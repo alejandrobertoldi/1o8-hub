@@ -1,0 +1,3 @@
+ALTER TABLE "aplus_module_images" ALTER COLUMN "alt_text" SET DATA TYPE text;--> statement-breakpoint
+ALTER TABLE "aplus_comments" ADD CONSTRAINT "aplus_comments_parent_comment_id_aplus_comments_id_fk" FOREIGN KEY ("parent_comment_id") REFERENCES "public"."aplus_comments"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+CREATE INDEX "idx_aplus_comments_client" ON "aplus_comments" USING btree ("client_id_code");

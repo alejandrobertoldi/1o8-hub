@@ -1,0 +1,255 @@
+  <!-- Overview -->
+  <h2 class="section-title" style="margin-top: 0;">Overview</h2>
+  <p class="lead">
+    How design images are uploaded, versioned, and progressed through review inside
+    <strong>Design &rarr; Listing Images</strong>. Every image lives in a per-product slot, is stored
+    automatically in the client's Google Drive, keeps a full version history, and moves through a
+    six-stage status workflow from <em>Not Started</em> to <em>Live</em>.
+  </p>
+  <div class="overview-grid">
+    <div class="ov-card">
+      <div class="num">10</div>
+      <div class="label">Image slots per product — MAIN + PT01–PT09</div>
+    </div>
+    <div class="ov-card">
+      <div class="num">6</div>
+      <div class="label">Statuses — Not Started → In Progress → In Review → Approved → Live → Discontinued</div>
+    </div>
+    <div class="ov-card">
+      <div class="num">V01+</div>
+      <div class="label">Versions per slot — every re-upload creates a new version, history is kept</div>
+    </div>
+  </div>
+
+  <!-- ══ KEY CONCEPTS ══ -->
+  <h2 class="section-title">Before You Start — Key Concepts</h2>
+
+  <div class="info-card">
+    <h3>Where it lives</h3>
+    <p>Open <strong>Design &rarr; Listing Images</strong>, choose a client, then pick a variation. You'll see a grid: one row per product, one column per image slot.</p>
+  </div>
+
+  <div class="concept-grid" style="margin-top:12px;">
+    <div class="info-card">
+      <h3>The 10 slots</h3>
+      <p>Each child product has ten image slots. <strong>MAIN</strong> is the hero image; <strong>PT01–PT09</strong> are the additional gallery images.</p>
+      <div class="slot-mock">
+        <div class="slot-chip main">MAIN</div>
+        <div class="slot-chip">PT01</div>
+        <div class="slot-chip">PT02</div>
+        <div class="slot-chip">PT03</div>
+        <div class="slot-chip">PT04</div>
+        <div class="slot-chip">PT05</div>
+        <div class="slot-chip">PT06</div>
+        <div class="slot-chip">PT07</div>
+        <div class="slot-chip">PT08</div>
+        <div class="slot-chip">PT09</div>
+      </div>
+    </div>
+    <div class="info-card">
+      <h3>Parent vs. child rows</h3>
+      <p>A <strong>parent row</strong> is a header only — it groups a variation and shows the product count. It holds <em>no</em> images and has no upload cells or status controls.</p>
+      <p><strong>Child rows</strong> are the individual products (by ASIN). Only child rows have the ten upload slots. This is where all uploading happens.</p>
+    </div>
+  </div>
+
+  <!-- ══ UPLOAD STEPS ══ -->
+  <h2 class="section-title">Uploading an Image</h2>
+  <div class="steps-list">
+
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">Open the client and variation</div>
+          <div class="step-desc">From <strong>Design &rarr; Listing Images</strong>, select the client, then open the variation whose products you want to work on. The grid loads with a row per product and a column per slot.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">Find the right slot</div>
+          <div class="step-desc">Locate the <strong>child product row</strong> (by ASIN) and the slot column you want — <code>MAIN</code> for the hero image, or <code>PT01</code>–<code>PT09</code> for a gallery image. Empty slots show a dashed upload box; filled slots show a thumbnail.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">Add the image</div>
+          <div class="step-desc">Either way works:</div>
+        </div>
+      </div>
+      <div class="substeps">
+        <div class="substep">
+          <div class="substep-dot"></div>
+          <div>
+            <div class="substep-label">Click to browse</div>
+            <div class="substep-desc">Click the upload cell and pick a file from your machine.</div>
+          </div>
+        </div>
+        <div class="substep">
+          <div class="substep-dot"></div>
+          <div>
+            <div class="substep-label">Drag &amp; drop</div>
+            <div class="substep-desc">Drag an image file directly onto the cell.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <div class="step-title">The file syncs to Google Drive <span class="badge badge-auto">Automatic</span></div>
+          <div class="step-desc">The image is uploaded into the client's Drive under <code>Graphics / Listing Images / {Product ID}</code> with a versioned filename. The subfolder for that product is created on the first upload — you don't create it manually. A confirmation appears when the upload finishes.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <div class="step-title">A version is created <span class="badge badge-auto">Automatic</span></div>
+          <div class="step-desc">Each upload becomes a new version for that slot (<code>V01</code>, <code>V02</code>, …). The newest version is shown in the grid; the rest are kept in the version history. New images start at <strong>Not Started</strong> until you set a status.</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /steps-list -->
+
+  <!-- ══ VERSION CONTROL ══ -->
+  <h2 class="section-title">Version Control</h2>
+  <p class="lead">Every slot keeps a full history. Re-uploading never overwrites the previous image — it adds a new version, so you can always look back or roll forward.</p>
+
+  <div class="info-card">
+    <h3>How versions are numbered</h3>
+    <p>Versions increment sequentially: <code>V01</code>, <code>V02</code>, <code>V03</code>… If you delete a version, its number is freed and the <strong>gap is back-filled</strong> on the next upload — so numbering stays contiguous with no holes.</p>
+  </div>
+
+  <div class="concept-grid" style="margin-top:12px;">
+    <div class="info-card">
+      <h3>Open the version history</h3>
+      <p>Click the version badge (e.g. <code>V01</code>) on a thumbnail to open the history popover. There you can see every version's thumbnail, number, status, and date, with the latest marked <em>current</em>.</p>
+    </div>
+    <div class="info-card">
+      <h3>Add, switch, or delete</h3>
+      <p>Add a version by uploading again to the same slot. Roll back by setting an older version's status to <strong>Live</strong>. Delete a version to remove it permanently (a hard delete — its number is then reused on the next upload).</p>
+    </div>
+  </div>
+
+  <div class="flow-arrow">
+    <span class="flow-pill vpill">V01</span>
+    <span class="arrow">→ re-upload →</span>
+    <span class="flow-pill vpill">V02</span>
+    <span class="arrow">→ re-upload →</span>
+    <span class="flow-pill vpill">V03</span>
+    <span class="arrow">·</span>
+    <span style="color:var(--muted);">delete V02</span>
+    <span class="arrow">→ next upload back-fills →</span>
+    <span class="flow-pill vpill">V02</span>
+  </div>
+
+  <!-- ══ THE 6 STATUSES ══ -->
+  <h2 class="section-title">The 6-Status Workflow</h2>
+  <p class="lead">Each version carries a status that shows where it is in the review and publishing process. Set it from the status chip under a thumbnail (newest version), from the version history popover (any specific version), or in bulk from the row's status control.</p>
+
+  <table class="status-table">
+    <thead>
+      <tr>
+        <th>Status</th>
+        <th>What it means / when to use it</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="status-pill sp-not"><span class="dot"></span>Not Started</span></td>
+        <td>Default for a freshly uploaded image. Work on it hasn't begun yet.</td>
+      </tr>
+      <tr>
+        <td><span class="status-pill sp-prog"><span class="dot"></span>In Progress</span></td>
+        <td>The designer is actively working on the image.</td>
+      </tr>
+      <tr>
+        <td><span class="status-pill sp-review"><span class="dot"></span>In Review</span></td>
+        <td>Submitted for review or client approval — awaiting feedback.</td>
+      </tr>
+      <tr>
+        <td><span class="status-pill sp-appr"><span class="dot"></span>Approved</span></td>
+        <td>Signed off and ready, but not yet published to the marketplace.</td>
+      </tr>
+      <tr>
+        <td><span class="status-pill sp-live"><span class="dot"></span>Live</span></td>
+        <td>Currently published on Amazon. Only one version per slot can be Live at a time.</td>
+      </tr>
+      <tr>
+        <td><span class="status-pill sp-disc"><span class="dot"></span>Discontinued</span></td>
+        <td>Retired — was previously Live and has since been replaced.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="flow-arrow">
+    <span class="status-pill sp-not"><span class="dot"></span>Not Started</span>
+    <span class="arrow">→</span>
+    <span class="status-pill sp-prog"><span class="dot"></span>In Progress</span>
+    <span class="arrow">→</span>
+    <span class="status-pill sp-review"><span class="dot"></span>In Review</span>
+    <span class="arrow">→</span>
+    <span class="status-pill sp-appr"><span class="dot"></span>Approved</span>
+    <span class="arrow">→</span>
+    <span class="status-pill sp-live"><span class="dot"></span>Live</span>
+  </div>
+
+  <!-- ══ AUTOMATIC BEHAVIOR ══ -->
+  <h2 class="section-title">Going Live — Automatic Behavior</h2>
+
+  <div class="status-grid">
+    <div class="status-card active">
+      <div class="status-card-title">
+        <div class="dot-status"></div>
+        Marking a version Live
+      </div>
+      <ul class="consequence-list">
+        <li><span class="c-icon">✅</span><span>The chosen version becomes the active image for that slot.</span></li>
+        <li><span class="c-icon">🔁</span><span>Any <strong>other</strong> version of the same slot that was Live is automatically set to <strong>Discontinued</strong>.</span></li>
+        <li><span class="c-icon">1️⃣</span><span>This guarantees exactly one Live version per slot — no manual cleanup needed.</span></li>
+      </ul>
+    </div>
+    <div class="status-card inactive">
+      <div class="status-card-title">
+        <div class="dot-status"></div>
+        What Discontinued means
+      </div>
+      <ul class="consequence-list">
+        <li><span class="c-icon">🗂️</span><span>The version is retired but <strong>not deleted</strong> — it stays in the history.</span></li>
+        <li><span class="c-icon">👁️</span><span>Discontinued versions can be hidden or surfaced using the status filters at the top of the grid.</span></li>
+        <li><span class="c-icon">↩️</span><span>You can promote a discontinued version back to Live; the current Live one then becomes Discontinued in turn.</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="flow-arrow">
+    <span class="flow-pill vpill">V02</span>
+    <span class="status-pill sp-live" style="padding:2px 8px;"><span class="dot"></span>Live</span>
+    <span class="arrow">→</span>
+    <span style="color:var(--muted);">set V03 to Live</span>
+    <span class="arrow">→</span>
+    <span class="flow-pill vpill">V03</span>
+    <span class="status-pill sp-live" style="padding:2px 8px;"><span class="dot"></span>Live</span>
+    <span class="arrow">+</span>
+    <span class="flow-pill vpill">V02</span>
+    <span class="status-pill sp-disc" style="padding:2px 8px;"><span class="dot"></span>Discontinued</span>
+  </div>
+
+  <div class="confirm-note">
+    <span>📁</span>
+    <span><strong>Drive is the source of truth for the files themselves.</strong> Uploads, new versions, and deletions all sync to the client's Google Drive automatically. The status workflow tracks review state inside the hub; it does not change what's actually published on Amazon until the listing is pushed live.</span>
+  </div>

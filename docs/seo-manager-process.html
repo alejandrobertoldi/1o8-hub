@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SEO Manager — Complete Process Guide</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f0f11; color: #e4e4e7; line-height: 1.6; padding: 2rem 1rem; }
+    .page { max-width: 1200px; margin: 0 auto; }
+
+    /* ── Header ── */
+    .page-header { margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid #27272a; }
+    .page-header h1 { font-size: 2rem; font-weight: 700; letter-spacing: -0.03em; color: #fafafa; }
+    .page-header h1 span { color: #E8A700; }
+    .page-header p { margin-top: 0.4rem; font-size: 0.85rem; color: #71717a; }
+
+    /* ── TOC ── */
+    .toc { background: #18181b; border: 1px solid #27272a; border-radius: 8px; padding: 1rem 1.2rem; margin-bottom: 2.5rem; }
+    .toc h3 { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #71717a; margin-bottom: 0.6rem; }
+    .toc ul { list-style: none; display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; }
+    .toc a { color: #a1a1aa; text-decoration: none; font-size: 0.85rem; }
+    .toc a:hover { color: #E8A700; }
+
+    /* ── Flowchart ── */
+    .flowchart { background: #18181b; border: 1px solid #27272a; border-radius: 12px; padding: 2rem; margin-bottom: 2.5rem; overflow-x: auto; }
+    .flowchart h2 { font-size: 1rem; font-weight: 600; color: #a1a1aa; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 1.5rem; }
+    .flow-row { display: flex; align-items: center; gap: 0; flex-wrap: nowrap; margin-bottom: 0; }
+    .flow-node { display: flex; flex-direction: column; align-items: center; min-width: 90px; }
+    .flow-box { padding: 0.55rem 0.8rem; border-radius: 8px; font-size: 0.72rem; font-weight: 700; text-align: center; line-height: 1.3; border: 1.5px solid; }
+    .flow-label { font-size: 0.62rem; color: #52525b; margin-top: 0.3rem; text-align: center; max-width: 80px; }
+    .flow-arrow { color: #3f3f46; font-size: 1.2rem; padding: 0 0.3rem; flex-shrink: 0; }
+    .flow-arrow-down { color: #3f3f46; font-size: 1.2rem; text-align: center; margin: 0.3rem auto; }
+    .phase-s1  { background: #1a1a2e; border-color: #3730a3; color: #818cf8; }
+    .phase-s2  { background: #1c1a14; border-color: #92400e; color: #fbbf24; }
+    .phase-s3  { background: #0f1f1a; border-color: #065f46; color: #34d399; }
+    .phase-s4  { background: #1a1020; border-color: #5b21b6; color: #c084fc; }
+    .phase-s5  { background: #141520; border-color: #1d4ed8; color: #60a5fa; }
+    .phase-s6  { background: #1a100a; border-color: #c2410c; color: #fb923c; }
+    .phase-s67 { background: #141a14; border-color: #166534; color: #86efac; }
+    .phase-s7  { background: #1a1420; border-color: #7c3aed; color: #d8b4fe; }
+    .phase-s8  { background: #1a1414; border-color: #9f1239; color: #fb7185; }
+    .phase-s9  { background: #1a1a10; border-color: #a16207; color: #fde047; }
+    .flow-pause { background: #1a1a1a; border-color: #52525b; color: #71717a; font-size: 0.6rem; border-style: dashed; }
+
+    /* ── Section ── */
+    .section { margin-bottom: 3rem; }
+    .section-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid #27272a; }
+    .phase-badge { padding: 0.3rem 0.8rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em; border: 1.5px solid; }
+    .section-header h2 { font-size: 1.2rem; font-weight: 600; color: #fafafa; }
+    .section-header .sub { font-size: 0.82rem; color: #71717a; margin-left: auto; }
+
+    /* ── Info grid ── */
+    .info-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.75rem; margin-bottom: 1rem; }
+    .info-card { background: #18181b; border: 1px solid #27272a; border-radius: 6px; padding: 0.75rem; }
+    .info-card .label { font-size: 0.65rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #52525b; margin-bottom: 0.3rem; }
+    .info-card .value { font-size: 0.82rem; color: #d4d4d8; }
+
+    /* ── Step list ── */
+    .steps { list-style: none; margin-bottom: 1rem; }
+    .steps li { display: flex; gap: 0.75rem; align-items: flex-start; padding: 0.5rem 0; border-bottom: 1px solid #1f1f22; font-size: 0.85rem; }
+    .steps li:last-child { border-bottom: none; }
+    .step-num { background: #27272a; color: #a1a1aa; font-size: 0.65rem; font-weight: 700; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+    .step-pause { background: #5b21b6; color: #fff; }
+
+    /* ── Prompt block ── */
+    .prompt-block { background: #18181b; border: 1px solid #27272a; border-radius: 8px; overflow: hidden; margin-bottom: 1rem; }
+    .prompt-header { display: flex; align-items: center; justify-content: space-between; padding: 0.55rem 1rem; background: #1e1e22; border-bottom: 1px solid #27272a; }
+    .role { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+    .role-sys  { color: #f59e0b; }
+    .role-user { color: #34d399; }
+    .role-note { color: #818cf8; }
+    .prompt-note { font-size: 0.7rem; color: #52525b; }
+    pre { padding: 0.9rem 1.1rem; font-family: "JetBrains Mono","Fira Code","Menlo",monospace; font-size: 0.77rem; line-height: 1.65; color: #d4d4d8; white-space: pre-wrap; word-break: break-word; }
+    .hl-key  { color: #fbbf24; }
+    .hl-bad  { color: #f87171; }
+    .hl-good { color: #4ade80; }
+    .hl-rule { color: #c084fc; }
+    .hl-lbl  { color: #60a5fa; }
+    .hl-warn { color: #fb923c; }
+
+    /* ── Output table ── */
+    .output-table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; font-size: 0.8rem; }
+    .output-table th { background: #1e1e22; color: #a1a1aa; font-size: 0.65rem; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.5rem 0.75rem; text-align: left; border-bottom: 1px solid #27272a; }
+    .output-table td { padding: 0.45rem 0.75rem; border-bottom: 1px solid #1f1f22; color: #d4d4d8; vertical-align: top; }
+    .output-table td code { font-family: monospace; font-size: 0.75rem; color: #fbbf24; background: #1e1e22; padding: 0.1rem 0.3rem; border-radius: 3px; }
+
+    hr.divider { border: none; border-top: 1px solid #27272a; margin: 2.5rem 0; }
+    .alert { background: #1a1010; border: 1px solid #7f1d1d; border-radius: 6px; padding: 0.75rem 1rem; font-size: 0.82rem; color: #fca5a5; margin-bottom: 1rem; }
+    .alert-purple { background: #1a1020; border-color: #5b21b6; color: #d8b4fe; }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <h1>SEO<span>Manager</span> — Complete Process Guide</h1>
+    <p>Full pipeline from intake to export · Phases S1–S9 · All AI prompts, data flows, and outputs · last updated 2026-05-21</p>
+  </div>
+
+  <nav class="toc">
+    <h3>Jump to</h3>
+    <ul>
+      <li><a href="#flowchart">Pipeline Flowchart</a></li>
+      <li><a href="#s1">S1 — Intake</a></li>
+      <li><a href="#s2">S2 — Keywords</a></li>
+      <li><a href="#s3">S3 — Reviews</a></li>
+      <li><a href="#s4">S4 — Rufus</a></li>
+      <li><a href="#s5">S5 — COSMO</a></li>
+      <li><a href="#s6">S6 — Listing Content (4 passes)</a></li>
+      <li><a href="#s67">S6.7 — Premium A+ Q&amp;A</a></li>
+      <li><a href="#s68">S6.8 — Final Export</a></li>
+      <li><a href="#s7">S7 — A+ Modules</a></li>
+      <li><a href="#s8">S8 — Images</a></li>
+      <li><a href="#s9">S9 — Quality Score</a></li>
+    </ul>
+  </nav>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- FLOWCHART -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="flowchart" id="flowchart">
+    <h2>Pipeline Overview</h2>
+    <div class="flow-row">
+      <div class="flow-node">
+        <div class="flow-box phase-s1">S1<br>Intake</div>
+        <div class="flow-label">ASINs + config</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">
+        <div class="flow-box phase-s2">S2<br>Keywords</div>
+        <div class="flow-label">Cerebro CSV → AI tiering</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">
+        <div class="flow-box phase-s3">S3<br>Reviews</div>
+        <div class="flow-label">Amazon reviews → AI analysis</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">
+        <div class="flow-box phase-s4">S4<br>Rufus</div>
+        <div class="flow-label">3-phase human + AI</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">
+        <div class="flow-box phase-s5">S5<br>COSMO</div>
+        <div class="flow-label">Semantic entity map</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">
+        <div class="flow-box phase-s6">S6<br>Content</div>
+        <div class="flow-label">4-pass generation</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">
+        <div class="flow-box phase-s67">S6.7<br>A+ Q&amp;A</div>
+        <div class="flow-label">Module 7 Q&amp;A</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">
+        <div class="flow-box phase-s6">S6.8<br>Export</div>
+        <div class="flow-label">DOCX → Drive</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">
+        <div class="flow-box phase-s7">S7<br>A+ Plan</div>
+        <div class="flow-label">7 modules skippable</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">
+        <div class="flow-box phase-s8">S8<br>Images</div>
+        <div class="flow-label">9 per ASIN skippable</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">
+        <div class="flow-box phase-s9">S9<br>Score</div>
+        <div class="flow-label">Quality gate</div>
+      </div>
+    </div>
+
+    <div style="margin-top:1.5rem;">
+      <table class="output-table">
+        <thead><tr><th>Phase</th><th>Type</th><th>DB Table</th><th>Claude Calls</th><th>Skippable</th></tr></thead>
+        <tbody>
+          <tr><td><strong style="color:#818cf8">S1</strong> — Intake</td><td>Manual + AI (optional baseline)</td><td><code>seo_projects</code>, <code>seo_asins</code></td><td>Optional</td><td>No</td></tr>
+          <tr><td><strong style="color:#fbbf24">S2</strong> — Keywords</td><td>CSV upload → AI tiering</td><td><code>seo_keywords</code></td><td>1 per 100-kw batch (parallel)</td><td>No</td></tr>
+          <tr><td><strong style="color:#34d399">S3</strong> — Reviews</td><td>Paste reviews → AI analysis</td><td><code>seo_reviews</code></td><td>1 per batch of reviews</td><td>No</td></tr>
+          <tr><td><strong style="color:#c084fc">S4</strong> — Rufus</td><td>Human Q&amp;A + AI synthesis</td><td><code>seo_rufus</code></td><td>Phase 2 gen + Phase 3 analysis</td><td>No</td></tr>
+          <tr><td><strong style="color:#60a5fa">S5</strong> — COSMO</td><td>AI semantic map</td><td><code>seo_cosmo_maps</code></td><td>1 (20 triples)</td><td>No</td></tr>
+          <tr><td><strong style="color:#fb923c">S6</strong> — Content</td><td>4-pass AI generation (SSE)</td><td><code>seo_asins.generatedContent</code></td><td>4 per batch × 4 batches</td><td>No</td></tr>
+          <tr><td><strong style="color:#86efac">S6.7</strong> — A+ Q&amp;A</td><td>AI grounded in S3/S4/S5</td><td><code>seo_asins.generatedContent._aplusQA</code></td><td>1</td><td>Yes</td></tr>
+          <tr><td><strong style="color:#fb923c">S6.8</strong> — Export</td><td>DOCX build → Google Drive</td><td><code>seo_exports</code></td><td>None</td><td>No</td></tr>
+          <tr><td><strong style="color:#d8b4fe">S7</strong> — A+ Plan</td><td>AI 7-module plan</td><td><code>seo_aplus_plans</code></td><td>1</td><td>Yes</td></tr>
+          <tr><td><strong style="color:#fb7185">S8</strong> — Images</td><td>AI image briefs</td><td><code>seo_images</code></td><td>1</td><td>Yes</td></tr>
+          <tr><td><strong style="color:#fde047">S9</strong> — Score</td><td>Quality scoring</td><td><code>seo_scores</code></td><td>1</td><td>No</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- S1 INTAKE -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="section" id="s1">
+    <div class="section-header">
+      <span class="phase-badge phase-s1">S1</span>
+      <h2>Intake &amp; Configuration</h2>
+      <span class="sub">seo_projects · seo_asins</span>
+    </div>
+
+    <div class="info-grid">
+      <div class="info-card"><div class="label">Input</div><div class="value">Brand name, ASIN list, variation data, brand guidelines</div></div>
+      <div class="info-card"><div class="label">AI</div><div class="value">Optional: baseline ASIN analysis from existing listing data</div></div>
+      <div class="info-card"><div class="label">Output</div><div class="value">Project row + ASIN rows with parentage, variant attributes, size placement</div></div>
+      <div class="info-card"><div class="label">Hard Rules</div><div class="value">Brand guidelines locked in <code>brand_guidelines_lock</code> JSONB</div></div>
+    </div>
+
+    <ul class="steps">
+      <li><span class="step-num">1</span>Create project: brand name, client, size placement rule (start/middle/end)</li>
+      <li><span class="step-num">2</span>Add ASINs: parentage level (Parent/Child), variation product, flavor/style/color/size attributes</li>
+      <li><span class="step-num">3</span>Upload brand guidelines PDF (optional) — auto-extracted and locked</li>
+      <li><span class="step-num">4</span>Set content voice (natural / authoritative / conversational)</li>
+      <li><span class="step-num">5</span>Approve → moves to S2</li>
+    </ul>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- S2 KEYWORDS -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="section" id="s2">
+    <div class="section-header">
+      <span class="phase-badge phase-s2">S2</span>
+      <h2>Keyword Research &amp; AI Tiering</h2>
+      <span class="sub">seo_keywords · /api/seo/claude/keywords</span>
+    </div>
+
+    <div class="info-grid">
+      <div class="info-card"><div class="label">Input</div><div class="value">Helium 10 Cerebro CSV (product) + optional competitor CSV</div></div>
+      <div class="info-card"><div class="label">Cap</div><div class="value">200 product + 200 competitor = 400 max keywords</div></div>
+      <div class="info-card"><div class="label">Batching</div><div class="value">100 keywords/batch · all batches run in PARALLEL (Promise.all)</div></div>
+      <div class="info-card"><div class="label">Output</div><div class="value">T1–T4 tiered keywords + 6 semantic groups + negative flags · SEO &amp; PPC dual-use</div></div>
+      <div class="info-card"><div class="label">Export</div><div class="value">GET /api/seo/projects/{id}/export-keywords → 4-sheet XLSX workbook</div></div>
+    </div>
+
+    <ul class="steps">
+      <li><span class="step-num">1</span><strong>S2.1 Upload:</strong> User uploads Cerebro CSV. Client parser reads keyword_phrase, search_volume, cerebro_iq_score, competing_products, title_density, CPR</li>
+      <li><span class="step-num">2</span><strong>S2.2 AI Tiering:</strong> "Ask Claude" button → POST /api/seo/claude/keywords. All 100-kw batches run in parallel. Each keyword gets SEO tier + semantic group + negative flag.</li>
+      <li><span class="step-num">3</span><strong>S2.3 Review:</strong> Tier counts validated (T1≥5, T2≥10, T3≥15, T4≥20). Filter + edit inline.</li>
+      <li><span class="step-num">4</span><strong>S2.4 Approve:</strong> Saved to seo_keywords. Negative keywords feed S6 backend exclusion list. Semantic groups inform S6 bullet organization.</li>
+      <li><span class="step-num">5</span><strong>S2.5 Export (optional):</strong> GET /api/seo/projects/{id}/export-keywords → 4-sheet XLSX: Master List / Single KW Campaigns / Negatives / Strategy Summary.</li>
+    </ul>
+
+    <div class="prompt-block">
+      <div class="prompt-header"><span class="role role-sys">SYSTEM</span><span class="prompt-note">Prepended with config doc block if set. Batches run in parallel.</span></div>
+      <pre>
+You are the Keyword Intelligence and Tiering Engine for Amazon SEO (RUFUS + COSMO).
+
+TASK: For each keyword, assign Priority Tier, Search Intent, Use Location, Match Type,
+COSMO Relationship, Buyer Stage, Semantic Group, and Negative flags.
+
+<span class="hl-lbl">TIERING RULES (SEO placement):</span>
+<span class="hl-rule">- T1:</span> High purchase intent → Title. Match: Exact. <span class="hl-warn">5-8 keywords TOTAL across all batches.</span>
+<span class="hl-rule">- T2:</span> Mid-funnel → Bullet Points. Match: Phrase. 10-15 total.
+<span class="hl-rule">- T3:</span> Semantic expansion → Description. Match: Phrase. 15-20 total.
+<span class="hl-rule">- T4:</span> Long-tail/awareness → Backend. Match: Exact or Broad. Everything else.
+<span class="hl-bad">No keyword in more than one tier.</span>
+
+<span class="hl-lbl">SEMANTIC GROUPS (PPC campaign grouping — assign exactly one):</span>
+<span class="hl-rule">- CoreProduct:</span>  exact product type, high-intent buyer terms
+<span class="hl-rule">- Ingredient:</span>   material, ingredient, format, physical attribute terms
+<span class="hl-rule">- Language:</span>     non-English terms (Spanish, Portuguese, etc.)
+<span class="hl-rule">- GenericCat:</span>   broad category discovery terms (cap ≤20 per group)
+<span class="hl-rule">- Benefit:</span>      use-case, benefit, occasion, demographic terms
+<span class="hl-rule">- Competitor:</span>   contains competitor brand name — <span class="hl-bad">ONLY place brand terms here</span>
+
+<span class="hl-lbl">NEGATIVE KEYWORDS — flag with neg:true when keyword describes:</span>
+- Wrong product form, wrong ingredient, or wrong product type/category
+- Set nc: <span class="hl-rule">WrongForm | WrongType | WrongIngredient | CompetitorBrand | WrongCat</span>
+- <span class="hl-warn">Competitor brand terms are NOT negatives</span> — Competitor group + ic:true
+- Negatives get tier:T4, loc:Backend, but sg must be empty
+
+RULES: Never put competitor brand terms in non-Competitor groups.
+       Quality over quantity (≤30 per group, GenericCat ≤20).
+
+BUYER STAGE: Awareness | Consideration | Decision
+COSMO: USED_FOR_FUNC | USED_TO | CAPABLE_OF | USED_FOR_EVE | USED_ON | USED_IN_LOC |
+       USED_AS | IS_A | xIS_A | USED_IN_BODY | USED_WITH | USED_FOR_AUD |
+       USED_BY | xINTERESTED_IN | xWANT
+INTENT: Informational | Commercial | Navigational | Transactional
+SCORING: (Relevancy×0.45) + (NormVolume×0.35) + (BuyerStageWeight×0.20)
+         Decision=1.0, Consideration=0.7, Awareness=0.4
+
+OUTPUT: Return ONLY a JSON array with short keys:
+{"t":"keyword","v":number,"tier":"T1","int":"Transactional","loc":"Title",
+ "mt":"Exact","cos":"USED_FOR_FUNC","bs":"Decision","n":"short note",
+ "sg":"CoreProduct","neg":false,"nc":"","ic":false}
+
+Key map: sg=semanticGroup, neg=isNegative, nc=negativeCategory, ic=isCompetitor</pre>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-header"><span class="role role-user">USER</span><span class="prompt-note">One per batch · dynamic</span></div>
+      <pre>
+Product: {brandName} — {variationProduct}
+Theme: {variationTheme}
+{Brand guidelines — first 600 chars, if provided}
+This is batch N of M. Assign max {t1PerBatch} T1, {t2PerBatch} T2, rest split T3/T4.
+
+Batch N/M ({count} keywords):
+Keyword    Volume    IQ    Competition    TitleDensity    CPR
+{TSV rows — one keyword per line}
+
+Return JSON array for ALL {count} keywords using short keys.</pre>
+    </div>
+
+    <table class="output-table">
+      <thead><tr><th>DB Field</th><th>JSON key</th><th>Source</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td><code>priorityTier</code></td><td><code>tier</code></td><td>Claude</td><td>T1 → Title, T2 → Bullets, T3 → Description, T4 → Backend</td></tr>
+        <tr><td><code>searchIntent</code></td><td><code>int</code></td><td>Claude</td><td>Transactional / Commercial / Informational / Navigational</td></tr>
+        <tr><td><code>primaryUseLocation</code></td><td><code>loc</code></td><td>Claude</td><td>Title / Bullet Points / Description / Backend Search Terms</td></tr>
+        <tr><td><code>cosmoRelationship</code></td><td><code>cos</code></td><td>Claude</td><td>Pre-label; validated/expanded in S5</td></tr>
+        <tr><td><code>buyerStage</code></td><td><code>bs</code></td><td>Claude</td><td>Awareness / Consideration / Decision</td></tr>
+        <tr><td><code>semanticGroup</code></td><td><code>sg</code></td><td>Claude</td><td>CoreProduct / Ingredient / Language / GenericCat / Benefit / Competitor — PPC campaign grouping; also informs S6 bullet structure</td></tr>
+        <tr><td><code>isNegative</code></td><td><code>neg</code></td><td>Claude</td><td>true = excluded from targeting; fed to S6 backend search term exclusion list</td></tr>
+        <tr><td><code>negativeReason</code></td><td><code>nc</code></td><td>Claude</td><td>WrongForm / WrongType / WrongIngredient / CompetitorBrand / WrongCat</td></tr>
+        <tr><td><code>isCompetitor</code></td><td><code>ic</code></td><td>Claude</td><td>true when semanticGroup = Competitor; used to isolate conquest targeting</td></tr>
+        <tr><td><code>cerebroIq</code>, <code>competingProducts</code>, <code>titleDensity</code>, <code>cpr</code></td><td>—</td><td>CSV</td><td>Raw Helium 10 metrics passed to Claude for scoring context</td></tr>
+      </tbody>
+    </table>
+
+    <div class="prompt-block" style="margin-top:16px">
+      <div class="prompt-header"><span class="role role-sys" style="background:#1e3a5f">XLSX EXPORT</span><span class="prompt-note">4 sheets · on demand · GET /api/seo/projects/{id}/export-keywords</span></div>
+      <pre>
+Sheet 1 — Master Keyword List
+  All non-negative keywords grouped by semantic group (color-coded headers)
+  Columns: Keyword · Volume · Cerebro IQ · PPC Bid · Competing · Title Density · Tier · Use Location · Buyer Stage · Priority
+
+Sheet 2 — Single Keyword Campaigns
+  Top 20 T1/T2 keywords. Campaign type derived from volume:
+  <span class="hl-rule">≥10,000 SV</span> → Exact + Broad   <span class="hl-rule">≥3,000 SV</span> → Exact   <span class="hl-rule">&lt;3,000 SV</span> → Exact (Niche)
+
+Sheet 3 — Negative Keywords
+  All is_negative=true keywords organized by category
+  Columns: Keyword · Reason · Category · Match Type (Phrase)
+
+Sheet 4 — Strategy Summary
+  Counts per group · tier breakdown · top T1/T2 keywords · brand + project metadata</pre>
+    </div>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- S3 REVIEWS -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="section" id="s3">
+    <div class="section-header">
+      <span class="phase-badge phase-s3">S3</span>
+      <h2>Customer Review Intelligence</h2>
+      <span class="sub">seo_reviews · /api/seo/claude/reviews</span>
+    </div>
+
+    <div class="info-grid">
+      <div class="info-card"><div class="label">Input</div><div class="value">Amazon product reviews (pasted or imported)</div></div>
+      <div class="info-card"><div class="label">AI</div><div class="value">Per-review structured analysis: sentiment, themes, objections, Rufus insights</div></div>
+      <div class="info-card"><div class="label">Output</div><div class="value">seo_reviews rows — used in S6 bullets and S6.7 Q&amp;A grounding</div></div>
+      <div class="info-card"><div class="label">Key field</div><div class="value">rufusUsableInsight — buyer-psychology signal extracted per review</div></div>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-header"><span class="role role-sys">SYSTEM</span><span class="prompt-note">Prepended with config doc block. Short keys minimize token usage.</span></div>
+      <pre>
+You are the Review Intelligence Engine for Amazon SEO.
+
+Analyze each review. Return structured intelligence.
+
+<span class="hl-lbl">FOR EACH REVIEW determine:</span>
+<span class="hl-rule">s:</span>   Sentiment (Positive+ | Positive | Neutral | Negative | Negative-)
+<span class="hl-rule">th:</span>  Key themes comma-separated
+<span class="hl-rule">u:</span>   Usage mentioned (Ritual | Habitual | Occasional | Emergency | or context)
+<span class="hl-rule">pkg:</span> Packaging feedback or "None mentioned"
+<span class="hl-rule">pr:</span>  Price feedback or "None mentioned"
+<span class="hl-rule">hl:</span>  Heat/intensity feedback or "Not applicable"
+<span class="hl-rule">ri:</span>  Rufus buyer-psychology insight from review language
+<span class="hl-rule">bm:</span>  Bullet mapping (e.g. "Bullet 1: Effectiveness")
+
+<span class="hl-rule">RULES:</span>
+- Anonymize names as Reviewer_001, Reviewer_002, etc.
+- No blank fields — use "None mentioned" or "Not applicable"
+
+OUTPUT: ONLY a JSON array with short keys:
+{"id":"...","d":"YYYY-MM-DD","rn":"Reviewer_XXX","v":"ASIN","r":5,"t":"title",
+ "s":"Positive","th":"...","u":"...","pkg":"...","pr":"...","hl":"...","ri":"...","bm":"..."}</pre>
+    </div>
+
+    <table class="output-table">
+      <thead><tr><th>DB Field</th><th>Used By</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td><code>keyThemes</code></td><td>S6 bullets, S6.7 Q&amp;A</td><td>Surface recurring topics in content</td></tr>
+        <tr><td><code>rufusUsableInsight</code></td><td>S6.7 Q&amp;A grounding</td><td>1-2★ = objections to address; 4-5★ = aspects to reinforce</td></tr>
+        <tr><td><code>sentiment</code> + <code>starRating</code></td><td>S6.7 Q&amp;A sourcing</td><td>Filters reviews by satisfaction tier</td></tr>
+        <tr><td><code>bulletMapping</code></td><td>S6 bullets</td><td>Maps review insight to bullet position B1-B5</td></tr>
+        <tr><td><code>helpfulVotes</code></td><td>S6.7 Q&amp;A</td><td>Sorted desc — most-voted reviews surface first</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- S4 RUFUS -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="section" id="s4">
+    <div class="section-header">
+      <span class="phase-badge phase-s4">S4</span>
+      <h2>Rufus Q&amp;A Intelligence</h2>
+      <span class="sub">seo_rufus · /api/seo/claude/rufus · 3 sub-phases</span>
+    </div>
+
+    <div class="alert alert-purple">⚠️ S4 requires a human pause. Phase 1 questions are IMMUTABLE — user must paste them into live Amazon Rufus and return the answers. Cannot be simulated or skipped.</div>
+
+    <div class="info-grid">
+      <div class="info-card"><div class="label">Phase 1</div><div class="value">5 canonical questions → human pastes into Amazon Rufus → answers back</div></div>
+      <div class="info-card"><div class="label">Phase 2</div><div class="value">Claude generates 8-10 deeper questions based on Phase 1 answers → human pastes → answers back</div></div>
+      <div class="info-card"><div class="label">Phase 3</div><div class="value">Claude analyzes all Q&amp;A → optimization summary (autonomous)</div></div>
+      <div class="info-card"><div class="label">Output</div><div class="value">seo_strategy, listing_plan, image_strategy, audience_segmentation, action_list — fed into S5/S6</div></div>
+    </div>
+
+    <ul class="steps">
+      <li><span class="step-num step-pause">!</span><strong>Phase 1 — IMMUTABLE QUESTIONS</strong> (v5 §4.3.1.3 — do not edit):
+        <ol style="margin-top:0.5rem;margin-left:1rem;font-size:0.8rem;color:#a1a1aa;">
+          <li>RQ1 (discovery): "What is this product for?"</li>
+          <li>RQ2 (discovery): "Who is this product designed for?"</li>
+          <li>RQ3 (consideration): "What problem does this product solve?"</li>
+          <li>RQ4 (consideration): "What makes this product different from alternatives?"</li>
+          <li>RQ5 (decision): "Why should I buy this product over the competition?"</li>
+        </ol>
+      </li>
+      <li><span class="step-num step-pause">!</span><strong>Phase 2 — Claude generates deeper questions → human pastes into Rufus → returns answers</strong></li>
+      <li><span class="step-num">3</span><strong>Phase 3 — Claude analyzes all Q&amp;A pairs autonomously → optimization_summary persisted</strong></li>
+    </ul>
+
+    <div class="prompt-block">
+      <div class="prompt-header"><span class="role role-sys">SYSTEM — Phase 2 question generation</span><span class="prompt-note">Claude generates 8-10 strategic deeper questions</span></div>
+      <pre>
+You are the RUFUS Optimization Engine for Amazon listing SEO.
+
+Given the Phase 1 foundational Q&amp;A from Rufus, generate 8-10 additional strategic questions
+to ask Rufus for deeper discovery.
+
+<span class="hl-lbl">RULES:</span>
+- Every question MUST end with a question mark
+- Questions must be short and direct for Rufus chat input
+- Focus on: usage patterns, objection resolution, competitive positioning, audience segments,
+  purchase triggers, seasonal usage, gifting context, complementary products
+- No quotation marks in questions
+- Each question should explore a different angle not covered in Phase 1
+- Questions should help inform listing optimization, A+ content, and image strategy
+
+OUTPUT: Return ONLY a JSON array of question strings.
+["What ingredients does this product contain?", "How quickly does this product work?"]</pre>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-header"><span class="role role-user">USER — Phase 2</span><span class="prompt-note">Dynamic</span></div>
+      <pre>
+Product: {brandName} — {productName}
+{Brand guidelines — first 600 chars, if provided}
+
+Phase 1 Responses:
+Q1: What is this product for?
+A1: {Rufus answer}
+
+Q2: Who is this product designed for?
+A2: {Rufus answer}
+
+[...Q3-Q5 with answers...]
+
+Generate 8-10 strategic Phase 2 questions.</pre>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-header"><span class="role role-sys">SYSTEM — Phase 3 analysis (autonomous)</span><span class="prompt-note">Produces optimization_summary used by S5/S6</span></div>
+      <pre>
+You are the RUFUS Analysis Engine for 1o8 Marketplace SEO (RUFUS + COSMO system).
+
+Analyze each Rufus Q&amp;A pair and produce structured intelligence for the OUT_RUF table.
+
+<span class="hl-lbl">FOR EACH Q&amp;A PAIR, determine:</span>
+<span class="hl-rule">RufusQuestionCategory:</span> Product Identity | Usage &amp; Application | Customer Satisfaction |
+  Customer Dissatisfaction | Competitive Landscape | Purchase Decision |
+  Ingredient &amp; Composition | Efficacy &amp; Performance | Audience &amp; Demographics | Seasonal &amp; Contextual
+
+Then produce an optimization_summary:
+- seo_strategy: core SEO direction from Rufus data
+- listing_plan: which content areas to prioritize
+- image_strategy: visual direction from answers
+- audience_segmentation: buyer personas surfaced
+- action_list: specific copywriting actions to take</pre>
+    </div>
+
+    <table class="output-table">
+      <thead><tr><th>DB Field</th><th>Used By</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td><code>phase1Questions</code> / <code>phase1Answers</code></td><td>S6.7 Q&amp;A context</td><td>Top 8 pairs injected as RUFUS SHOPPER QUESTIONS</td></tr>
+        <tr><td><code>optimizationSummary.seo_strategy</code></td><td>S5 COSMO, S6 content</td><td>Shapes entity relationships and content priorities</td></tr>
+        <tr><td><code>rows</code> (analyzed Q&amp;A)</td><td>S6 bullets user prompt</td><td>All Rufus Q&amp;As injected into bullet generation</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- S5 COSMO -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="section" id="s5">
+    <div class="section-header">
+      <span class="phase-badge phase-s5">S5</span>
+      <h2>COSMO Semantic Entity Map</h2>
+      <span class="sub">seo_cosmo_maps · /api/seo/claude/cosmo</span>
+    </div>
+
+    <div class="info-grid">
+      <div class="info-card"><div class="label">Input</div><div class="value">Approved keywords (S2) + Rufus optimization summary (S4)</div></div>
+      <div class="info-card"><div class="label">Output</div><div class="value">20 entity-relationship triples across all 16 COSMO categories</div></div>
+      <div class="info-card"><div class="label">Hard Rule</div><div class="value">All 16 relationship categories MUST be evaluated per ASIN (v5 §5.3)</div></div>
+      <div class="info-card"><div class="label">Used By</div><div class="value">S6 titles + bullets + description, S6.7 Q&amp;A (high-confidence triples)</div></div>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-header"><span class="role role-sys">SYSTEM</span><span class="prompt-note">Must evaluate ALL 16 relationship types. Generates exactly 20 rows.</span></div>
+      <pre>
+You are the COSMO Semantic Modeling Engine for 1o8 Marketplace SEO.
+
+Generate a complete COSMO semantic entity-relationship map for an Amazon product listing.
+
+<span class="hl-lbl">COSMO RELATIONSHIP TYPES (all 16 — use only these):</span>
+<span class="hl-rule">Functional:</span>  USED_FOR_FUNC, USED_TO, CAPABLE_OF
+<span class="hl-rule">Event/Context:</span> USED_FOR_EVE, USED_ON, USED_IN_LOC
+<span class="hl-rule">Product/Concept:</span> USED_AS, IS_A, xIS_A
+<span class="hl-rule">Body:</span>          USED_IN_BODY
+<span class="hl-rule">Complementary:</span> USED_WITH
+<span class="hl-rule">Audience:</span>      USED_FOR_AUD, USED_BY
+<span class="hl-rule">Interest:</span>      xINTERESTED_IN, xWANT, xLIKES
+
+<span class="hl-lbl">RULES:</span>
+1. Generate exactly <span class="hl-warn">20 relationship rows</span> — no more, no less.
+2. Prioritize variety — aim for at least one of each applicable type.
+3. Every row must trace to a keyword, review insight, or Rufus answer.
+4. COSMOEntity = the product or product attribute being mapped.
+5. COSMOMappedValue = specific, concise target concept.
+6. COSMOUsageExplanation = how this relationship informs listing content — max 20 words.
+
+<span class="hl-lbl">PDP SECTION MAPPING (COSMOAppliedPDPSection1 and 2):</span>
+Title | Bullet 1-5 | Description | Backend | A+ Module | Image | Not Applicable</pre>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-header"><span class="role role-user">USER</span><span class="prompt-note">Dynamic</span></div>
+      <pre>
+Brand: {brandName}
+Product: {variationProduct}
+{Brand voice — from brand_guidelines_lock}
+
+<span class="hl-lbl">Approved Keywords (T1-T4):</span>
+[{"text":"...","priority_tier":"T1","cosmo_domain":"USED_FOR_FUNC"}, ...]
+
+<span class="hl-lbl">Rufus Optimization Summary:</span>
+{optimizationSummary — seo_strategy, listing_plan, audience_segmentation}
+
+<span class="hl-lbl">Required Categories (all 16 must be evaluated):</span>
+USED_FOR_FUNC, USED_TO, CAPABLE_OF, USED_FOR_EVE, USED_ON, USED_IN_LOC,
+USED_AS, IS_A, xIS_A, USED_IN_BODY, USED_WITH, USED_FOR_AUD, USED_BY,
+xINTERESTED_IN, xWANT, xLIKES
+
+Return 20 relationship rows as JSON array.</pre>
+    </div>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- S6 CONTENT GENERATION -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="section" id="s6">
+    <div class="section-header">
+      <span class="phase-badge phase-s6">S6</span>
+      <h2>Listing Content Generation — 4-Pass Pipeline</h2>
+      <span class="sub">seo_asins.generatedContent · /api/seo/claude/seo · SSE streaming</span>
+    </div>
+
+    <div class="info-grid">
+      <div class="info-card"><div class="label">Steps</div><div class="value">S6.1 Config → S6.2 Titles → S6.3 Bullets → S6.4 Description → S6.5 Backend → S6.6 Audit → S6.7 Q&amp;A → S6.8 Export</div></div>
+      <div class="info-card"><div class="label">Passes (Bullets)</div><div class="value">Pass 1 Gen → Pass 2 Voice → Pass 3 CMOS → Pass 4 Coherence + Human Score</div></div>
+      <div class="info-card"><div class="label">Streaming</div><div class="value">SSE progress events per pass; UI shows live stepper</div></div>
+      <div class="info-card"><div class="label">Human Score</div><div class="value">1-100 score per ASIN from Pass 4; pathTo100 with Accept auto-apply</div></div>
+    </div>
+
+    <div style="background:#18181b;border:1px solid #27272a;border-radius:8px;padding:1rem;margin-bottom:1rem;">
+      <div style="font-size:0.72rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#52525b;margin-bottom:0.75rem;">4-PASS PIPELINE (Bullets only — Titles run Pass 1+2+3 only)</div>
+      <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;">
+        <div style="background:#1a100a;border:1.5px solid #c2410c;border-radius:6px;padding:0.5rem 0.75rem;font-size:0.75rem;color:#fb923c;font-weight:700;">Pass 1<br><span style="font-size:0.65rem;font-weight:400;">Generate + ANTI_AI + NATIVE_VOICE</span></div>
+        <div style="color:#3f3f46;font-size:1.2rem;">→</div>
+        <div style="background:#141520;border:1.5px solid #1d4ed8;border-radius:6px;padding:0.5rem 0.75rem;font-size:0.75rem;color:#60a5fa;font-weight:700;">Pass 2<br><span style="font-size:0.65rem;font-weight:400;">humanizeRows() — Voice &amp; Tone</span></div>
+        <div style="color:#3f3f46;font-size:1.2rem;">→</div>
+        <div style="background:#1a1020;border:1.5px solid #5b21b6;border-radius:6px;padding:0.5rem 0.75rem;font-size:0.75rem;color:#c084fc;font-weight:700;">Pass 3<br><span style="font-size:0.65rem;font-weight:400;">cmosRows() — CMOS Editorial</span></div>
+        <div style="color:#3f3f46;font-size:1.2rem;">→</div>
+        <div style="background:#1c1a14;border:1.5px solid #92400e;border-radius:6px;padding:0.5rem 0.75rem;font-size:0.75rem;color:#fbbf24;font-weight:700;">Pass 4<br><span style="font-size:0.65rem;font-weight:400;">coherenceRows() + Human Score</span></div>
+      </div>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-header"><span class="role role-sys">SYSTEM — Pass 1 (all batches)</span><span class="prompt-note">complianceRules + NATIVE_VOICE_CONTRACT + ANTI_AI_PATTERNS prepended</span></div>
+      <pre>
+<span class="hl-lbl">COMPLIANCE (ABSOLUTE):</span>
+- NO medical/disease/treatment/cure/guarantee claims
+- NO competitor names. NO emoji. NO non-ASCII characters.
+- NO colons ":" in titles or descriptions (only in bullet ALL CAPS headers)
+- Titles: hyphen "-" only separator, one space each side. No word >2x per title.
+- Content must read human-written. Quality > keyword density.
+
+<span class="hl-lbl">NATIVE_VOICE_CONTRACT:</span>
+Senior American consumer brand copywriter. Direct, benefit-led, natural rhythm.
+- Lead with the benefit, not the feature
+- Use contractions (doesn't, you'll, it's, won't)
+- Vary sentence rhythm — mix short punchy + longer explanatory
+- NEVER: "This [product]..." after ALL CAPS header → use "Our [product]..."
+
+<span class="hl-lbl">ANTI_AI_PATTERNS:</span>
+Banned: delve, tapestry, intricate, interplay, cultivate, foster, garner, underscore,
+align with, crucial, pivotal, serves as, stands as, represents a, testament,
+groundbreaking, evolving landscape, boasts, vibrant, breathtaking
+
+<span class="hl-lbl">TITLE RULES (S6.2):</span>
+<span class="hl-warn">STRICT LENGTH: 190–200 characters. Titles under 190 chars WILL BE REJECTED.</span>
+- Write LONG, descriptive titles. Multiple " - " separated segments.
+- Only chars: letters, numbers, spaces, hyphen "-"
+
+<span class="hl-lbl">BULLET RULES (S6.3):</span>
+5 bullets per ASIN in 4 versions:
+<span class="hl-warn">Detailed: 390–400 chars | Concise: 190–200 chars | Content: 90–100 chars | Key Features: 40–50 chars</span>
+- Every bullet: ALL CAPS summary + colon, then normal case
+- B1=value proposition, B2=fit/who, B3=how-to, B4=durability, B5=variation-specific (Child ASINs)
+
+<span class="hl-lbl">DESCRIPTION RULES (S6.4):</span>
+<span class="hl-warn">Length: 1000–1200 characters. NO colons allowed.</span>
+
+<span class="hl-lbl">BACKEND RULES (S6.5):</span>
+<span class="hl-warn">≤500 bytes UTF-8. Even 1 byte over = full de-index. T4 keywords only. No brand name.</span></pre>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-header"><span class="role role-user">USER — Pass 1 (S6.3 Bullets example)</span><span class="prompt-note">All Rufus Q&amp;As + COSMO bullet mapping + top reviews injected</span></div>
+      <pre>
+Generate all bullet points.
+
+Brand: {brandName}
+ASINs: [{asin, parentage_level, variation_product, flavor, style, color, size}, ...]
+
+<span class="hl-lbl">Tier 1 Keywords:</span> {up to 20 T1 keywords}
+<span class="hl-lbl">Tier 2 Keywords:</span> {up to 20 T2 keywords}
+
+<span class="hl-lbl">Rufus Q&amp;A (express these insights in bullet content):</span>
+Q: {RufusQuestion}
+A: {RufusAnswer — first 200 chars}
+...all Rufus Q&amp;As
+
+<span class="hl-lbl">COSMO → Bullet Mapping:</span>
+B1: {COSMORelationType}→{COSMOMappedValue}, ...
+B2-B5: ...
+
+<span class="hl-lbl">Reviews:</span>
+{ReviewTheme}: {ReviewRufusUsableInsight}
+...up to 10 review insights
+
+<span class="hl-lbl">Approved Titles:</span> {ASIN}: {Title}
+
+Return ONLY valid JSON array.</pre>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-header"><span class="role role-sys">SYSTEM — Pass 2 (humanizeRows)</span><span class="prompt-note">Voice &amp; tone only. Falls back on failure.</span></div>
+      <pre>
+You are a native American English voice editor. Fix tone and phrasing so content sounds
+like a senior copywriter at a premium US consumer brand — not an AI or SEO tool.
+
+FIX: Stiff phrasing, hollow keyword sentences, missing contractions, feature-led sentences
+     "This [product]..." → "Our [product]..."
+DO NOT CHANGE: keywords, JSON field names, ASIN values, ALL CAPS bullet headers.
+DO NOT EXCEED: Titles 190-200 | Detailed 390-400 | Concise 190-200 | Content 90-100 | KF 40-50</pre>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-header"><span class="role role-sys">SYSTEM — Pass 3 (cmosRows)</span><span class="prompt-note">CMOS 18th ed. grammar only. Falls back on failure.</span></div>
+      <pre>
+You are a Chicago Manual of Style (18th edition) copy editor.
+Apply CMOS grammar and style rules only — do NOT touch voice or tone.
+
+§5.225 — Remove intensifiers: very, really, extremely, amazing, revolutionary, superior, ultimate
+§5.195 — Remove pleonasms: free gift→gift, completely unique→unique, new innovation→innovation
+§7.85  — Hyphenate compound modifiers: heavy-duty, easy-to-clean, long-lasting
+§5.249 — Parallel structure: all 5 DetailedBulletPoints for one ASIN must open the same way</pre>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-header"><span class="role role-sys">SYSTEM — Pass 4 (coherenceRows + Human Score)</span><span class="prompt-note">Bullets only. Returns rows + humanScores[]. Falls back on failure.</span></div>
+      <pre>
+You are a senior Amazon content strategist. Ensure the 5 bullets work as a coherent set
+and return a Human Score per ASIN.
+
+<span class="hl-lbl">COHERENCE CHECKS:</span>
+- B1→B5 must tell a progressive story: value → who → how → care → variant
+- No two bullets repeat the same benefit, claim, or keyword phrase
+- Bullets must not contradict the ProductDescription
+
+<span class="hl-lbl">HUMAN SCORE (1–100 per ASIN):</span>
+Deduct for: AI vocabulary, stiff phrasing, keyword stuffing, missing contractions,
+"This product" constructions, -ing phrase padding, em-dash overuse
+
+<span class="hl-lbl">RETURN FORMAT:</span>
+{
+  "rows": [...same structure as input with coherence fixes...],
+  "humanScores": [{
+    "asin": "B0XXX",
+    "score": 0-100,
+    "label": "Robotic"|"Needs Work"|"Mostly Human"|"Human-grade"|"Native",
+    "detractors": ["what dragged the score down"],
+    "pathTo100": [
+      {"field":"DetailedBulletPoint_1","tip":"one-line explanation","rewrite":"full replacement"}
+    ],
+    "descriptionChecked": true|false
+  }]
+}</pre>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-header"><span class="role role-note">SSE STREAMING — Bullet generation only</span></div>
+      <pre>
+The route sends Server-Sent Events so the UI shows each pass live:
+
+  data: {"type":"progress","pass":1}   ← Pass 1: generation
+  data: {"type":"progress","pass":2}   ← Pass 2: humanizeRows
+  data: {"type":"progress","pass":3}   ← Pass 3: cmosRows
+  data: {"type":"progress","pass":4}   ← Pass 4: coherenceRows + Human Score
+  data: {"type":"result","rows":[...],"humanScores":[...]}
+
+UI renders: Done ✓ / Active spinner / Pending ○ per pass.</pre>
+    </div>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- S6.7 A+ Q&A -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="section" id="s67">
+    <div class="section-header">
+      <span class="phase-badge phase-s67">S6.7</span>
+      <h2>Premium A+ Q&amp;A — Module 7 (premium_qa)</h2>
+      <span class="sub">seo_asins.generatedContent._aplusQA · /api/seo/claude/aplus-qa</span>
+    </div>
+
+    <div class="info-grid">
+      <div class="info-card"><div class="label">Sourcing Priority</div><div class="value">1. S3 Reviews → 2. S4 Rufus → 3. S5 COSMO → 4. Listing content</div></div>
+      <div class="info-card"><div class="label">Output</div><div class="value">5 Q&amp;A pairs per ASIN. Q: 115–120 chars. A: 245–250 chars.</div></div>
+      <div class="info-card"><div class="label">Persistence</div><div class="value">_aplusQA stored in seo_asins.generatedContent JSONB — no migration</div></div>
+      <div class="info-card"><div class="label">Export</div><div class="value">B5 section in DOCX with Amazon-style dark Q / gold A card layout</div></div>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-header"><span class="role role-sys">SYSTEM</span><span class="prompt-note">S3/S4/S5 context fetched from DB by projectId at request time</span></div>
+      <pre>
+You are an Amazon A+ Premium Content specialist writing Module 7 (premium_qa) Q&amp;A pairs.
+
+<span class="hl-lbl">HARD RULES:</span>
+- Exactly 5 Q&amp;A pairs per ASIN.
+- <span class="hl-warn">Q: 115–120 characters exactly.</span> Decision-stage buyer question — purchase objection,
+  use-case fit, or key differentiator. Conversational and specific.
+- <span class="hl-warn">A: 245–250 characters exactly.</span> Benefit-led. Direct answer first, then supporting detail.
+  No colons. No brand name repetition.
+
+<span class="hl-lbl">SOURCING PRIORITY:</span>
+1. Customer reviews (S3) — one Q&amp;A MUST address a repeated objection if present
+2. Rufus shopper questions (S4) — mirror these question intents
+3. COSMO relationships (S5) — reinforce strongest product associations
+4. Approved listing content — ground every answer here, do not invent claims
+
+<span class="hl-bad">Banned: delve, tapestry, foster, underscore, align with, crucial, pivotal, serves as</span>
+- Child variant Q5 must address its specific variation differentiator
+- No medical claims. No competitor names. No emoji. No colons in answers.
+
+BEFORE RETURNING: count every Q and A. If outside range, rewrite until it fits.</pre>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-header"><span class="role role-user">USER</span><span class="prompt-note">Per ASIN — review themes/objections injected from seo_reviews DB</span></div>
+      <pre>
+Brand: {brandName}
+T1 Keywords: {up to 15 T1 keywords}
+
+<span class="hl-lbl">RUFUS SHOPPER QUESTIONS (from seo_rufus.phase1Questions + phase1Answers — top 8 pairs):</span>
+Q: {question} → {answer — first 150 chars}
+
+<span class="hl-lbl">COSMO RELATIONSHIPS (high-confidence triples, confidence_level="High" or ≥0.8 — up to 12):</span>
+- {entity1} {relationship} {entity2}
+
+<span class="hl-lbl">APPROVED CONTENT per ASIN (from seo_reviews + seo_asins):</span>
+ASIN: B0XXXXX | Type: Parent/Child | Variant: Flavor/Style/Color/Size
+Title: {Title}
+B1: {DetailedBulletPoint_1}  B2: {...}  B3: {...}
+Description: {first 400 chars}
+Customer themes: {seoReviews.keyThemes — top by helpfulVotes, up to 5}
+Objections to address: {rufusUsableInsight from 1–2★ reviews, up to 3}
+Praised aspects: {rufusUsableInsight from 4–5★ reviews, up to 3}
+
+--- (next ASIN)
+
+Return ONLY a valid JSON array.</pre>
+    </div>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- S6.8 EXPORT -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="section" id="s68">
+    <div class="section-header">
+      <span class="phase-badge phase-s6">S6.8</span>
+      <h2>Final Export — OUT_SEO DOCX → Google Drive</h2>
+      <span class="sub">seo_exports · /api/seo/projects/[id]/export-gdoc</span>
+    </div>
+
+    <div class="info-grid">
+      <div class="info-card"><div class="label">Format</div><div class="value">DOCX (seo-docx-builder.ts) uploaded to Google Drive brand subfolder</div></div>
+      <div class="info-card"><div class="label">Cover</div><div class="value">1o8 Marketplace logo + project name + brand · ASINs · date</div></div>
+      <div class="info-card"><div class="label">Sections</div><div class="value">B1 Title · B2 Detailed Bullets · B3 Description · B4 Backend · B5 A+ Q&amp;A</div></div>
+      <div class="info-card"><div class="label">Branding</div><div class="value">Inter font · #F8BF1C gold · #2C2B36 dark · keywords highlighted in red</div></div>
+    </div>
+
+    <table class="output-table">
+      <thead><tr><th>Section</th><th>Char Limits</th><th>Display</th></tr></thead>
+      <tbody>
+        <tr><td><strong>B1 — Title</strong></td><td>190–200 chars</td><td>Full text + char count (green=OK, red=violation)</td></tr>
+        <tr><td><strong>B2 — Detailed Bullets</strong></td><td>390–400 chars each (×5)</td><td>Table: # | content | char count</td></tr>
+        <tr><td><strong>B3 — Product Description</strong></td><td>1000–1200 chars</td><td>Full text + char count</td></tr>
+        <tr><td><strong>B4 — Backend Search Terms</strong></td><td>≤500 bytes UTF-8</td><td>Full string + byte count</td></tr>
+        <tr><td><strong>B5 — Premium A+ Q&amp;A</strong></td><td>Q: 115–120 | A: 245–250</td><td>Amazon-style card: dark badge Q + gold badge A</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- S7 A+ MODULES -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="section" id="s7">
+    <div class="section-header">
+      <span class="phase-badge phase-s7">S7</span>
+      <h2>A+ Content Module Plan</h2>
+      <span class="sub">seo_aplus_plans · Skippable</span>
+    </div>
+    <div class="info-grid">
+      <div class="info-card"><div class="label">Output</div><div class="value">Exactly 7 A+ modules per ASIN. Module 7 MUST be premium_qa.</div></div>
+      <div class="info-card"><div class="label">Hard Rule</div><div class="value">At most ONE comparison_table_* module total. Module 7 = premium_qa always.</div></div>
+      <div class="info-card"><div class="label">Input</div><div class="value">Approved listing content (S6) + COSMO map (S5) + brand guidelines</div></div>
+      <div class="info-card"><div class="label">Skippable</div><div class="value">Yes — client may handle A+ separately</div></div>
+    </div>
+    <div class="alert">Hard Rule (v5 §8): Exactly 7 modules. Module 7 = <code>premium_qa</code>. Max 1 comparison table module. All module types from approved list only.</div>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- S8 IMAGES -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="section" id="s8">
+    <div class="section-header">
+      <span class="phase-badge phase-s8">S8</span>
+      <h2>Image Briefs</h2>
+      <span class="sub">seo_images · Skippable</span>
+    </div>
+    <div class="info-grid">
+      <div class="info-card"><div class="label">Output</div><div class="value">Exactly 9 image briefs per ASIN</div></div>
+      <div class="info-card"><div class="label">Fixed names</div><div class="value">MAIN, PT01–PT08 (technical names are immutable)</div></div>
+      <div class="info-card"><div class="label">Specs</div><div class="value">All PNG, 2000×2000, RGB. Alt text 95–100 chars. Overlay ≤100 chars (N/A for MAIN)</div></div>
+      <div class="info-card"><div class="label">Skippable</div><div class="value">Yes — client may handle images separately</div></div>
+    </div>
+    <div class="alert">Hard Rule (v5 §9): Exactly 9 images: MAIN + PT01–PT08. Alt text 95–100 chars. MAIN has no overlay text.</div>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- S9 SCORING -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="section" id="s9">
+    <div class="section-header">
+      <span class="phase-badge phase-s9">S9</span>
+      <h2>Quality Score</h2>
+      <span class="sub">seo_scores · Final gate</span>
+    </div>
+    <div class="info-grid">
+      <div class="info-card"><div class="label">Input</div><div class="value">All S1–S8 outputs for the project</div></div>
+      <div class="info-card"><div class="label">Output</div><div class="value">Per-ASIN quality score across all content dimensions</div></div>
+      <div class="info-card"><div class="label">Also available</div><div class="value">Per-field Human Score (1–100) from S6 Pass 4 with pathTo100 suggestions</div></div>
+      <div class="info-card"><div class="label">Gate</div><div class="value">Project must pass S9 before delivery to client</div></div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

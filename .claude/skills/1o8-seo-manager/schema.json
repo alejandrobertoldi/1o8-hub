@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "tables": {
+    "seo_listings": {
+      "title": { "type": "string", "maxChars": 75, "forbidChars": [":"], "punctuation": "hyphen-only", "wordRepeatCap": 2 },
+      "item_highlight": { "type": "string", "maxChars": 125, "forbidChars": [":"], "format": "comma-separated Title-Case phrases, no words repeated from title" },
+      "bullets.detailed": { "type": "string[]", "length": 5, "minChars": 390, "maxChars": 400, "headerPrefix": "ALL_CAPS_COLON" },
+      "bullets.concise": { "type": "string[]", "length": 5, "minChars": 190, "maxChars": 200, "headerPrefix": "ALL_CAPS_COLON" },
+      "bullets.content": { "type": "string[]", "length": 5, "minChars": 90, "maxChars": 100, "headerPrefix": "ALL_CAPS_COLON" },
+      "bullets.key_features": { "type": "string[]", "length": 5, "minChars": 40, "maxChars": 50, "headerPrefix": "ALL_CAPS_COLON" },
+      "product_description": { "type": "string", "minChars": 1000, "maxChars": 1200, "forbidChars": [":"] },
+      "backend_search_terms": { "type": "string", "maxBytes": 500, "encoding": "utf8" }
+    },
+    "seo_aplus_plans": {
+      "modules": { "type": "object[]", "length": 7, "module_7_must_be": "premium_qa", "max_one_of_type_prefix": "comparison_table_" }
+    },
+    "seo_images": {
+      "image_count_per_asin": 9,
+      "technical_names": ["MAIN", "PT01", "PT02", "PT03", "PT04", "PT05", "PT06", "PT07", "PT08"],
+      "file_format": "PNG",
+      "dimensions": { "width": 2000, "height": 2000 },
+      "color_mode": "RGB",
+      "alt_text": { "minChars": 95, "maxChars": 100 },
+      "overlay_text": { "maxChars": 100, "exempt_for": ["MAIN"] }
+    },
+    "seo_qa": {
+      "pairs": { "type": "object[]", "minLength": 12, "maxLength": 15 },
+      "aplus_qa_subset": { "type": "object[]", "length": 5, "question_chars": [115, 120], "answer_chars": [245, 250] }
+    },
+    "seo_scores": {
+      "rufus_coverage_pct": { "type": "number", "min": 0, "max": 100, "hardGate": 80 },
+      "cosmo_coverage_pct": { "type": "number", "min": 0, "max": 100, "hardGate": 75 },
+      "cosmo_density_per_100_words": { "type": "number", "min": 3, "max": 5 },
+      "cosmo_relationship_categories_evaluated": { "type": "string[]", "length": 16 }
+    }
+  }
+}

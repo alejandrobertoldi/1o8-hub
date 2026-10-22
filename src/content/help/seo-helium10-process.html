@@ -1,0 +1,109 @@
+<h2 class="section-title" id="overview" style="margin-top:0">SEO Manager — complete process (S0–S8)</h2>
+<p class="lead">SEO Manager turns product facts, keyword research, customer reviews, and Alexa for Shopping answers into reviewed Amazon listing content, then takes it through team and client approval before it is pushed to the Hub catalog. Everything happens on one project page: phases are stacked cards, and each card unlocks when the one before it is approved.</p>
+<p>For the full step-by-step SOP with roles, rules and checklists, open <a href="/docs/seo-manager-sop.html" target="_blank" rel="noopener">SEO Manager SOP (full)</a>.</p>
+<nav aria-label="Guide contents"><p><a href="#page">The project page</a> · <a href="#s0">S0 Setup</a> · <a href="#s1">S1 Intake</a> · <a href="#s2">S2 Keywords</a> · <a href="#s3">S3 Reviews</a> · <a href="#s4">S4 Alexa for Shopping</a> · <a href="#s5">S5 COSMO</a> · <a href="#s6">S6 SEO Content</a> · <a href="#s7">S7 Review &amp; Share</a> · <a href="#s8">S8 Push</a> · <a href="#rules">Content rules</a> · <a href="#troubleshooting">Troubleshooting</a></p></nav>
+
+<h2 class="section-title" id="page">The project page</h2>
+<ul>
+<li><strong>One page, nine phases.</strong> S0 Setup through S8 Push are cards on the same page. The left menu lists every phase and its sub-steps; click any unlocked item to jump to it.</li>
+<li><strong>One click per approval.</strong> Approving a phase unlocks the next one straight away: the approved card collapses and the next card opens. There is no separate "Continue" step.</li>
+<li><strong>Status.</strong> Each phase shows <em>Approved</em>, <em>In progress</em> or <em>Locked</em>. S6 sub-sections show <strong>LOCKED</strong> (done and protected) or <strong>UNLOCKED</strong> (editable).</li>
+<li><strong>AI model.</strong> The <strong>AI · Opus 4.7</strong> pill at the top right shows the Claude model the AI steps use; hover it to see the model per step.</li>
+<li><strong>Local saving.</strong> Work is saved to the project as you go. Approvals are what move a project forward — generating content alone is never an approval.</li>
+</ul>
+
+<h2 class="section-title" id="s0">S0 — Project Setup</h2>
+<ol>
+<li>Open <a href="/seo/manager">SEO → Content Control Center</a> and select <strong>New Project</strong>.</li>
+<li><strong>Select Client</strong>, then <strong>Target ASINs</strong> (marketplace and parent/child variation scope).</li>
+<li><strong>Content Rules</strong>: choose which sections are shared across variations and which need variation-specific content. Sections are Title, <strong>Bullet Points (one set of 5)</strong>, Description and Backend.</li>
+<li><strong>Name &amp; Assignee</strong>, then <strong>Confirm &amp; Create</strong>.</li>
+</ol>
+
+<h2 class="section-title" id="s1">S1 — Intake: establish the source facts</h2>
+<ol>
+<li><strong>Project Summary</strong>: verify client, brand, marketplace, ASINs and variation details.</li>
+<li><strong>Variety Pack Details</strong> (when shown): confirm contents and quantities.</li>
+<li><strong>Baseline Analysis</strong>: pick the baseline version per ASIN and correct missing or wrong facts.</li>
+<li><strong>Competitors</strong> and <strong>Brand Guidelines</strong>: add competitors; upload or paste guidelines (voice, audience, words to avoid, supported claims). The full guidelines are sent to every AI step.</li>
+<li><strong>Confirm &amp; Approve</strong> S1.</li>
+</ol>
+
+<h2 class="section-title" id="s2">S2 — Keywords: Cerebro CSV upload</h2>
+<div class="info-card"><p><strong>Helium 10 is used through CSV exports.</strong> The direct Helium 10 connection is switched off; keywords come from a Cerebro CSV you export from Helium 10.</p></div>
+<ol>
+<li><strong>Step 1 — Copy ASINs into Helium 10 Cerebro</strong>: use <em>Copy variation ASINs</em> (child ASINs; the parent is excluded), run Cerebro, export the CSV.</li>
+<li><strong>Step 2 — Upload the Cerebro CSV</strong> for the product. Optionally upload competitor Cerebro CSVs.</li>
+<li>Review <strong>Parsed Data</strong>, apply filters, then run tiering and review the keywords (tiers, intent, negatives).</li>
+<li>Approve S2.</li>
+</ol>
+
+<h2 class="section-title" id="s3">S3 — Reviews: review CSV upload</h2>
+<ol>
+<li><strong>Upload the review CSV</strong> for the parent ASIN (required columns: id, text, date, title, rating). Reviews already stored in the Hub can be used instead with <em>Use Hub reviews</em>.</li>
+<li>Check the parsed reviews, run the AI analysis, and review themes, praise and objections.</li>
+<li>Approve S3. If the product has no reviews, use <strong>Skip — No Reviews Available</strong>.</li>
+</ol>
+
+<h2 class="section-title" id="s4">S4 — Alexa for Shopping</h2>
+<ol>
+<li><strong>Phase 1</strong>: copy the question block into Amazon's Alexa for Shopping chat, paste the five answers back, confirm the mapping.</li>
+<li><strong>Phase 2</strong>: generate (or use default) strategic questions, collect the answers the same way, confirm.</li>
+<li>Run the analysis, review the Q&amp;A insights, approve S4.</li>
+</ol>
+<p>Answers from Alexa are research to verify, not proof that a claim is correct.</p>
+
+<h2 class="section-title" id="s5">S5 — COSMO</h2>
+<ol>
+<li>Check the prerequisites (S1–S4), then <strong>Generate COSMO Map</strong>.</li>
+<li>Remove unsupported or irrelevant relationships, then approve S5.</li>
+</ol>
+
+<h2 class="section-title" id="s6">S6 — SEO Content (S6.1–S6.8)</h2>
+<ol>
+<li><strong>S6.1 Configuration</strong> — confirm settings (e.g. size placement) and lock.</li>
+<li><strong>S6.2 Titles</strong> — Title (≤75 chars) and Item Highlight (≤125 chars).</li>
+<li><strong>S6.3 Bullet Points</strong> — <strong>one set of 5 bullets</strong>, 180–200 characters each (never over 200).</li>
+<li><strong>S6.4 Description</strong> and <strong>S6.5 Backend Search Terms</strong> (byte limit applies).</li>
+<li><strong>S6.6 Audit &amp; Optimize</strong> — run the audit, fix findings in the batches.</li>
+<li><strong>S6.7 Premium A+ Q&amp;A</strong> — Module 7 questions and answers; uses all bullets, the full description and the full brand guidelines.</li>
+<li><strong>S6.8 Final SEO Content</strong> — review everything per ASIN, then <strong>Save &amp; Submit for review</strong>. This locks S6 and starts S7.</li>
+</ol>
+<div class="info-card">
+<p><strong>Keyword tables (S6.2–S6.5).</strong> Every table shows where each keyword is already used, in the same order: Title · Item Highlight · Bullets · Description · Backend. The first checkbox shows whether the keyword is in this step's text — untick to remove, tick to add — then Regenerate. Columns update by themselves when another step is generated.</p>
+<p><strong>Editing.</strong> Click a text cell to edit it. The lock icon in a cell's left margin protects it from regeneration.</p>
+</div>
+
+<h2 class="section-title" id="s7">S7 — Review &amp; Share with Client</h2>
+<ol>
+<li>The <strong>review tracker</strong> shows each sign-off: SEO Manager (submitted) → Project Manager → Account Manager → Client (when sent).</li>
+<li>Reviewers comment directly on the preview, or <strong>edit text on the spot</strong> during PM/AM review; every edit is logged with a before/after.</li>
+<li><strong>Project Manager</strong> approves or requests changes (a note is required).</li>
+<li><strong>Account Manager</strong> either <strong>Sends to client</strong> or <strong>Approves as final</strong> (a reason is required).</li>
+<li>The <strong>client</strong> reviews in the portal and can <strong>suggest edits</strong>; the team accepts or declines each suggestion. The client then approves.</li>
+</ol>
+<div class="info-card"><p><strong>Overrides.</strong> Someone higher on the client team (Account Manager or Executive Strategist) can act on a lower step through a separate <em>Override</em> checkbox. Approving your own submission is only allowed for the client's Account Manager or Executive Strategist.</p></div>
+
+<h2 class="section-title" id="s8">S8 — Push Content to Products</h2>
+<ol>
+<li>Once a revision is approved, S8 pushes that <strong>approved revision</strong> to the Hub product records.</li>
+<li>Preview the changes, check matched and unmatched ASINs, then confirm.</li>
+</ol>
+<p>Pushing updates Hub products and queues them for BigQuery publishing; it does not publish to Amazon by itself.</p>
+
+<h2 class="section-title" id="rules">Content rules that apply everywhere</h2>
+<ul>
+<li><strong>Prohibited terms</strong> — one list drives both the AI and the S6 compliance check: medical claims (e.g. "medicine", "cure", "FDA approved"), guarantees, superlatives ("best", "#1") and promotional wording ("sale", "% off", "free shipping"). Flagged terms show as <em>critical</em>; edit the text or regenerate with feedback.</li>
+<li><strong>Bullets</strong> — one set of 5; Concise, Content and Key Features versions are retired.</li>
+<li><strong>Changes after submission</strong> — S6 stays locked after Save &amp; Submit; use <strong>Unlock for Editing</strong> to change it. Submitting text identical to the approved revision is refused.</li>
+</ul>
+
+<h2 class="section-title" id="troubleshooting">Troubleshooting</h2>
+<ul>
+<li><strong>A phase is locked</strong> — approve the phase before it; generating content is not approval.</li>
+<li><strong>Keyword or review upload fails</strong> — check the CSV columns and that the file is for the right product.</li>
+<li><strong>A critical prohibited term</strong> — edit the cell or regenerate with feedback; bypass only when the word is genuinely allowed.</li>
+<li><strong>New data not showing</strong> (e.g. thumbnails after an update) — do a full page reload.</li>
+<li><strong>Push shows unmatched ASINs</strong> — fix the catalog records and preview again before confirming.</li>
+</ul>
+<p><a href="/seo/manager">Open the Content Control Center</a> · <a href="/docs/seo-manager-sop.html" target="_blank" rel="noopener">Full SOP</a></p>

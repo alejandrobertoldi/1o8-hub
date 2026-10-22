@@ -1,0 +1,2 @@
+(Get-Content "src/lib/db/schema.ts" -Raw) -replace '(portalTimelineEnabled: varchar\("portal_timeline_enabled", \{ length: 10 \}),\s+asanaProjectGid: varchar\("asana_project_gid", \{ length: 100 \}),\s+updatedAt: timestamp\("updated_at", \{ withTimezone: true \}\)\.notNull\(\)\.defaultNow\(\),', "`$1" | Set-Content "src/lib/db/schema.ts" -NoNewline
+Write-Host "Done"

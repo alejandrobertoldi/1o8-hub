@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SEO Manager SOP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f7f6f3; --card: #ffffff; --ink: #1c1b19; --muted: #6b6862; --line: #e4e1da;
+    --brand: #c4520c; --brand-soft: #fff1e6; --ok: #127a46; --ok-soft: #e6f6ee;
+    --warn: #8a5a00; --warn-soft: #fff6db; --bad: #b42318; --bad-soft: #fdecea; --clay: #b85f43;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #101114; --card: #17191d; --ink: #ecebe8; --muted: #a09d97; --line: #2a2d33;
+      --brand: #ff8a3d; --brand-soft: #2a1a0f; --ok: #4ade80; --ok-soft: #10261a;
+      --warn: #fbbf24; --warn-soft: #2a220c; --bad: #f87171; --bad-soft: #2b1414; --clay: #d97757;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #101114; --card: #17191d; --ink: #ecebe8; --muted: #a09d97; --line: #2a2d33;
+    --brand: #ff8a3d; --brand-soft: #2a1a0f; --ok: #4ade80; --ok-soft: #10261a;
+    --warn: #fbbf24; --warn-soft: #2a220c; --bad: #f87171; --bad-soft: #2b1414; --clay: #d97757;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.6 Inter, system-ui, sans-serif; }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 32px 16px 80px; }
+  header { margin-bottom: 28px; }
+  .eyebrow { font: 600 12px/1 Inter; letter-spacing: .08em; text-transform: uppercase; color: var(--brand); }
+  h1 { font: 700 34px/1.15 Outfit, sans-serif; margin: 8px 0 6px; letter-spacing: -.01em; }
+  h2 { font: 700 23px/1.25 Outfit, sans-serif; margin: 44px 0 12px; scroll-margin-top: 16px; }
+  h3 { font: 600 17px/1.3 Outfit, sans-serif; margin: 26px 0 8px; }
+  p { margin: 8px 0; }
+  .meta { color: var(--muted); font-size: 13px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 18px 20px; margin: 14px 0; }
+  .note { border-left: 4px solid var(--brand); background: var(--brand-soft); border-radius: 12px; padding: 12px 16px; margin: 14px 0; }
+  .ok { border-left-color: var(--ok); background: var(--ok-soft); }
+  .warn { border-left-color: var(--warn); background: var(--warn-soft); }
+  .bad { border-left-color: var(--bad); background: var(--bad-soft); }
+  nav.toc { columns: 2; column-gap: 28px; font-size: 14px; }
+  nav.toc a { display: block; padding: 2px 0; color: var(--ink); text-decoration: none; }
+  nav.toc a:hover { color: var(--brand); }
+  a { color: var(--brand); }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; margin: 10px 0; }
+  th, td { text-align: left; vertical-align: top; padding: 8px 10px; border-bottom: 1px solid var(--line); }
+  th { font-weight: 600; color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+  .tablewrap { overflow-x: auto; }
+  code, .mono { font: 500 13px JetBrains Mono, ui-monospace, monospace; }
+  .pill { display: inline-block; border-radius: 999px; padding: 1px 9px; font-size: 12px; font-weight: 600; border: 1px solid var(--line); white-space: nowrap; }
+  .p-ok { color: var(--ok); background: var(--ok-soft); border-color: transparent; }
+  .p-warn { color: var(--warn); background: var(--warn-soft); border-color: transparent; }
+  .p-brand { color: var(--brand); background: var(--brand-soft); border-color: transparent; }
+  .p-clay { color: var(--clay); border-color: var(--clay); }
+  .flow { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 12px 0; }
+  .flow .pill { padding: 4px 11px; }
+  .flow .arr { color: var(--muted); }
+  ol.steps { padding-left: 22px; }
+  ol.steps > li { margin: 8px 0; }
+  .done { font-size: 14px; color: var(--muted); }
+  .done b { color: var(--ok); }
+  .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
+  .grid2 .card { margin: 0; }
+  @media (max-width: 640px) { nav.toc { columns: 1; } h1 { font-size: 28px; } }
+  @media print { body { background: #fff; } .card, .note { break-inside: avoid; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">MarketFoundry · Standard Operating Procedure</div>
+  <h1>SEO Manager — listing content from research to push</h1>
+  <p class="meta">Version 2.0 · October 2026 · Applies to every SEO project in the MF Hub (SEO → Content Control Center)</p>
+</header>
+
+<div class="card">
+  <strong>Contents</strong>
+  <nav class="toc">
+    <a href="#purpose">1. Purpose &amp; scope</a>
+    <a href="#roles">2. Roles &amp; responsibilities</a>
+    <a href="#before">3. Before you start</a>
+    <a href="#page">4. How the project page works</a>
+    <a href="#s0">5. S0 Project Setup</a>
+    <a href="#s1">6. S1 Intake</a>
+    <a href="#s2">7. S2 Keywords (Cerebro CSV)</a>
+    <a href="#s3">8. S3 Reviews (review CSV)</a>
+    <a href="#s4">9. S4 Alexa for Shopping</a>
+    <a href="#s5">10. S5 COSMO</a>
+    <a href="#s6">11. S6 SEO Content</a>
+    <a href="#tables">12. Keyword tables</a>
+    <a href="#s7">13. S7 Review &amp; Share</a>
+    <a href="#s8">14. S8 Push Content</a>
+    <a href="#limits">15. Limits &amp; content rules</a>
+    <a href="#prohibited">16. Prohibited terms</a>
+    <a href="#tracking">17. Tracking projects</a>
+    <a href="#changes">18. What changed in v2.0</a>
+    <a href="#trouble">19. Troubleshooting</a>
+    <a href="#glossary">20. Glossary</a>
+  </nav>
+</div>
+
+<h2 id="purpose">1. Purpose &amp; scope</h2>
+<p>This SOP describes how a listing goes from research to approved, pushed content in SEO Manager. It covers the nine phases (S0–S8), who does what, which rules the content must follow, and how review and client approval work.</p>
+<div class="flow">
+  <span class="pill">S0 Setup</span><span class="arr">→</span><span class="pill">S1 Intake</span><span class="arr">→</span><span class="pill">S2 Keywords</span><span class="arr">→</span><span class="pill">S3 Reviews</span><span class="arr">→</span><span class="pill">S4 Alexa for Shopping</span><span class="arr">→</span><span class="pill">S5 COSMO</span><span class="arr">→</span><span class="pill p-brand">S6 SEO Content</span><span class="arr">→</span><span class="pill p-warn">S7 Review &amp; Share</span><span class="arr">→</span><span class="pill p-ok">S8 Push</span>
+</div>
+<div class="note warn"><strong>Golden rule:</strong> generating content is never the same as approving it. Every phase moves forward only when someone reads the output and approves it.</div>
+
+<h2 id="roles">2. Roles &amp; responsibilities</h2>
+<div class="tablewrap"><table>
+<tr><th>Role</th><th>Responsible for</th><th>Approves</th></tr>
+<tr><td><strong>SEO Manager / Specialist</strong> (project assignee)</td><td>Runs S0–S6: research, uploads, generation, edits, audit. Submits S6 for review. Answers reviewer comments and client suggestions.</td><td>S1–S6 phases; submits S6.8</td></tr>
+<tr><td><strong>Project Manager (PM)</strong> — the client's PM</td><td>First review in S7: reads the preview, comments, edits on the spot.</td><td>PM step, or Request changes</td></tr>
+<tr><td><strong>Account Manager (AM)</strong> — the client's AM</td><td>Second review in S7; decides whether the client sees it.</td><td>AM step: Send to client, Approve as final, or Request changes</td></tr>
+<tr><td><strong>Executive Strategist (ES)</strong></td><td>Can step in for the PM or AM when needed.</td><td>Override on PM or AM step</td></tr>
+<tr><td><strong>Client</strong></td><td>Reviews in the client portal; suggests edits.</td><td>Client step (final approval)</td></tr>
+<tr><td><strong>Owner / Super Admin</strong></td><td>Escalations; can decide any step.</td><td>Override on any step</td></tr>
+</table></div>
+<p class="meta">PM, AM and ES come from the client's team record in the Hub. If a role has no matching user, the tracker says so and an Owner must decide that step.</p>
+
+<h2 id="before">3. Before you start</h2>
+<ul>
+  <li>SEO access in the Hub (ask an admin if the SEO section is missing).</li>
+  <li>The client's brand guidelines (voice, audience, words to avoid, supported claims).</li>
+  <li>Access to <strong>Helium 10 Cerebro</strong> to export keyword CSVs, and the review CSV export for the parent ASIN.</li>
+  <li>Access to Amazon's <strong>Alexa for Shopping</strong> chat for S4.</li>
+  <li>Product facts: sizes, counts, materials, usage — anything a claim will rely on.</li>
+</ul>
+
+<h2 id="page">4. How the project page works</h2>
+<ul>
+  <li><strong>Everything on one page.</strong> Phases are stacked cards. Closed cards are slim pills; open cards show the work. The left menu lists phases and sub-steps; click to jump.</li>
+  <li><strong>Unlocking.</strong> A phase card is locked until the phase before it is approved. <strong>Approving a phase is one click:</strong> the approved card closes and the next one opens.</li>
+  <li><strong>S6 sub-sections</strong> (S6.1–S6.8) carry a <span class="pill p-ok">LOCKED</span> or <span class="pill p-warn">UNLOCKED</span> status. Locked = finished and protected; unlocked = editable.</li>
+  <li><strong>AI model.</strong> The <span class="pill p-clay">AI · Opus 4.7</span> pill in the header shows which Claude model the AI steps use (hover for the model per step).</li>
+  <li><strong>Saving.</strong> Work saves as you go. If something new isn't showing after an update, do a full page reload.</li>
+</ul>
+
+<h2 id="s0">5. S0 — Project Setup</h2>
+<ol class="steps">
+  <li><strong>New Project</strong> in the Content Control Center.</li>
+  <li><strong>Select Client.</strong></li>
+  <li><strong>Target ASINs</strong> — choose marketplace and the ASINs in scope (single ASIN, variation family or group).</li>
+  <li><strong>Content Rules</strong> — for each section (Title, Bullet Points, Description, Backend) choose <em>shared</em> (same for all variations) or <em>dimension-specific</em> (e.g. different per Size).</li>
+  <li><strong>Name &amp; Assignee</strong>, then <strong>Confirm &amp; Create</strong>.</li>
+</ol>
+<p class="done"><b>Done when:</b> the project exists with the right client, ASINs, rules and assignee.</p>
+
+<h2 id="s1">6. S1 — Intake</h2>
+<ol class="steps">
+  <li><strong>Project Summary</strong> — check client, brand, marketplace, ASINs and variations. Fix scope problems now.</li>
+  <li><strong>Variety Pack Details</strong> (if shown) — confirm contents and quantities.</li>
+  <li><strong>Baseline Analysis</strong> — choose the baseline listing version per ASIN; correct missing or wrong facts.</li>
+  <li><strong>Competitors</strong> — add the competitors that matter.</li>
+  <li><strong>Brand Guidelines</strong> — upload or paste. The <em>full</em> text is given to every AI step, so put real rules in it.</li>
+  <li><strong>Confirm &amp; Approve.</strong></li>
+</ol>
+<p class="done"><b>Done when:</b> the facts and guidelines are right — every later step builds on them.</p>
+<h3 id="cascade">Guidelines cascade — which guideline wins</h3>
+<p>Guidelines can be set at four levels. When two levels say different things about the same field, the more specific one wins:</p>
+<div class="flow">
+  <span class="pill p-brand">Listing</span><span class="arr">&gt;</span><span class="pill">Group</span><span class="arr">&gt;</span><span class="pill">Variation</span><span class="arr">&gt;</span><span class="pill">Brand</span>
+</div>
+<ul>
+  <li><strong>Listing</strong> — rules for one specific listing (ASIN).</li>
+  <li><strong>Group</strong> — rules for a variation group the ASIN belongs to.</li>
+  <li><strong>Variation</strong> — defaults for the variation family.</li>
+  <li><strong>Brand</strong> — the free-text brand guidelines from S1; they apply to every field the typed levels above don't cover.</li>
+</ul>
+<p class="meta">S6 shows which levels are set for the current batch in its guidelines panel. The batch currently resolves the cascade from the <strong>first ASIN</strong> of the project, so put ASIN-specific rules at the listing level of that ASIN or in the brand text.</p>
+
+<h2 id="s2">7. S2 — Keywords (Cerebro CSV)</h2>
+<div class="note">The direct Helium 10 connection is <strong>switched off</strong>. Keywords come from a Helium 10 Cerebro CSV that you export and upload.</div>
+<ol class="steps">
+  <li><strong>Step 1 — Copy ASINs into Cerebro.</strong> Use <em>Copy variation ASINs</em> (child ASINs; the parent is left out), paste into Cerebro, run the research, export CSV.</li>
+  <li><strong>Step 2 — Upload the Cerebro CSV.</strong> Supported columns: Keyword Phrase, Search Volume, Cerebro IQ Score, Competing Products, Title Density, CPR, Position.</li>
+  <li>Optional: upload competitor Cerebro CSVs.</li>
+  <li><strong>Parsed Data</strong> — filter out irrelevant phrases.</li>
+  <li><strong>Review Keywords</strong> — run tiering; check tiers (T1 = most important), intent and negatives.</li>
+  <li><strong>Approve S2.</strong></li>
+</ol>
+<p class="done"><b>Done when:</b> the approved keyword list reflects the product and is tiered.</p>
+
+<h2 id="s3">8. S3 — Reviews (review CSV)</h2>
+<ol class="steps">
+  <li><strong>Upload the review CSV</strong> for the parent ASIN (one file covers all variations). Required columns: <code>id, text, date, title, rating</code>.</li>
+  <li>Alternative: <em>Use Hub reviews</em> if the Hub already holds reviews for these ASINs.</li>
+  <li>Check the parsed reviews, run the AI analysis, review themes, praise, complaints and objections.</li>
+  <li><strong>Approve S3.</strong> No reviews at all? Use <strong>Skip — No Reviews Available</strong>. Never invent review evidence.</li>
+</ol>
+
+<h2 id="s4">9. S4 — Alexa for Shopping</h2>
+<ol class="steps">
+  <li><strong>Phase 1</strong> — copy the question block into Alexa for Shopping for the parent ASIN; paste all five answers back; confirm the mapping.</li>
+  <li><strong>Phase 2</strong> — generate strategic questions (or use the defaults); collect and paste answers per batch; confirm.</li>
+  <li><strong>Review Q&amp;A insights</strong> — check accuracy, unanswered questions and claims that need evidence.</li>
+  <li><strong>Approve S4.</strong></li>
+</ol>
+<p class="meta">Alexa answers are research to verify, not proof that a claim is true.</p>
+
+<h2 id="s5">10. S5 — COSMO</h2>
+<ol class="steps">
+  <li>Check the prerequisite panel (S1–S4 complete).</li>
+  <li><strong>Generate COSMO Map.</strong></li>
+  <li>Remove relationships that are unsupported or irrelevant.</li>
+  <li><strong>Approve S5.</strong></li>
+</ol>
+
+<h2 id="s6">11. S6 — SEO Content</h2>
+<div class="tablewrap"><table>
+<tr><th>Sub-step</th><th>What you do</th><th>Notes</th></tr>
+<tr><td><strong>S6.1 Configuration</strong></td><td>Confirm pre-generation settings (e.g. where size goes in the title); lock.</td><td></td></tr>
+<tr><td><strong>S6.2 Titles</strong></td><td>Generate, review, edit; approve.</td><td>Title ≤ 75 chars · Item Highlight ≤ 125 chars</td></tr>
+<tr><td><strong>S6.3 Bullet Points</strong></td><td>Generate, review the human score and compliance, edit; approve.</td><td><strong>One set of 5 bullets</strong>, 180–200 chars, never over 200</td></tr>
+<tr><td><strong>S6.4 Description</strong></td><td>Generate, review, edit; approve.</td><td>Character count shown per ASIN</td></tr>
+<tr><td><strong>S6.5 Backend Search Terms</strong></td><td>Generate, review; optionally <em>Refine Backend Keywords</em>; approve.</td><td>Counted in bytes (Amazon's limit)</td></tr>
+<tr><td><strong>S6.6 Audit &amp; Optimize</strong></td><td>Run the audit, fix findings in the batches, re-run.</td><td>AI scores support, never replace, your review</td></tr>
+<tr><td><strong>S6.7 Premium A+ Q&amp;A</strong></td><td>Generate Module 7 Q&amp;A per ASIN; review; approve.</td><td>5 pairs per ASIN · Q 115–120 chars · A 245–250 chars</td></tr>
+<tr><td><strong>S6.8 Final SEO Content</strong></td><td>Review all ASINs; <strong>Save &amp; Submit for review</strong>.</td><td>Locks S6 and starts S7</td></tr>
+</table></div>
+<h3>Working in the S6 tables</h3>
+<ul>
+  <li><strong>Edit</strong> — click a text cell to edit it in place.</li>
+  <li><strong>Lock</strong> — the lock icon in a cell's left margin protects that cell from regeneration. Regenerating a batch overwrites only unlocked cells of that batch.</li>
+  <li><strong>Regenerate with feedback</strong> — type what to change (e.g. "BP4: don't use 'medicine'") and regenerate.</li>
+  <li><strong>Compliance panel</strong> — lists critical terms and warnings with where they occur. Fix the text or regenerate; bypass only when you are sure the word is allowed.</li>
+  <li><strong>S6.8 layout</strong> — one row per ASIN: Product (thumbnail, ASIN, variation details), Title / Item Highlight, Bullet Points (BP1–BP5 stacked), Product Description, Backend Search Terms — each with its length.</li>
+</ul>
+<div class="note"><strong>After submitting:</strong> S6 stays locked across reloads. To change it, use <strong>Unlock for Editing</strong>, make changes, and submit again. Submitting text identical to the approved revision is refused ("No changes since rN").</div>
+
+<h2 id="tables">12. Keyword tables (S6.2–S6.5)</h2>
+<p>Below each batch, a table lists the approved keywords and search queries (Helium 10 volume and, when available, Amazon Search Query Performance data).</p>
+<ul>
+  <li><strong>Same columns everywhere</strong>, always in this order: Title · Item Highlight · Bullets · Description · Backend — minus the current step's own. A tick means the keyword already appears in that part of the listing.</li>
+  <li><strong>Live</strong> — the ticks are read from the current text, so when you generate Bullets, the Titles table's Bullets column fills in by itself.</li>
+  <li><strong>First checkbox = in this step's text.</strong> Green rows start ticked: untick to remove the keyword on the next Regenerate. Red rows start unticked: tick to add it. Pending changes show "will add" / "will remove".</li>
+  <li><strong>Sorting</strong> — click any header, including the first column (used in this step).</li>
+</ul>
+
+<h2 id="s7">13. S7 — Review &amp; Share with Client</h2>
+<p>S7 is where the content written in S6 is checked by the team and, usually, the client before anything is pushed. Every time S6 is submitted, the Hub freezes a copy of the text called a <strong>revision</strong> (r1, r2, r3…). Reviewers always look at that frozen copy, so S6 can't change under them.</p>
+<div class="flow">
+  <span class="pill">SEO Manager submits</span><span class="arr">→</span><span class="pill">Project Manager</span><span class="arr">→</span><span class="pill">Account Manager</span><span class="arr">→</span><span class="pill">Client</span><span class="arr">→</span><span class="pill p-ok">Approved</span>
+</div>
+<div class="note bad"><strong>No automatic notifications.</strong> The Hub does not email or message reviewers when it's their turn. After each step, tell the next person (PM, AM or client) yourself. Reviewers can also see what's waiting for them in the Content Control Center.</div>
+
+<h3>13.1 Revision statuses</h3>
+<div class="tablewrap"><table>
+<tr><th>Status</th><th>Shown as</th><th>Meaning</th><th>Who acts next</th></tr>
+<tr><td><code>pm_review</code></td><td>PM review</td><td>Submitted; waiting for the Project Manager</td><td>PM (or an override)</td></tr>
+<tr><td><code>am_review</code></td><td>AM review</td><td>PM approved; waiting for the Account Manager</td><td>AM (or an override)</td></tr>
+<tr><td><code>client_review</code></td><td>With client</td><td>AM sent it to the client portal</td><td>Client (or an Owner on their behalf)</td></tr>
+<tr><td><code>approved</code></td><td>Approved</td><td>Final. Becomes the <strong>current</strong> revision; S8 can push it</td><td>SEO Manager (push in S8)</td></tr>
+<tr><td><code>changes_requested</code></td><td>Changes requested</td><td>Closed. Fix in S6 and submit a new revision</td><td>SEO Manager</td></tr>
+</table></div>
+<p class="meta">Only one revision of a project can be in review at a time. The last approved revision stays "current" until a newer one is approved.</p>
+
+<h3>13.2 Submitting (SEO Manager)</h3>
+<ol class="steps">
+  <li>Finish S6.2–S6.7 and review everything in <strong>S6.8 Final SEO Content</strong>.</li>
+  <li>Click <strong>Save &amp; Submit for review</strong>. This creates the revision, sets it to <em>PM review</em>, and <strong>locks S6</strong> (it stays locked after reloads).</li>
+  <li>Tell the Project Manager it's ready.</li>
+</ol>
+<ul>
+  <li>Submitting text identical to the approved revision is refused: <em>"No changes since rN — nothing to review"</em>.</li>
+  <li>To change content later, use <strong>Unlock for Editing</strong> in S6. Unlocking does not change any revision already in review.</li>
+</ul>
+
+<h3>13.3 Reading the review tracker</h3>
+<p>The tracker in S7 has one row per sign-off. A <strong>Client</strong> row appears once the revision is sent to the client.</p>
+<div class="tablewrap"><table>
+<tr><th>What you see</th><th>Meaning</th></tr>
+<tr><td>Orange box with a black tick</td><td>That step is done; the text says who, when, and <em>(override)</em> if someone stood in</td></tr>
+<tr><td><span style="color:var(--warn)">Your approval</span></td><td>It's your turn: tick your box to decide</td></tr>
+<tr><td><span style="color:var(--warn)">Waiting for &lt;name&gt;</span></td><td>It's someone else's turn</td></tr>
+<tr><td><span style="color:var(--bad)">Changes requested by &lt;name&gt;: note</span></td><td>That step sent it back; the note says why</td></tr>
+<tr><td>No matching user for &lt;name&gt; — an Owner must decide</td><td>The client team names someone without a Hub account; an Owner has to take that step</td></tr>
+<tr><td>Not yet</td><td>The step hasn't been reached</td></tr>
+<tr><td>Amber <em>Override as …</em> box</td><td>You're not the assigned person but rank higher on the client team; tick it to act in their place</td></tr>
+</table></div>
+
+<h3>13.4 Reviewing the content (PM and AM)</h3>
+<ol class="steps">
+  <li>Open S7. Use the ASIN buttons to switch between products. The preview looks like an Amazon product page: listing images (Hub images first, Amazon images as fallback), title, item highlight, bullets and description. Keywords are highlighted; backend search terms are shown below the preview (team only).</li>
+  <li><strong>Comment</strong>: hover any field and click it; the comment thread opens right under it. Comments are internal unless written for the client.</li>
+  <li><strong>Edit on the spot</strong>: in the same box, change the text and click <em>Save edit</em>. The edit updates the revision <em>and</em> S6, and is logged as an internal note showing what was removed and added. Edit notes resolve themselves and don't count as open comments.</li>
+  <li><strong>Decide</strong> by ticking your box in the tracker (see 13.5).</li>
+</ol>
+<div class="tablewrap"><table>
+<tr><th>Field</th><th>Edit limit in review</th></tr>
+<tr><td>Title</td><td>75 characters</td></tr>
+<tr><td>Item Highlight</td><td>125 characters</td></tr>
+<tr><td>Bullet points 1–5</td><td>200 characters each — saving (and sending a client suggestion) is blocked above it</td></tr>
+<tr><td>Product Description</td><td>1,200 characters</td></tr>
+<tr><td>Backend Search Terms</td><td><strong>249 bytes</strong> — Amazon's hard limit (one byte over de-indexes all terms); saving is blocked above it</td></tr>
+</table></div>
+<p class="meta">On-the-spot editing is available while the revision is in PM or AM review, to team members with editor rights or above. Once it's with the client, the team changes text only by accepting the client's suggestions.</p>
+
+<h3>13.5 Decisions at each step</h3>
+<div class="tablewrap"><table>
+<tr><th>Step</th><th>Option</th><th>What it does</th><th>Required</th></tr>
+<tr><td rowspan="2"><strong>Project Manager</strong></td><td>Approve</td><td>Moves to AM review</td><td>Confirm</td></tr>
+<tr><td>Request changes</td><td>Closes the revision as <em>Changes requested</em></td><td>A note</td></tr>
+<tr><td rowspan="3"><strong>Account Manager</strong></td><td>Send to client</td><td>Moves to <em>With client</em>; appears in the client portal; adds the Client row</td><td>The client's SEO portal section must be on</td></tr>
+<tr><td>Approve as final</td><td>Approves immediately without the client; becomes current; S8 unlocks</td><td>A reason (saved on the revision)</td></tr>
+<tr><td>Request changes</td><td>Closes the revision</td><td>A note</td></tr>
+<tr><td rowspan="2"><strong>Client</strong></td><td>Approve</td><td>Final approval; becomes current; S8 unlocks</td><td></td></tr>
+<tr><td>Request changes</td><td>Closes the revision</td><td>A note</td></tr>
+</table></div>
+<p><strong>Send to client or Approve as final?</strong> Send to client when the client normally signs off on listing copy. Approve as final only when the client already agreed outside the Hub (say so in the reason, e.g. "client approved by email 14 Oct"), or for internal or urgent changes. Approvals cannot be undone — to change approved content, start a new revision.</p>
+
+<h3>13.6 The client's side (portal)</h3>
+<ol class="steps">
+  <li>The client opens the review from the SEO section of their portal (it must be enabled for that client).</li>
+  <li>They see the same Amazon-style preview with listing images and keyword highlighting. Backend search terms are hidden from clients.</li>
+  <li>They can comment, and <strong>suggest edits</strong>: type new wording on a field and send it. They never change the text directly.</li>
+  <li>They <strong>approve</strong> or <strong>request changes</strong>.</li>
+</ol>
+<h3>13.7 Handling client suggestions (team)</h3>
+<ul>
+  <li>Each suggestion appears on its field in S7 with a before/after and a status: <em>Pending review</em>, <em>Accepted</em> or <em>Declined</em>.</li>
+  <li><strong>Accept</strong> puts the client's wording into the revision and S6. <strong>Decline</strong> closes the suggestion without changing anything.</li>
+  <li>Handle all suggestions before the client's final approval, and tell the client what you accepted or declined.</li>
+</ul>
+
+<h3>13.8 Overrides and self-approval</h3>
+<div class="tablewrap"><table>
+<tr><th>Step</th><th>Assigned person</th><th>Who can override</th></tr>
+<tr><td>Project Manager</td><td>The client's PM</td><td>The client's AM or ES · any Owner</td></tr>
+<tr><td>Account Manager</td><td>The client's AM</td><td>The client's ES · any Owner</td></tr>
+<tr><td>Client</td><td>The client</td><td>An Owner, on the client's behalf, with a written reason (never the person who submitted)</td></tr>
+</table></div>
+<ul>
+  <li>An override is shown as <em>(override)</em> in the tracker and history, so it's always visible who stood in.</li>
+  <li><strong>Self-approval</strong> — approving a revision you submitted — is allowed only for the client's <strong>Account Manager or Executive Strategist</strong>, and is meant for emergencies. From the Project Manager downwards it is never allowed.</li>
+  <li>If the same person submitted and approved every step, the content has had no second pair of eyes. Prefer sending it to the client in that case.</li>
+</ul>
+
+<h3>13.9 When changes are requested</h3>
+<ol class="steps">
+  <li>The revision closes as <em>Changes requested</em>, with the reviewer's note.</li>
+  <li>The SEO Manager opens S6 (<strong>Unlock for Editing</strong>), works through the open comments shown there, and fixes the content.</li>
+  <li>Submit again: a new revision (r2, r3…) starts at PM review. The previous approved revision, if any, stays current until the new one is approved.</li>
+</ol>
+
+<h3>13.10 Checklist before you approve</h3>
+<ul>
+  <li>Facts match the product (sizes, counts, materials, claims).</li>
+  <li>No critical prohibited terms; no competitor names.</li>
+  <li>Bullets ≤ 200 characters; backend ≤ 249 bytes.</li>
+  <li>Variation-specific details are right for each ASIN.</li>
+  <li>All comments answered; all client suggestions accepted or declined.</li>
+</ul>
+
+<h2 id="s8">14. S8 — Push Content to Products</h2>
+<ol class="steps">
+  <li>S8 unlocks when a revision is approved; it pushes <strong>that approved revision</strong>, not whatever is currently in S6.</li>
+  <li><strong>Preview</strong> the push: matched and unmatched ASINs and the fields that will change.</li>
+  <li><strong>Confirm</strong> only when the preview is correct. Fix unmatched catalog records first.</li>
+</ol>
+<div class="note warn">Pushing updates the Hub product records and queues them for BigQuery publishing. It does <strong>not</strong> publish to Amazon by itself — follow the separate publishing process.</div>
+
+<h2 id="limits">15. Limits &amp; content rules</h2>
+<div class="tablewrap"><table>
+<tr><th>Field</th><th>Limit</th></tr>
+<tr><td>Title</td><td>≤ 75 characters; no colons</td></tr>
+<tr><td>Item Highlight</td><td>≤ 125 characters</td></tr>
+<tr><td>Bullet points</td><td>One set of 5 · 180–200 characters each, never over 200 · ALL CAPS header + colon + normal body</td></tr>
+<tr><td>Product Description</td><td>Character count shown; no colons</td></tr>
+<tr><td>Backend Search Terms</td><td>Counted in bytes; lowercase, no punctuation, no brand names</td></tr>
+<tr><td>A+ Q&amp;A (Module 7)</td><td>5 pairs per ASIN · Question 115–120 · Answer 245–250 characters</td></tr>
+</table></div>
+<ul>
+  <li>No emoji; no competitor names; no keyword stuffing; never copy existing content verbatim.</li>
+  <li>Concise, Content and Key Features bullet versions are <strong>retired</strong> — only one bullet set is written.</li>
+</ul>
+
+<h2 id="prohibited">16. Prohibited terms</h2>
+<p>One list drives both sides: the AI is told to avoid these words, and the S6 compliance check flags them as <strong>critical</strong>. Matching is whole-word ("best" does not flag "bestseller").</p>
+<div class="grid2">
+  <div class="card"><strong>Medical / disease claims</strong><p class="meta">cure, treat, heal, prevent, diagnose, disease, disorder, symptom, medical, medicine, drug, pharmaceutical, prescription, therapeutic, cancer, diabetes, antibiotic, clinically proven/tested/studied, doctor recommended, FDA / FDA approved…</p></div>
+  <div class="card"><strong>Guarantee &amp; result claims</strong><p class="meta">guarantee(d), 100% guaranteed, money back guarantee, 100% effective, miracle, instant results, risk-free</p></div>
+  <div class="card"><strong>Superlatives &amp; rankings</strong><p class="meta">best, #1, number one, top rated, award winning</p></div>
+  <div class="card"><strong>Promotional &amp; transactional</strong><p class="meta">free shipping, in stock, buy now, add to cart, sale, discount, % off, click here, visit our website</p></div>
+</div>
+<p><strong>When a term is flagged:</strong> edit the cell (fastest), or regenerate with feedback. Bypass only when the word is genuinely allowed for this product — Amazon's rules apply regardless.</p>
+
+<h2 id="tracking">17. Tracking projects</h2>
+<ul>
+  <li><strong>SEO Dashboard</strong> (<code>/seo</code>) — Client Health shows active clients only, with phase completion across S1–S8; the Phase Funnel shows where projects are; stale projects are listed last.</li>
+  <li><strong>Client page</strong> and <strong>Content Control Center</strong> — each project card shows its ASINs on the left and, on the right, every phase with who worked on it and when, plus the S7 review stages and who pushed.</li>
+</ul>
+
+<h2 id="changes">18. What changed in v2.0 (October 2026)</h2>
+<ul>
+  <li>One-page project with S7 Review &amp; Share and S8 Push as their own phases.</li>
+  <li>Keywords (S2) and reviews (S3) back to CSV uploads; the direct Helium 10 connection is off.</li>
+  <li>One set of 5 bullets; Concise / Content / Key Features retired.</li>
+  <li>Standard keyword tables across S6.2–S6.5; first column shows usage in the current step.</li>
+  <li>One prohibited-terms list for the AI and the compliance check.</li>
+  <li>Team and client review with tracker, on-the-spot edits, client suggestions and overrides.</li>
+  <li>S6 stays locked after submission; duplicate submissions refused; push uses the approved revision.</li>
+  <li>S6.7 uses all bullets, the full description and the full brand guidelines.</li>
+</ul>
+
+<h2 id="trouble">19. Troubleshooting</h2>
+<div class="tablewrap"><table>
+<tr><th>Problem</th><th>What to do</th></tr>
+<tr><td>A phase is locked</td><td>Approve the phase before it. Generating content is not approval.</td></tr>
+<tr><td>CSV upload fails</td><td>Check the columns and that the file is for this product (child ASINs for Cerebro, parent ASIN for reviews).</td></tr>
+<tr><td>"Critical" prohibited term</td><td>Edit the text or regenerate with feedback; bypass only if genuinely allowed.</td></tr>
+<tr><td>Bullet over 200 characters</td><td>Edit it down in the S6.3 table or in review; the count turns red above 200.</td></tr>
+<tr><td>Submit refused: "No changes since rN"</td><td>Nothing changed since the approved revision — edit first, or don't submit.</td></tr>
+<tr><td>Reviewer can't decide a step</td><td>Only the assigned person, someone higher on the client team (override), or an Owner can. Check the client's team in the Hub.</td></tr>
+<tr><td>New data or images not showing</td><td>Full page reload.</td></tr>
+<tr><td>Push shows unmatched ASINs</td><td>Fix the catalog records, preview again, then confirm.</td></tr>
+</table></div>
+
+<h2 id="glossary">20. Glossary</h2>
+<div class="tablewrap"><table>
+<tr><td><strong>Revision (r1, r2…)</strong></td><td>A frozen copy of the S6 content submitted for review. The approved one is "current" and is what S8 pushes.</td></tr>
+<tr><td><strong>Cerebro</strong></td><td>Helium 10's reverse-ASIN keyword tool; S2 uses its CSV export.</td></tr>
+<tr><td><strong>COSMO</strong></td><td>Amazon's product-meaning (knowledge graph) model; S5 maps product ↔ need ↔ use relationships for it.</td></tr>
+<tr><td><strong>Alexa for Shopping</strong></td><td>Amazon's shopping assistant (formerly Rufus); S4 collects its answers as research.</td></tr>
+<tr><td><strong>Tier (T1–T4)</strong></td><td>Keyword priority from S2; T1 matters most.</td></tr>
+<tr><td><strong>Override</strong></td><td>Deciding a review step on behalf of the assigned person, by someone higher on the client team or an Owner.</td></tr>
+</table></div>
+
+<p class="meta" style="margin-top:40px">Questions or corrections to this SOP: raise them with the SEO lead. Quick reference: Help → SEO Manager: Complete Process.</p>
+</div>
+</body>
+</html>

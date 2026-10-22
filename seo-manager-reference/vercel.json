@@ -1,0 +1,25 @@
+{
+  "functions": {
+    "app/api/extract-doc/route.ts": {
+      "maxDuration": 60
+    },
+    "app/api/claude/keywords/route.ts": {
+      "maxDuration": 60
+    },
+    "app/api/claude/seo/route.ts": {
+      "maxDuration": 60
+    },
+    "app/api/claude/cosmo/route.ts": {
+      "maxDuration": 60
+    },
+    "app/api/claude/reviews/route.ts": {
+      "maxDuration": 60
+    },
+    "app/api/claude/rufus/route.ts": {
+      "maxDuration": 60
+    },
+    "app/api/claude/seo-audit/route.ts": {
+      "maxDuration": 60
+    }
+  }
+}

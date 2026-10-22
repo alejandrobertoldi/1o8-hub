@@ -1,0 +1,362 @@
+  <!-- Overview -->
+  <h2 class="section-title" style="margin-top: 0;">Overview</h2>
+  <p class="lead">
+    How 1o8 generates last month's Amazon report, reviews it internally, and emails the client.
+    Everything happens on <strong>Clients &rarr; Monthly Report</strong>
+    (<a href="/reports/monthly"><code>/reports/monthly</code></a>).
+    Filter <strong>Waiting for me</strong> to see only your queue.
+  </p>
+  <div class="overview-grid">
+    <div class="ov-card">
+      <div class="num">4th</div>
+      <div class="label">Autogenerate cron &mdash; 08:00, 10:00 and 12:00 UTC on the 4th. Each client is its own job so a timeout cannot stop the rest.</div>
+    </div>
+    <div class="ov-card">
+      <div class="num">PM &rarr; AM &rarr; CEO</div>
+      <div class="label">Review order. Status is a 2&times;5 table: Generated, PM, AM, CEO, Sent</div>
+    </div>
+    <div class="ov-card">
+      <div class="num">CEO</div>
+      <div class="label">CEO Approve sends the letter automatically. Only Jake can approve at that step.</div>
+    </div>
+  </div>
+
+  <div class="info-card">
+    <h3>Where the team works</h3>
+    <p>
+      Hub page: <a href="/reports/monthly">/reports/monthly</a>.
+      Done steps are struck through and ticked. Do not trust last month's numbers on days 1&ndash;3
+      &mdash; Amazon / Intentwise settlement lags 3&ndash;4 days.
+      In <strong>View</strong>, PM / AM / CEO add a client note at the end of each section to explain the numbers.
+    </p>
+  </div>
+
+  <!-- ══ HAPPY PATH ══ -->
+  <h2 class="section-title">1. Happy path (every month)</h2>
+
+  <table class="status-table">
+    <thead>
+      <tr>
+        <th>When (UTC)</th>
+        <th>What happens</th>
+        <th>Who is pinged</th>
+        <th>Hub status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Days 1&ndash;3</strong></td>
+        <td>Do not trust last month yet. Settlement is still catching up.</td>
+        <td>Nobody</td>
+        <td>No new rows</td>
+      </tr>
+      <tr>
+        <td><strong>Day 4, 08:00</strong></td>
+        <td>
+          Cron fans out one generate job per active AAC client with an Intentwise id.
+          Skips if a row already exists, or if settlement has not reached month-end.
+          Catch-up runs at 10:00 and 12:00 UTC on the same day.
+          Each PM gets <strong>one email</strong> listing their clients (A, B, C, D).
+        </td>
+        <td>PM (hub user whose name matches AAC <code>ProjectManager_MF</code>)</td>
+        <td>Generated ticked &middot; PM current</td>
+      </tr>
+      <tr>
+        <td><strong>After PM Approve</strong></td>
+        <td>
+          PM checks <strong>View</strong> (full report), adds client notes at the end of sections that need context,
+          and opens <strong>Email</strong> (letter preview).
+          May <strong>Regenerate</strong> that client only. Approve emails the AM.
+          Send back returns to Generated with an internal note.
+        </td>
+        <td>AM (AAC <code>AccountManager_MF</code>)</td>
+        <td>Generated + PM ticked &middot; AM current</td>
+      </tr>
+      <tr>
+        <td><strong>After AM Approve</strong></td>
+        <td>
+          AM reviews numbers and client notes. May add or edit notes in View. Approve queues the CEO.
+          Send back returns to Generated (PM again).
+          The CEO gets <strong>one email</strong> the first time any report in the period is waiting for him.
+        </td>
+        <td>CEO &middot; jake@marketfoundry.agency</td>
+        <td>Generated + PM + AM ticked &middot; CEO current</td>
+      </tr>
+      <tr>
+        <td><strong>After CEO Approve</strong></td>
+        <td>
+          Jake reviews in the hub and clicks <strong>Approve &amp; send</strong>.
+          The letter goes to the address-book recipients automatically. AM and CEO are copied.
+        </td>
+        <td>Client inboxes on the enabled list. AM and CEO are copied.</td>
+        <td>First four ticked &middot; Sent current, then all five ticked</td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="lead">
+    Cron schedule is <code>0 8,10,12 4 * *</code>. Existing rows are never overwritten by cron.
+    Manual Regenerat that client resets status to Generated and re-emails that PM (one-client digest).
+  </p>
+
+  <!-- ══ WHO CAN CLICK ══ -->
+  <h2 class="section-title">2. Who can click what</h2>
+
+  <table class="status-table">
+    <thead>
+      <tr>
+        <th>Role</th>
+        <th>Matched by</th>
+        <th>Can approve</th>
+        <th>Can add client notes</th>
+        <th>Can send client letter</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>PM</strong></td>
+        <td>Hub <code>users.name</code> equals AAC <code>ProjectManager_MF</code> (case/space insensitive)</td>
+        <td>Only while PM is current, and only on that PM&rsquo;s own clients</td>
+        <td>Yes, in View, on their own clients</td>
+        <td>No</td>
+      </tr>
+      <tr>
+        <td><strong>AM</strong></td>
+        <td>Hub <code>users.name</code> equals AAC <code>AccountManager_MF</code></td>
+        <td>Only while AM is current, and only on that AM&rsquo;s own clients. Cannot skip PM.</td>
+        <td>Yes, in View, on their own clients</td>
+        <td>No</td>
+      </tr>
+      <tr>
+        <td><strong>CEO (Jake)</strong></td>
+        <td>Email <code>jake@marketfoundry.agency</code>, not the client AM name</td>
+        <td>Only while CEO is current. Approve sends the letter.</td>
+        <td>Yes, in View</td>
+        <td>Retry only if status is Failed</td>
+      </tr>
+      <tr>
+        <td><strong>Admin / owner</strong></td>
+        <td>Hub role admin or owner</td>
+        <td>No, unless they are also that client&rsquo;s PM, AM, or Jake</td>
+        <td>Yes (override, notes only)</td>
+        <td>No</td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="lead">
+    Send back: from AM &rarr; Generated (PM). From CEO &rarr; AM. Staff mail for send-back includes the note.
+    Stage mail is best-effort; a missing inbox does not block generate or approve.
+  </p>
+
+  <!-- ══ CLIENT NOTES ══ -->
+  <h2 class="section-title">3. Client notes (PM / AM / CEO)</h2>
+  <p class="lead">
+    Personalized context for the client, written at the end of each report section.
+    These are not the same as <strong>Send back</strong> notes, which stay internal.
+  </p>
+  <div class="concept-grid">
+    <div class="info-card">
+      <h3>How to add a note</h3>
+      <p>
+        On <a href="/reports/monthly">/reports/monthly</a>, open <strong>View</strong>.
+        Scroll to the end of a section. Use <strong>Note for the client</strong>, then
+        <strong>Add note</strong> or <strong>Save note</strong>.
+        Clearing the box and saving removes that section&rsquo;s note.
+      </p>
+      <p>
+        Only the assigned PM, assigned AM, Jake, or an admin override can write.
+        Notes are allowed at any review stage, including after send.
+      </p>
+    </div>
+    <div class="info-card">
+      <h3>Where the client sees them</h3>
+      <p>
+        Hub View (editable for reviewers). Portal full report (read-only).
+        Client letter after the KPI, advertising, and highlights blocks
+        (other section notes stay on the full report).
+      </p>
+      <p>
+        Regenerating a report keeps existing notes.
+        The Drive PDF / HTML archive only picks up new notes on the next generate.
+        Cover and table of contents cannot take a note.
+      </p>
+    </div>
+  </div>
+
+  <!-- ══ CLIENT LETTER ══ -->
+  <h2 class="section-title">4. What the client receives</h2>
+
+  <div class="concept-grid">
+    <div class="info-card">
+      <h3>Client letter</h3>
+      <p>
+        <strong>From</strong> 1o8 &lt;reports@marketfoundry.agency&gt;.<br>
+        <strong>Reply-To</strong> is the AM, not the shared reports inbox. A plain Reply goes to the AM.<br>
+        <strong>Cc</strong> is the AM and the CEO so both stay on Reply-All.
+      </p>
+      <p>
+        Subject: <em>Client &mdash; Month Year performance</em>.
+        600px HTML: greeting, lede, headline KPIs, MoM tables, 3&ndash;5 highlights,
+        plus any client notes saved on those blocks,
+        then <strong>Click for more details</strong> opens the full report in the client portal
+        (<code>/portal/reports/monthly?period=YYYY-MM</code>).
+      </p>
+      <p>
+        No PDF, no SVG, no Drive link. Under Gmail's 102 KB clip limit.
+        Send is blocked if the client has no AM email &mdash; it will not fall back to <code>reports@</code>.
+      </p>
+    </div>
+    <div class="info-card">
+      <h3>Hub archive (internal only)</h3>
+      <p>
+        A4 landscape PDF and HTML sibling in Drive. View / Open PDF / Download HTML on
+        <a href="/reports/monthly">/reports/monthly</a>. Same JSON the letter is built from.
+      </p>
+      <p>
+        After send, <strong>Client send</strong> shows datetime, Resend last event
+        (delivered / bounced / failed / sent), and to-addresses. Resend id is stored on the row.
+      </p>
+    </div>
+  </div>
+
+  <h3>Recipients</h3>
+  <p>
+    AAC <code>ClientContactEmail1</code>&ndash;<code>5</code> plus portal client/prospect users on that account.
+    <code>AmazonContactEmail</code> is never used. Hub toggles plus optional custom addresses (max 10)
+    are sent as the enabled list. Toggles live in the browser (localStorage), not Postgres.
+  </p>
+
+  <!-- ══ STAFF EMAILS ══ -->
+  <h2 class="section-title">5. Staff emails (internal)</h2>
+  <p class="lead">
+    Internal review pings go through Resend <strong>before</strong> anyone sends the client letter.
+    From is <code>1o8 Hub &lt;reports@marketfoundry.agency&gt;</code>.
+    Reply-To is the same inbox. Client letters keep Reply-To as the AM.
+  </p>
+  <p>
+    Resend must have <code>marketfoundry.agency</code> verified (sending enabled).
+    If it is not, PM/AM/CEO pings return 403 and the report still saves.
+    The subdomain <code>reports.marketfoundry.agency</code> is not used.
+  </p>
+  <table class="status-table">
+    <thead>
+      <tr>
+        <th>Trigger</th>
+        <th>To</th>
+        <th>Ask</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Cron (day 4)</strong></td>
+        <td>Each PM, one email</td>
+        <td>Lists that PM&rsquo;s clients whose reports are ready</td>
+      </tr>
+      <tr>
+        <td><strong>PM Approve</strong></td>
+        <td>That client&rsquo;s AM, one email per client</td>
+        <td>PM approved; review, comment, and/or approve</td>
+      </tr>
+      <tr>
+        <td><strong>AM Approve</strong> (first report of the period to reach CEO)</td>
+        <td>Jake, one email for the period</td>
+        <td>Reports are waiting. Later AM approvals do not email again.</td>
+      </tr>
+      <tr>
+        <td><strong>CEO Approve</strong></td>
+        <td>Client recipients (auto)</td>
+        <td>Letter sends immediately. No extra CEO ping.</td>
+      </tr>
+      <tr>
+        <td><strong>Send back</strong></td>
+        <td>The person who must act next</td>
+        <td>Read the note, then regenerate / approve</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ══ CHECKLIST ══ -->
+  <h2 class="section-title">6. Hub checklist for each reviewer</h2>
+  <table class="status-table">
+    <thead>
+      <tr>
+        <th>Step</th>
+        <th>Do this</th>
+        <th>Do not</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>PM</strong></td>
+        <td>Open Waiting for me. View the report. Add a client note at the end of any section that needs context. If numbers are wrong, Regenerat that client only, then Approve.</td>
+        <td>Regenerate All. Do not Send (button is hidden). Do not put internal review comments in client notes.</td>
+      </tr>
+      <tr>
+        <td><strong>AM</strong></td>
+        <td>Check the report and notes. Preview Email. Approve, or Send back with an internal note. Only your own clients.</td>
+        <td>Approve someone else&rsquo;s client. Do not skip the PM. Do not Send to the client.</td>
+      </tr>
+      <tr>
+        <td><strong>CEO</strong></td>
+        <td>Open Waiting for me. Spot-check notes. <strong>Approve &amp; send</strong> &mdash; the letter goes out automatically.</td>
+        <td>Approve before AM is done. Admin/owner cannot click this unless they are Jake.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ══ EXCEPTIONS ══ -->
+  <h2 class="section-title">7. Exceptions</h2>
+  <table class="status-table">
+    <thead>
+      <tr>
+        <th>Case</th>
+        <th>Behaviour</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>No Intentwise id</strong></td>
+        <td>Listed on the page, Generate disabled. Cron status <code>skipped_no_intentwise</code>.</td>
+      </tr>
+      <tr>
+        <td><strong>Settlement lag</strong></td>
+        <td>Cron skips until Intentwise max date &ge; last day of the period.</td>
+      </tr>
+      <tr>
+        <td><strong>Already generated</strong></td>
+        <td>Cron skips. Manual Regenerat that client resets status to Generated and re-emails the PM. Client notes on the report are kept.</td>
+      </tr>
+      <tr>
+        <td><strong>No AAC/portal emails</strong></td>
+        <td>Send returns 409. Unblock contacts before CEO send.</td>
+      </tr>
+      <tr>
+        <td><strong>No AM email</strong></td>
+        <td>Send returns 409. Reply-To cannot be set. Match AAC <code>AccountManager_MF</code> to a hub user email first.</td>
+      </tr>
+      <tr>
+        <td><strong>Resend failure</strong></td>
+        <td>Status Failed (Sent step red). Jake retries Send. From is pinned to <code>reports@marketfoundry.agency</code>.</td>
+      </tr>
+      <tr>
+        <td><strong>Bounce after send</strong></td>
+        <td>Client send reads Resend last_event. Status stays Sent in the Hub; delivery pill shows Bounced.</td>
+      </tr>
+      <tr>
+        <td><strong>PM/AM name missing in Hub users</strong></td>
+        <td>Stage email is skipped (logged). Approve still works if they sign in with a matching name. AAC &ldquo;Jake&rdquo; (not &ldquo;Jake Kosten&rdquo;) will not resolve an inbox.</td>
+      </tr>
+      <tr>
+        <td><strong>Chrome busy / Drive error</strong></td>
+        <td>Generate returns 502/500. Retry that client. Do not Regenerat All.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="confirm-note">
+    <span>✉</span>
+    <span>
+      <strong>Client Reply goes to the AM.</strong>
+      From stays <code>reports@marketfoundry.agency</code>.
+      Reply-To is the account manager. Cc is the AM and Jake so Reply-All keeps both on the thread.
+    </span>
+  </div>

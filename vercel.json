@@ -1,0 +1,36 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/asana-tasks-sync",
+      "schedule": "*/15 * * * *"
+    },
+    {
+      "path": "/api/cron/readiness-snapshot",
+      "schedule": "0 12 * * *"
+    }
+  ],
+  "functions": {
+    "src/app/api/reports/monthly/route.ts": {
+      "memory": 2048,
+      "maxDuration": 300
+    },
+    "src/app/api/reports/monthly/pdf/route.ts": {
+      "memory": 2048,
+      "maxDuration": 60
+    },
+    "src/app/api/reports/monthly/pdf/drive/route.ts": {
+      "memory": 2048,
+      "maxDuration": 60
+    },
+    "src/app/api/cron/monthly-reports/route.ts": {
+      "memory": 2048,
+      "maxDuration": 300
+    },
+    "src/app/api/cron/reviews-sync/route.ts": {
+      "maxDuration": 300
+    },
+    "src/app/api/reviews/sync/route.ts": {
+      "maxDuration": 300
+    }
+  }
+}

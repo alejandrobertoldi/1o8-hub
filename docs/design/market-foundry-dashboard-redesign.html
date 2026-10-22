@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Market Foundry — ClientReports Dashboard Redesign</title>
+  <style>
+    /* =============================================================
+       MARKET FOUNDRY DESIGN TOKENS
+       Copy these variables into the AI design system token layer.
+       ============================================================= */
+    :root {
+      --mf-orange: #ff751f;
+      --mf-orange-700: #c4510a;
+      --mf-orange-100: #fff0e6;
+      --mf-charcoal: #2a5059;
+      --mf-charcoal-900: #19343b;
+      --mf-charcoal-700: #23464f;
+      --mf-ghost: #f0eff6;
+      --mf-white: #fefefe;
+      --mf-ink: #242222;
+      --mf-muted: #68777c;
+      --mf-line: #dbe1e4;
+      --mf-positive: #18864b;
+      --mf-positive-bg: #e9f7ef;
+      --mf-negative: #c73737;
+      --mf-negative-bg: #fff0f0;
+      --mf-warning: #a66600;
+      --mf-warning-bg: #fff7df;
+      --mf-info: #356bb3;
+      --mf-shadow-sm: 0 2px 8px rgba(16, 34, 39, .08);
+      --mf-shadow-md: 0 10px 30px rgba(16, 34, 39, .12);
+      --mf-radius-sm: 8px;
+      --mf-radius-md: 12px;
+      --mf-radius-lg: 18px;
+      --mf-space-1: 4px;
+      --mf-space-2: 8px;
+      --mf-space-3: 12px;
+      --mf-space-4: 16px;
+      --mf-space-5: 20px;
+      --mf-space-6: 24px;
+      --mf-space-8: 32px;
+      --mf-space-10: 40px;
+      --mf-max-width: 1760px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--mf-ink);
+      background: var(--mf-charcoal);
+      font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+
+    /* App shell */
+    .app-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      min-height: 72px;
+      display: flex;
+      align-items: center;
+      background: rgba(42, 80, 89, .97);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255,255,255,.12);
+    }
+    .header-inner {
+      width: min(calc(100% - 32px), var(--mf-max-width));
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--mf-space-6);
+    }
+    .brand { display:flex; align-items:center; gap:14px; min-width:250px; color:var(--mf-white); }
+    .brand-mark { width:38px; height:38px; border-radius:11px; background:var(--mf-orange); display:grid; place-items:center; font-weight:900; box-shadow:var(--mf-shadow-sm); }
+    .brand-title { font-weight:800; font-size:20px; letter-spacing:-.03em; }
+    .brand-title span { color:var(--mf-orange); }
+    .brand-subtitle { font-size:11px; color:rgba(255,255,255,.62); text-transform:uppercase; letter-spacing:.12em; }
+    .header-actions { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:10px; }
+    .control, .btn {
+      height: 38px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,.17);
+      background: rgba(255,255,255,.08);
+      color: var(--mf-white);
+      padding: 0 12px;
+    }
+    .control option { color:var(--mf-ink); }
+    .btn { display:inline-flex; align-items:center; gap:8px; font-weight:700; }
+    .btn-primary { background:var(--mf-orange); border-color:var(--mf-orange); }
+    .btn-ghost:hover, .control:hover { background:rgba(255,255,255,.13); }
+
+    .page {
+      width: min(calc(100% - 32px), var(--mf-max-width));
+      margin: 0 auto;
+      padding: 28px 0 56px;
+    }
+    .page-heading { display:flex; justify-content:space-between; align-items:flex-end; gap:24px; color:var(--mf-white); margin-bottom:22px; }
+    .page-heading h1 { margin:0; font-size:clamp(26px, 3vw, 42px); letter-spacing:-.045em; line-height:1; }
+    .page-heading p { margin:10px 0 0; color:rgba(255,255,255,.7); max-width:760px; }
+    .period-badge { flex:none; border:1px solid rgba(255,255,255,.18); border-radius:999px; padding:9px 14px; color:rgba(255,255,255,.84); background:rgba(255,255,255,.07); }
+
+    /* Shared components */
+    .section { margin-top: var(--mf-space-10); }
+    .section-heading { display:flex; align-items:flex-end; justify-content:space-between; gap:18px; margin-bottom:14px; color:var(--mf-white); }
+    .section-heading h2 { margin:0; font-size:18px; letter-spacing:-.02em; }
+    .section-heading p { margin:4px 0 0; font-size:12px; color:rgba(255,255,255,.65); }
+    .section-tools { display:flex; flex-wrap:wrap; gap:8px; }
+    .surface {
+      background:var(--mf-white);
+      border:1px solid rgba(255,255,255,.25);
+      border-radius:var(--mf-radius-lg);
+      box-shadow:var(--mf-shadow-md);
+      overflow:hidden;
+    }
+    .surface-head { min-height:54px; display:flex; align-items:center; justify-content:space-between; gap:14px; padding:14px 18px; border-bottom:1px solid var(--mf-line); }
+    .surface-title { margin:0; font-size:15px; letter-spacing:-.01em; }
+    .surface-subtitle { color:var(--mf-muted); font-size:12px; }
+    .chip { display:inline-flex; align-items:center; gap:6px; border-radius:999px; padding:6px 9px; font-size:11px; font-weight:750; }
+    .chip.positive { color:var(--mf-positive); background:var(--mf-positive-bg); }
+    .chip.negative { color:var(--mf-negative); background:var(--mf-negative-bg); }
+    .chip.warning { color:var(--mf-warning); background:var(--mf-warning-bg); }
+    .chip.neutral { color:var(--mf-charcoal); background:var(--mf-ghost); }
+    .segmented { display:inline-flex; padding:3px; border-radius:10px; background:var(--mf-ghost); }
+    .segmented button { border:0; background:transparent; border-radius:8px; color:var(--mf-muted); padding:7px 10px; font-size:12px; }
+    .segmented button.active { background:var(--mf-white); color:var(--mf-ink); box-shadow:var(--mf-shadow-sm); font-weight:750; }
+
+    /* Insights */
+    .insight-grid { display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:14px; }
+    .insight-card { min-height:112px; padding:17px; border-radius:var(--mf-radius-md); background:rgba(255,255,255,.09); border:1px solid rgba(255,255,255,.15); color:var(--mf-white); }
+    .insight-card strong { display:block; margin:7px 0 4px; font-size:15px; }
+    .insight-card p { margin:0; color:rgba(255,255,255,.72); font-size:12px; }
+    .insight-icon { width:30px; height:30px; border-radius:9px; display:grid; place-items:center; background:rgba(255,255,255,.12); color:var(--mf-orange); font-weight:900; }
+
+    /* KPI layout */
+    .kpi-grid { display:grid; grid-template-columns:repeat(12,minmax(0,1fr)); gap:16px; }
+    .kpi-card { grid-column:span 3; min-height:190px; background:var(--mf-white); border:1px solid rgba(36,34,34,.11); border-radius:var(--mf-radius-lg); box-shadow:var(--mf-shadow-md); overflow:hidden; display:flex; flex-direction:column; }
+    .kpi-card.hero { grid-column:span 4; color:var(--mf-white); background:var(--mf-orange); border-color:rgba(255,255,255,.2); }
+    .kpi-body { display:flex; justify-content:space-between; align-items:flex-start; gap:14px; padding:18px 18px 10px; }
+    .kpi-label { text-transform:uppercase; letter-spacing:.11em; font-size:10px; font-weight:850; color:var(--mf-muted); }
+    .hero .kpi-label { color:rgba(255,255,255,.75); }
+    .kpi-value { margin-top:7px; font-size:clamp(29px, 2.5vw, 42px); line-height:1; font-weight:850; letter-spacing:-.045em; }
+    .kpi-meta { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; padding:0 18px 12px; }
+    .mini-stat { padding:9px 10px; border-radius:10px; background:var(--mf-ghost); }
+    .hero .mini-stat { background:rgba(255,255,255,.15); }
+    .mini-stat span { display:block; font-size:9px; text-transform:uppercase; letter-spacing:.08em; color:var(--mf-muted); }
+    .hero .mini-stat span { color:rgba(255,255,255,.67); }
+    .mini-stat b { display:block; margin-top:3px; font-size:13px; }
+    .spark { height:58px; margin-top:auto; padding:0 14px 10px; }
+    .spark svg { width:100%; height:100%; }
+    .spark .fill { fill:rgba(255,117,31,.11); }
+    .spark .line { fill:none; stroke:var(--mf-orange); stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; }
+    .spark .previous { fill:none; stroke:#9ca7ab; stroke-width:1.7; stroke-dasharray:3 3; }
+    .hero .spark .fill { fill:rgba(255,255,255,.12); }
+    .hero .spark .line { stroke:var(--mf-white); }
+    .hero .spark .previous { stroke:rgba(255,255,255,.5); }
+
+    /* Charts */
+    .chart-grid { display:grid; grid-template-columns:repeat(12,minmax(0,1fr)); gap:16px; }
+    .chart-main { grid-column:span 12; }
+    .chart-half { grid-column:span 6; }
+    .chart-third { grid-column:span 4; }
+    .chart-body { padding:18px; }
+    .chart-wrap { position:relative; width:100%; height:310px; }
+    .chart-wrap.compact { height:245px; }
+    .chart-wrap svg { width:100%; height:100%; overflow:visible; }
+    .grid-line { stroke:#e5e9eb; stroke-width:1; }
+    .axis-label { font-size:10px; fill:#6d7a7f; }
+    .sales-line { stroke:var(--mf-orange); stroke-width:3; fill:none; }
+    .revenue-line { stroke:var(--mf-positive); stroke-width:2.5; fill:none; }
+    .spend-line { stroke:#65418a; stroke-width:2.3; fill:none; }
+    .target-line { stroke:var(--mf-charcoal); stroke-width:1.4; stroke-dasharray:5 5; fill:none; }
+    .bar-bad { fill:#ef5b62; }
+    .bar-good { fill:#42b875; }
+    .bar-orange { fill:#ffad3d; }
+    .dot-sales { fill:var(--mf-orange); }
+    .dot-revenue { fill:var(--mf-positive); }
+    .dot-spend { fill:#65418a; }
+    .legend { display:flex; flex-wrap:wrap; justify-content:center; gap:16px; margin-top:8px; color:var(--mf-muted); font-size:11px; }
+    .legend span { display:inline-flex; align-items:center; gap:6px; }
+    .legend i { width:9px; height:9px; border-radius:50%; display:inline-block; }
+    .chart-kpis { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; margin-bottom:14px; }
+    .chart-kpi { border:1px solid var(--mf-line); border-radius:10px; padding:10px 12px; }
+    .chart-kpi span { display:block; color:var(--mf-muted); font-size:10px; text-transform:uppercase; letter-spacing:.08em; }
+    .chart-kpi b { display:block; margin-top:3px; font-size:18px; }
+
+    /* Funnel */
+    .funnel { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; align-items:center; padding:28px 18px 34px; }
+    .funnel-step { text-align:center; position:relative; }
+    .funnel-step:not(:last-child)::after { content:'→'; position:absolute; right:-10px; top:32px; color:var(--mf-muted); font-size:18px; }
+    .funnel-bar { margin:0 auto 10px; height:62px; display:flex; align-items:center; justify-content:center; color:white; font-weight:850; border-radius:9px; background:var(--mf-orange); }
+    .funnel-step:nth-child(2) .funnel-bar { width:82%; background:#d86622; }
+    .funnel-step:nth-child(3) .funnel-bar { width:62%; background:var(--mf-charcoal); }
+    .funnel-step:nth-child(4) .funnel-bar { width:46%; background:var(--mf-positive); }
+    .funnel-step small { display:block; color:var(--mf-muted); }
+
+    /* Tables */
+    .table-shell { overflow:auto; max-height:570px; }
+    table { width:100%; border-collapse:separate; border-spacing:0; min-width:1160px; }
+    thead th { position:sticky; top:0; z-index:2; background:var(--mf-charcoal-900); color:var(--mf-white); text-align:right; padding:12px 14px; font-size:11px; letter-spacing:.02em; border-bottom:2px solid var(--mf-orange); white-space:nowrap; }
+    thead th:first-child { left:0; z-index:3; text-align:left; }
+    tbody td { padding:11px 14px; border-bottom:1px solid var(--mf-line); text-align:right; white-space:nowrap; background:var(--mf-white); }
+    tbody tr:nth-child(even) td { background:#f8f8fb; }
+    tbody tr:hover td { background:var(--mf-orange-100); }
+    tbody td:first-child { position:sticky; left:0; z-index:1; text-align:left; font-weight:700; box-shadow:1px 0 0 var(--mf-line); }
+    tfoot td { position:sticky; bottom:0; background:var(--mf-charcoal-900); color:var(--mf-white); font-weight:800; padding:12px 14px; text-align:right; border-top:2px solid var(--mf-orange); }
+    tfoot td:first-child { text-align:left; }
+    .metric-cell { display:flex; justify-content:flex-end; align-items:center; gap:8px; }
+    .heat { display:inline-block; min-width:58px; padding:5px 7px; border-radius:7px; font-weight:750; text-align:center; }
+    .heat.good { color:var(--mf-positive); background:var(--mf-positive-bg); }
+    .heat.bad { color:var(--mf-negative); background:var(--mf-negative-bg); }
+    .heat.warn { color:var(--mf-warning); background:var(--mf-warning-bg); }
+    .progress { width:58px; height:6px; border-radius:999px; background:#e7ebed; overflow:hidden; }
+    .progress > span { display:block; height:100%; background:var(--mf-orange); border-radius:inherit; }
+    .table-toolbar { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 16px; border-bottom:1px solid var(--mf-line); background:var(--mf-white); }
+    .table-filters { display:flex; flex-wrap:wrap; gap:8px; }
+    .input, .select-light { height:36px; border:1px solid var(--mf-line); border-radius:9px; background:var(--mf-white); color:var(--mf-ink); padding:0 11px; }
+    .input { min-width:240px; }
+    .table-count { color:var(--mf-muted); font-size:12px; }
+
+    /* Footer insight cards */
+    .action-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; }
+    .action-card { padding:18px; }
+    .action-card h3 { margin:0 0 12px; font-size:15px; }
+    .action-item { display:flex; align-items:flex-start; gap:10px; padding:11px 0; border-top:1px solid var(--mf-line); }
+    .action-item:first-of-type { border-top:0; }
+    .rank { flex:none; width:28px; height:28px; border-radius:8px; display:grid; place-items:center; background:var(--mf-ghost); font-weight:800; }
+    .action-copy b { display:block; }
+    .action-copy span { display:block; color:var(--mf-muted); font-size:12px; margin-top:2px; }
+
+    @media (max-width: 1180px) {
+      .header-inner { align-items:flex-start; padding:12px 0; }
+      .header-actions { max-width:720px; }
+      .kpi-card, .kpi-card.hero { grid-column:span 6; }
+      .chart-third { grid-column:span 6; }
+      .insight-grid { grid-template-columns:repeat(2,1fr); }
+    }
+    @media (max-width: 760px) {
+      .header-inner, .page-heading, .section-heading, .table-toolbar { align-items:stretch; flex-direction:column; }
+      .brand { min-width:0; }
+      .header-actions { justify-content:flex-start; }
+      .control, .btn { flex:1; min-width:140px; }
+      .kpi-card, .kpi-card.hero, .chart-half, .chart-third { grid-column:span 12; }
+      .insight-grid, .action-grid { grid-template-columns:1fr; }
+      .chart-kpis { grid-template-columns:repeat(2,1fr); }
+      .funnel { grid-template-columns:1fr; }
+      .funnel-step:not(:last-child)::after { content:'↓'; right:50%; top:auto; bottom:-22px; }
+      .input { min-width:0; width:100%; }
+      .period-badge { align-self:flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="brand" aria-label="ClientReports">
+        <div class="brand-mark">MF</div>
+        <div>
+          <div class="brand-title">Client<span>Reports</span></div>
+          <div class="brand-subtitle">Market Foundry analytics</div>
+        </div>
+      </div>
+      <div class="header-actions" aria-label="Dashboard controls">
+        <select class="control" aria-label="Client"><option>Hotshot US</option></select>
+        <select class="control" aria-label="Date granularity"><option>Daily</option><option>Weekly</option><option>Monthly</option></select>
+        <button class="btn btn-ghost">Jul 1, 2026 — Jul 27, 2026</button>
+        <button class="btn btn-ghost">Compare: Previous year</button>
+        <button class="btn btn-ghost">Export</button>
+        <button class="btn btn-primary">Refresh</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="page-heading">
+      <div>
+        <h1>Performance overview</h1>
+        <p>An executive-first reporting layout that separates headline performance, diagnostics, and detailed analysis.</p>
+      </div>
+      <div class="period-badge">Last refreshed: Jul 27, 2026 · 10:42 AM</div>
+    </div>
+
+    <section aria-labelledby="insights-title">
+      <div class="section-heading">
+        <div><h2 id="insights-title">Executive insights</h2><p>Immediate context before users interpret charts or tables.</p></div>
+      </div>
+      <div class="insight-grid">
+        <article class="insight-card"><div class="insight-icon">$</div><strong>Sales are down 26.9% YoY</strong><p>Total sales reached $33.06K versus $45.20K in the comparison period.</p></article>
+        <article class="insight-card"><div class="insight-icon">↗</div><strong>Ad spend is 16.4% higher</strong><p>Spend increased while ad revenue fell, placing pressure on advertising efficiency.</p></article>
+        <article class="insight-card"><div class="insight-icon">!</div><strong>ACoS is above target</strong><p>Current ACoS is 36.22% compared with the 25.00% target.</p></article>
+        <article class="insight-card"><div class="insight-icon">◎</div><strong>Traffic quality needs review</strong><p>Clicks increased 5.1%, but conversions declined 30.1% and CVR fell to 15.90%.</p></article>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="kpi-title">
+      <div class="section-heading">
+        <div><h2 id="kpi-title">Headline performance</h2><p>Primary metrics receive visual emphasis; supporting metrics use neutral cards.</p></div>
+        <div class="segmented" aria-label="KPI grouping"><button class="active">All</button><button>Sales</button><button>Advertising</button><button>Traffic</button></div>
+      </div>
+      <div class="kpi-grid">
+        <article class="kpi-card hero"><div class="kpi-body"><div><div class="kpi-label">Total sales</div><div class="kpi-value">$33.06K</div></div><span class="chip negative">▼ 26.88%</span></div><div class="kpi-meta"><div class="mini-stat"><span>Previous year</span><b>$45.20K</b></div><div class="mini-stat"><span>Period goal</span><b>$42.00K</b></div></div><div class="spark"><svg viewBox="0 0 220 54" preserveAspectRatio="none"><path class="fill" d="M0,45 L0,27 L18,35 L36,22 L54,42 L72,16 L90,31 L108,25 L126,39 L144,21 L162,29 L180,17 L198,32 L220,23 L220,54 L0,54Z"/><polyline class="previous" points="0,18 18,31 36,14 54,34 72,7 90,25 108,15 126,29 144,10 162,22 180,13 198,20 220,17"/><polyline class="line" points="0,27 18,35 36,22 54,42 72,16 90,31 108,25 126,39 144,21 162,29 180,17 198,32 220,23"/></svg></div></article>
+        <article class="kpi-card hero"><div class="kpi-body"><div><div class="kpi-label">Organic sales</div><div class="kpi-value">$23.09K</div></div><span class="chip negative">▼ 24.07%</span></div><div class="kpi-meta"><div class="mini-stat"><span>Previous year</span><b>$30.41K</b></div><div class="mini-stat"><span>Share of sales</span><b>69.8%</b></div></div><div class="spark"><svg viewBox="0 0 220 54" preserveAspectRatio="none"><path class="fill" d="M0,46 L0,39 L18,31 L36,40 L54,17 L72,34 L90,25 L108,38 L126,28 L144,37 L162,22 L180,31 L198,26 L220,35 L220,54 L0,54Z"/><polyline class="previous" points="0,32 18,22 36,29 54,9 72,21 90,17 108,31 126,20 144,25 162,14 180,21 198,17 220,23"/><polyline class="line" points="0,39 18,31 36,40 54,17 72,34 90,25 108,38 126,28 144,37 162,22 180,31 198,26 220,35"/></svg></div></article>
+        <article class="kpi-card hero"><div class="kpi-body"><div><div class="kpi-label">Ad revenue</div><div class="kpi-value">$9.97K</div></div><span class="chip negative">▼ 32.64%</span></div><div class="kpi-meta"><div class="mini-stat"><span>Previous year</span><b>$14.80K</b></div><div class="mini-stat"><span>Share of sales</span><b>30.2%</b></div></div><div class="spark"><svg viewBox="0 0 220 54" preserveAspectRatio="none"><path class="fill" d="M0,54 L0,25 L18,40 L36,12 L54,37 L72,19 L90,44 L108,28 L126,21 L144,41 L162,18 L180,32 L198,24 L220,39 L220,54Z"/><polyline class="previous" points="0,17 18,28 36,6 54,26 72,11 90,30 108,17 126,10 144,27 162,8 180,20 198,14 220,23"/><polyline class="line" points="0,25 18,40 36,12 54,37 72,19 90,44 108,28 126,21 144,41 162,18 180,32 198,24 220,39"/></svg></div></article>
+
+        <article class="kpi-card"><div class="kpi-body"><div><div class="kpi-label">Ad spend</div><div class="kpi-value">$3.61K</div></div><span class="chip negative">▲ 16.42%</span></div><div class="kpi-meta"><div class="mini-stat"><span>Previous year</span><b>$3.10K</b></div><div class="mini-stat"><span>Budget used</span><b>82%</b></div></div><div class="spark"><svg viewBox="0 0 220 54" preserveAspectRatio="none"><path class="fill" d="M0,54 L0,38 L18,35 L36,39 L54,7 L72,31 L90,34 L108,27 L126,35 L144,29 L162,39 L180,32 L198,42 L220,31 L220,54Z"/><polyline class="previous" points="0,33 18,32 36,36 54,21 72,29 90,30 108,32 126,34 144,31 162,35 180,34 198,36 220,33"/><polyline class="line" points="0,38 18,35 36,39 54,7 72,31 90,34 108,27 126,35 144,29 162,39 180,32 198,42 220,31"/></svg></div></article>
+        <article class="kpi-card"><div class="kpi-body"><div><div class="kpi-label">ACoS</div><div class="kpi-value">36.22%</div></div><span class="chip negative">11.22 pts above</span></div><div class="kpi-meta"><div class="mini-stat"><span>Previous year</span><b>20.96%</b></div><div class="mini-stat"><span>Target</span><b>25.00%</b></div></div><div class="spark"><svg viewBox="0 0 220 54" preserveAspectRatio="none"><path class="fill" d="M0,54 L0,45 L18,7 L36,43 L54,39 L72,44 L90,23 L108,41 L126,46 L144,35 L162,44 L180,31 L198,46 L220,41 L220,54Z"/><polyline class="previous" points="0,42 18,40 36,41 54,39 72,42 90,38 108,41 126,43 144,39 162,41 180,40 198,43 220,42"/><polyline class="line" points="0,45 18,7 36,43 54,39 72,44 90,23 108,41 126,46 144,35 162,44 180,31 198,46 220,41"/></svg></div></article>
+        <article class="kpi-card"><div class="kpi-body"><div><div class="kpi-label">ROAS</div><div class="kpi-value">2.76</div></div><span class="chip negative">▼ 42.14%</span></div><div class="kpi-meta"><div class="mini-stat"><span>Previous year</span><b>4.77</b></div><div class="mini-stat"><span>Target</span><b>4.00</b></div></div><div class="spark"><svg viewBox="0 0 220 54" preserveAspectRatio="none"><path class="fill" d="M0,54 L0,24 L18,39 L36,31 L54,42 L72,29 L90,34 L108,18 L126,13 L144,43 L162,36 L180,25 L198,45 L220,27 L220,54Z"/><polyline class="previous" points="0,18 18,27 36,22 54,30 72,19 90,21 108,13 126,8 144,27 162,23 180,17 198,31 220,18"/><polyline class="line" points="0,24 18,39 36,31 54,42 72,29 90,34 108,18 126,13 144,43 162,36 180,25 198,45 220,27"/></svg></div></article>
+        <article class="kpi-card"><div class="kpi-body"><div><div class="kpi-label">Conversion rate</div><div class="kpi-value">15.90%</div></div><span class="chip negative">▼ 33.50%</span></div><div class="kpi-meta"><div class="mini-stat"><span>Previous year</span><b>23.91%</b></div><div class="mini-stat"><span>Conversions</span><b>283</b></div></div><div class="spark"><svg viewBox="0 0 220 54" preserveAspectRatio="none"><path class="fill" d="M0,54 L0,28 L18,35 L36,30 L54,38 L72,24 L90,27 L108,32 L126,20 L144,40 L162,29 L180,34 L198,25 L220,37 L220,54Z"/><polyline class="previous" points="0,18 18,22 36,20 54,26 72,16 90,18 108,23 126,13 144,27 162,20 180,22 198,16 220,24"/><polyline class="line" points="0,28 18,35 36,30 54,38 72,24 90,27 108,32 126,20 144,40 162,29 180,34 198,25 220,37"/></svg></div></article>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="performance-title">
+      <div class="section-heading"><div><h2 id="performance-title">Business performance</h2><p>One dominant chart with selectable series instead of all metrics competing at once.</p></div><div class="section-tools"><div class="segmented"><button class="active">Daily</button><button>Weekly</button><button>Monthly</button></div></div></div>
+      <div class="chart-grid">
+        <article class="surface chart-main">
+          <div class="surface-head"><div><h3 class="surface-title">Sales, ad revenue, ad spend & ACoS</h3><div class="surface-subtitle">Jul 1–26 · current period</div></div><div class="segmented"><button class="active">Current</button><button>Previous year</button><button>Target</button></div></div>
+          <div class="chart-body">
+            <div class="chart-kpis"><div class="chart-kpi"><span>Total sales</span><b>$33.06K</b></div><div class="chart-kpi"><span>Ad revenue</span><b>$9.97K</b></div><div class="chart-kpi"><span>Ad spend</span><b>$3.61K</b></div><div class="chart-kpi"><span>ACoS</span><b>36.22%</b></div></div>
+            <div class="chart-wrap"><svg viewBox="0 0 1400 310" preserveAspectRatio="none" role="img" aria-label="Combined sales and advertising performance chart"><line class="grid-line" x1="55" y1="42" x2="1360" y2="42"/><line class="grid-line" x1="55" y1="102" x2="1360" y2="102"/><line class="grid-line" x1="55" y1="162" x2="1360" y2="162"/><line class="grid-line" x1="55" y1="222" x2="1360" y2="222"/><line class="grid-line" x1="55" y1="270" x2="1360" y2="270"/><line class="target-line" x1="55" y1="210" x2="1360" y2="210"/>
+              <g opacity=".95"><rect class="bar-bad" x="72" y="237" width="30" height="33"/><rect class="bar-bad" x="122" y="230" width="30" height="40"/><rect class="bar-bad" x="172" y="228" width="30" height="42"/><rect class="bar-bad" x="222" y="48" width="30" height="222"/><rect class="bar-good" x="272" y="244" width="30" height="26"/><rect class="bar-good" x="322" y="245" width="30" height="25"/><rect class="bar-bad" x="372" y="208" width="30" height="62"/><rect class="bar-bad" x="422" y="182" width="30" height="88"/><rect class="bar-bad" x="472" y="172" width="30" height="98"/><rect class="bar-bad" x="522" y="206" width="30" height="64"/><rect class="bar-bad" x="572" y="219" width="30" height="51"/><rect class="bar-good" x="622" y="246" width="30" height="24"/><rect class="bar-good" x="672" y="247" width="30" height="23"/><rect class="bar-good" x="722" y="249" width="30" height="21"/><rect class="bar-bad" x="772" y="223" width="30" height="47"/><rect class="bar-bad" x="822" y="199" width="30" height="71"/><rect class="bar-bad" x="872" y="226" width="30" height="44"/><rect class="bar-bad" x="922" y="225" width="30" height="45"/><rect class="bar-bad" x="972" y="222" width="30" height="48"/><rect class="bar-bad" x="1022" y="216" width="30" height="54"/><rect class="bar-bad" x="1072" y="174" width="30" height="96"/><rect class="bar-good" x="1122" y="244" width="30" height="26"/><rect class="bar-good" x="1172" y="246" width="30" height="24"/><rect class="bar-good" x="1222" y="243" width="30" height="27"/><rect class="bar-bad" x="1272" y="221" width="30" height="49"/><rect class="bar-bad" x="1322" y="209" width="30" height="61"/></g>
+              <polyline class="sales-line" points="87,154 137,158 187,166 237,191 287,126 337,148 387,187 437,93 487,151 537,142 587,149 637,140 687,136 737,168 787,146 837,147 887,153 937,125 987,117 1037,71 1087,165 1137,107 1187,114 1237,137 1287,135 1337,123"/>
+              <polyline class="revenue-line" points="87,199 137,218 187,215 237,246 287,198 337,208 387,235 437,223 487,210 537,203 587,209 637,170 687,208 737,215 787,228 837,221 887,213 937,213 987,197 1037,197 1087,239 1137,196 1187,211 1237,197 1287,226 1337,221"/>
+              <polyline class="spend-line" points="87,250 137,251 187,249 237,260 287,250 337,247 387,248 437,239 487,236 537,243 587,241 637,230 687,242 737,246 787,241 837,239 887,238 937,237 987,231 1037,239 1087,249 1137,237 1187,242 1237,245 1287,241 1337,239"/>
+              <text class="axis-label" x="18" y="46">$2.4K</text><text class="axis-label" x="25" y="106">$1.8K</text><text class="axis-label" x="25" y="166">$1.2K</text><text class="axis-label" x="31" y="226">$600</text><text class="axis-label" x="42" y="274">$0</text></svg></div>
+            <div class="legend"><span><i style="background:#ff751f"></i>Total sales</span><span><i style="background:#18864b"></i>Ad revenue</span><span><i style="background:#65418a"></i>Ad spend</span><span><i style="background:#ef5b62;border-radius:2px"></i>ACoS above goal</span><span><i style="background:#42b875;border-radius:2px"></i>ACoS at/below goal</span></div>
+          </div>
+        </article>
+
+        <article class="surface chart-half"><div class="surface-head"><div><h3 class="surface-title">CPC & conversion rate</h3><div class="surface-subtitle">Cost efficiency versus conversion quality</div></div><span class="chip neutral">Avg. CPC $2.03</span></div><div class="chart-body"><div class="chart-wrap compact"><svg viewBox="0 0 650 245" preserveAspectRatio="none"><line class="grid-line" x1="46" y1="35" x2="620" y2="35"/><line class="grid-line" x1="46" y1="95" x2="620" y2="95"/><line class="grid-line" x1="46" y1="155" x2="620" y2="155"/><line class="grid-line" x1="46" y1="215" x2="620" y2="215"/><g fill="#ffad3d"><rect x="58" y="90" width="17" height="125"/><rect x="80" y="101" width="17" height="114"/><rect x="102" y="118" width="17" height="97"/><rect x="124" y="84" width="17" height="131"/><rect x="146" y="91" width="17" height="124"/><rect x="168" y="79" width="17" height="136"/><rect x="190" y="69" width="17" height="146"/><rect x="212" y="35" width="17" height="180"/><rect x="234" y="61" width="17" height="154"/><rect x="256" y="73" width="17" height="142"/><rect x="278" y="65" width="17" height="150"/><rect x="300" y="75" width="17" height="140"/><rect x="322" y="101" width="17" height="114"/><rect x="344" y="108" width="17" height="107"/><rect x="366" y="114" width="17" height="101"/><rect x="388" y="90" width="17" height="125"/><rect x="410" y="98" width="17" height="117"/><rect x="432" y="103" width="17" height="112"/><rect x="454" y="105" width="17" height="110"/><rect x="476" y="93" width="17" height="122"/><rect x="498" y="97" width="17" height="118"/><rect x="520" y="84" width="17" height="131"/><rect x="542" y="92" width="17" height="123"/><rect x="564" y="98" width="17" height="117"/><rect x="586" y="91" width="17" height="124"/></g><polyline points="66,92 88,118 110,91 132,205 154,77 176,78 198,128 220,143 242,131 264,121 286,116 308,58 330,104 352,101 374,126 396,150 418,118 440,127 462,115 484,96 506,151 528,93 550,103 572,60 594,130" fill="none" stroke="#5b6ef5" stroke-width="2.5"/><text class="axis-label" x="8" y="39">$3.00</text><text class="axis-label" x="8" y="99">$2.00</text><text class="axis-label" x="8" y="159">$1.00</text><text class="axis-label" x="22" y="219">$0</text></svg></div><div class="legend"><span><i style="background:#ffad3d;border-radius:2px"></i>CPC</span><span><i style="background:#5b6ef5"></i>CVR</span></div></div></article>
+
+        <article class="surface chart-half"><div class="surface-head"><div><h3 class="surface-title">Clicks, impressions & CTR</h3><div class="surface-subtitle">Traffic volume and engagement quality</div></div><span class="chip negative">CTR 0.31%</span></div><div class="chart-body"><div class="chart-wrap compact"><svg viewBox="0 0 650 245" preserveAspectRatio="none"><line class="grid-line" x1="46" y1="35" x2="620" y2="35"/><line class="grid-line" x1="46" y1="95" x2="620" y2="95"/><line class="grid-line" x1="46" y1="155" x2="620" y2="155"/><line class="grid-line" x1="46" y1="215" x2="620" y2="215"/><g fill="#ffad3d"><rect x="58" y="108" width="17" height="107"/><rect x="80" y="94" width="17" height="121"/><rect x="102" y="111" width="17" height="104"/><rect x="124" y="74" width="17" height="141"/><rect x="146" y="108" width="17" height="107"/><rect x="168" y="117" width="17" height="98"/><rect x="190" y="116" width="17" height="99"/><rect x="212" y="100" width="17" height="115"/><rect x="234" y="109" width="17" height="106"/><rect x="256" y="111" width="17" height="104"/><rect x="278" y="115" width="17" height="100"/><rect x="300" y="122" width="17" height="93"/><rect x="322" y="116" width="17" height="99"/><rect x="344" y="120" width="17" height="95"/><rect x="366" y="104" width="17" height="111"/><rect x="388" y="109" width="17" height="106"/><rect x="410" y="98" width="17" height="117"/><rect x="432" y="103" width="17" height="112"/><rect x="454" y="78" width="17" height="137"/><rect x="476" y="111" width="17" height="104"/><rect x="498" y="121" width="17" height="94"/><rect x="520" y="125" width="17" height="90"/><rect x="542" y="118" width="17" height="97"/><rect x="564" y="99" width="17" height="116"/><rect x="586" y="104" width="17" height="111"/></g><polyline points="66,115 88,117 110,135 132,105 154,122 176,126 198,118 220,113 242,56 264,86 286,110 308,120 330,126 352,138 374,120 396,110 418,115 440,108 462,104 484,109 506,111 528,114 550,136 572,126 594,114" fill="none" stroke="#8ba0b5" stroke-width="2.5"/><polyline points="66,211 88,210 110,212 132,210 154,211 176,211 198,210 220,210 242,208 264,210 286,211 308,210 330,211 352,212 374,210 396,211 418,210 440,209 462,210 484,210 506,211 528,210 550,212 572,211 594,210" fill="none" stroke="#5b6ef5" stroke-width="2.5"/><text class="axis-label" x="8" y="39">60K</text><text class="axis-label" x="8" y="99">45K</text><text class="axis-label" x="8" y="159">30K</text><text class="axis-label" x="8" y="219">15K</text></svg></div><div class="legend"><span><i style="background:#ffad3d;border-radius:2px"></i>Impressions</span><span><i style="background:#8ba0b5"></i>Clicks</span><span><i style="background:#5b6ef5"></i>CTR</span></div></div></article>
+
+        <article class="surface chart-third"><div class="surface-head"><div><h3 class="surface-title">Conversion funnel</h3><div class="surface-subtitle">Volume loss through the purchase journey</div></div></div><div class="funnel"><div class="funnel-step"><div class="funnel-bar">2,727</div><b>Sessions</b><small>100%</small></div><div class="funnel-step"><div class="funnel-bar">1,780</div><b>Clicks</b><small>65.3%</small></div><div class="funnel-step"><div class="funnel-bar">283</div><b>Conversions</b><small>15.9%</small></div><div class="funnel-step"><div class="funnel-bar">$33.06K</div><b>Sales</b><small>$116.82/order</small></div></div></article>
+
+        <article class="surface chart-third"><div class="surface-head"><div><h3 class="surface-title">ROAS by campaign</h3><div class="surface-subtitle">Quickly identify scale and waste</div></div></div><div class="chart-body"><div class="chart-wrap compact"><svg viewBox="0 0 430 245" preserveAspectRatio="none"><g><text class="axis-label" x="8" y="36">Brand defense</text><rect x="115" y="21" width="260" height="19" rx="5" fill="#18864b"/><text x="382" y="35" font-size="11" fill="#242222">5.76</text><text class="axis-label" x="8" y="78">Manual exact</text><rect x="115" y="63" width="202" height="19" rx="5" fill="#42b875"/><text x="324" y="77" font-size="11" fill="#242222">4.48</text><text class="axis-label" x="8" y="120">Search terms</text><rect x="115" y="105" width="157" height="19" rx="5" fill="#ffad3d"/><text x="279" y="119" font-size="11" fill="#242222">3.47</text><text class="axis-label" x="8" y="162">Auto targeting</text><rect x="115" y="147" width="113" height="19" rx="5" fill="#ff751f"/><text x="235" y="161" font-size="11" fill="#242222">2.50</text><text class="axis-label" x="8" y="204">Video targeting</text><rect x="115" y="189" width="76" height="19" rx="5" fill="#ef5b62"/><text x="198" y="203" font-size="11" fill="#242222">1.69</text></g><line class="target-line" x1="295" y1="10" x2="295" y2="222"/><text class="axis-label" x="300" y="235">Target 4.0</text></svg></div></div></article>
+
+        <article class="surface chart-third"><div class="surface-head"><div><h3 class="surface-title">Spend vs. ROAS</h3><div class="surface-subtitle">Bubble size represents ad revenue</div></div><span class="chip neutral">Opportunity map</span></div><div class="chart-body"><div class="chart-wrap compact"><svg viewBox="0 0 430 245" preserveAspectRatio="none"><line class="grid-line" x1="45" y1="35" x2="405" y2="35"/><line class="grid-line" x1="45" y1="95" x2="405" y2="95"/><line class="grid-line" x1="45" y1="155" x2="405" y2="155"/><line class="grid-line" x1="45" y1="215" x2="405" y2="215"/><line class="target-line" x1="45" y1="130" x2="405" y2="130"/><circle cx="340" cy="145" r="22" fill="#ff751f" fill-opacity=".75"/><circle cx="168" cy="91" r="17" fill="#18864b" fill-opacity=".78"/><circle cx="112" cy="62" r="13" fill="#42b875" fill-opacity=".78"/><circle cx="252" cy="170" r="14" fill="#ef5b62" fill-opacity=".72"/><circle cx="74" cy="116" r="9" fill="#ffad3d" fill-opacity=".85"/><text class="axis-label" x="47" y="236">Low spend</text><text class="axis-label" x="350" y="236">High spend</text><text class="axis-label" x="6" y="42">High ROAS</text><text class="axis-label" x="6" y="217">Low ROAS</text></svg></div></div></article>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="keywords-title">
+      <div class="section-heading"><div><h2 id="keywords-title">Keyword analysis</h2><p>Sticky headers, sticky first column, conditional formatting, and accessible row density.</p></div></div>
+      <article class="surface">
+        <div class="surface-head"><div><h3 class="surface-title">Sponsored Products keywords</h3><div class="surface-subtitle">369 keywords · sorted by ad spend</div></div><button class="btn" style="color:var(--mf-charcoal);border-color:var(--mf-line);background:var(--mf-white)">Export CSV</button></div>
+        <div class="table-toolbar"><div class="table-filters"><input class="input" placeholder="Search keyword, ASIN, SKU…" aria-label="Search keywords"/><select class="select-light"><option>All match types</option></select><select class="select-light"><option>ROAS: Any</option><option>ROAS ≥ 4</option><option>ROAS &lt; 2</option></select><select class="select-light"><option>ACoS: Any</option><option>ACoS ≤ 25%</option><option>ACoS &gt; 60%</option></select></div><div class="table-count">Showing 12 of 369</div></div>
+        <div class="table-shell"><table><thead><tr><th>Keyword</th><th>Ad Spend ↓</th><th>Ad Revenue</th><th>ACoS</th><th>ROAS</th><th>Avg. CPC</th><th>Impressions</th><th>Clicks</th><th>Conversions</th><th>CVR</th></tr></thead><tbody>
+          <tr><td>cramps relief</td><td>$88.18</td><td>$492.35</td><td><span class="heat good">17.91%</span></td><td><span class="heat good">5.58</span></td><td>$2.00</td><td>16.1K</td><td>44</td><td>15</td><td><div class="metric-cell"><div class="progress"><span style="width:85%"></span></div>34.09%</div></td></tr>
+          <tr><td>leg cramps instant relief</td><td>$78.73</td><td>$29.95</td><td><span class="heat bad">262.87%</span></td><td><span class="heat bad">0.38</span></td><td>$2.13</td><td>18.4K</td><td>37</td><td>1</td><td><div class="metric-cell"><div class="progress"><span style="width:8%"></span></div>2.70%</div></td></tr>
+          <tr><td>muscle cramp relief</td><td>$61.96</td><td>$119.80</td><td><span class="heat warn">51.72%</span></td><td><span class="heat warn">1.93</span></td><td>$1.38</td><td>32.9K</td><td>45</td><td>4</td><td><div class="metric-cell"><div class="progress"><span style="width:22%"></span></div>8.89%</div></td></tr>
+          <tr><td>hot shot for cramps</td><td>$57.01</td><td>$149.75</td><td><span class="heat warn">38.07%</span></td><td><span class="heat warn">2.63</span></td><td>$2.19</td><td>3.1K</td><td>26</td><td>5</td><td><div class="metric-cell"><div class="progress"><span style="width:48%"></span></div>19.23%</div></td></tr>
+          <tr><td>hot shot</td><td>$53.50</td><td>$0.00</td><td><span class="heat bad">—</span></td><td><span class="heat bad">0.00</span></td><td>$2.43</td><td>8.8K</td><td>22</td><td>0</td><td><div class="metric-cell"><div class="progress"><span style="width:0%"></span></div>0.00%</div></td></tr>
+          <tr><td>sports shot for cramps</td><td>$32.24</td><td>$824.63</td><td><span class="heat good">3.91%</span></td><td><span class="heat good">25.58</span></td><td>$0.92</td><td>22.5K</td><td>35</td><td>20</td><td><div class="metric-cell"><div class="progress"><span style="width:100%"></span></div>57.14%</div></td></tr>
+          <tr><td>hotshot</td><td>$31.99</td><td>$127.24</td><td><span class="heat good">25.14%</span></td><td><span class="heat good">3.98</span></td><td>$1.45</td><td>2.8K</td><td>22</td><td>3</td><td><div class="metric-cell"><div class="progress"><span style="width:34%"></span></div>13.64%</div></td></tr>
+          <tr><td>cramp prevention drink</td><td>$29.20</td><td>$81.45</td><td><span class="heat warn">35.85%</span></td><td><span class="heat warn">2.79</span></td><td>$1.54</td><td>9.8K</td><td>19</td><td>2</td><td><div class="metric-cell"><div class="progress"><span style="width:26%"></span></div>10.53%</div></td></tr>
+          <tr><td>leg cramp</td><td>$23.58</td><td>$103.00</td><td><span class="heat good">22.89%</span></td><td><span class="heat good">4.37</span></td><td>$1.96</td><td>3.3K</td><td>12</td><td>2</td><td><div class="metric-cell"><div class="progress"><span style="width:42%"></span></div>16.67%</div></td></tr>
+          <tr><td>cramps relief exact</td><td>$21.19</td><td>$89.85</td><td><span class="heat good">23.58%</span></td><td><span class="heat good">4.24</span></td><td>$2.35</td><td>1.6K</td><td>9</td><td>3</td><td><div class="metric-cell"><div class="progress"><span style="width:83%"></span></div>33.33%</div></td></tr>
+          <tr><td>cramp fix</td><td>$19.03</td><td>$0.00</td><td><span class="heat bad">—</span></td><td><span class="heat bad">0.00</span></td><td>$2.72</td><td>1.4K</td><td>7</td><td>0</td><td><div class="metric-cell"><div class="progress"><span style="width:0%"></span></div>0.00%</div></td></tr>
+          <tr><td>night leg cramps treatment</td><td>$18.69</td><td>$0.00</td><td><span class="heat bad">—</span></td><td><span class="heat bad">0.00</span></td><td>$1.44</td><td>6.5K</td><td>13</td><td>0</td><td><div class="metric-cell"><div class="progress"><span style="width:0%"></span></div>0.00%</div></td></tr>
+        </tbody><tfoot><tr><td>Total</td><td>$1,089.09</td><td>$3,978.35</td><td>27.38%</td><td>3.65</td><td>$1.68</td><td>255.9K</td><td>650</td><td>110</td><td>16.92%</td></tr></tfoot></table></div>
+      </article>
+    </section>
+
+    <section class="section" aria-labelledby="campaign-title">
+      <div class="section-heading"><div><h2 id="campaign-title">Campaign & product detail</h2><p>Use collapsible data sections in production to shorten the page and preserve context.</p></div></div>
+      <article class="surface">
+        <div class="surface-head"><div><h3 class="surface-title">Campaign performance</h3><div class="surface-subtitle">13 active campaigns</div></div><span class="chip neutral">Click row to expand</span></div>
+        <div class="table-toolbar"><div class="table-filters"><input class="input" placeholder="Search campaign…"/><select class="select-light"><option>All campaign types</option></select><select class="select-light"><option>All statuses</option></select></div><div class="table-count">13 campaigns</div></div>
+        <div class="table-shell" style="max-height:420px"><table><thead><tr><th>Campaign Name</th><th>Ad Spend</th><th>Ad Revenue</th><th>ACoS</th><th>ROAS</th><th>Avg. CPC</th><th>Impressions</th><th>Clicks</th><th>Conversions</th><th>CVR</th></tr></thead><tbody>
+          <tr><td>SP | 1o8 | Auto Campaign New - 2026</td><td>$2,303.51</td><td>$5,767.35</td><td><span class="heat warn">39.94%</span></td><td><span class="heat warn">2.50</span></td><td>$2.25</td><td>261.8K</td><td>1.0K</td><td>167</td><td>16.31%</td></tr>
+          <tr><td>SP | 1o8 | Amazon Search Term Report</td><td>$415.48</td><td>$1,440.72</td><td><span class="heat warn">28.84%</span></td><td><span class="heat warn">3.47</span></td><td>$1.60</td><td>82.0K</td><td>260</td><td>40</td><td>15.38%</td></tr>
+          <tr><td>SP | 1o8 | Manual | Competitor Keywords 2025</td><td>$189.30</td><td>$848.10</td><td><span class="heat good">22.32%</span></td><td><span class="heat good">4.48</span></td><td>$2.10</td><td>29.3K</td><td>90</td><td>24</td><td>26.67%</td></tr>
+          <tr><td>SB | 1o8 | HOTSHOT Product Collection</td><td>$183.34</td><td>$1,055.83</td><td><span class="heat good">17.36%</span></td><td><span class="heat good">5.76</span></td><td>$1.29</td><td>96.3K</td><td>142</td><td>27</td><td>19.01%</td></tr>
+          <tr><td>SP | 1o8 | Brand Defense</td><td>$175.90</td><td>$269.55</td><td><span class="heat bad">65.26%</span></td><td><span class="heat bad">1.53</span></td><td>$2.28</td><td>19.2K</td><td>77</td><td>9</td><td>11.69%</td></tr>
+          <tr><td>SB | 1o8 | Cramps Video | Product Targeting</td><td>$131.97</td><td>$222.80</td><td><span class="heat bad">59.23%</span></td><td><span class="heat bad">1.69</span></td><td>$1.71</td><td>6.7K</td><td>77</td><td>6</td><td>7.79%</td></tr>
+        </tbody><tfoot><tr><td>Total</td><td>$3,610.61</td><td>$9,968.50</td><td>36.22%</td><td>2.76</td><td>$2.03</td><td>573.1K</td><td>1.8K</td><td>283</td><td>15.90%</td></tr></tfoot></table></div>
+      </article>
+    </section>
+
+    <section class="section" aria-labelledby="actions-title">
+      <div class="section-heading"><div><h2 id="actions-title">Decision support</h2><p>End the page with ranked actions rather than another raw table.</p></div></div>
+      <div class="action-grid">
+        <article class="surface action-card"><h3>Top performers</h3><div class="action-item"><div class="rank">1</div><div class="action-copy"><b>Sports shot for cramps</b><span>ROAS 25.58 · CVR 57.14% · candidate for scale</span></div></div><div class="action-item"><div class="rank">2</div><div class="action-copy"><b>HOTSHOT Product Collection</b><span>ROAS 5.76 · ACoS 17.36%</span></div></div></article>
+        <article class="surface action-card"><h3>Efficiency risks</h3><div class="action-item"><div class="rank">!</div><div class="action-copy"><b>Leg cramps instant relief</b><span>ACoS 262.87% with only one conversion</span></div></div><div class="action-item"><div class="rank">!</div><div class="action-copy"><b>Brand Defense campaign</b><span>ACoS 65.26% · review bids and search terms</span></div></div></article>
+        <article class="surface action-card"><h3>Recommended actions</h3><div class="action-item"><div class="rank">→</div><div class="action-copy"><b>Reduce bids on zero-conversion terms</b><span>Prioritize terms with spend above $15 and no orders.</span></div></div><div class="action-item"><div class="rank">→</div><div class="action-copy"><b>Shift budget toward ROAS ≥ 4 campaigns</b><span>Protect budget for profitable exact and branded campaigns.</span></div></div></article>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Lightweight demo interaction. Replace with your application state/data layer.
+    document.querySelectorAll('.segmented').forEach(group => {
+      group.addEventListener('click', event => {
+        const button = event.target.closest('button');
+        if (!button) return;
+        group.querySelectorAll('button').forEach(item => item.classList.remove('active'));
+        button.classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>

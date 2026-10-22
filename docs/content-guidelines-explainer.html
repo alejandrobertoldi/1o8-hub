@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Content Guidelines — How It Works</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --brand: #E8A700;
+    --brand-light: rgba(232,167,0,0.12);
+    --bg: #0e0e0f;
+    --surface: #161618;
+    --surface2: #1e1e21;
+    --border: #2a2a2e;
+    --text: #f0f0f0;
+    --muted: #888;
+    --green: #22c55e;
+    --blue: #60a5fa;
+    --purple: #a78bfa;
+    --orange: #fb923c;
+    --tier-listing: #f472b6;
+    --tier-group: #60a5fa;
+    --tier-variation: #a78bfa;
+    --tier-brand: #94a3b8;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 40px 24px 80px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  /* ── Header ── */
+  .hero { margin-bottom: 56px; }
+  .hero h1 { font-size: 42px; font-weight: 800; letter-spacing: -0.04em; line-height: 1.1; }
+  .hero h1 span { color: var(--brand); }
+  .hero p { color: var(--muted); margin-top: 12px; font-size: 15px; max-width: 540px; }
+
+  /* ── Section ── */
+  .section { margin-bottom: 56px; }
+  .section-label {
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.1em; color: var(--muted); margin-bottom: 20px;
+  }
+  h2 { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 4px; }
+  .sub { color: var(--muted); font-size: 13px; margin-bottom: 24px; }
+
+  /* ── Tier pyramid ── */
+  .pyramid { display: flex; flex-direction: column; gap: 0; }
+
+  .tier {
+    display: flex; align-items: center; gap: 16px;
+    padding: 16px 20px; border: 1px solid var(--border);
+    background: var(--surface); position: relative;
+    transition: background 0.15s;
+  }
+  .tier:first-child { border-radius: 12px 12px 0 0; }
+  .tier:last-child  { border-radius: 0 0 12px 12px; }
+  .tier:not(:last-child) { border-bottom: none; }
+
+  .tier-dot {
+    width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+  }
+  .tier-badge {
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.08em; padding: 2px 8px; border-radius: 4px;
+    border: 1px solid; flex-shrink: 0; min-width: 90px; text-align: center;
+  }
+  .tier-name { font-weight: 600; font-size: 14px; flex: 1; }
+  .tier-where { font-size: 12px; color: var(--muted); font-family: 'SF Mono', 'Fira Code', monospace; }
+  .tier-priority {
+    font-size: 10px; font-weight: 700; color: var(--muted);
+    background: var(--surface2); border: 1px solid var(--border);
+    padding: 2px 8px; border-radius: 20px;
+  }
+
+  .tier-listing   { border-left: 3px solid var(--tier-listing); }
+  .tier-group     { border-left: 3px solid var(--tier-group); }
+  .tier-variation { border-left: 3px solid var(--tier-variation); }
+  .tier-brand     { border-left: 3px solid var(--tier-brand); }
+
+  .dot-listing   { background: var(--tier-listing); }
+  .dot-group     { background: var(--tier-group); }
+  .dot-variation { background: var(--tier-variation); }
+  .dot-brand     { background: var(--tier-brand); }
+
+  .badge-listing   { color: var(--tier-listing); border-color: var(--tier-listing); background: rgba(244,114,182,0.08); }
+  .badge-group     { color: var(--tier-group);   border-color: var(--tier-group);   background: rgba(96,165,250,0.08); }
+  .badge-variation { color: var(--tier-variation); border-color: var(--tier-variation); background: rgba(167,139,250,0.08); }
+  .badge-brand     { color: var(--tier-brand);   border-color: var(--tier-brand);   background: rgba(148,163,184,0.08); }
+
+  .arrow-down {
+    text-align: center; color: var(--border); font-size: 18px;
+    line-height: 1; padding: 4px 0;
+  }
+
+  /* ── Field-by-field table ── */
+  .fbf-intro {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px 20px; margin-bottom: 24px;
+    font-size: 13px; color: var(--muted); line-height: 1.7;
+  }
+  .fbf-intro strong { color: var(--text); }
+
+  .fbf-table { width: 100%; border-collapse: collapse; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+  .fbf-table thead tr { background: var(--surface2); }
+  .fbf-table th {
+    padding: 10px 14px; text-align: left; font-size: 10px;
+    font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted);
+    border-bottom: 1px solid var(--border);
+  }
+  .fbf-table td {
+    padding: 10px 14px; font-size: 13px; border-bottom: 1px solid var(--border);
+    background: var(--surface); vertical-align: middle;
+  }
+  .fbf-table tr:last-child td { border-bottom: none; }
+
+  .field-name { font-weight: 600; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; }
+  .field-desc { color: var(--muted); font-size: 12px; }
+
+  .cell-set {
+    font-size: 12px; padding: 3px 8px; border-radius: 5px; border: 1px solid;
+    display: inline-block; max-width: 180px; overflow: hidden;
+    text-overflow: ellipsis; white-space: nowrap;
+  }
+  .cell-empty { color: var(--border); font-size: 12px; }
+  .cell-win {
+    font-weight: 700; font-size: 12px; padding: 3px 8px;
+    border-radius: 5px; display: inline-flex; align-items: center; gap-4px;
+  }
+
+  /* ── Example scenario ── */
+  .example-grid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 12px; margin-bottom: 24px;
+  }
+  .example-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px; position: relative;
+  }
+  .example-card.winner { border-width: 2px; }
+  .example-card-label {
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.08em; margin-bottom: 10px;
+  }
+  .example-field {
+    display: flex; flex-direction: column; gap: 6px; font-size: 12px;
+  }
+  .ef-row { display: flex; align-items: flex-start; gap-6px; gap: 6px; }
+  .ef-key { color: var(--muted); flex-shrink: 0; min-width: 80px; font-size: 11px; }
+  .ef-val { color: var(--text); word-break: break-word; line-height: 1.4; }
+  .ef-val.empty { color: var(--border); font-style: italic; }
+  .ef-win {
+    background: var(--brand-light); color: var(--brand);
+    border-radius: 3px; padding: 0 4px; font-weight: 600;
+  }
+
+  .resolved-card {
+    background: var(--surface2); border: 1px solid var(--brand);
+    border-radius: 10px; padding: 16px 20px; position: relative;
+    overflow: hidden;
+  }
+  .resolved-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0;
+    height: 2px; background: var(--brand);
+  }
+  .resolved-title {
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--brand); margin-bottom: 12px;
+  }
+  .resolved-field { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 8px; }
+  .rf-label { color: var(--muted); font-size: 11px; min-width: 120px; flex-shrink: 0; padding-top: 1px; }
+  .rf-value { font-size: 13px; color: var(--text); }
+  .rf-source {
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.06em; padding: 1px 6px; border-radius: 3px;
+    border: 1px solid; margin-left: 8px; flex-shrink: 0; align-self: center;
+  }
+
+  /* ── How cascade works ── */
+  .flow-list { display: flex; flex-direction: column; gap: 0; }
+  .flow-step {
+    display: flex; gap: 16px; align-items: flex-start;
+    padding: 14px 0; border-bottom: 1px solid var(--border);
+  }
+  .flow-step:last-child { border-bottom: none; }
+  .flow-num {
+    width: 28px; height: 28px; border-radius: 50%; display: flex;
+    align-items: center; justify-content: center; font-size: 12px;
+    font-weight: 700; flex-shrink: 0; margin-top: 1px;
+  }
+  .flow-step h4 { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+  .flow-step p { font-size: 13px; color: var(--muted); }
+  code {
+    font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px;
+    background: var(--surface2); border: 1px solid var(--border);
+    padding: 1px 5px; border-radius: 4px; color: var(--brand);
+  }
+
+  /* ── Where to edit ── */
+  .entry-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .entry-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px 18px;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .entry-card h4 { font-size: 14px; font-weight: 600; }
+  .entry-card p { font-size: 12px; color: var(--muted); line-height: 1.5; }
+  .entry-path {
+    font-size: 11px; font-family: 'SF Mono','Fira Code',monospace;
+    color: var(--brand); margin-top: 2px;
+  }
+  .entry-tiers { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+  .tier-chip {
+    font-size: 10px; font-weight: 700; padding: 2px 7px;
+    border-radius: 4px; border: 1px solid;
+  }
+
+  /* ── Footer note ── */
+  .note {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px 20px; font-size: 13px;
+    color: var(--muted); margin-top: 48px; line-height: 1.7;
+  }
+  .note strong { color: var(--text); }
+
+  @media (max-width: 640px) {
+    .example-grid { grid-template-columns: 1fr 1fr; }
+    .entry-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── Hero ───────────────────────────────────────────────── -->
+<div class="hero">
+  <h1>Content<span>Guidelines</span></h1>
+  <p>A 4-tier cascade that lets editors set messaging context at any level of the product hierarchy — resolved field-by-field at generation time.</p>
+</div>
+
+<!-- ── 1. The four tiers ──────────────────────────────────── -->
+<div class="section">
+  <div class="section-label">01 — Tier hierarchy</div>
+  <h2>Four tiers, one cascade</h2>
+  <p class="sub">Higher tiers win. Listing is closest to the product; Brand is the global baseline.</p>
+
+  <div class="pyramid">
+    <div class="tier tier-listing">
+      <span class="tier-dot dot-listing"></span>
+      <span class="tier-badge badge-listing">Listing</span>
+      <span class="tier-name">Per-ASIN override</span>
+      <span class="tier-where">master.content_guidelines</span>
+      <span class="tier-priority">Highest</span>
+    </div>
+    <div class="tier tier-group">
+      <span class="tier-dot dot-group"></span>
+      <span class="tier-badge badge-group">Group</span>
+      <span class="tier-name">Variation group</span>
+      <span class="tier-where">variation_groups.content_guidelines</span>
+      <span class="tier-priority">↑ 2nd</span>
+    </div>
+    <div class="tier tier-variation">
+      <span class="tier-dot dot-variation"></span>
+      <span class="tier-badge badge-variation">Variation</span>
+      <span class="tier-name">Variation defaults</span>
+      <span class="tier-where">variations.content_guidelines</span>
+      <span class="tier-priority">↑ 3rd</span>
+    </div>
+    <div class="tier tier-brand">
+      <span class="tier-dot dot-brand"></span>
+      <span class="tier-badge badge-brand">Brand</span>
+      <span class="tier-name">Brand voice baseline</span>
+      <span class="tier-where">seo_projects.brand_guidelines (text)</span>
+      <span class="tier-priority">Lowest</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── 2. Field-by-field ─────────────────────────────────── -->
+<div class="section">
+  <div class="section-label">02 — Resolution mode</div>
+  <h2>Field-by-field, not all-or-nothing</h2>
+  <p class="sub">Each of the 5 fields independently picks the highest tier where it's set. A tier doesn't have to fill every field to contribute.</p>
+
+  <div class="fbf-intro">
+    <strong>Old behaviour (v1):</strong> entire tier wins — if the group had any content, the group's object was used whole, discarding everything from variation/brand.<br>
+    <strong>New behaviour (v2):</strong> each field is resolved independently — a listing can override just <em>messagingAngle</em> while inheriting <em>keyFeatures</em> from the group.
+  </div>
+
+  <table class="fbf-table">
+    <thead>
+      <tr>
+        <th>Field</th>
+        <th>Type</th>
+        <th>What it controls</th>
+        <th>Example value</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="field-name">messagingAngle</span></td>
+        <td><code>string</code></td>
+        <td class="field-desc">One-liner editorial direction for Claude</td>
+        <td class="field-desc">"Lead with sleep benefits, not fragrance"</td>
+      </tr>
+      <tr>
+        <td><span class="field-name">targetAudience</span></td>
+        <td><code>string</code></td>
+        <td class="field-desc">Who this product is for</td>
+        <td class="field-desc">"Adults 25–45 seeking better sleep"</td>
+      </tr>
+      <tr>
+        <td><span class="field-name">keyFeatures</span></td>
+        <td><code>string[]</code></td>
+        <td class="field-desc">Key selling points to emphasise</td>
+        <td class="field-desc">["vegan formula", "dermatologist tested"]</td>
+      </tr>
+      <tr>
+        <td><span class="field-name">doList</span></td>
+        <td><code>string[]</code></td>
+        <td class="field-desc">Writing rules — things to include</td>
+        <td class="field-desc">["Use sensory language", "Reference bedtime routines"]</td>
+      </tr>
+      <tr>
+        <td><span class="field-name">dontList</span></td>
+        <td><code>string[]</code></td>
+        <td class="field-desc">Writing rules — things to avoid</td>
+        <td class="field-desc">["Avoid price comparisons", "Don't mention competitors"]</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ── 3. Example resolution ─────────────────────────────── -->
+<div class="section">
+  <div class="section-label">03 — Worked example</div>
+  <h2>How a field resolves in practice</h2>
+  <p class="sub">Product B01234 · Lavender 8oz Single · Group: "Lavender — 8oz"</p>
+
+  <div class="example-grid">
+    <!-- Listing -->
+    <div class="example-card" style="border-color:var(--tier-listing)">
+      <div class="example-card-label" style="color:var(--tier-listing)">Listing (B01234)</div>
+      <div class="example-field">
+        <div class="ef-row"><span class="ef-key">angle</span><span class="ef-val ef-win">Value pack — lead with oz-per-dollar</span></div>
+        <div class="ef-row"><span class="ef-key">audience</span><span class="ef-val empty">—</span></div>
+        <div class="ef-row"><span class="ef-key">features</span><span class="ef-val empty">—</span></div>
+        <div class="ef-row"><span class="ef-key">do</span><span class="ef-val empty">—</span></div>
+        <div class="ef-row"><span class="ef-key">don't</span><span class="ef-val empty">—</span></div>
+      </div>
+    </div>
+
+    <!-- Group -->
+    <div class="example-card" style="border-color:var(--tier-group)">
+      <div class="example-card-label" style="color:var(--tier-group)">Group (Lavender 8oz)</div>
+      <div class="example-field">
+        <div class="ef-row"><span class="ef-key">angle</span><span class="ef-val empty">— (overridden)</span></div>
+        <div class="ef-row"><span class="ef-key">audience</span><span class="ef-val empty">—</span></div>
+        <div class="ef-row"><span class="ef-key">features</span><span class="ef-val ef-win">calming scent, 8oz travel size</span></div>
+        <div class="ef-row"><span class="ef-key">do</span><span class="ef-val ef-win">sensory language, bedtime context</span></div>
+        <div class="ef-row"><span class="ef-key">don't</span><span class="ef-val empty">—</span></div>
+      </div>
+    </div>
+
+    <!-- Variation -->
+    <div class="example-card" style="border-color:var(--tier-variation)">
+      <div class="example-card-label" style="color:var(--tier-variation)">Variation (Lavender Line)</div>
+      <div class="example-field">
+        <div class="ef-row"><span class="ef-key">angle</span><span class="ef-val empty">— (overridden)</span></div>
+        <div class="ef-row"><span class="ef-key">audience</span><span class="ef-val ef-win">Adults 25–45 seeking better sleep</span></div>
+        <div class="ef-row"><span class="ef-key">features</span><span class="ef-val empty">— (overridden)</span></div>
+        <div class="ef-row"><span class="ef-key">do</span><span class="ef-val empty">— (overridden)</span></div>
+        <div class="ef-row"><span class="ef-key">don't</span><span class="ef-val ef-win">no price compare, no competitors</span></div>
+      </div>
+    </div>
+
+    <!-- Brand -->
+    <div class="example-card" style="border-color:var(--tier-brand)">
+      <div class="example-card-label" style="color:var(--tier-brand)">Brand (baseline text)</div>
+      <div class="example-field">
+        <div class="ef-row"><span class="ef-key">voice</span><span class="ef-val">"Warm, sensory, wellness-forward…" (free text, no structured fields)</span></div>
+        <div class="ef-row" style="margin-top:6px"><span class="ef-key" style="color:var(--muted);font-size:11px">Used only when all structured tiers are empty for a given field</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Resolved output -->
+  <div class="resolved-card">
+    <div class="resolved-title">✦ Resolved for B01234 — what Claude receives</div>
+    <div class="resolved-field">
+      <span class="rf-label">Messaging angle</span>
+      <span class="rf-value">Value pack — lead with oz-per-dollar</span>
+      <span class="rf-source" style="color:var(--tier-listing);border-color:var(--tier-listing)">Listing</span>
+    </div>
+    <div class="resolved-field">
+      <span class="rf-label">Target audience</span>
+      <span class="rf-value">Adults 25–45 seeking better sleep</span>
+      <span class="rf-source" style="color:var(--tier-variation);border-color:var(--tier-variation)">Variation</span>
+    </div>
+    <div class="resolved-field">
+      <span class="rf-label">Key features</span>
+      <span class="rf-value">calming scent, 8oz travel size</span>
+      <span class="rf-source" style="color:var(--tier-group);border-color:var(--tier-group)">Group</span>
+    </div>
+    <div class="resolved-field">
+      <span class="rf-label">Do</span>
+      <span class="rf-value">sensory language, bedtime context</span>
+      <span class="rf-source" style="color:var(--tier-group);border-color:var(--tier-group)">Group</span>
+    </div>
+    <div class="resolved-field">
+      <span class="rf-label">Don't</span>
+      <span class="rf-value">no price compare, no competitors</span>
+      <span class="rf-source" style="color:var(--tier-variation);border-color:var(--tier-variation)">Variation</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── 4. Resolution algorithm ───────────────────────────── -->
+<div class="section">
+  <div class="section-label">04 — Resolution algorithm</div>
+  <h2>Step-by-step at generation time</h2>
+  <p class="sub">Runs inside <code>resolveGuidelinesFieldByField()</code> in <code>src/lib/variation-guidelines.ts</code></p>
+
+  <div class="flow-list">
+    <div class="flow-step">
+      <span class="flow-num" style="background:rgba(244,114,182,0.12);color:var(--tier-listing)">1</span>
+      <div>
+        <h4>Load listing guidelines</h4>
+        <p>For each ASIN in the batch, fetch <code>master.content_guidelines</code> by ASIN code. Returned as <code>listing_guidelines</code> in the S1 intake payload.</p>
+      </div>
+    </div>
+    <div class="flow-step">
+      <span class="flow-num" style="background:rgba(96,165,250,0.12);color:var(--tier-group)">2</span>
+      <div>
+        <h4>Look up group guidelines</h4>
+        <p>Match the ASIN's <code>variation_group</code> string against the variation's group list loaded at S1 intake.</p>
+      </div>
+    </div>
+    <div class="flow-step">
+      <span class="flow-num" style="background:rgba(167,139,250,0.12);color:var(--tier-variation)">3</span>
+      <div>
+        <h4>Use variation defaults as fallback</h4>
+        <p>The variation's <code>content_guidelines</code> are the last structured tier — loaded alongside groups in S1.</p>
+      </div>
+    </div>
+    <div class="flow-step">
+      <span class="flow-num" style="background:var(--surface2);color:var(--muted)">4</span>
+      <div>
+        <h4>Per-field winner selection</h4>
+        <p>For each of the 5 fields: use the value from the highest tier where it is non-empty. Empty string and empty array both count as "not set".</p>
+      </div>
+    </div>
+    <div class="flow-step">
+      <span class="flow-num" style="background:var(--brand-light);color:var(--brand)">5</span>
+      <div>
+        <h4>Render into Claude prompt block</h4>
+        <p>The resolved object is formatted by <code>renderGuidelinesBlock()</code> and appended after the brand guidelines section in the S6 generation prompt.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── 5. Where to edit ───────────────────────────────────── -->
+<div class="section">
+  <div class="section-label">05 — Where to edit</div>
+  <h2>Entry points</h2>
+  <p class="sub">Guidelines can be set from two places in the app.</p>
+
+  <div class="entry-grid">
+    <div class="entry-card" style="border-color:var(--brand);border-width:2px">
+      <h4>Guidelines Hub</h4>
+      <p>Single page showing the full hierarchy for a client. Edit any tier without leaving the page. Best for batch setup.</p>
+      <div class="entry-path">/guidelines?client=AAC</div>
+      <div class="entry-tiers">
+        <span class="tier-chip" style="color:var(--tier-listing);border-color:var(--tier-listing)">Listing</span>
+        <span class="tier-chip" style="color:var(--tier-group);border-color:var(--tier-group)">Group</span>
+        <span class="tier-chip" style="color:var(--tier-variation);border-color:var(--tier-variation)">Variation</span>
+      </div>
+    </div>
+    <div class="entry-card">
+      <h4>Variation Builder</h4>
+      <p>The existing variation page. Group guidelines are on the Guidelines tab of each group card; variation defaults are in the collapsible at the top.</p>
+      <div class="entry-path">/variations/[id]</div>
+      <div class="entry-tiers">
+        <span class="tier-chip" style="color:var(--tier-group);border-color:var(--tier-group)">Group</span>
+        <span class="tier-chip" style="color:var(--tier-variation);border-color:var(--tier-variation)">Variation</span>
+      </div>
+    </div>
+    <div class="entry-card">
+      <h4>Brand Guidelines Page</h4>
+      <p>Read-only overview of all variation guidelines for a client. Links back to the variation builder to edit. No listing tier shown here.</p>
+      <div class="entry-path">/clients/[code]/brand-guidelines</div>
+      <div class="entry-tiers">
+        <span class="tier-chip" style="color:var(--muted);border-color:var(--border)">Read-only</span>
+      </div>
+    </div>
+    <div class="entry-card">
+      <h4>SEO Generate (automatic)</h4>
+      <p>No manual editing here. Guidelines are resolved automatically from the 4 tiers and injected into the Claude prompt at S6 generation time.</p>
+      <div class="entry-path">/seo/[id]/seo</div>
+      <div class="entry-tiers">
+        <span class="tier-chip" style="color:var(--brand);border-color:var(--brand)">Auto-resolved</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Footer note ───────────────────────────────────────── -->
+<div class="note">
+  <strong>Key rules:</strong>
+  Array fields (<code>keyFeatures</code>, <code>doList</code>, <code>dontList</code>) are picked wholesale from the winning tier — arrays are not merged across tiers.
+  · Setting a field to empty string / empty array at a higher tier does <em>not</em> override a lower tier; it simply means "not set here, fall through".
+  · To actively clear a field, the field must remain absent (null) in the JSONB — not set to an empty value.
+</div>
+
+</body>
+</html>

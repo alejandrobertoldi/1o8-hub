@@ -1,0 +1,602 @@
+[
+ {
+  "code": "XPH8",
+  "units": 2496
+ },
+ {
+  "code": "HGR6",
+  "units": 2192
+ },
+ {
+  "code": "IAH3",
+  "units": 1754
+ },
+ {
+  "code": "CLT2",
+  "units": 1616
+ },
+ {
+  "code": "POC1",
+  "units": 1603
+ },
+ {
+  "code": "XDA4",
+  "units": 1473
+ },
+ {
+  "code": "SWF2",
+  "units": 1429
+ },
+ {
+  "code": "GYR1",
+  "units": 1239
+ },
+ {
+  "code": "TLH2",
+  "units": 1232
+ },
+ {
+  "code": "XMD5",
+  "units": 1168
+ },
+ {
+  "code": "TUS2",
+  "units": 1148
+ },
+ {
+  "code": "SCK6",
+  "units": 1140
+ },
+ {
+  "code": "SMF3",
+  "units": 1118
+ },
+ {
+  "code": "OXR1",
+  "units": 1116
+ },
+ {
+  "code": "IGQ1",
+  "units": 1110
+ },
+ {
+  "code": "MSP1",
+  "units": 1058
+ },
+ {
+  "code": "JFK8",
+  "units": 1054
+ },
+ {
+  "code": "ORF3",
+  "units": 1035
+ },
+ {
+  "code": "ORD5",
+  "units": 1023
+ },
+ {
+  "code": "SBD6",
+  "units": 1012
+ },
+ {
+  "code": "LGB3",
+  "units": 1009
+ },
+ {
+  "code": "PVD2",
+  "units": 1005
+ },
+ {
+  "code": "MIA1",
+  "units": 984
+ },
+ {
+  "code": "MEM4",
+  "units": 968
+ },
+ {
+  "code": "MQY1",
+  "units": 968
+ },
+ {
+  "code": "RIC4",
+  "units": 926
+ },
+ {
+  "code": "SAT2",
+  "units": 922
+ },
+ {
+  "code": "MTN1",
+  "units": 918
+ },
+ {
+  "code": "DET3",
+  "units": 915
+ },
+ {
+  "code": "AFW1",
+  "units": 903
+ },
+ {
+  "code": "SYR1",
+  "units": 896
+ },
+ {
+  "code": "SAN3",
+  "units": 885
+ },
+ {
+  "code": "HGR5",
+  "units": 873
+ },
+ {
+  "code": "FWA6",
+  "units": 866
+ },
+ {
+  "code": "BOS3",
+  "units": 863
+ },
+ {
+  "code": "VGT1",
+  "units": 819
+ },
+ {
+  "code": "BTR1",
+  "units": 805
+ },
+ {
+  "code": "AKC1",
+  "units": 795
+ },
+ {
+  "code": "EWR9",
+  "units": 794
+ },
+ {
+  "code": "AVP8",
+  "units": 793
+ },
+ {
+  "code": "DEN3",
+  "units": 792
+ },
+ {
+  "code": "SAT3",
+  "units": 791
+ },
+ {
+  "code": "BFL1",
+  "units": 783
+ },
+ {
+  "code": "BDL4",
+  "units": 764
+ },
+ {
+  "code": "SAV7",
+  "units": 763
+ },
+ {
+  "code": "RMN3",
+  "units": 761
+ },
+ {
+  "code": "ORF4",
+  "units": 756
+ },
+ {
+  "code": "STL8",
+  "units": 751
+ },
+ {
+  "code": "LGA9",
+  "units": 746
+ },
+ {
+  "code": "TYS1",
+  "units": 744
+ },
+ {
+  "code": "BFI4",
+  "units": 737
+ },
+ {
+  "code": "ROC1",
+  "units": 734
+ },
+ {
+  "code": "ORH3",
+  "units": 732
+ },
+ {
+  "code": "DEN4",
+  "units": 730
+ },
+ {
+  "code": "BWI2",
+  "units": 726
+ },
+ {
+  "code": "PDX8",
+  "units": 716
+ },
+ {
+  "code": "DET6",
+  "units": 706
+ },
+ {
+  "code": "CLE2",
+  "units": 706
+ },
+ {
+  "code": "LAX9",
+  "units": 705
+ },
+ {
+  "code": "CLT4",
+  "units": 704
+ },
+ {
+  "code": "SMF1",
+  "units": 700
+ },
+ {
+  "code": "MKE1",
+  "units": 699
+ },
+ {
+  "code": "HOU2",
+  "units": 696
+ },
+ {
+  "code": "BHM1",
+  "units": 684
+ },
+ {
+  "code": "SBN1",
+  "units": 671
+ },
+ {
+  "code": "DAB2",
+  "units": 670
+ },
+ {
+  "code": "GYR2",
+  "units": 653
+ },
+ {
+  "code": "MKE2",
+  "units": 641
+ },
+ {
+  "code": "ACY1",
+  "units": 635
+ },
+ {
+  "code": "LUK2",
+  "units": 633
+ },
+ {
+  "code": "KRB1",
+  "units": 633
+ },
+ {
+  "code": "FAT1",
+  "units": 629
+ },
+ {
+  "code": "CMH1",
+  "units": 621
+ },
+ {
+  "code": "FTW6",
+  "units": 621
+ },
+ {
+  "code": "AUS2",
+  "units": 612
+ },
+ {
+  "code": "OMA2",
+  "units": 611
+ },
+ {
+  "code": "SDF8",
+  "units": 582
+ },
+ {
+  "code": "RDU2",
+  "units": 578
+ },
+ {
+  "code": "MLI1",
+  "units": 576
+ },
+ {
+  "code": "DTW1",
+  "units": 569
+ },
+ {
+  "code": "JAN1",
+  "units": 562
+ },
+ {
+  "code": "AUS3",
+  "units": 553
+ },
+ {
+  "code": "FSD1",
+  "units": 552
+ },
+ {
+  "code": "CLE3",
+  "units": 552
+ },
+ {
+  "code": "MQJ1",
+  "units": 549
+ },
+ {
+  "code": "MCO1",
+  "units": 546
+ },
+ {
+  "code": "RFD2",
+  "units": 545
+ },
+ {
+  "code": "DSM5",
+  "units": 544
+ },
+ {
+  "code": "DCA1",
+  "units": 542
+ },
+ {
+  "code": "IND9",
+  "units": 540
+ },
+ {
+  "code": "DAL3",
+  "units": 539
+ },
+ {
+  "code": "MDW7",
+  "units": 534
+ },
+ {
+  "code": "HOU6",
+  "units": 530
+ },
+ {
+  "code": "DEN9",
+  "units": 529
+ },
+ {
+  "code": "OKC1",
+  "units": 525
+ },
+ {
+  "code": "CSG1",
+  "units": 520
+ },
+ {
+  "code": "PAE2",
+  "units": 510
+ },
+ {
+  "code": "PCW1",
+  "units": 507
+ },
+ {
+  "code": "ABQ1",
+  "units": 505
+ },
+ {
+  "code": "MKC6",
+  "units": 505
+ },
+ {
+  "code": "TPA4",
+  "units": 499
+ },
+ {
+  "code": "PSP1",
+  "units": 497
+ },
+ {
+  "code": "MCC1",
+  "units": 497
+ },
+ {
+  "code": "QXX6",
+  "units": 497
+ },
+ {
+  "code": "SAV4",
+  "units": 493
+ },
+ {
+  "code": "CMH4",
+  "units": 488
+ },
+ {
+  "code": "RIC2",
+  "units": 482
+ },
+ {
+  "code": "GEG1",
+  "units": 481
+ },
+ {
+  "code": "SCK1",
+  "units": 467
+ },
+ {
+  "code": "RDU1",
+  "units": 456
+ },
+ {
+  "code": "SLC1",
+  "units": 455
+ },
+ {
+  "code": "JAX7",
+  "units": 451
+ },
+ {
+  "code": "ELP1",
+  "units": 450
+ },
+ {
+  "code": "GRR1",
+  "units": 447
+ },
+ {
+  "code": "JAX2",
+  "units": 439
+ },
+ {
+  "code": "PDX9",
+  "units": 439
+ },
+ {
+  "code": "SCK4",
+  "units": 431
+ },
+ {
+  "code": "RDG1",
+  "units": 425
+ },
+ {
+  "code": "KRB2",
+  "units": 424
+ },
+ {
+  "code": "AGS1",
+  "units": 422
+ },
+ {
+  "code": "LAS7",
+  "units": 415
+ },
+ {
+  "code": "BFL2",
+  "units": 408
+ },
+ {
+  "code": "BOI2",
+  "units": 405
+ },
+ {
+  "code": "XAB4",
+  "units": 404
+ },
+ {
+  "code": "ITX3",
+  "units": 393
+ },
+ {
+  "code": "LGB7",
+  "units": 390
+ },
+ {
+  "code": "OAK4",
+  "units": 382
+ },
+ {
+  "code": "ONT6",
+  "units": 369
+ },
+ {
+  "code": "SHV1",
+  "units": 369
+ },
+ {
+  "code": "BDL3",
+  "units": 366
+ },
+ {
+  "code": "BDL2",
+  "units": 358
+ },
+ {
+  "code": "EWR4",
+  "units": 354
+ },
+ {
+  "code": "KRB3",
+  "units": 352
+ },
+ {
+  "code": "TPA1",
+  "units": 348
+ },
+ {
+  "code": "DFW7",
+  "units": 344
+ },
+ {
+  "code": "TUL2",
+  "units": 339
+ },
+ {
+  "code": "PHL7",
+  "units": 329
+ },
+ {
+  "code": "KRB4",
+  "units": 328
+ },
+ {
+  "code": "XMD3",
+  "units": 321
+ },
+ {
+  "code": "HGA6",
+  "units": 303
+ },
+ {
+  "code": "XMD6",
+  "units": 301
+ },
+ {
+  "code": "IND1",
+  "units": 298
+ },
+ {
+  "code": "TEB9",
+  "units": 284
+ },
+ {
+  "code": "DAL2",
+  "units": 277
+ },
+ {
+  "code": "MDW4",
+  "units": 270
+ },
+ {
+  "code": "SDF1",
+  "units": 269
+ },
+ {
+  "code": "ATL2",
+  "units": 269
+ },
+ {
+  "code": "BNA3",
+  "units": 267
+ },
+ {
+  "code": "XSL2",
+  "units": 255
+ },
+ {
+  "code": "SDF9",
+  "units": 251
+ }
+]

@@ -1,0 +1,280 @@
+# Intentwise Redshift Tables
+
+**Host:** `analytics.intentwise.com:5439`
+**Database:** `data_platform`
+
+## amazon_marketing_cloud (15 tables)
+
+| Table | Description |
+|-------|-------------|
+| ad_attributed_branded_searches | Branded search attribution |
+| asin_purchase_overlap_upsell | ASIN purchase overlap/upsell |
+| dsp_campaign_perf_by_geo | DSP campaign performance by geo |
+| dsp_reach_impression_frequency | DSP reach/impression frequency |
+| multi_touch_attribution_analysis | Multi-touch attribution |
+| new_to_brand_customers | NTB customers |
+| new_to_brand_purchases | NTB purchases |
+| ntb_gateway_asins | NTB gateway ASINs |
+| path_to_conversion | Path to conversion |
+| sd_dsp_overlap | SD/DSP overlap |
+| shopper_funnel | Shopper funnel |
+| sp_sd_overlap | SP/SD overlap |
+| sponsored_ads_dsp_streamingtv_overlap | Sponsored Ads/DSP/STV overlap |
+| tentpole_phase_overlap | Tentpole phase overlap |
+| time_to_conversion | Time to conversion |
+
+## amazon_source_data (103 tables)
+
+### Account
+| Table |
+|-------|
+| account |
+
+### Sponsored Products (SP)
+| Table |
+|-------|
+| ad_sponsoredproducts_adgroup |
+| ad_sponsoredproducts_autosearchterm_report |
+| ad_sponsoredproducts_campaignnegativekeyword |
+| ad_sponsoredproducts_keyword |
+| ad_sponsoredproducts_keyword_report |
+| ad_sponsoredproducts_keywordsearchterm_report |
+| ad_sponsoredproducts_negativekeyword |
+| ad_sponsoredproducts_productads |
+| ad_sponsoredproducts_producttargetsearchterm_report |
+| ad_sponsoredproducts_target |
+
+### Sponsored Brands (SB)
+| Table |
+|-------|
+| ad_sponsoredbrand_ad |
+| ad_sponsoredbrand_ad_asin |
+| ad_sponsoredbrand_ad_report |
+| ad_sponsoredbrand_campaign |
+| ad_sponsoredbrand_campaign_report |
+| ad_sponsoredbrand_keyword_report |
+| ad_sponsoredbrand_keywordsearchterm_report |
+| ad_sponsoredbrand_negativekeyword |
+| ad_sponsoredbrand_producttargetsearchterm_report |
+| ad_sponsoredbrand_target |
+| ad_sponsoredbrand_target_report |
+
+### Sponsored Display (SD)
+| Table |
+|-------|
+| ad_sponsoreddisplay_adgroup |
+| ad_sponsoreddisplay_adgroup_report |
+| ad_sponsoreddisplay_campaign |
+| ad_sponsoreddisplay_productads |
+| ad_sponsoreddisplay_target |
+| ad_sponsoreddisplay_target_report |
+
+### Ads — Marketing Stream & Other
+| Table |
+|-------|
+| ad_marketingstream_budgetusage |
+| ad_marketingstream_conversions |
+| ad_marketingstream_sponsoreddisplay_conversions |
+| ad_marketingstream_sponsoreddisplay_traffic |
+| ad_marketingstream_traffic |
+| ad_store |
+| ad_store_insights_report |
+| monthly_budget |
+| share_of_voice |
+
+### DSP
+| Table |
+|-------|
+| dsp_advertisers |
+| dsp_lineitem |
+| dsp_lineitem_budgetcap |
+| dsp_lineitemandcreativeassociation |
+| dsp_order |
+| dsp_order_budgetcap |
+| dsp_order_budgetflight |
+
+### Brand Analytics
+| Table |
+|-------|
+| brandanalytics_marketbasket_report |
+| brandanalytics_promotionperformance_report |
+| brandanalytics_repeatpurchase_report |
+| brandanalytics_searchterms_report |
+
+### Catalog
+| Table |
+|-------|
+| catalog_item_images |
+| catalog_master |
+| category_master |
+
+### FBA Inventory
+| Table | Status | Notes |
+|-------|--------|-------|
+| sellercentral_fbamanageinventory_report | **Active** | Available, inbound, reserved, unfulfillable |
+| sellercentral_fbainventoryhealth_report | **Stale (Oct 2022)** | Age buckets, velocity, suggestions — needs re-enablement |
+| sellercentral_fbainventoryage_report | **Stale (Oct 2022)** | Age buckets, recommendations |
+| sellercentral_fbaamazonfulfilledinventory_report | | Amazon-fulfilled inventory |
+| sellercentral_fbadailyinventoryhistory_report | | Daily inventory history |
+| sellercentral_fbamonthlyinventoryhistory_report | | Monthly inventory history |
+| sellercentral_fbareservedinventory_report | **Active** | Reserved breakdown (customer orders, FC transfers, FC processing) |
+| sellercentral_fbastrandedinventory_report | | Stranded inventory |
+| sellercentral_fbareceivedinventory_report | | Received inventory |
+| sellercentral_inventory_report | | General inventory |
+| sellercentral_restockinventory_report | | Restock recommendations |
+
+### FBA Fees & Storage
+| Table |
+|-------|
+| sellercentral_fbafeepreview_report |
+| sellercentral_fbastoragefees_report |
+| sellercentral_fbalongtermstoragefeecharges_report |
+| sellercentral_referralfeepreview_report |
+
+### FBA Finance
+| Table |
+|-------|
+| sellercentral_allfinancialeventlist |
+| sellercentral_fbaledgerdetailed_report |
+| sellercentral_fbaledgersummary_report |
+| sellercentral_fbareimbursements_report |
+| sellercentral_financialtransactions_itemlevelbreakdowns |
+| sellercentral_financialtransactions_transactionlevelbreakdowns |
+| sellercentral_settlement_report_v2 |
+
+### FBA Other
+| Table |
+|-------|
+| sellercentral_fbareturns_report |
+| sellercentral_fbapromotions_report |
+| sellercentral_fbasubscribeandsaveforecast_report |
+| sellercentral_fbasubscribeandsaveperformance_report |
+
+### Listings & Orders
+| Table |
+|-------|
+| sellercentral_alllistings_report |
+| sellercentral_ordersbylastupdate_report |
+| sellercentral_listingqualityandsuppressedlisting_report |
+| sellercentral_suppressedlistings_report |
+
+### Seller Performance
+| Table |
+|-------|
+| sellercentral_sellerperformance_report |
+| sellercentral_sellerperformance_customerserviceperformance_report |
+| sellercentral_sellerperformance_policycompliance_report |
+
+### Coupons
+| Table |
+|-------|
+| sellercentral_couponperformance_asin |
+| sellercentral_couponperformance_coupon |
+| sellercentral_couponperformance_report |
+
+### Replenishment
+| Table |
+|-------|
+| replenishment_offer |
+| replenishment_offer_metrics |
+
+### Vendor Central
+| Table |
+|-------|
+| vendorcentral_inventoryhealth |
+| vendorcentral_purchaseorder_address |
+| vendorcentral_purchaseorder_itemquantity |
+| vendorcentral_purchaseorder_report |
+| vendorcentral_rapidretailinventory_report |
+| vendorcentral_rapidretailsales_report |
+| vendorcentral_rapidretailtraffic_report |
+| vendorcentral_retailanalytics_amazonfresh_sales_report |
+| vendorcentral_retailanalytics_netppm_report |
+| vendorcentral_retailanalytics_sales_report |
+| vendorcentral_retailanalytics_traffic_report |
+| vendorcentral_salesdiagnostic_orderedrevenue |
+| vendorcentral_salesdiagnostic_report |
+| vendorcentral_salesdiagnostic_shippedcogs |
+| vendorcentral_salesdiagnostic_shippedrevenue |
+| vendorcentral_couponperformance_asin |
+| vendorcentral_couponperformance_campaign |
+| vendorcentral_couponperformance_coupon |
+| vendorcentral_couponperformance_report |
+
+## intentwise_ecommerce_graph (14 tables)
+
+| Table | Description |
+|-------|-------------|
+| account_summary | Account-level daily summary |
+| advertised_product_summary | Advertised product daily metrics |
+| campaign_summary | Campaign-level daily summary |
+| keyword_summary | Keyword-level daily summary |
+| label_summary | Label-level summary |
+| product_summary | **Product-level daily metrics (sales, units, ads, sessions)** |
+| producttarget_summary | Product target summary |
+| searchterm_summary | Search term summary |
+| refdata_currency_exchange_rate | Currency exchange rates |
+| refdata_date_dimension | Date dimension reference |
+| refdata_label | Label definitions |
+| refdata_label_mapping | Label-to-entity mappings |
+| refdata_product_cost | Product cost data |
+| refdata_product_sku_mapping | Product-SKU mapping |
+
+## criteo_source_data (17 tables)
+
+| Table |
+|-------|
+| ad_balance |
+| ad_brand |
+| ad_campaign |
+| ad_campaign_keyword_report |
+| ad_campaign_pagetype_report |
+| ad_campaign_product_report |
+| ad_campaign_productcategory_report |
+| ad_campaign_summary_report |
+| ad_lineitem |
+| ad_lineitem_keyword_report |
+| ad_lineitem_negativekeyword |
+| ad_lineitem_pagetype_report |
+| ad_lineitem_product |
+| ad_lineitem_product_report |
+| ad_lineitem_productcategory_report |
+| ad_lineitem_summary_report |
+| ad_retailer |
+
+## instacart_source_data (11 tables)
+
+| Table |
+|-------|
+| ad_account_report |
+| ad_adgroup_attributes |
+| ad_adgroup_keyword_attributes |
+| ad_adgroup_keyword_report |
+| ad_adgroup_product_attributes |
+| ad_adgroup_product_report |
+| ad_adgroup_report |
+| ad_campaign_adgroup_bids |
+| ad_campaign_attributes |
+| ad_campaign_report |
+| ad_product |
+
+## walmart_source_data (16 tables)
+
+| Table |
+|-------|
+| ad_adgroup |
+| ad_campaign |
+| ad_campaign_placement_bid_multiplier |
+| ad_campaign_platform_bid_multiplier |
+| ad_item |
+| ad_item_master |
+| ad_keyword |
+| ad_keyword_report |
+| ad_placement_report |
+| ad_platform_report |
+| ad_sba_profile |
+| marketplace_orderlineitemcharge |
+| marketplace_orderlineitemstatus |
+| marketplace_orderpickupperson |
+| marketplace_ordersubtotal |
+| monthly_budget |

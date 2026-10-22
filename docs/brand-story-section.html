@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>1o8Hub — Brand Story Section</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --brand: #E8A700;
+    --brand-light: rgba(232,167,0,0.12);
+    --bg: #0e0e0f;
+    --surface: #161618;
+    --surface2: #1e1e21;
+    --border: #2a2a2e;
+    --text: #f0f0f0;
+    --muted: #888;
+    --ok: #10b981;
+    --ok-light: rgba(16, 185, 129, 0.12);
+    --warn: #f59e0b;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 40px 24px 80px;
+    max-width: 960px;
+    margin: 0 auto;
+  }
+
+  .hero { margin-bottom: 56px; }
+  .hero h1 {
+    font-size: 42px; font-weight: 800; letter-spacing: -0.04em; line-height: 1.1;
+  }
+  .hero h1 .brand { color: var(--text); }
+  .hero h1 .story { color: var(--brand); font-weight: 400; }
+  .hero p { color: var(--muted); margin-top: 12px; font-size: 15px; max-width: 620px; }
+
+  .section { margin-bottom: 56px; }
+  .section-label {
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.1em; color: var(--muted); margin-bottom: 20px;
+  }
+  h2 { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 4px; }
+  .sub { color: var(--muted); font-size: 13px; margin-bottom: 24px; }
+
+  .overview-box {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px 20px; margin-bottom: 24px;
+    font-size: 13px; color: var(--muted); line-height: 1.7;
+    position: relative; overflow: hidden;
+  }
+  .overview-box::before {
+    content: ''; position: absolute; top: 0; left: 0; bottom: 0;
+    width: 3px; background: var(--brand);
+  }
+  .overview-box strong { color: var(--text); }
+
+  code {
+    font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px;
+    background: var(--surface2); border: 1px solid var(--border);
+    padding: 1px 5px; border-radius: 4px; color: var(--brand);
+  }
+
+  table { width: 100%; border-collapse: collapse; border-radius: 10px;
+    overflow: hidden; border: 1px solid var(--border); margin-bottom: 16px; }
+  thead tr { background: var(--surface2); }
+  th { padding: 10px 14px; text-align: left; font-size: 10px;
+    font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--muted); border-bottom: 1px solid var(--border); }
+  td { padding: 10px 14px; font-size: 13px;
+    border-bottom: 1px solid var(--border); background: var(--surface);
+    vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  .col-path { font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 12px; color: var(--brand); white-space: nowrap; }
+
+  /* Card preview */
+  .preview-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 16px; margin-bottom: 16px;
+  }
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; overflow: hidden; display: flex; flex-direction: column;
+  }
+  .card-cover {
+    height: 96px; background: var(--surface2);
+    display: flex; align-items: center; justify-content: center;
+    position: relative; border-bottom: 1px solid var(--border);
+  }
+  .card-cover .dot {
+    position: absolute; top: 10px; right: 10px;
+    width: 9px; height: 9px; border-radius: 50%;
+    background: var(--ok); box-shadow: 0 0 0 2px var(--surface);
+  }
+  .card-cover .dot.muted { background: #555; }
+  .card-cover .placeholder {
+    font-family: 'SF Mono', monospace; font-weight: 800;
+    font-size: 24px; letter-spacing: -0.02em; color: rgba(255,255,255,0.18);
+  }
+  .card-cover .mock-img {
+    width: 100%; height: 100%;
+    background:
+      linear-gradient(135deg, rgba(232,167,0,0.25), transparent 60%),
+      repeating-linear-gradient(45deg, rgba(255,255,255,0.04), rgba(255,255,255,0.04) 8px, transparent 8px, transparent 16px),
+      linear-gradient(180deg, #1f2937, #0f172a);
+  }
+  .card-body { padding: 10px 14px 6px; }
+  .card-name { font-size: 12px; font-weight: 600; color: var(--text); }
+  .card-meta {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 4px 14px 12px;
+    font-family: 'SF Mono', monospace; font-size: 9px;
+  }
+  .card-meta .v { color: var(--text); font-weight: 700; }
+  .card-meta .when { color: var(--muted); }
+  .card-meta .code { color: var(--muted); font-weight: 700; }
+  .card-footer {
+    border-top: 1px solid var(--border); padding: 6px;
+  }
+  .status-pill {
+    display: block; text-align: center; padding: 4px 8px;
+    border-radius: 6px; font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.04em;
+  }
+  .status-pill.live { color: var(--ok); background: var(--ok-light);
+    border: 1px solid rgba(16, 185, 129, 0.3); }
+  .status-pill.notstarted { color: #888; background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border); }
+
+  ul { padding-left: 20px; color: var(--muted); }
+  ul li { margin-bottom: 6px; }
+  ul li strong { color: var(--text); }
+
+  .priority-chain {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    margin: 12px 0; font-size: 12px;
+  }
+  .priority-chain .step {
+    padding: 4px 10px; border-radius: 6px;
+    background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text); font-weight: 600;
+  }
+  .priority-chain .arrow { color: var(--muted); }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1><span class="brand">Brand</span><span class="story">Story</span></h1>
+  <p>The Brand Story section drives the Amazon Storefront brand-story content per client. Two surfaces: a landing card grid (one card per active client) and a per-client detail page with a per-version editor.</p>
+</div>
+
+<div class="section">
+  <div class="section-label">01 · Surfaces</div>
+  <table>
+    <thead>
+      <tr><th>Route</th><th>Purpose</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="col-path">/design/brand-story</td>
+        <td>Landing grid. One card per active client. Shows the winning version's screenview thumbnail, status, version label, last update.</td>
+      </tr>
+      <tr>
+        <td class="col-path">/design/brand-story/[clientIdCode]</td>
+        <td>Per-client detail. Lists every V## for that client. Per-version editor: modules (1..19), backgrounds, screenview asset.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="section">
+  <div class="section-label">02 · Landing card</div>
+  <div class="overview-box">
+    Cards surface "what is this client's brand-story situation right now?" at a glance. <strong>Cover</strong> = screenview of the winning version (object-contain so the full image fits). <strong>Meta</strong> = name, V##, time, updated-by, code. <strong>Footer</strong> = status selector that writes through to the underlying version.
+  </div>
+  <div class="preview-grid">
+    <div class="card">
+      <div class="card-cover">
+        <div class="dot"></div>
+        <div class="mock-img"></div>
+      </div>
+      <div class="card-body"><div class="card-name">Dr. Cuddles</div></div>
+      <div class="card-meta">
+        <span class="v">V01</span>
+        <span class="when">20h · manuel</span>
+        <span class="code">DRC_SC_US</span>
+      </div>
+      <div class="card-footer"><span class="status-pill live">● Live</span></div>
+    </div>
+    <div class="card">
+      <div class="card-cover">
+        <div class="dot muted"></div>
+        <div class="placeholder">DLR_SC_US</div>
+      </div>
+      <div class="card-body"><div class="card-name">DLR</div></div>
+      <div class="card-meta">
+        <span class="v">V00</span>
+        <span class="when">never</span>
+        <span class="code">DLR_SC_US</span>
+      </div>
+      <div class="card-footer"><span class="status-pill notstarted">● Not Started</span></div>
+    </div>
+    <div class="card">
+      <div class="card-cover">
+        <div class="dot muted"></div>
+        <div class="placeholder">DRE_SC_US</div>
+      </div>
+      <div class="card-body"><div class="card-name">Dreamiere</div></div>
+      <div class="card-meta">
+        <span class="v">V00</span>
+        <span class="when">never</span>
+        <span class="code">DRE_SC_US</span>
+      </div>
+      <div class="card-footer"><span class="status-pill notstarted">● Not Started</span></div>
+    </div>
+  </div>
+  <ul>
+    <li><strong>Has screenview</strong> → render the image at full aspect against the muted card surface.</li>
+    <li><strong>No screenview yet</strong> → render the full <code>clientIdCode</code> as a faint mono placeholder.</li>
+    <li>Status dot (top-right) mirrors the footer pill's status.</li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-label">03 · Status model</div>
+  <div class="overview-box">
+    <strong>Source of truth</strong> = <code>brand_story_versions.status</code>. The landing card derives its status from the "winning" version per client (the one most representative of the current state). The card's dropdown writes back to that same row, so the landing page and the per-version editor never disagree.
+  </div>
+
+  <p style="margin-bottom: 12px; color: var(--text); font-size: 13px; font-weight: 600;">Winning-version priority (used for both the thumbnail picker and the status surface):</p>
+  <div class="priority-chain">
+    <span class="step">live</span>
+    <span class="arrow">›</span>
+    <span class="step">approved</span>
+    <span class="arrow">›</span>
+    <span class="step">in_review</span>
+    <span class="arrow">›</span>
+    <span class="step">in_progress</span>
+    <span class="arrow">›</span>
+    <span class="step">not_started</span>
+    <span class="arrow">·then·</span>
+    <span class="step">version_number DESC</span>
+  </div>
+
+  <p style="margin-top: 16px; color: var(--muted); font-size: 13px;">When a client has zero versions, the legacy <code>design_status</code> row is used for both read and write (so the dropdown remains usable before any version exists).</p>
+</div>
+
+<div class="section">
+  <div class="section-label">04 · Editor — module add controls</div>
+  <div class="overview-box">
+    Four direct module-type buttons (one-click add) plus a bulk control: <code>count × type → Add N</code>. All adds (single and bulk) route through a single atomic PATCH so optimistic React state can't race the server's position sequencing.
+  </div>
+  <ul>
+    <li><strong>Quick-add buttons:</strong> Brand ASIN &amp; Store Showcase, Brand Focus Image, Brand Logo &amp; Description, Brand Q&amp;A.</li>
+    <li><strong>Bulk:</strong> number input (default 7) + type select (default Brand Focus Image) + Add button. The label reflects the effective count (clamped to remaining room out of 19).</li>
+    <li><strong>Max:</strong> 19 modules per version. The Add button disables when there's no room left.</li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-label">05 · Data layer</div>
+  <table>
+    <thead>
+      <tr><th>Table</th><th>Role</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="col-path">brand_story_versions</td>
+        <td>One row per V## per client. <code>status</code> is the source of truth for the landing card.</td>
+      </tr>
+      <tr>
+        <td class="col-path">brand_story_modules</td>
+        <td>Position-ordered modules (1..19) for a version. Type is one of four: asin-showcase, focus-image, logo-description, qa.</td>
+      </tr>
+      <tr>
+        <td class="col-path">brand_story_assets</td>
+        <td>Image-slot binding. <code>kind = 'screenview'</code> is the V##'s hero image, surfaced on the landing card.</td>
+      </tr>
+      <tr>
+        <td class="col-path">brand_story_asin_items</td>
+        <td>Children of asin-showcase modules (1..4 per module).</td>
+      </tr>
+      <tr>
+        <td class="col-path">brand_story_qa_items</td>
+        <td>Children of qa modules (1..3 per module).</td>
+      </tr>
+      <tr>
+        <td class="col-path">drive_files</td>
+        <td>The <code>drive_file_id</code> (text) column on this table is the actual Google Drive GID — what the <code>/brand-story-image</code> proxy understands. The brand_story_assets FK points to <code>drive_files.id</code> (uuid), not the GID.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="section">
+  <div class="section-label">06 · API contract</div>
+  <table>
+    <thead>
+      <tr><th>Endpoint</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="col-path">GET /api/design-status</td>
+        <td>Returns one row per active client with <code>brandStoryVersionCount</code>, <code>brandStoryThumbnailUrl</code> (or null), and a <code>brand_story</code> category status derived from the winning version when one exists.</td>
+      </tr>
+      <tr>
+        <td class="col-path">PUT /api/design-status</td>
+        <td>For <code>category = 'brand_story'</code>, mirrors the new status onto the winning version's <code>brand_story_versions.status</code>. Falls back to <code>design_status</code> upsert only when zero versions exist.</td>
+      </tr>
+      <tr>
+        <td class="col-path">GET /api/design-status/brand-story-versions</td>
+        <td>Per-client list of versions, with assets stitched (screenview, bg_desktop, bg_mobile) and modules with their typed children.</td>
+      </tr>
+      <tr>
+        <td class="col-path">PATCH /api/design-status/brand-story-versions/[id]</td>
+        <td>Atomic per-version save: backgrounds, alt text, and the full modules array (used by both single-add and bulk-add).</td>
+      </tr>
+      <tr>
+        <td class="col-path">GET /api/design-status/brand-story-image?driveFileId=...</td>
+        <td>Drive-content proxy. Param is the Drive GID (text), NOT the brand_story_assets.drive_file_id (uuid FK).</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,2509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SEO Manager — Complete Pipeline Reference</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --brand: #E8A700;
+    --brand-light: rgba(232,167,0,0.12);
+    --bg: #0e0e0f;
+    --surface: #161618;
+    --surface2: #1e1e21;
+    --border: #2a2a2e;
+    --text: #f0f0f0;
+    --muted: #888;
+    --green: #22c55e;
+    --blue: #60a5fa;
+    --purple: #a78bfa;
+    --orange: #fb923c;
+    --red: #ef4444;
+    --tier-listing: #f472b6;
+    --tier-group: #60a5fa;
+    --tier-variation: #a78bfa;
+    --tier-brand: #94a3b8;
+  }
+
+  @media print {
+    :root {
+      --bg: #ffffff;
+      --surface: #f7f7f7;
+      --surface2: #efefef;
+      --border: #d4d4d4;
+      --text: #111111;
+      --muted: #555555;
+    }
+    body { padding: 16px !important; }
+    .phase { page-break-inside: avoid; }
+    pre { white-space: pre-wrap; word-break: break-word; }
+    a { color: inherit; text-decoration: none; }
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 40px 24px 80px;
+    max-width: 1080px;
+    margin: 0 auto;
+  }
+
+  /* ── Header ── */
+  .hero { margin-bottom: 56px; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
+  .hero h1 { font-size: 44px; font-weight: 800; letter-spacing: -0.04em; line-height: 1.05; }
+  .hero h1 span { color: var(--brand); }
+  .hero .subtitle { color: var(--muted); margin-top: 12px; font-size: 15px; max-width: 720px; }
+  .hero .meta { display: flex; gap: 16px; margin-top: 16px; font-size: 11px; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; }
+  .hero .meta span { padding: 4px 8px; background: var(--surface); border: 1px solid var(--border); border-radius: 4px; }
+
+  /* ── TOC ── */
+  .toc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin-bottom: 56px;
+  }
+  .toc-label {
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.1em; color: var(--muted); margin-bottom: 12px;
+  }
+  .toc ol { list-style: none; counter-reset: toc; columns: 2; column-gap: 32px; }
+  .toc li { counter-increment: toc; padding: 4px 0; font-size: 13px; break-inside: avoid; }
+  .toc li::before { content: counter(toc, decimal-leading-zero) " — "; color: var(--brand); font-family: 'SF Mono', monospace; font-size: 11px; }
+  .toc a { color: var(--text); text-decoration: none; }
+  .toc a:hover { color: var(--brand); }
+
+  /* ── Section ── */
+  .section { margin-bottom: 56px; }
+  .section-label {
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.1em; color: var(--muted); margin-bottom: 16px;
+  }
+  h2 { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 4px; }
+  h2 .ph { color: var(--brand); font-family: 'SF Mono', monospace; font-size: 22px; margin-right: 8px; }
+  h3 { font-size: 16px; font-weight: 700; margin-top: 28px; margin-bottom: 10px; letter-spacing: -0.01em; }
+  h3 .tag {
+    font-size: 9px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.1em; color: var(--brand);
+    background: var(--brand-light); padding: 2px 8px; border-radius: 4px;
+    margin-left: 8px; vertical-align: middle;
+  }
+  h4 { font-size: 13px; font-weight: 700; margin-top: 16px; margin-bottom: 6px; color: var(--text); }
+  .tagline {
+    font-size: 14px; color: var(--muted); font-style: italic;
+    margin-bottom: 18px; padding-left: 12px; border-left: 2px solid var(--brand);
+  }
+  p { margin-bottom: 10px; }
+  p + p { margin-top: 0; }
+
+  /* ── Tables ── */
+  table.io { width: 100%; border-collapse: collapse; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); margin-top: 8px; margin-bottom: 12px; }
+  table.io thead tr { background: var(--surface2); }
+  table.io th {
+    padding: 8px 12px; text-align: left; font-size: 10px;
+    font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted);
+    border-bottom: 1px solid var(--border);
+  }
+  table.io td {
+    padding: 8px 12px; font-size: 12.5px; border-bottom: 1px solid var(--border);
+    background: var(--surface); vertical-align: top;
+  }
+  table.io tr:last-child td { border-bottom: none; }
+  table.io td.name { font-family: 'SF Mono', monospace; font-size: 12px; color: var(--brand); white-space: nowrap; }
+  table.io td.type { font-family: 'SF Mono', monospace; font-size: 11px; color: var(--muted); white-space: nowrap; }
+
+  /* ── Code/path ── */
+  code, .path {
+    font-family: 'SF Mono', 'Fira Code', monospace; font-size: 11.5px;
+    background: var(--surface2); border: 1px solid var(--border);
+    padding: 1px 5px; border-radius: 4px; color: var(--brand);
+    white-space: nowrap;
+  }
+  .path { color: var(--brand); }
+
+  pre {
+    background: #0a0a0b; color: #e8e8e8;
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 16px 18px; font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 11.5px; line-height: 1.55;
+    overflow-x: auto; white-space: pre-wrap; word-wrap: break-word;
+    margin: 8px 0 16px;
+  }
+  pre.system { border-left: 3px solid var(--purple); }
+  pre.user { border-left: 3px solid var(--green); }
+  pre .label {
+    display: block; color: var(--brand); font-weight: 700;
+    margin-bottom: 6px; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+  }
+
+  ul.bullets, ol.bullets { margin: 6px 0 12px 22px; }
+  ul.bullets li, ol.bullets li { margin-bottom: 4px; font-size: 13px; }
+
+  /* ── Phase block ── */
+  .phase {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin-bottom: 32px;
+    position: relative;
+  }
+  .phase::before {
+    content: ''; position: absolute; top: 0; left: 0; bottom: 0;
+    width: 3px; background: var(--brand);
+    border-radius: 12px 0 0 12px;
+  }
+  .phase-meta {
+    display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px; margin-bottom: 14px;
+    font-size: 11px;
+  }
+  .phase-meta .chip {
+    padding: 3px 8px; border-radius: 4px;
+    background: var(--surface2); border: 1px solid var(--border);
+    color: var(--muted); font-family: 'SF Mono', monospace;
+  }
+  .phase-meta .chip.brand { color: var(--brand); border-color: var(--brand); background: var(--brand-light); }
+  .phase-meta .chip.green { color: var(--green); border-color: var(--green); background: rgba(34,197,94,0.08); }
+  .phase-meta .chip.red { color: var(--red); border-color: var(--red); background: rgba(239,68,68,0.08); }
+
+  /* ── Callouts ── */
+  .callout {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-left: 3px solid var(--orange);
+    border-radius: 6px; padding: 12px 16px; margin: 12px 0;
+    font-size: 12.5px; color: var(--text);
+  }
+  .callout.warn { border-left-color: var(--red); }
+  .callout.info { border-left-color: var(--blue); }
+  .callout.good { border-left-color: var(--green); }
+  .callout strong { color: var(--brand); font-weight: 700; }
+  .callout-title {
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.1em; margin-bottom: 4px; color: var(--orange);
+  }
+  .callout.warn .callout-title { color: var(--red); }
+  .callout.info .callout-title { color: var(--blue); }
+  .callout.good .callout-title { color: var(--green); }
+
+  /* ── Cascade diagram ── */
+  .pyramid { display: flex; flex-direction: column; gap: 0; margin-top: 12px; }
+  .tier {
+    display: flex; align-items: center; gap: 16px;
+    padding: 14px 18px; border: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .tier:first-child { border-radius: 10px 10px 0 0; }
+  .tier:last-child  { border-radius: 0 0 10px 10px; }
+  .tier:not(:last-child) { border-bottom: none; }
+  .tier-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .tier-badge {
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.08em; padding: 2px 8px; border-radius: 4px;
+    border: 1px solid; flex-shrink: 0; min-width: 90px; text-align: center;
+  }
+  .tier-name { font-weight: 600; font-size: 13px; flex: 1; }
+  .tier-where { font-size: 11px; color: var(--muted); font-family: 'SF Mono', monospace; }
+  .tier-priority {
+    font-size: 10px; font-weight: 700; color: var(--muted);
+    background: var(--surface2); border: 1px solid var(--border);
+    padding: 2px 8px; border-radius: 20px;
+  }
+  .tier-listing   { border-left: 3px solid var(--tier-listing); }
+  .tier-group     { border-left: 3px solid var(--tier-group); }
+  .tier-variation { border-left: 3px solid var(--tier-variation); }
+  .tier-brand     { border-left: 3px solid var(--tier-brand); }
+  .dot-listing   { background: var(--tier-listing); }
+  .dot-group     { background: var(--tier-group); }
+  .dot-variation { background: var(--tier-variation); }
+  .dot-brand     { background: var(--tier-brand); }
+  .badge-listing   { color: var(--tier-listing); border-color: var(--tier-listing); background: rgba(244,114,182,0.08); }
+  .badge-group     { color: var(--tier-group);   border-color: var(--tier-group);   background: rgba(96,165,250,0.08); }
+  .badge-variation { color: var(--tier-variation); border-color: var(--tier-variation); background: rgba(167,139,250,0.08); }
+  .badge-brand     { color: var(--tier-brand);   border-color: var(--tier-brand);   background: rgba(148,163,184,0.08); }
+
+  /* ── Flow ASCII ── */
+  .flow {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 20px 22px;
+    font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px;
+    color: var(--text); line-height: 1.7;
+    overflow-x: auto;
+  }
+  .flow b { color: var(--brand); }
+  .flow em { color: var(--blue); font-style: normal; }
+
+  /* ── Anchor offset for sticky-less docs ── */
+  h2[id], h3[id] { scroll-margin-top: 16px; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ HERO ═══════════════ -->
+<div class="hero">
+  <h1>SEO<span>Manager</span> — Complete Pipeline Reference</h1>
+  <p class="subtitle">
+    Single source of truth for the 1o8Hub Amazon listing SEO pipeline: phases S0 through S9, every Claude prompt verbatim,
+    the 4-tier guidelines cascade, full DB schema, and every gotcha discovered the hard way.
+  </p>
+  <div class="meta">
+    <span>Last reviewed: 2026-05-27</span>
+    <span>Model default: claude-sonnet-4-6</span>
+    <span>Pipeline owner: 1o8Hub</span>
+  </div>
+</div>
+
+<div style="margin:1.5rem 0;padding:1rem 1.25rem;border-left:4px solid #E8A700;background:#fff8e1;color:#332a00;border-radius:6px;font-size:14px;line-height:1.55;">
+  <strong>Phase 1 update — 2026-05-27 (P10 + P11):</strong>
+  S2 now applies a client-side pre-tier filter (min search volume, max organic rank, word-count bounds, exclude-words) before sending the Cerebro upload to Claude tiering — see <code>/seo/[id]/keywords</code> "Step 2.5". S7 batches now route by <code>KeywordPrimaryUseLocation</code> via <code>distributeKeywords()</code> in <code>src/lib/seo/keyword-distribution.ts</code>; each section (title / bullets / description / backend) draws from a mutually exclusive keyword pool. The description batch also absorbs leftover T1/T2 keywords not present in current title/bullets.
+  <br><br>
+  <strong>Stale below:</strong> every section referencing the old <code>tier1 / tier2 / tier3 / tier4</code> local-variable slicing in <code>seo/route.ts</code> reflects pre-Phase-1 behavior. Those sections will be rewritten in Phase 7. Until then, the source of truth for S7 routing is <code>src/lib/seo/keyword-distribution.ts</code> + the user-prompt blocks labelled <em>Approved {Title|Bullet|Description|Backend} Keywords</em> in <code>src/app/api/seo/claude/seo/route.ts</code>. The H10 export recipe lives at <code>docs/superpowers/specs/2026-05-27-h10-export-recipe.md</code>.
+</div>
+
+<!-- ═══════════════ TOC ═══════════════ -->
+<div class="toc">
+  <div class="toc-label">Table of contents</div>
+  <ol>
+    <li><a href="#overview">Overview &amp; vocabulary</a></li>
+    <li><a href="#s0">S0 — Competitive intake (pre-pipeline skill)</a></li>
+    <li><a href="#s1">S1 — Project &amp; ASIN intake</a></li>
+    <li><a href="#s2">S2 — Keyword tiering</a></li>
+    <li><a href="#s3">S3 — Review intelligence</a></li>
+    <li><a href="#s4">S4 — Rufus Q&amp;A (3 phases)</a></li>
+    <li><a href="#s5">S5 — COSMO semantic map</a></li>
+    <li><a href="#s6">S6 — Compliance &amp; byte-budget validation</a></li>
+    <li><a href="#s7">S7 — SEO content generation (titles / bullets / desc / backend)</a></li>
+    <li><a href="#s7-audit">S7 — Premium audit (12-dim scoring)</a></li>
+    <li><a href="#s7-aplus">S7 — A+ Module 7 (premium_qa) generation</a></li>
+    <li><a href="#s8">S8 — Image plans (stub)</a></li>
+    <li><a href="#s9">S9 — Quality score (stub)</a></li>
+    <li><a href="#walkthrough"><strong>End-to-end worked example — one ASIN, full pipeline</strong></a></li>
+    <li><a href="#cascade">Guidelines cascade — Brand &rarr; Variation &rarr; Group &rarr; Listing</a></li>
+    <li><a href="#dataflow">Data flow diagram</a></li>
+    <li><a href="#env">Environment &amp; configuration</a></li>
+    <li><a href="#schema">Database schema</a></li>
+    <li><a href="#crossref">Cross-references</a></li>
+  </ol>
+</div>
+
+<!-- ═══════════════ OVERVIEW ═══════════════ -->
+<div class="section" id="overview">
+  <div class="section-label">00 — Orientation</div>
+  <h2>Overview &amp; vocabulary</h2>
+  <p>
+    The SEO Manager is a multi-phase pipeline that converts an Amazon brand brief + ASIN list into a fully optimized listing bundle:
+    titles, bullets (4 versions), product description, backend search terms, A+ Module 7 premium Q&amp;A, and an audit score.
+    Each phase has its own DB artifact, its own UI surface, and (where applicable) its own Claude prompt.
+  </p>
+  <h3>Phase model</h3>
+  <p>Phases are defined in <code>src/lib/seo/phases/s1.ts</code> through <code>s9.ts</code> as <code>PhaseExecutor</code> objects with <code>loadContext</code>, <code>fillSlots</code>, and <code>persist</code> methods. S7/S8/S9 are stubs in the new executor model; the working S7 content generation lives in the legacy route <code>src/app/api/seo/claude/seo/route.ts</code>.</p>
+  <h3>Vocabulary</h3>
+  <table class="io">
+    <thead><tr><th>Term</th><th>Meaning</th></tr></thead>
+    <tbody>
+      <tr><td class="name">ASIN</td><td>Amazon Standard Identification Number. One product variant per ASIN.</td></tr>
+      <tr><td class="name">Parent / Child</td><td>Parent ASIN is the variation umbrella; Child is a specific variant (size/flavor/color). <code>parentageLevel</code> distinguishes.</td></tr>
+      <tr><td class="name">Rufus</td><td>Amazon's shopper-facing AI assistant. The pipeline optimizes content so Rufus can quote it.</td></tr>
+      <tr><td class="name">COSMO</td><td>Amazon's internal semantic entity-relationship system. The pipeline produces a COSMO map that the listing content expresses.</td></tr>
+      <tr><td class="name">T1–T4</td><td>Keyword priority tiers. T1 = title-grade purchase intent; T4 = backend long-tail.</td></tr>
+      <tr><td class="name">Brand guidelines lock</td><td>Snapshot of brand voice + words-to-avoid + positioning, frozen at S1 approval. Stored in <code>seo_projects.brand_guidelines_lock</code> JSONB.</td></tr>
+      <tr><td class="name">Variation guidelines</td><td>Per-variation content guidelines (messagingAngle, targetAudience, keyFeatures, doList, dontList). Lives in <code>variations.content_guidelines</code>.</td></tr>
+      <tr><td class="name">Group guidelines</td><td>Per-variation-group override of variation guidelines. Lives in <code>variation_groups.content_guidelines</code>.</td></tr>
+      <tr><td class="name">Listing guidelines</td><td>Per-ASIN override. Lives in <code>master.content_guidelines</code>.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ═══════════════ S0 ═══════════════ -->
+<div class="phase" id="s0">
+  <h2><span class="ph">S0</span>Competitive intake</h2>
+  <p class="tagline">Optional pre-pipeline skill that grounds S7 content in a competitive positioning analysis.</p>
+  <div class="phase-meta">
+    <span class="chip">Source: <code>src/lib/seo-skill-runner.ts</code></span>
+    <span class="chip">Model: claude-haiku-4-5-20251001</span>
+    <span class="chip brand">Calls Claude: yes</span>
+    <span class="chip">Persistence: <code>seo_settings</code> KV (<code>competitive:&lt;projectId&gt;</code>)</span>
+  </div>
+
+  <p>S0 is a "skill" run on-demand from the project page, gated by <code>skill_config.s0_competitive</code> in <code>seo_settings</code>. It analyzes the brand's existing ASIN content against the user-provided competitor list and saves a <code>CompetitiveResult</code> object. The result is read back by S7 (<code>loadCompetitiveData</code> at <code>src/app/api/seo/claude/seo/route.ts:544</code>) and injected as a <code>COMPETITIVE INTELLIGENCE (S0 Analysis — use to differentiate content):</code> block into every batch prompt.</p>
+
+  <h3>Inputs</h3>
+  <table class="io">
+    <thead><tr><th>Field</th><th>Source</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td class="name">brand_name</td><td><code>seo_projects.brand_name</code></td><td></td></tr>
+      <tr><td class="name">competitors</td><td><code>seo_projects.competitors</code> (JSONB array of {name, url})</td><td>If empty, prompt asks Claude to infer common competitors from the category.</td></tr>
+      <tr><td class="name">asin list</td><td><code>seo_asins</code></td><td>First 5 ASINs only — title, parentage, variation.</td></tr>
+      <tr><td class="name">existing content samples</td><td><code>seo_asins.existing_content</code></td><td>First 2 ASINs — full title + first 3 bullets.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Processing</h3>
+  <ol class="bullets">
+    <li><code>loadProjectIntake(projectId)</code> — fetches project + ASINs.</li>
+    <li>Builds the user prompt with brand, ASIN list, competitor list, content samples.</li>
+    <li>Calls Claude via raw <code>fetch</code> to <code>https://api.anthropic.com/v1/messages</code> with model <code>claude-haiku-4-5-20251001</code>, max_tokens 4096.</li>
+    <li>Extracts a balanced JSON object from the response (handles markdown fences).</li>
+    <li>Writes the result to <code>seo_settings</code> with key <code>competitive:&lt;projectId&gt;</code>.</li>
+    <li>Logs an event with action <code>skill:competitive</code>.</li>
+  </ol>
+
+  <h3>Claude prompts <span class="tag">verbatim</span></h3>
+
+<pre class="system"><span class="label">System prompt — src/lib/seo-skill-runner.ts:159-178</span>You are a competitive intelligence analyst for Amazon product listings.
+Analyze the brand's product listings against competitor information to identify positioning gaps,
+keyword opportunities, and content strategy recommendations.
+
+Return ONLY a valid JSON object with this exact structure:
+{
+  "positioning": {
+    "strengths": ["strength 1", "strength 2", ...],
+    "weaknesses": ["weakness 1", ...],
+    "opportunities": ["opportunity 1", ...]
+  },
+  "keywordGaps": [
+    { "keyword": "...", "competitorUsing": "competitor name", "priority": "high|medium|low" }
+  ],
+  "contentRecommendations": ["recommendation 1", ...],
+  "overallScore": &lt;0-100&gt;
+}
+
+Score meaning: 0-40 = weak competitive position, 40-70 = moderate, 70-100 = strong.
+Provide 3-5 items per category. Focus on actionable insights.</pre>
+
+<pre class="user"><span class="label">User prompt</span>Analyze competitive positioning for:
+
+Brand: ${brandName}
+Products (${asinList.length} ASINs):
+${asinList.slice(0, 5).map(a =&gt; `- ${a.asin}: ${a.title} (${a.parentage})`).join("\n")}
+
+Competitors:
+${competitors.length &gt; 0
+    ? competitors.map(c =&gt; `- ${c.name}: ${c.url}`).join("\n")
+    : "No competitors listed — analyze based on product category and common competitors."}
+
+Existing content samples:
+${asinList.slice(0, 2).map(a =&gt; `${a.asin}:\n  Title: ${a.title}\n  Bullets: ${(a.bullets || []).slice(0, 3).join(" | ")}`).join("\n")}
+
+Return ONLY valid JSON.</pre>
+
+  <h3>Outputs</h3>
+  <p>Writes a single <code>CompetitiveResult</code> JSON blob to <code>seo_settings</code>:</p>
+  <table class="io">
+    <tbody>
+      <tr><td class="name">runAt</td><td class="type">ISO timestamp</td><td>When the run completed.</td></tr>
+      <tr><td class="name">positioning.strengths</td><td class="type">string[]</td><td>3-5 brand strengths.</td></tr>
+      <tr><td class="name">positioning.weaknesses</td><td class="type">string[]</td><td>3-5 weaknesses.</td></tr>
+      <tr><td class="name">positioning.opportunities</td><td class="type">string[]</td><td>3-5 actionable opportunities.</td></tr>
+      <tr><td class="name">keywordGaps</td><td class="type">{keyword, competitorUsing, priority}[]</td><td>Keywords competitors use that the brand doesn't.</td></tr>
+      <tr><td class="name">contentRecommendations</td><td class="type">string[]</td><td>3-5 content strategy items.</td></tr>
+      <tr><td class="name">overallScore</td><td class="type">number 0-100</td><td>Composite competitive strength.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>UI surface</h3>
+  <p>S0 has no dedicated route. It's triggered from the project page (<code>/seo/[id]</code>) when the admin enables the skill config. The result feeds S7 generation automatically.</p>
+
+  <h3>Gotchas</h3>
+  <ul class="bullets">
+    <li>Model is hardcoded to <code>claude-haiku-4-5-20251001</code> — does not use <code>ai-config.server</code>.</li>
+    <li>Only the first 5 ASINs and first 2 samples are sent. Large variations are truncated.</li>
+    <li>S7 only loads the top-3 strengths, top-N high-priority keyword gaps, and first 3 content recommendations — the rest of the analysis is stored but unused.</li>
+    <li>Skill is gated off by default. <code>getSkillConfig().s0_competitive</code> must be <code>true</code> in <code>seo_settings</code>.</li>
+  </ul>
+</div>
+
+<!-- ═══════════════ S1 ═══════════════ -->
+<div class="phase" id="s1">
+  <h2><span class="ph">S1</span>Project &amp; ASIN intake</h2>
+  <p class="tagline">Establishes the project, locks brand guidelines, and computes per-ASIN baseline analysis.</p>
+  <div class="phase-meta">
+    <span class="chip">Source: <code>src/lib/seo/phases/s1.ts</code></span>
+    <span class="chip">Model: claude-sonnet-4-6</span>
+    <span class="chip">Calls Claude: yes (via prompt slot system)</span>
+    <span class="chip">Persistence: <code>seo_projects</code> + <code>seo_asins.baseline_analysis</code></span>
+  </div>
+
+  <h3>Inputs</h3>
+  <table class="io">
+    <thead><tr><th>Field</th><th>Source</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td class="name">brand_name</td><td><code>seo_projects.name</code></td><td></td></tr>
+      <tr><td class="name">brand_voice</td><td><code>seo_projects.brand_guidelines_lock.brand_voice</code></td><td>Locked at S1 approval.</td></tr>
+      <tr><td class="name">words_to_avoid</td><td><code>seo_projects.brand_guidelines_lock.words_to_avoid</code></td><td>Array of banned words.</td></tr>
+      <tr><td class="name">positioning</td><td><code>seo_projects.brand_guidelines_lock.positioning</code></td><td>Free-text positioning.</td></tr>
+      <tr><td class="name">variation_theme</td><td><code>seo_projects.variety_pack_details</code></td><td>Theme description.</td></tr>
+      <tr><td class="name">asins</td><td><code>seo_asins</code> rows</td><td>Each carries existing_content (item_name, bullets, etc.).</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Processing</h3>
+  <ol class="bullets">
+    <li><code>loadContext</code> selects the project, reads the brand_guidelines_lock JSONB, and loads all ASINs for the project.</li>
+    <li><code>fillSlots</code> builds the slot map: <code>brand_name</code>, <code>brand_voice</code>, <code>words_to_avoid</code>, <code>positioning</code>, <code>variation_theme</code>, <code>asin_grid_json</code> (JSON-stringified ASIN list).</li>
+    <li>The runner sends the slot-filled prompt to Claude (see prompt block below). Output is an array of per-ASIN baseline analyses.</li>
+    <li><code>persist</code> updates each ASIN row's <code>baselineAnalysis</code> JSONB with quality_score, keyword_integration, compliance_flags, top_improvements.</li>
+  </ol>
+
+  <h3>Claude prompts <span class="tag">slot-based</span></h3>
+  <p>S1 uses the slot-based prompt template system in <code>src/lib/seo/prompts/</code>. The runner fills the slots produced by <code>fillSlots</code>. The output JSON schema:</p>
+<pre class="system"><span class="label">S1 expected output structure (from src/lib/seo/phases/s1.ts:32-42)</span>{
+  "asins": [
+    {
+      "asin": "B0XXXXXXX",
+      "baseline_analysis": {
+        "quality_score": 0-100,
+        "keyword_integration": "strong" | "moderate" | "weak",
+        "compliance_flags": ["..."],
+        "top_improvements": ["..."]
+      }
+    }
+  ]
+}</pre>
+  <p class="callout info"><span class="callout-title">Where the prompt body lives</span>The user-facing baseline-analysis prompt template is constructed via <code>SlotMap</code> + <code>skill-loader</code>. The full template body is loaded from <code>src/lib/seo/skill-loader.ts</code> at runtime — search for <code>s1</code> template files in <code>src/lib/seo/prompts/</code>. The S1 file itself only defines the slot contract.</p>
+
+  <h3>Outputs</h3>
+  <ul class="bullets">
+    <li><code>seo_asins.baseline_analysis</code> (JSONB) — quality_score, keyword_integration, compliance_flags[], top_improvements[].</li>
+    <li><code>seo_projects.s1_approved_at</code> stamped when admin approves.</li>
+  </ul>
+
+  <h3>UI surface</h3>
+  <p><code>/seo/[id]/intake</code> — the intake grid. Admin enters brand metadata, uploads/pastes ASINs, fills the brand-guidelines lock form, then approves S1.</p>
+
+  <h3>Gotchas</h3>
+  <ul class="bullets">
+    <li>Brand guidelines lock is <strong>immutable after S1 approval</strong>. Changing brand voice mid-project requires admin override.</li>
+    <li><code>brand_guidelines</code> (free text) and <code>brand_guidelines_lock</code> (structured) are two distinct columns. The free text is what gets truncated to 600 chars at S7 (see Cascade section).</li>
+    <li>The persist step does an unconditional <code>UPDATE</code> on every row — the <code>where</code> clause is <code>seoAsins.projectId = projectId</code>, not per-ASIN. This means all ASINs get the same baseline written if you re-run S1 with a mismatched output. (Confirmed by inspecting <code>src/lib/seo/phases/s1.ts:76-86</code>.)</li>
+  </ul>
+</div>
+
+<!-- ═══════════════ S2 ═══════════════ -->
+<div class="phase" id="s2">
+  <h2><span class="ph">S2</span>Keyword tiering</h2>
+  <p class="tagline">Classify every keyword by priority tier, search intent, COSMO relationship, and PPC semantic group.</p>
+  <div class="phase-meta">
+    <span class="chip">Source: <code>src/lib/seo/phases/s2.ts</code> + <code>src/app/api/seo/claude/keywords/route.ts</code></span>
+    <span class="chip">Model: configured via <code>ai-config.server</code> (<code>seo_keywords</code> feature)</span>
+    <span class="chip brand">Calls Claude: yes (batched, parallel)</span>
+    <span class="chip">Batch size: 100 keywords</span>
+    <span class="chip">Persistence: <code>seo_keywords</code></span>
+  </div>
+
+  <h3>Inputs</h3>
+  <table class="io">
+    <thead><tr><th>Field</th><th>Source</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td class="name">cerebroCsv</td><td><code>seo_projects.content_rules.s2_cerebro_csv.dimensions[0]</code></td><td>Required — raw Helium 10 Cerebro export pasted as CSV.</td></tr>
+      <tr><td class="name">baselineSummary</td><td><code>seo_asins.baseline_analysis.top_improvements</code></td><td>Joined per-ASIN summary fed to Claude as context.</td></tr>
+      <tr><td class="name">brandName / variationProduct / variationTheme</td><td><code>seo_projects</code></td><td>For tiering context.</td></tr>
+      <tr><td class="name">competitors</td><td><code>seo_projects.competitors</code></td><td>Used to identify competitor-brand keywords.</td></tr>
+      <tr><td class="name">guidelines</td><td><code>seo_projects.brand_guidelines</code> (truncated to 600 chars)</td><td>Brand context for audience/intent signals.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Processing</h3>
+  <ol class="bullets">
+    <li>UI sends up to 400 keywords (200 product + 200 competitor) to <code>POST /api/seo/claude/keywords</code>.</li>
+    <li>Route splits into batches of 100, then dispatches <code>Promise.all</code> — all batches run in parallel to fit Vercel's 60-second window.</li>
+    <li>Each batch gets the same system prompt and a batch-specific user prompt with a tier budget hint (max <code>ceil(8 / batches)</code> T1, <code>ceil(15 / batches)</code> T2).</li>
+    <li>Claude returns short-key JSON (<code>t/v/tier/int/loc/mt/cos/bs/n/sg/neg/nc/ic</code>); the route expands them to long-form column names.</li>
+    <li>On JSON parse failure for a batch, the route tries to close at the last <code>}</code>. If still failing, that batch returns empty.</li>
+    <li>Phase persist (<code>src/lib/seo/phases/s2.ts</code>) deletes existing keywords for the project, then bulk-inserts the new tiered rows into <code>seo_keywords</code>.</li>
+  </ol>
+
+  <h3>Claude prompt <span class="tag">verbatim</span></h3>
+<pre class="system"><span class="label">System prompt — src/app/api/seo/claude/keywords/route.ts:26-67</span>You are the Keyword Intelligence and Tiering Engine for Amazon SEO (RUFUS + COSMO).
+
+TASK: For each keyword, assign Priority Tier, Search Intent, Use Location, Match Type, COSMO Relationship, Buyer Stage, Semantic Group, and Negative flags.
+
+TIERING RULES (SEO placement):
+- T1: High purchase intent → Title. Match: Exact. 5-8 keywords total across all batches.
+- T2: Mid-funnel → Bullet Points. Match: Phrase. 10-15 keywords total.
+- T3: Semantic expansion → Description. Match: Phrase. 15-20 keywords total.
+- T4: Long-tail/awareness → Backend. Match: Exact or Broad. Everything else.
+- No keyword in more than one tier.
+
+SEMANTIC GROUPS (PPC campaign grouping — assign exactly one per keyword):
+- CoreProduct: exact product type, high-intent buyer terms
+- Ingredient: material, ingredient, format, physical attribute terms
+- Language: non-English terms (Spanish, Portuguese, etc.)
+- GenericCat: broad category discovery terms (cap at 20 per group)
+- Benefit: use-case, benefit, occasion, demographic terms
+- Competitor: contains a competitor brand name — ONLY place brand terms here
+
+NEGATIVE KEYWORDS (flag keywords that should NOT be targeted):
+- Set neg:true when the keyword describes: wrong product form (seed/plant/capsule/oil when selling a different form), wrong ingredient, wrong product type/category, or irrelevant adjacent category
+- Set nc to one of: WrongForm | WrongType | WrongIngredient | CompetitorBrand | WrongCat
+- Competitor brand keywords are NOT negatives — they go in Competitor group with ic:true
+- Negatives still get a tier (T4) and loc (Backend) but sg should be empty
+
+RULES:
+- Never put competitor brand terms in CoreProduct/Ingredient/Language/GenericCat/Benefit groups
+- A keyword in the Competitor group gets ic:true
+- Negatives get neg:true — they are excluded from targeting but still indexed
+- Choose quality over quantity for semantic groups (≤30 per group except GenericCat ≤20)
+
+BUYER STAGE: Awareness | Consideration | Decision
+COSMO: USED_FOR_FUNC | USED_TO | CAPABLE_OF | USED_FOR_EVE | USED_ON | USED_IN_LOC | USED_AS | IS_A | xIS_A | USED_IN_BODY | USED_WITH | USED_FOR_AUD | USED_BY | xINTERESTED_IN | xWANT
+INTENT: Informational | Commercial | Navigational | Transactional
+SCORING: (Relevancy×0.45) + (NormVolume×0.35) + (BuyerStageWeight×0.20). Decision=1.0, Consideration=0.7, Awareness=0.4.
+
+OUTPUT: Return ONLY a JSON array. Each element:
+{"t":"keyword","v":number,"tier":"T1","int":"Transactional","loc":"Title","mt":"Exact","cos":"USED_FOR_FUNC","bs":"Decision","n":"note","sg":"CoreProduct","neg":false,"nc":"","ic":false}
+
+Field key mapping: t=text, v=volume, tier=priorityTier, int=searchIntent, loc=useLocation, mt=matchType, cos=cosmoRelationship, bs=buyerStage, n=notes, sg=semanticGroup, neg=isNegative, nc=negativeCategory, ic=isCompetitor.
+
+Use SHORT keys. Return ONLY the JSON array — no markdown, no explanation, no code fences.</pre>
+
+<pre class="user"><span class="label">User prompt template — route.ts:132-140</span>Product: ${brandName} — ${variationProduct || "Product"}
+Theme: ${variationTheme || "N/A"}
+${guidelinesBlock}${tierGuidance}
+
+Batch ${batchIdx + 1}/${batches.length} (${batch.length} keywords):
+Keyword\tVolume\tIQ\tCompetition\tTitleDensity\tCPR
+${kwLines}
+
+Return JSON array for ALL ${batch.length} keywords using short keys.</pre>
+
+  <p>Where <code>guidelinesBlock</code> is:</p>
+<pre class="user"><span class="label">guidelinesBlock — route.ts:109-111</span>BRAND GUIDELINES (apply to tone, intent signals, audience keywords):
+${String(guidelines).substring(0, 600)}</pre>
+
+  <h3>Outputs</h3>
+  <p>Bulk-inserted into <code>seo_keywords</code>. Key columns:</p>
+  <table class="io">
+    <tbody>
+      <tr><td class="name">text</td><td class="type">text</td><td>Keyword phrase.</td></tr>
+      <tr><td class="name">search_volume</td><td class="type">integer</td><td>Monthly search volume.</td></tr>
+      <tr><td class="name">priority_tier</td><td class="type">T1|T2|T3|T4</td><td></td></tr>
+      <tr><td class="name">primary_use_location</td><td class="type">Title|Bullet Points|Description|Backend Search Terms</td><td></td></tr>
+      <tr><td class="name">match_type</td><td class="type">Exact|Phrase|Broad</td><td>PPC match type.</td></tr>
+      <tr><td class="name">cosmo_relationship</td><td class="type">enum</td><td>One of the 15 COSMO types.</td></tr>
+      <tr><td class="name">buyer_stage</td><td class="type">Awareness|Consideration|Decision</td><td></td></tr>
+      <tr><td class="name">semantic_group</td><td class="type">CoreProduct|Ingredient|Language|GenericCat|Benefit|Competitor</td><td>PPC grouping.</td></tr>
+      <tr><td class="name">is_negative</td><td class="type">boolean</td><td>Excluded from PPC targeting.</td></tr>
+      <tr><td class="name">negative_category</td><td class="type">WrongForm|WrongType|WrongIngredient|CompetitorBrand|WrongCat</td><td></td></tr>
+      <tr><td class="name">is_competitor</td><td class="type">boolean</td><td>Competitor brand keyword.</td></tr>
+      <tr><td class="name">cerebro_iq / competing_products / title_density / cpr</td><td class="type">number</td><td>Helium 10 metrics passed through.</td></tr>
+      <tr><td class="name">ppc_suggested_bid / _min / _max</td><td class="type">numeric</td><td>From Cerebro.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>UI surface</h3>
+  <p><code>/seo/[id]/keywords</code> — Cerebro upload, tiering button, keyword grid, T1/T2/T3/T4 filters, negative-keyword flag toggle.</p>
+
+  <h3>Gotchas</h3>
+  <ul class="bullets">
+    <li>Hard limit of <strong>400 keywords</strong>. Anything past index 400 is silently dropped.</li>
+    <li>Batches run in parallel — a single failing batch returns 0 keywords for that slice; the rest of the run succeeds.</li>
+    <li>Tier budgets are per-batch heuristics — totals can drift if batches disagree.</li>
+    <li><code>persist</code> does a hard <code>DELETE</code> of all keywords for the project before insert. Re-running S2 wipes any manual overrides.</li>
+    <li>Rate-limited: 10 req/min per user.</li>
+  </ul>
+</div>
+
+<!-- ═══════════════ S3 ═══════════════ -->
+<div class="phase" id="s3">
+  <h2><span class="ph">S3</span>Review intelligence</h2>
+  <p class="tagline">Extract sentiment, themes, objections, and Rufus-usable insights from customer reviews.</p>
+  <div class="phase-meta">
+    <span class="chip">Source: <code>src/lib/seo/phases/s3.ts</code> + <code>src/app/api/seo/claude/reviews/route.ts</code></span>
+    <span class="chip">Model: configured via <code>ai-config.server</code> (<code>seo_reviews</code>)</span>
+    <span class="chip brand">Calls Claude: yes</span>
+    <span class="chip">Persistence: <code>seo_reviews</code></span>
+  </div>
+
+  <h3>Inputs</h3>
+  <table class="io">
+    <thead><tr><th>Field</th><th>Source</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td class="name">reviewsCsv</td><td><code>seo_projects.content_rules.s3_reviews_csv.dimensions[0]</code></td><td>Required — raw review CSV pasted by admin.</td></tr>
+      <tr><td class="name">reviewBlock</td><td>Pre-formatted from UI</td><td>Newer payload shape: pre-trimmed text. Legacy still accepts <code>reviews[]</code>.</td></tr>
+      <tr><td class="name">brandName / productName</td><td><code>seo_projects</code></td><td></td></tr>
+    </tbody>
+  </table>
+
+  <h3>Processing</h3>
+  <ol class="bullets">
+    <li>Client posts <code>reviewBlock</code> (pre-trimmed) or <code>reviews[]</code> (legacy — capped at 60). Each review is reduced to <code>[i] ★rating | variation | date | HV:n\ntitle\ntext(0..250)</code>.</li>
+    <li>Single Claude call. Output is a JSON array of short-key analysis rows.</li>
+    <li>Route expands short keys: <code>id→ReviewID</code>, <code>d→ReviewDate</code>, <code>rn→ReviewReviewerName</code>, <code>r→ReviewStarRating</code>, <code>t→ReviewTitle</code>, <code>s→ReviewSentiment</code>, <code>th→ReviewKeyThemes</code>, <code>u→ReviewUsageMentioned</code>, <code>pkg→ReviewPackagingFeedback</code>, <code>pr→ReviewPriceFeedback</code>, <code>hl→ReviewHeatLevelFeedback</code>, <code>ri→ReviewRufusUsableInsight</code>, <code>bm→ReviewBulletMapping</code>.</li>
+    <li>Phase persist deletes existing reviews for the project, then inserts the new analysis.</li>
+  </ol>
+
+  <h3>Claude prompt <span class="tag">verbatim</span></h3>
+<pre class="system"><span class="label">System prompt — src/app/api/seo/claude/reviews/route.ts:17-38</span>You are the Review Intelligence Engine for Amazon SEO.
+
+Analyze each review. Return structured intelligence.
+
+FOR EACH REVIEW determine:
+- s: Sentiment (Positive+ | Positive | Neutral | Negative | Negative-)
+- th: Key themes comma-separated
+- u: Usage mentioned (Ritual, Habitual, Occasional, Emergency, or context)
+- pkg: Packaging feedback or "None mentioned"
+- pr: Price feedback or "None mentioned"
+- hl: Heat/intensity feedback or "Not applicable"
+- ri: Rufus buyer-psychology insight from review language
+- bm: Bullet mapping (e.g. "Bullet 1: Effectiveness")
+
+RULES:
+- Anonymize names as Reviewer_001, Reviewer_002, etc.
+- No blank fields — use "None mentioned" or "Not applicable"
+
+OUTPUT: ONLY a JSON array with short keys:
+{"id":"...","d":"YYYY-MM-DD","rn":"Reviewer_XXX","v":"...","r":5,"t":"title","s":"Positive","th":"...","u":"...","pkg":"...","pr":"...","hl":"...","ri":"...","bm":"..."}
+
+No markdown, no code fences, no explanation. Start with [ end with ].</pre>
+
+<pre class="user"><span class="label">User prompt — route.ts:82-87</span>Product: ${brandName || "Product"} — ${productName || ""}
+${count} reviews:
+
+${prompt}
+
+Analyze ALL ${count} reviews. Return JSON array with short keys.</pre>
+
+  <h3>Outputs</h3>
+  <p>Bulk-inserted into <code>seo_reviews</code>:</p>
+  <table class="io">
+    <tbody>
+      <tr><td class="name">review_id</td><td class="type">varchar(100)</td><td></td></tr>
+      <tr><td class="name">date</td><td class="type">varchar(50)</td><td></td></tr>
+      <tr><td class="name">asin</td><td class="type">varchar(20)</td><td>Reviewed ASIN (set to "ParentASIN" if not differentiated).</td></tr>
+      <tr><td class="name">star_rating</td><td class="type">integer</td><td></td></tr>
+      <tr><td class="name">sentiment</td><td class="type">varchar(50)</td><td>Positive+ / Positive / Neutral / Negative / Negative-</td></tr>
+      <tr><td class="name">key_themes</td><td class="type">text</td><td>Comma-separated themes.</td></tr>
+      <tr><td class="name">usage_mentioned</td><td class="type">text</td><td>Ritual / Habitual / Occasional / Emergency / free text.</td></tr>
+      <tr><td class="name">packaging_feedback / price_feedback / heat_level_feedback</td><td class="type">text</td><td>"None mentioned" / "Not applicable" when absent.</td></tr>
+      <tr><td class="name">rufus_usable_insight</td><td class="type">text</td><td>Insight for the Rufus phase.</td></tr>
+      <tr><td class="name">bullet_mapping</td><td class="type">text</td><td>Which bullet this insight maps to.</td></tr>
+      <tr><td class="name">helpful_votes</td><td class="type">integer</td><td>Carried from input — orders the A+ Q&amp;A pull.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>UI surface</h3>
+  <p><code>/seo/[id]/reviews</code> — review upload, analysis grid, sentiment filter, theme cloud.</p>
+
+  <h3>Gotchas</h3>
+  <ul class="bullets">
+    <li>Legacy path caps at 60 reviews. The new pre-trimmed <code>reviewBlock</code> path has no cap server-side but the client trims to fit token budget.</li>
+    <li>Review text is truncated to 250 chars in the prompt.</li>
+    <li>Reviewers are anonymized to <code>Reviewer_001/002/...</code> — never expose real names downstream.</li>
+    <li>Rate-limited: 10 req/min per user.</li>
+  </ul>
+</div>
+
+<!-- ═══════════════ S4 ═══════════════ -->
+<div class="phase" id="s4">
+  <h2><span class="ph">S4</span>Rufus Q&amp;A — 3 phases</h2>
+  <p class="tagline">Generate, harvest, and synthesize Rufus shopper questions to inform listing content.</p>
+  <div class="phase-meta">
+    <span class="chip">Source: <code>src/lib/seo/phases/s4.ts</code> + <code>src/app/api/seo/claude/rufus/route.ts</code></span>
+    <span class="chip">Model: configured (<code>seo_rufus</code>)</span>
+    <span class="chip brand">Calls Claude: yes (Phase 2 + Phase 3 only)</span>
+    <span class="chip">Persistence: <code>seo_rufus</code> (one row per project)</span>
+  </div>
+
+  <p>S4 has three sub-phases. Phase 1 emits a hardcoded canonical question set (no Claude call). Phase 2 calls Claude to generate strategic follow-up questions. Phase 3 calls Claude to synthesize all Q&amp;A into an optimization summary.</p>
+
+  <h3>Phase 1 — Canonical questions <span class="tag">no Claude call</span></h3>
+  <p>The 5 canonical Rufus questions are stored in <code>src/lib/seo/prompts/canonical-rufus-questions.ts</code> and returned by <code>S4.emitPhase1()</code>. Admin pastes Rufus's answers manually, then approves Phase 1.</p>
+  <p><code>persistPhase1</code> upserts the <code>seo_rufus</code> row with <code>phase1Questions</code>, <code>phase1Answers</code>, <code>phase1ApprovedAt</code>.</p>
+
+  <h3>Phase 2 — Strategic questions <span class="tag">Claude call</span></h3>
+<pre class="system"><span class="label">System prompt — src/app/api/seo/claude/rufus/route.ts:77-90</span>You are the RUFUS Optimization Engine for Amazon listing SEO.
+
+Given the Phase 1 foundational Q&amp;A from Rufus, generate 8-10 additional strategic questions to ask Rufus for deeper discovery.
+
+RULES:
+- Every question MUST end with a question mark
+- Questions must be short and direct for Rufus chat input
+- Focus on: usage patterns, objection resolution, competitive positioning, audience segments, purchase triggers, seasonal usage, gifting context, complementary products
+- No quotation marks in questions
+- Each question should explore a different angle not covered in Phase 1
+- Questions should help inform listing optimization, A+ content, and image strategy
+
+OUTPUT: Return ONLY a JSON array of question strings. No markdown, no code fences.
+Example: ["What ingredients does this product contain?", "How quickly does this product work?"]</pre>
+
+<pre class="user"><span class="label">User prompt — route.ts:96-101</span>Product: ${brandName} — ${productName}
+${guidelinesSection}
+Phase 1 Responses:
+${phase1.map((p, i) =&gt; `Q${i + 1}: ${p.question}\nA${i + 1}: ${p.answer}`).join("\n\n")}
+
+Generate 8-10 strategic Phase 2 questions.</pre>
+
+  <p>Where <code>guidelinesSection</code> is:</p>
+<pre class="user"><span class="label">guidelinesSection — route.ts:92-94</span>BRAND GUIDELINES (use to shape question relevance and brand voice):
+${guidelines.substring(0, 600)}</pre>
+
+  <h3>Phase 3 — Optimization analysis <span class="tag">Claude call</span></h3>
+  <p>After Phase 2 questions get answers (pasted from Rufus), Phase 3 synthesizes the full Q&amp;A set into structured intelligence.</p>
+
+<pre class="system"><span class="label">System prompt — src/app/api/seo/claude/rufus/route.ts:152-192</span>You are the RUFUS Analysis Engine for 1o8 Marketplace SEO (RUFUS + COSMO system).
+
+Analyze each Rufus Q&amp;A pair and produce structured intelligence for the OUT_RUF table.
+
+FOR EACH Q&amp;A PAIR, determine:
+
+1. RufusQuestionCategory: One of — Product Identity, Usage &amp; Application, Customer Satisfaction, Customer Dissatisfaction, Competitive Landscape, Purchase Decision, Ingredient &amp; Composition, Efficacy &amp; Performance, Audience &amp; Demographics, Seasonal &amp; Contextual
+
+2. RufusInsightType: One of — Core Benefit, Objection, Desire, Usage Pattern, Competitive Advantage, Purchase Trigger, Trust Signal, Value Proposition
+
+3. RufusPrimaryObjectionAddressed: The main customer objection this Q&amp;A helps resolve, or "None identified"
+
+4. RufusPrimaryDesireAddressed: The main customer desire this Q&amp;A satisfies, or "None identified"
+
+5. RufusCOSMORelationship: Primary COSMO relationship type — USED_FOR_FUNC, USED_TO, CAPABLE_OF, USED_FOR_EVE, USED_ON, USED_IN_LOC, USED_AS, IS_A, xIS_A, USED_IN_BODY, USED_WITH, USED_FOR_AUD, USED_BY, xINTERESTED_IN, xWANT
+
+6. RufusUsageContext: How/when the product is used based on this Q&amp;A — e.g., "Daily wellness routine", "Emergency relief", "Athletic recovery"
+
+7. RufusNotes: Any additional flags — competitor mentions, compliance concerns, gaps, cross-reference notes. Use "None" if nothing notable.
+
+RULES:
+- ASIN must be "ParentASIN" for all rows (variation family scope)
+- No field may be blank
+- RufusQuestion and RufusAnswer must be preserved exactly as provided
+- One row per Q&amp;A pair
+
+OUTPUT: Return ONLY a valid JSON array. Each object:
+{
+  "ASIN": "ParentASIN",
+  "RufusQuestion": "...",
+  "RufusAnswer": "...",
+  "RufusQuestionCategory": "...",
+  "RufusInsightType": "...",
+  "RufusPrimaryObjectionAddressed": "...",
+  "RufusPrimaryDesireAddressed": "...",
+  "RufusCOSMORelationship": "...",
+  "RufusUsageContext": "...",
+  "RufusNotes": "..."
+}
+
+No markdown, no code fences, no explanation.</pre>
+
+<pre class="user"><span class="label">User prompt — route.ts:202-207</span>Product: ${brandName} — ${productName}
+Total Q&amp;A pairs: ${(allQA || []).length}
+${guidelinesSection}
+${qaBlock}
+
+Analyze ALL ${(allQA || []).length} Q&amp;A pairs. Return the complete JSON array.</pre>
+
+  <h3>Outputs</h3>
+  <p>All written to <code>seo_rufus</code> (one row per project, unique on <code>project_id</code>):</p>
+  <table class="io">
+    <tbody>
+      <tr><td class="name">phase1_questions / phase1_answers</td><td class="type">jsonb</td><td>Canonical 5.</td></tr>
+      <tr><td class="name">phase2_questions / phase2_answers</td><td class="type">jsonb</td><td>Claude-generated 8-10 strategic.</td></tr>
+      <tr><td class="name">phase3_questions / phase3_answers</td><td class="type">jsonb</td><td>Reserved for future expansion.</td></tr>
+      <tr><td class="name">rows</td><td class="type">jsonb</td><td>Flat Phase-3 analysis rows.</td></tr>
+      <tr><td class="name">optimization_summary</td><td class="type">jsonb</td><td>seo_strategy, listing_plan, image_strategy, audience_segmentation, action_list[].</td></tr>
+      <tr><td class="name">phase{1,2,3}_approved_at</td><td class="type">timestamp</td><td>Approval gates.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>UI surface</h3>
+  <p><code>/seo/[id]/rufus</code> — phase wizard. Phase 1 + 2 require admin to paste Rufus's actual chat responses; Phase 3 runs autonomously.</p>
+
+  <h3>Gotchas</h3>
+  <ul class="bullets">
+    <li>Phase 1 is hardcoded — no AI generation. Editing <code>canonical-rufus-questions.ts</code> changes every project's Phase 1.</li>
+    <li>If Phase 3 JSON parsing fails, the route returns <strong>fallback rows</strong> with placeholder text ("Parse Error", "Not analyzed") — these silently pollute downstream prompts. Inspect <code>seo_rufus.rows</code> before approving.</li>
+    <li>The <code>RufusAnswer</code> is preserved exactly — including PII or competitor mentions. Phase 1 prompt does not anonymize.</li>
+    <li>S4 Phase 1 and Phase 2 each require admin pause — runner sets <code>requiresPause</code> true for both. Only Phase 3 is autonomous.</li>
+  </ul>
+</div>
+
+<!-- ═══════════════ S5 ═══════════════ -->
+<div class="phase" id="s5">
+  <h2><span class="ph">S5</span>COSMO semantic map</h2>
+  <p class="tagline">Build a 20-row entity-relationship map that the listing content will express.</p>
+  <div class="phase-meta">
+    <span class="chip">Source: <code>src/lib/seo/phases/s5.ts</code> + <code>src/app/api/seo/claude/cosmo/route.ts</code></span>
+    <span class="chip">Model: configured (<code>seo_cosmo</code>)</span>
+    <span class="chip brand">Calls Claude: yes</span>
+    <span class="chip">Persistence: <code>seo_cosmo_maps</code> (one row per project)</span>
+  </div>
+
+  <h3>Inputs</h3>
+  <table class="io">
+    <thead><tr><th>Field</th><th>Source</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td class="name">approvedKeywords</td><td><code>seo_keywords</code> rows</td><td>Mapped to <code>{text, priority_tier, cosmo_domain}</code>.</td></tr>
+      <tr><td class="name">rufusPhase3</td><td><code>seo_rufus.optimization_summary</code></td><td>Optimization summary fed as context.</td></tr>
+      <tr><td class="name">brandVoice</td><td><code>seo_projects.brand_guidelines_lock.brand_voice</code></td><td>Locked snapshot — note: S5 reads <strong>brand voice only</strong>, not variation/group/listing tiers.</td></tr>
+      <tr><td class="name">cosmoCategoriesRequired</td><td><code>src/lib/seo/prompts/cosmo-relationships.ts</code></td><td>Hardcoded list of 16 COSMO relationship types.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Claude prompt <span class="tag">verbatim</span></h3>
+<pre class="system"><span class="label">System prompt — src/app/api/seo/claude/cosmo/route.ts:90-142</span>You are the COSMO Semantic Modeling Engine for 1o8 Marketplace SEO.
+
+Your task: Generate a complete COSMO semantic entity-relationship map for an Amazon product listing.
+
+COSMO RELATIONSHIP TYPES (use only these, grouped by category):
+Functional/Usage: USED_FOR_FUNC, USED_TO, CAPABLE_OF
+Event/Context: USED_FOR_EVE, USED_ON, USED_IN_LOC
+Product/Concept: USED_AS, IS_A, xIS_A
+Body/Interaction: USED_IN_BODY
+Complementary: USED_WITH
+Audience/User: USED_FOR_AUD, USED_BY
+Interest/Motivation: xINTERESTED_IN, xWANT
+
+Category guidance:
+- USED_FOR_FUNC: Core function or practical use of the product
+- USED_TO: Intended purpose or outcome the product supports
+- CAPABLE_OF: What the product can enable based on its features
+- USED_FOR_EVE: Events or activities where the product is used
+- USED_ON: Time-based, seasonal, or situational relevance
+- USED_IN_LOC: Physical locations or environments
+- USED_AS: Functional or conceptual role of the product
+- IS_A: Primary taxonomic classification
+- xIS_A: Audience- or context-specific classifications for category clarity
+- USED_IN_BODY: Body interaction (fully compliant, non-medical language only)
+- USED_WITH: Products or items commonly used alongside
+- USED_FOR_AUD: Intended audience
+- USED_BY: Common user type or demographic
+- xINTERESTED_IN: Interests, preferences, or thematic categories tied to the user
+- xWANT: Goals, desires, or activities the user seeks to accomplish
+
+PDP SECTION MAPPING (for COSMOAppliedPDPSection1 and COSMOAppliedPDPSection2):
+- Title, Bullet 1, Bullet 2, Bullet 3, Bullet 4, Bullet 5, Description, Backend, A+ Module, Image, Not Applicable
+
+RULES:
+1. Generate exactly 20 relationship rows — no more, no less.
+2. Prioritize variety across ALL relationship types — aim for at least one of each applicable type.
+3. Every row must trace to a keyword, review insight, or Rufus answer.
+4. COSMOEntity = the product or product attribute being mapped.
+5. COSMOTailType = the target concept (audience, use case, ingredient, etc.)
+6. COSMOMappedValue = the specific value — keep concise.
+7. COSMOUsageExplanation = how this relationship informs listing content — max 20 words.
+8. COSMOAppliedPDPSection1 = primary PDP location.
+9. COSMOAppliedPDPSection2 = secondary PDP location (use "Not Applicable" if none).
+10. COSMONotes = source reference — max 10 words.
+11. No cell may be blank — use "Not Applicable" where needed.
+12. NEVER include competitor names in any field.
+13. No medical/disease claims.
+
+OUTPUT: Return ONLY a valid JSON array — no markdown, no code fences, no preamble, no explanation.
+Start with [ and end with ].
+
+JSON schema for each object:
+{"ASIN":"","COSMOEntity":"","COSMORelationType":"","COSMOTailType":"","COSMOMappedValue":"","COSMOUsageExplanation":"","COSMOAppliedPDPSection1":"","COSMOAppliedPDPSection2":"","COSMONotes":""}</pre>
+
+<pre class="user"><span class="label">User prompt — route.ts:148-161</span>Product: ${brandName}
+Parent ASIN: ${parentAsin}
+ASINs in scope: ${asinList || ""}
+${guidelinesBlock}
+=== TOP KEYWORDS (S2) ===
+${topKeywords || "None provided"}
+
+=== REVIEW THEMES (S3) ===
+${reviewThemes || "None provided"}
+
+=== RUFUS INSIGHTS (S4) ===
+${rufusInsights || "None provided"}
+
+Generate exactly 20 COSMO rows as a valid JSON array. Output ONLY the JSON array.</pre>
+
+  <p>Where <code>guidelinesBlock</code> is brand guidelines truncated to 600 chars:</p>
+<pre class="user"><span class="label">guidelinesBlock — route.ts:144-146</span>=== BRAND GUIDELINES ===
+${String(guidelines).substring(0, 600)}
+=== END GUIDELINES ===</pre>
+
+  <h3>Outputs</h3>
+  <p><code>seo_cosmo_maps</code> (one row per project, unique on <code>project_id</code>):</p>
+  <table class="io">
+    <tbody>
+      <tr><td class="name">triples</td><td class="type">jsonb[]</td><td>{id, entity1, relationship, entity2, confidence, confidence_level, supporting_keyword_tier}.</td></tr>
+      <tr><td class="name">rows</td><td class="type">jsonb[]</td><td>Flat COSMO rows with COSMOEntity/COSMORelationType/etc.</td></tr>
+      <tr><td class="name">keyword_coverage</td><td class="type">jsonb</td><td>Per-relationship-type keyword count.</td></tr>
+      <tr><td class="name">competitive_positioning</td><td class="type">text</td><td>Free-text positioning summary.</td></tr>
+      <tr><td class="name">relationship_categories_evaluated</td><td class="type">string[]</td><td>Which COSMO types were filled.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>UI surface</h3>
+  <p><code>/seo/[id]/cosmo</code> — generate button, 20-row map editor, PDP-section assignment.</p>
+
+  <h3>Gotchas</h3>
+  <ul class="bullets">
+    <li><strong>"Exactly 20" is enforced in prompt, not in code.</strong> Claude occasionally returns 18-19 rows or runs out of tokens (max_tokens). The route has a <code>repairTruncatedJson</code> fallback that closes a partial array — the user sees a "repaired" warning event.</li>
+    <li>If <code>stop_reason === "max_tokens"</code> and repair fails, the entire response is rejected. UI guidance: reduce loaded keyword count.</li>
+    <li>S5 reads <strong>brand voice only</strong> — the variation/group/listing guidelines cascade is <strong>not</strong> applied here. See Cascade section.</li>
+  </ul>
+</div>
+
+<!-- ═══════════════ S6 ═══════════════ -->
+<div class="phase" id="s6">
+  <h2><span class="ph">S6</span>Compliance &amp; byte-budget validation</h2>
+  <p class="tagline">Server-side compliance scan + byte budget check for generated listing content.</p>
+  <div class="phase-meta">
+    <span class="chip">Source: <code>src/lib/seo/phases/s6.ts</code></span>
+    <span class="chip red">Calls Claude: no</span>
+    <span class="chip">Persistence: <code>seo_listings</code>, <code>seo_aplus_plans</code>, <code>seo_passage_map</code>, <code>seo_qa</code></span>
+  </div>
+
+  <p>S6 in the executor model is a pure validation + persistence layer — it runs <strong>after</strong> S7 generation in the legacy route. Despite the phase number, in the running pipeline S6 is the validation pass over S7 content. It does not call Claude. (Don't confuse with the S6 in older docs that referred to the content-generation step.)</p>
+
+  <h3>Inputs</h3>
+  <table class="io">
+    <thead><tr><th>Field</th><th>Source</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td class="name">approvedKeywords</td><td><code>seo_keywords</code></td><td>Filtered: <code>!isNegative</code>.</td></tr>
+      <tr><td class="name">cosmoTriples</td><td><code>seo_cosmo_maps.triples</code></td><td></td></tr>
+      <tr><td class="name">brandVoice / wordsToAvoid</td><td><code>seo_projects.brand_guidelines_lock</code></td><td></td></tr>
+      <tr><td class="name">asins</td><td><code>seo_asins</code></td><td>For per-ASIN attribute lookup.</td></tr>
+      <tr><td class="name">S6Output (listings + qa_pairs + passage_map)</td><td>From S7 generation</td><td>Caller passes the generated content.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Processing — per ASIN, inside a single DB transaction</h3>
+  <ol class="bullets">
+    <li><strong>Compliance scan</strong> — calls <code>scanCompliance</code> from <code>src/lib/seo/compliance.ts</code> on each field (title, all 4 × 5 bullets, product_description, backend_search_terms). Merges with prior bypass state via <code>mergeBypass</code>.</li>
+    <li><strong>Byte budget</strong> — <code>checkCharBudget(title, 190, 200)</code>, <code>checkCharBudget(description, 1000, 1200)</code>, <code>checkByteBudget(backend, 500)</code>.</li>
+    <li>Insert versioned row into <code>seo_listings</code> (auto-increment <code>version</code>).</li>
+    <li>Insert <strong>seo_aplus_plans</strong> stub: 7 modules, position 7 = <code>premium_qa</code>, others = <code>hero</code>. Fields/images empty; populated by S7-aplus.</li>
+    <li>Insert <strong>seo_passage_map</strong> with section / text / rufus_question_ids / cosmo_triple_ids / keywords_used.</li>
+    <li>Insert <strong>seo_qa</strong> with all pairs + derived subsets:
+      <ul class="bullets">
+        <li><code>aplusQaSubset</code> = first 5 pairs with <code>intent_tier === "decision"</code>.</li>
+        <li><code>customerQaExport</code> = every pair, mapped to {id, question, answer_long}.</li>
+        <li><code>passageMapQa</code> = {pair_id, rufus_question_ids, cosmo_triple_ids:[]} per pair.</li>
+      </ul>
+    </li>
+    <li>After all ASINs persist, stamps <code>seo_projects.s6_approved_at</code> and bumps <code>updated_at</code>.</li>
+  </ol>
+
+  <h3>Outputs</h3>
+  <p>See "Persistence" tables above and the schema section. Note <code>seo_listings.byte_usage</code> JSONB carries per-field budget telemetry: <code>{ title: {used, max, ok}, product_description: {used, max, ok}, backend_search_terms: {...} }</code>.</p>
+
+  <h3>UI surface</h3>
+  <p><code>/seo/[id]/compliance</code> — compliance violations grid, bypass toggle, byte usage chart.</p>
+
+  <h3>Gotchas</h3>
+  <ul class="bullets">
+    <li><strong>Byte usage is computed only for title / product_description / backend_search_terms.</strong> Bullets aren't byte-checked here — they're checked at S7 generation time via the content route's auto-fix logic.</li>
+    <li>The A+ plan inserted here is a stub. The real A+ content (Module 7 premium_qa) is populated separately by the A+ Q&amp;A route.</li>
+    <li>Re-running S6 inserts a <strong>new version</strong> row; it doesn't update. Use <code>ORDER BY version DESC LIMIT 1</code> when reading.</li>
+    <li>Compliance scanning runs synchronously inside the transaction — large batches can hit Vercel timeouts.</li>
+  </ul>
+</div>
+
+<!-- ═══════════════ S7 ═══════════════ -->
+<div class="phase" id="s7">
+  <h2><span class="ph">S7</span>SEO content generation</h2>
+  <p class="tagline">The big one — generates titles, bullets (4 versions), description, and backend search terms across 4 batches.</p>
+
+  <div class="callout" style="background: rgba(232,167,0,0.12); border: 2px solid var(--brand); padding: 14px 16px; border-radius: 6px; margin: 14px 0;">
+    <div style="font-weight: 700; color: var(--brand); margin-bottom: 6px; text-transform: uppercase; font-size: 12px; letter-spacing: 0.05em;">⚠ Before generating — verify the guidelines override</div>
+    <p style="margin-bottom: 6px;">S7 is the ONLY phase that consumes the full 4-tier guidelines cascade. The override rule is <strong>Listing &gt; Group &gt; Variation</strong> per field (not per object), with Brand riding as a separate prompt block. Arrays do <strong>not merge</strong> — a winning tier replaces lower tiers wholesale.</p>
+    <p style="margin-bottom: 0;">Before clicking Generate: check which tier owns each field for the ASINs in this batch. If a Listing has even one item in a field's array, it shadows everything below for that field. <a href="#cascade" style="color: var(--brand); font-weight: 600;">See the worked example in the Cascade section ↓</a></p>
+  </div>
+  <div class="phase-meta">
+    <span class="chip">Source: <code>src/app/api/seo/claude/seo/route.ts</code> (1082 lines)</span>
+    <span class="chip">Model: configured (<code>seo_content</code>)</span>
+    <span class="chip brand">Calls Claude: yes (up to 4 passes per batch)</span>
+    <span class="chip">Streaming: SSE with progress events</span>
+    <span class="chip">Persistence: client-side state → autosaved JSONB</span>
+  </div>
+
+  <p>S7 is the production content engine. The phase executor (<code>src/lib/seo/phases/s7.ts</code>) is a stub — the running implementation is in the legacy route. UI: <code>/seo/[id]/seo</code>. The client sends one batch at a time (<code>titles | bullets | description | backend</code>) and reads an SSE stream that emits progress events per pass plus a final <code>result</code> event.</p>
+
+  <h3>Inputs</h3>
+  <table class="io">
+    <thead><tr><th>Field</th><th>Source</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td class="name">batch</td><td>UI</td><td><code>titles | bullets | description | backend</code></td></tr>
+      <tr><td class="name">brandName / asins</td><td><code>seo_projects</code> + <code>seo_asins</code></td><td></td></tr>
+      <tr><td class="name">keywords</td><td><code>seo_keywords</code></td><td>Filtered into T1/T2/T3/T4 buckets capped at 20/20/15/30.</td></tr>
+      <tr><td class="name">cosmo</td><td><code>seo_cosmo_maps.rows</code></td><td>First 15 sent; filtered by PDP section per batch.</td></tr>
+      <tr><td class="name">rufus</td><td><code>seo_rufus.rows</code></td><td>First 10 sent.</td></tr>
+      <tr><td class="name">reviews</td><td><code>seo_reviews</code></td><td>First 15 sent (themes + insights).</td></tr>
+      <tr><td class="name">guidelines</td><td><code>seo_projects.brand_guidelines</code> (free text)</td><td><strong>Truncated to 600 chars client-side</strong> at <code>src/app/seo/[id]/seo/page.tsx:523</code>.</td></tr>
+      <tr><td class="name">variationGuidelinesText</td><td>Resolved via <code>resolveGuidelinesFieldByField()</code></td><td>See Cascade section.</td></tr>
+      <tr><td class="name">currentRows</td><td>UI state</td><td>Used for revision feedback + locked-keyword preservation.</td></tr>
+      <tr><td class="name">feedback / usedKeywords</td><td>UI</td><td>Optional revision instruction + must-keep keyword list.</td></tr>
+      <tr><td class="name">sizePlacement</td><td>UI</td><td>"after-brand" | "after-product" | "end".</td></tr>
+      <tr><td class="name">contentVoice</td><td>UI</td><td>Resolves into <code>CONTENT_VOICES</code> instruction (default "natural").</td></tr>
+      <tr><td class="name">projectId</td><td>UI</td><td>Used for variety pack composition lookup + S0 competitive load.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Processing — passes</h3>
+  <p>Per batch, the route streams progress events for each pass:</p>
+  <ol class="bullets">
+    <li><strong>Pass 1 — Main generation.</strong> Claude generates the content. The system prompt is a concatenation of: feature config doc block (top 6000 chars of <code>getConfigDocBlock</code>), batch-specific system prompt, full <code>complianceRules</code> block, <code>NATIVE_VOICE_CONTRACT</code> (for titles + bullets), <code>ANTI_AI_PATTERNS</code>.</li>
+    <li><strong>Pass 2 — Voice &amp; tone (titles &amp; bullets only).</strong> <code>humanizeRows()</code> rewrites for American native voice. Preserves keywords, structure, char limits. Falls back silently on any failure.</li>
+    <li><strong>Pass 3 — CMOS editorial (titles &amp; bullets only).</strong> <code>cmosRows()</code> applies Chicago Manual of Style 18th ed. rules §5.195 / §5.225 / §5.249-252 / §5.254 / §7.85. Removes meaningless intensifiers, pleonasms, fixes parallelism, hyphenates compound modifiers.</li>
+    <li><strong>Pass 4 — Coherence + Human Score (bullets only).</strong> <code>coherenceRows()</code> from <code>src/lib/seo/coherence.ts</code> produces <code>HumanScore</code> objects that flag AI-detectable patterns and provide "detractor paths" for the user to accept/bypass per ASIN.</li>
+  </ol>
+
+  <p>After generation, the route applies hard server-side fixes:</p>
+  <ul class="bullets">
+    <li><strong>Titles:</strong> auto-fix titles outside 190-200 chars. First retry by re-asking Claude to expand. Then programmatic trim at the last <code>" - "</code> separator if still too long.</li>
+    <li><strong>Backend search terms:</strong> per-ASIN, strip words already present in the visible content (title + bullets + description). Hard-cap at 249 bytes UTF-8 by dropping terms from the right.</li>
+    <li><strong>computeLengths()</strong>: writes <code>X_CharLength</code> for char fields, <code>X_ByteLength</code> for backend.</li>
+  </ul>
+
+  <h3>The complianceRules block <span class="tag">always injected</span></h3>
+<pre class="system"><span class="label">complianceRules — src/app/api/seo/claude/seo/route.ts:567-587</span>COMPLIANCE (ABSOLUTE):
+- NO medical/disease/treatment/cure/guarantee claims
+- NO competitor names in content
+- NO emoji or non-ASCII characters
+- NO colons ":" in titles or descriptions (ONLY in bullet ALL CAPS headers)
+- Titles: hyphen "-" only separator, one space each side
+- No word &gt;2x per title (case-insensitive)
+- Keyword phrase max 1x per element
+- Content must read human-written. Quality &gt; keyword density.
+${voiceBlock}
+
+RUFUS &amp; COSMO OPTIMIZATION:
+- Write content that ANSWERS questions a shopper would ask (Rufus optimized)
+- Express product RELATIONSHIPS naturally (COSMO optimized) — who uses it, what it's for, when/where it's used
+- Avoid keyword lists disguised as sentences. Each sentence should convey genuine product information.
+- BAD example: "Premium organic turmeric curcumin supplement capsules with black pepper bioperine for joint support inflammation relief"
+- GOOD example: "Premium Turmeric Curcumin with BioPerine - Supports Joint Comfort and Healthy Inflammation Response for Active Adults"
+${guidelines ? `\nBRAND GUIDELINES (LOCKED):\n${guidelines}\n` : ""}${variationGuidelinesText ? `\n${variationGuidelinesText}\n` : ""}${competitiveBlock}
+
+${ANTI_AI_PATTERNS}</pre>
+
+  <p class="callout info"><span class="callout-title">Cascade injection point</span>This is the <strong>only</strong> place where the brand guidelines (locked snapshot) and the variation/group/listing guidelines (cascaded) meet the prompt — at line 585 of <code>src/app/api/seo/claude/seo/route.ts</code>. Brand goes into <code>BRAND GUIDELINES (LOCKED):</code>. Variation/group/listing cascaded output goes into the <code>## Variation Content Guidelines</code> block produced by <code>renderGuidelinesBlock()</code>.</p>
+
+  <h3>The NATIVE_VOICE_CONTRACT <span class="tag">titles + bullets only</span></h3>
+<pre class="system"><span class="label">NATIVE_VOICE_CONTRACT — route.ts:46-86</span>VOICE &amp; WRITING STANDARD (NON-NEGOTIABLE):
+
+You are a senior American consumer brand copywriter — not an SEO technician. You write the way a native American speaker thinks: direct, benefit-led, natural rhythm.
+
+WRITING PRINCIPLES:
+1. Lead with the benefit, not the feature — "Stays put all day" not "Features enhanced adhesive technology"
+2. Use contractions where natural — "doesn't", "you'll", "it's", "won't", "can't"
+3. Vary sentence rhythm — mix short punchy statements with longer explanatory ones; never write four long sentences in a row
+4. American idiom over formal register — "works great for" not "is well-suited to facilitate"; "easy to use" not "demonstrates ease of utilization"
+5. Every sentence must earn its place — if it only strings keywords together with no real meaning, rewrite it
+6. Concrete over abstract — replace vague claims with specific ones: "holds 200 lbs" not "exceptional strength"; "fits 32–36 inch waist" not "versatile fit"; "ready in 60 seconds" not "quick setup"
+7. Parallel structure in bullets — all 5 DetailedBulletPoints for a given ASIN must open grammatically the same way (e.g., all start with an imperative clause, or all start with a result phrase); mixing patterns signals machine assembly
+
+NEVER WRITE (non-native, robotic patterns):
+- "Facilitates the enhancement of..." → write "helps you..."
+- "Demonstrates suitability for utilization across..." → write "works great for..."
+- "Provides to users the benefit of..." → write "gives you..."
+- "Is well-suited to meet the needs of..." → write "perfect for..."
+- "This product features advanced..." → write "Built with..." or "You get..."
+- "This [product] is..." / "This [product] helps..." / "This [product] provides..." after an ALL CAPS header → write "Our [product] is..." / "Our [product] helps..." / "Our [product] provides...". Example: "JOINT SUPPORT: This Arm Sleeve keeps your joints warm" → "JOINT SUPPORT: Our Arm Sleeve keeps your joints warm". Applies to every sentence in bullets and descriptions — never start a sentence body with "This [product name]".
+- Pure keyword lists disguised as sentences: "Premium organic turmeric curcumin supplement capsules black pepper bioperine joint support" is NOT a sentence
+- Meaningless intensifiers: "very durable" → "holds 200 lbs"; "incredibly easy" → "ready in 30 seconds"; never use: very, really, quite, extremely, incredibly, amazing, revolutionary, game-changing, next-level, cutting-edge, state-of-the-art
+- Redundant pleonasms: "free gift" → "gift"; "completely unique" → "unique"; "new innovation" → "innovation"; "added bonus" → "bonus"; "end result" → "result"
+
+PUNCTUATION RULE: Hyphenate compound modifiers before nouns — "heavy-duty grip" not "heavy duty grip"; "easy-to-clean surface" not "easy to clean surface"; "long-lasting hold" not "long lasting hold".
+
+CALIBRATION EXAMPLES:
+
+Title — keyword dump → descriptive narrative:
+❌ "Premium Organic Turmeric Curcumin Supplement Capsules Black Pepper BioPerine Joint Support Inflammation Relief Non-GMO"
+✅ "Premium Turmeric Curcumin with BioPerine - Supports Joint Comfort and Healthy Inflammation Response for Active Adults - 120 Capsules"
+
+Detailed bullet — feature list → benefit story:
+❌ "SUPERIOR ABSORPTION: Formulated with advanced bioavailability enhancement technology utilizing black pepper extract for maximum nutrient uptake and absorption optimization"
+✅ "ABSORBS UP TO 20X BETTER: Black pepper BioPerine dramatically boosts how much turmeric your body actually uses — so you get the full benefit of every capsule, not just what passes through"
+
+Detailed bullet — stiff/formal → natural/conversational:
+❌ "VERSATILE APPLICATION: This product demonstrates suitability for utilization across multiple contexts and environments including indoor and outdoor recreational activities"
+✅ "READY FOR ANYTHING: Whether you're hiking, at the gym, or running errands, these hold up all day without slipping, bunching, or leaving marks"</pre>
+
+  <h3>The ANTI_AI_PATTERNS block <span class="tag">always injected</span></h3>
+<pre class="system"><span class="label">ANTI_AI_PATTERNS — route.ts:93-122</span>ANTI-AI WRITING RULES (NON-NEGOTIABLE — apply before writing a single word):
+
+You are not an AI assistant producing output. You are a human copywriter who happens to be fast. Read these rules before generating anything — they describe patterns you must never produce.
+
+BANNED WORDS &amp; PHRASES (Wikipedia AI writing signals — delete on sight):
+- Significance inflation: testament, pivotal, vital role, groundbreaking, marks a shift, evolving landscape, underscores, highlights its importance, setting the stage for, indelible mark, deeply rooted, enduring, stands as, serves as, represents a
+- Promotional fluff: boasts, vibrant, rich (figurative), profound, breathtaking, must-visit, stunning, nestled, in the heart of, renowned, showcasing, exemplifies, commitment to
+- AI vocabulary: delve, tapestry, intricate/intricacies, interplay, landscape (abstract), cultivate, foster, garner, underscore, align with, crucial, pivotal, key (adjective overuse), valuable
+- Copula avoidance: never write "serves as X" / "stands as X" / "represents X" when you mean "is X". Write "is" or "are" or "has".
+- Filler hedging: "It is important to note that", "It could potentially be argued", "In order to achieve", "Due to the fact that", "At this point in time", "has the ability to" → cut these entirely or rewrite directly
+- Persuasive authority tropes: "The real question is", "At its core", "what really matters", "fundamentally", "the heart of the matter", "in reality" — these add ceremony to ordinary points, skip them
+- Signposting announcements: "Let's dive in", "Here's what you need to know", "Let's explore", "Without further ado" — do not announce what you are about to do, just do it
+
+STRUCTURAL PATTERNS TO AVOID:
+- Rule of three forcing: do not force every idea into groups of exactly three. Two items or four items are fine.
+- Negative parallelism: avoid "It's not just about X, it's about Y" or "Not merely A, it's B" constructions
+- -ing phrase padding: do not tack present-participle phrases onto sentence ends to fake depth. "Supports healthy joints, reflecting the brand's commitment to wellness" — the -ing clause is empty, cut it
+- Elegant variation / synonym cycling: if the product is a "sleeve", call it a "sleeve" throughout. Do not rotate "sleeve" → "garment" → "accessory" → "product" to avoid repetition
+- Generic positive conclusion: never close with "the future looks bright", "exciting times ahead", or any variant. End on a specific fact or claim
+- False ranges: avoid "from X to Y, from A to B" structures where X and Y are not on a meaningful scale
+- Em dash overuse: use a comma, period, or parentheses instead of — in most cases. One em dash per bullet maximum
+
+SENTENCE-LEVEL RULES:
+- Use simple "is/are/has/does" where correct — never dress up a simple statement with "serves as" or "functions as"
+- Vary sentence length deliberately: mix short (4–8 words) and medium (12–20 words). Never write three long sentences in a row
+- Use active voice with a named subject: "The silicone grip holds 200 lbs" not "200 lbs is supported by the silicone grip"
+- Passive constructions with no actor are banned: "No configuration needed" → "You don't need to configure anything"; "Results are preserved automatically" → "The system saves your results automatically"
+- Be specific. "Exceptional quality" means nothing. "Rated for 500 wash cycles" means something.</pre>
+
+  <h3>Batch 1 — Titles</h3>
+
+<pre class="system"><span class="label">System prompt — route.ts:600-621</span>You are the Amazon Listing Title Generator for 1o8 SEO Manager.
+${complianceRules}
+
+${NATIVE_VOICE_CONTRACT}
+
+TITLE RULES:
+- One title per ASIN. STRICT LENGTH: 190-200 characters. Titles under 190 chars WILL BE REJECTED.
+- A 195-char title example: "BrandName Premium Organic Hot Sauce - Spicy Habanero and Sweet Jalapeño Gourmet Blend with Fresh Garlic Vinegar and Lime - Kosher Certified Non-GMO Artisanal Condiment - 7.5 Fl Oz (Pack of 2)"
+- Write LONG, descriptive titles. Use multiple " - " separated segments with product benefits, ingredients, certifications, use cases, and size.
+- Only chars: letters, numbers, spaces, hyphen "-"
+- Hyphen: one space before and after each "-"
+- First segment: Brand Name + core product noun phrase
+- Variation attributes NEVER in first segment
+- Parent ASIN: Size="Parent" in data but do NOT put "Parent" in the title text
+${sizePlacement ? `- Size placement: ${sizePlacement === "end" ? "end of title" : sizePlacement === "after-brand" ? "after brand name" : "after product descriptor"}` : ""}
+- Tier 1 keywords naturally where they fit
+- No filler phrases
+- VERIFY: count each title's characters. If under 190, add more descriptive segments.
+
+OUTPUT FORMAT: Return a JSON array. Each object = one ASIN with these exact keys:
+{ "ASIN": "...", "Title": "..." }
+Do NOT include character counts — they are computed server-side.</pre>
+
+<pre class="user"><span class="label">User prompt — route.ts:626-639</span>${buildRevisionBlock(feedback, "TITLES", getCurrentBatchContent("titles", currentRows), usedKeywords)}Generate titles for these ASINs.
+
+Brand: ${brandName}
+ASINs:
+${JSON.stringify(asinList, null, 1)}
+
+Tier 1 Keywords:
+${tier1.map((k) =&gt; `- ${k.KeywordText} (SV: ${k.SearchVolume})`).join("\n")}
+${formatCosmoBlock(titleCosmo, "COSMO — TITLE-MAPPED RELATIONSHIPS (express these naturally in titles)")}
+
+Full COSMO Map:
+${allCosmoSummary}
+
+Rufus Key Insights:
+${rufus.slice(0, 15).map((r) =&gt; `Q: ${r.RufusQuestion}\nA: ${(r.RufusAnswer || "").substring(0, 150)}`).join("\n\n")}
+${varietyPackContext}${feedback ? `\nREMINDER — REVISION FEEDBACK: ${feedback}\nEvery title MUST satisfy this feedback.` : ""}
+
+Return ONLY valid JSON array.</pre>
+
+  <h3>Batch 2 — Bullets</h3>
+
+<pre class="system"><span class="label">System prompt — route.ts:647-686</span>You are the Amazon Bullet Point Generator for 1o8 SEO Manager.
+${complianceRules}
+
+${NATIVE_VOICE_CONTRACT}
+
+BULLET RULES:
+- 5 bullets per ASIN in 4 versions
+- Detailed: 390-400 chars. Concise: 190-200 chars. Content: 90-100 chars. Key Features: 40-50 chars.
+- Every bullet: ALL CAPS summary + colon, then normal case
+- B1-B2: Consideration stage. B3-B5: Decision stage.
+- B5: variation-specific for Child ASINs
+- Min 1 keyword/bullet. Max 1x per keyword phrase per bullet.
+- No word &gt;2x per bullet. No cross-bullet duplication.
+- Bullet purposes: B1=core value, B2=fit/scope, B3=workflow/instruction, B4=care/durability, B5=variation-specific
+
+OUTPUT FORMAT: Return a JSON array. Each object = one ASIN with these exact keys:
+{
+  "ASIN": "...",
+  "DetailedBulletPoint_1": "...",
+  ...
+  "DetailedBulletPoint_5": "...",
+  "ConciseBulletPoint_1": "...",
+  ...
+  "ConciseBulletPoint_5": "...",
+  "ContentBulletPoint_1": "...",
+  ...
+  "ContentBulletPoint_5": "...",
+  "KeyFeaturesBulletPoint_1": "...",
+  ...
+  "KeyFeaturesBulletPoint_5": "..."
+}
+Do NOT include CharLength fields — they are computed server-side.</pre>
+
+<pre class="user"><span class="label">User prompt — route.ts:700-719</span>${buildRevisionBlock(feedback, "BULLETS", getCurrentBatchContent("bullets", currentRows), usedKeywords)}Generate all bullet points.
+
+Brand: ${brandName}
+ASINs:
+${JSON.stringify(asinList, null, 1)}
+
+Tier 1:
+${tier1.map((k) =&gt; `- ${k.KeywordText}`).join("\n")}
+Tier 2:
+${tier2.map((k) =&gt; `- ${k.KeywordText}`).join("\n")}
+
+Rufus Q&amp;A (express these insights in bullet content):
+${rufus.map((r) =&gt; `Q: ${r.RufusQuestion}\nA: ${(r.RufusAnswer || "").substring(0, 200)}`).join("\n\n")}
+
+COSMO → Bullet Mapping (each bullet should express its mapped relationships):
+${bulletCosmoBlock}
+
+Full COSMO Map:
+${cosmo.slice(0, 20).map((c) =&gt; `${c.COSMORelationType}: ${c.COSMOMappedValue}`).join("\n")}
+
+Reviews:
+${reviews.slice(0, 10).map((r) =&gt; `${r.ReviewTheme || r.ReviewKeyThemes}: ${r.ReviewRufusUsableInsight || ""}`).join("\n")}
+
+Approved Titles:
+${approvedTitles}
+${varietyPackContext}${feedback ? `\nREMINDER — REVISION FEEDBACK: ${feedback}\nEvery bullet MUST satisfy this feedback.` : ""}
+
+Return ONLY valid JSON array.</pre>
+
+  <h3>Batch 3 — Description</h3>
+
+<pre class="system"><span class="label">System prompt — route.ts:727-738</span>You are the Amazon Product Description Generator for 1o8 SEO Manager.
+${complianceRules}
+
+DESCRIPTION RULES:
+- One description per ASIN. Length: 1000-1200 characters.
+- NO colons ":" allowed.
+- Human narrative style. Awareness → Consideration buyer journey.
+- Keywords naturally, density secondary. Never copy existing content verbatim.
+
+OUTPUT FORMAT: Return a JSON array:
+{ "ASIN": "...", "ProductDescription": "..." }
+Do NOT include CharLength fields — they are computed server-side.</pre>
+
+<pre class="user"><span class="label">User prompt — route.ts:745-760</span>${buildRevisionBlock(feedback, "DESCRIPTIONS", getCurrentBatchContent("description", currentRows), usedKeywords)}Generate product descriptions.
+
+Brand: ${brandName}
+ASINs:
+${JSON.stringify(asinList, null, 1)}
+
+Titles:
+${titlesCtx}
+
+Bullet summaries:
+${bulletsCtx}
+${formatCosmoBlock(descCosmo, "COSMO — DESCRIPTION-MAPPED RELATIONSHIPS (weave these into the narrative)")}
+
+Full COSMO Map:
+${cosmo.slice(0, 20).map((c) =&gt; `${c.COSMORelationType}: ${c.COSMOMappedValue}`).join("\n")}
+
+Rufus Q&amp;A (the description should implicitly answer these shopper questions):
+${rufus.map((r) =&gt; `Q: ${r.RufusQuestion}\nA: ${(r.RufusAnswer || "").substring(0, 150)}`).join("\n\n")}
+${varietyPackContext}${feedback ? `\nREMINDER — REVISION FEEDBACK: ${feedback}\nEvery description MUST satisfy this feedback.` : ""}
+
+Return ONLY valid JSON array.</pre>
+
+  <p class="callout warn"><span class="callout-title">Description ignores NATIVE_VOICE_CONTRACT</span>Description batch system prompt does <strong>not</strong> include <code>NATIVE_VOICE_CONTRACT</code> — only titles and bullets get the full native-voice contract. Descriptions rely on the shorter "Human narrative style" rule + the ANTI_AI_PATTERNS that come bundled in <code>complianceRules</code>.</p>
+
+  <h3>Batch 4 — Backend search terms</h3>
+
+<pre class="system"><span class="label">System prompt — route.ts:768-783</span>You are the Amazon Backend Search Terms Generator for 1o8 SEO Manager.
+${complianceRules}
+
+BACKEND RULES:
+- ONE BackendSearchTerms field per ASIN. Maximum 249 bytes (UTF-8). Pack as close to 249 bytes as possible.
+- Use ONLY T4 keywords not already covered by the listing's title/bullets (exclusion list provided).
+- Never include words from the exclusion list — Amazon already indexes those from surface content.
+- Never include negative keywords (wrong form/type/ingredient) — they attract irrelevant traffic.
+- Lowercase. Space-separated. No punctuation except hyphens within compound words. No repeated words.
+- No brand name. No competitor names. No prohibited terms.
+- Prioritize: synonyms, spelling variants (US/UK), use-case expansions, materials, demographics, occasions.
+- Output as ONE combined space-separated string.
+
+OUTPUT FORMAT: Return a JSON array:
+{ "ASIN": "...", "BackendSearchTerms": "..." }
+Do NOT include ByteLength fields — they are computed server-side.</pre>
+
+<pre class="user"><span class="label">User prompt — route.ts:821-834</span>${buildRevisionBlock(feedback, "BACKEND SEARCH TERMS", getCurrentBatchContent("backend", currentRows), usedKeywords, true)}Generate backend search terms.
+
+⚠️ HARD CAP — NON-NEGOTIABLE: Each ASIN's BackendSearchTerms MUST be ≤ 249 bytes (UTF-8). Even 1 byte over de-indexes ALL keywords for that ASIN. Count bytes before returning; drop lowest-tier terms first if over. This rule overrides the must-keep list.
+Pack as close to 249 bytes as possible — unused bytes are wasted indexing opportunities.
+
+ASINs: ${asinList.map((a) =&gt; `${a.asin} (${a.parentage_level})`).join(", ")}
+
+Tier 4 keywords (primary source):
+${tier4.map((k) =&gt; k.KeywordText).join(", ")}
+
+Tier 3 (gap fill if bytes remain):
+${tier3.map((k) =&gt; k.KeywordText).join(", ")}
+${exclusionBlock}${negativeBlock}
+${feedback ? `\nREMINDER — REVISION FEEDBACK: ${feedback}\nBackend terms MUST satisfy this feedback.` : ""}
+
+Return ONLY valid JSON array.</pre>
+
+  <h3>Pass 2 — humanizeRows (voice editor)</h3>
+
+<pre class="system"><span class="label">System prompt — route.ts:238-252</span>You are a native American English voice editor. Your only job is to fix tone and phrasing so the content sounds like a senior copywriter at a premium US consumer brand wrote it — not an AI or SEO tool.
+
+FIX (voice &amp; tone only):
+- Stiff or formal phrasing, non-native sentence structure
+- Hollow keyword-only sentences (add real meaning)
+- Over-long words where shorter ones work naturally
+- Missing contractions where a native speaker would use them (doesn't, you'll, it's, won't)
+- Feature-led sentences — rewrite as benefit-led ("Features enhanced grip" → "Holds tight all day")
+- Sentences that start with "This [product]..." after an ALL CAPS header — change to "Our [product]..." (e.g. "This Arm Sleeve protects..." → "Our Arm Sleeve protects...")
+
+DO NOT change: CMOS grammar/style (intensifiers, pleonasms, hyphens, parallel structure) — those are handled in a separate CMOS pass.
+DO NOT CHANGE: keywords (verbatim), JSON field names, ASIN values, ALL CAPS bullet headers before the colon.
+DO NOT EXCEED character limits: ${HUMANIZE_CHAR_LIMITS[batch]}
+
+Return ONLY a valid JSON array with the exact same structure as the input.</pre>
+
+  <h3>Pass 3 — cmosRows (Chicago Manual of Style editor)</h3>
+
+<pre class="system"><span class="label">System prompt — route.ts:343-371</span>You are a Chicago Manual of Style (18th edition) copy editor. Your only job is to apply CMOS grammar and style rules to Amazon listing content. Do NOT change voice, tone, or narrative style — a separate voice editor already handled that.
+
+APPLY THESE CMOS RULES ONLY:
+
+§5.225 — Intensifiers: Remove meaningless intensifiers and replace with specific factual claims.
+  Remove: very, really, quite, extremely, incredibly, amazing, revolutionary, game-changing, next-level, cutting-edge, state-of-the-art, powerful, exceptional, superior, ultimate
+  Replace with the specific claim the intensifier is trying to convey:
+  "very durable" → "holds 200 lbs" | "incredibly easy" → "ready in 30 seconds" | "amazing results" → state the actual result
+
+§5.195 — Pleonasms: Remove redundant word pairs where one word already implies the other.
+  free gift → gift | completely unique → unique | new innovation → innovation
+  added bonus → bonus | end result → result | past history → history
+  future plans → plans | true fact → fact | close proximity → proximity
+
+§7.85 — Compound modifiers: Hyphenate compound modifiers that appear before a noun.
+  heavy duty grip → heavy-duty grip | easy to clean surface → easy-to-clean surface
+  long lasting hold → long-lasting hold | fast acting formula → fast-acting formula
+  water resistant coating → water-resistant coating | non stick surface → non-stick surface
+
+§5.249-252 — Parallel structure: Within each ASIN's DetailedBulletPoint series (B1-B5), all 5 bullets must open with the same grammatical pattern. If B1 starts with an imperative clause, B2-B5 must too. If B1 starts with a result phrase, all must. Do NOT mix patterns within one ASIN.
+
+§5.254 — Concrete over abstract: Replace vague superlatives and abstract claims with specific, verifiable ones wherever the specific information can be inferred from context.
+  "exceptional quality" → describe what makes it exceptional | "premium materials" → name the material if known
+  "best-in-class performance" → state the performance metric
+
+DO NOT CHANGE: keywords (verbatim), JSON field names, ASIN values, ALL CAPS bullet headers before the colon, voice/tone, narrative structure.
+DO NOT EXCEED character limits: ${HUMANIZE_CHAR_LIMITS[batch]}
+
+Return ONLY a valid JSON array with the exact same structure as the input.</pre>
+
+  <h3>Revision block (when feedback is provided)</h3>
+
+<pre class="user"><span class="label">buildRevisionBlock — route.ts:194-204</span>⚠️ CRITICAL REVISION INSTRUCTION (HIGHEST PRIORITY — OVERRIDE ALL DEFAULTS):
+${feedback}
+
+PRESERVATION RULE — read carefully: This is a REVISION of existing content, NOT a fresh generation. The ${contentLabel.toLowerCase()} below already exist. Keep every keyword, claim, fact, and structural element from CURRENT ${contentLabel} intact. Apply ONLY the changes the revision instruction explicitly asks for:
+- "ADD keywords X, Y, Z" → weave the new keywords into the existing content while keeping ALL existing keywords and the existing narrative.
+- "REMOVE keywords X, Y, Z" → drop ONLY those exact terms; keep everything else.
+- Do NOT rephrase, restructure, or rewrite anything the instruction did not target.
+- Do NOT drop existing keywords that the instruction did not explicitly mark for removal.
+- Do NOT substitute a keyword for a similar-but-different phrase (e.g. "elastic knee support" must NOT become "elastic knee sleeve").
+${keepBlock}${currentBlock}</pre>
+
+  <h3>Outputs</h3>
+  <ul class="bullets">
+    <li>Streamed via SSE: <code>{type:"progress", pass:1..4}</code> then <code>{type:"result", rows, usage, humanScores?}</code>.</li>
+    <li>Client autosaves into <code>seo_asins.generated_content</code> JSONB. S6 (validation) later persists into <code>seo_listings</code>.</li>
+  </ul>
+
+  <h3>UI surface</h3>
+  <p><code>/seo/[id]/seo</code> — the content generation page. Batch buttons, locked-cell grid, feedback box, pass-stepper progress.</p>
+
+  <h3>Gotchas</h3>
+  <ul class="bullets">
+    <li><strong>Truncations:</strong> brand guidelines free text truncated to 600 chars (client at <code>page.tsx:523</code>). Rufus answers truncated to 150 chars (titles) / 200 chars (bullets) / 150 chars (description). Reviews truncated to first 10-15 rows.</li>
+    <li><strong>Tier caps:</strong> T1≤20, T2≤20, T3≤15, T4≤30 sent to prompt. Anything beyond is silently dropped.</li>
+    <li><strong>Only the first ASIN's group + listing guidelines are used.</strong> See <code>src/app/seo/[id]/seo/page.tsx:509-512</code> — <code>firstGroupName = asins[0]?.variation_group</code>. If your batch mixes groups, only the first applies.</li>
+    <li><strong>Group lookup is by NAME not ID</strong> (<code>g.name === firstGroupName</code>). Renaming a group orphans its guidelines.</li>
+    <li><strong>humanize + CMOS passes are silent-fail.</strong> If they return invalid JSON, the route falls back to the previous pass's output. The user has no signal beyond the missing progress event.</li>
+    <li><strong>Title auto-fix may still drop keywords.</strong> The programmatic trim at <code>" - "</code> can chop a segment containing must-keep keywords.</li>
+    <li><strong>Backend hard cap drops from the right.</strong> Re-running backend with feedback may still strip must-keep keywords if total exceeds 249 bytes.</li>
+    <li>Rate-limited: 10 req/min per user.</li>
+    <li><code>maxDuration = 300</code> seconds. Large batches with 4 passes can come close.</li>
+  </ul>
+</div>
+
+<!-- ═══════════════ S7-AUDIT ═══════════════ -->
+<div class="phase" id="s7-audit">
+  <h2><span class="ph">S7+</span>Premium audit — 12-dimension scoring</h2>
+  <p class="tagline">Score the generated bundle on 12 dimensions and auto-write replacement text for warning+ findings.</p>
+  <div class="phase-meta">
+    <span class="chip">Source: <code>src/app/api/seo/claude/seo-audit/route.ts</code></span>
+    <span class="chip">Model: configured (<code>seo_audit</code>)</span>
+    <span class="chip brand">Calls Claude: 2 calls (score + rewrites)</span>
+    <span class="chip">Persistence: <code>seo_quality_scores</code></span>
+  </div>
+
+  <p>After S7 generation, the user can trigger a premium audit. Call 1 produces a 12-dimension score + findings list. Call 2 generates a specific rewrite for every critical or warning finding, attached back to the finding as <code>finding.rewrite</code>.</p>
+
+  <h3>Call 1 — scoring</h3>
+
+<pre class="system"><span class="label">Score system prompt — src/app/api/seo/claude/seo-audit/route.ts:121-170</span>You are the 1o8 SEO Premium Audit Engine. You analyze generated Amazon listing content against research data to score quality and identify specific improvement opportunities.
+
+Your audit covers 12 dimensions:
+1. COMPLIANCE: Prohibited terms, medical claims, competitor names, emoji, colon misuse
+2. KEYWORD COVERAGE: Tier 1 and Tier 2 keyword presence in titles, bullets, description
+3. COSMO DENSITY: COSMO relationship expression (USED_FOR_FUNC, USED_TO, CAPABLE_OF, IS_A, USED_FOR_AUD)
+4. RUFUS COVERAGE: Are Rufus questions answered in the content?
+5. HUMAN VOICE: Natural readability vs keyword-stuffed/templated feel
+6. BUYER JOURNEY: Title=Decision, B1-B2=Consideration, B3-B5=Decision, Desc=Awareness→Consideration
+7. VARIATION CONSISTENCY: Child ASIN differentiation
+8. E-E-A-T SIGNALS: Experience, Expertise, Authority, Trust — claims backed by evidence, knowledgeable voice
+9. READABILITY: Flesch-Kincaid grade 8-10, scannable bullets, well-structured description
+10. AI CITABILITY: Can AI assistants (Rufus, AI Overviews, ChatGPT) excerpt clean quotable passages? Clear Q&amp;A structures?
+11. GEO READINESS: Brand mention signals, passage citability for AI search, entity clarity, implicit Q&amp;A structure for AI-powered discovery (Amazon Rufus, Google AI Overviews, Perplexity, ChatGPT web search)
+12. OVERALL: Weighted average of all dimensions
+
+For each finding, be SPECIFIC — include which ASIN and which field (Title, DetailedBulletPoint_1-5, ProductDescription, BackendSearchTerms) is affected.
+
+OUTPUT: Return ONLY valid JSON:
+{
+  "complianceScore": &lt;0-100&gt;,
+  "keywordCoverage": &lt;0-100&gt;,
+  "cosmoDensity": &lt;0-100&gt;,
+  "rufusCoverage": &lt;0-100&gt;,
+  "humanVoice": &lt;0-100&gt;,
+  "buyerJourney": &lt;0-100&gt;,
+  "variationConsistency": &lt;0-100&gt;,
+  "eeatScore": &lt;0-100&gt;,
+  "readabilityScore": &lt;0-100&gt;,
+  "citabilityScore": &lt;0-100&gt;,
+  "geoScore": &lt;0-100&gt;,
+  "overallScore": &lt;0-100&gt;,
+  "findings": [
+    {
+      "severity": "critical" | "warning" | "info",
+      "category": "&lt;audit dimension name&gt;",
+      "asin": "&lt;specific ASIN or 'all'&gt;",
+      "field": "&lt;Title|DetailedBulletPoint_1-5|ProductDescription|BackendSearchTerms|all&gt;",
+      "detail": "&lt;what was found&gt;",
+      "suggestion": "&lt;specific improvement instruction&gt;",
+      "batch": "titles" | "bullets" | "description" | "backend" | "all"
+    }
+  ],
+  "remediation": {
+    "titles": "&lt;specific feedback for title regeneration or null&gt;",
+    "bullets": "&lt;specific feedback for bullet regeneration or null&gt;",
+    "description": "&lt;specific feedback for description regeneration or null&gt;",
+    "backend": "&lt;specific feedback for backend regeneration or null&gt;"
+  }
+}</pre>
+
+<pre class="user"><span class="label">Score user prompt — route.ts:172-197</span>Audit this generated content against the research data.
+
+BRAND: ${brandName}
+${guidelines ? `BRAND GUIDELINES: ${guidelines.substring(0, 500)}` : ""}
+
+═══ GENERATED CONTENT ═══
+${contentSummary}
+
+═══ RESEARCH DATA ═══
+
+TIER 1 KEYWORDS (must appear in surface content):
+${tier1.map((k) =&gt; `- "${k.KeywordText}" SV:${k.SearchVolume}`).join("\n")}
+
+TIER 2 KEYWORDS (should appear where natural):
+${tier2.map((k) =&gt; `- "${k.KeywordText}" SV:${k.SearchVolume}`).join("\n")}
+
+COSMO RELATIONSHIPS (should be expressed in content):
+${cosmo.slice(0, 15).map((c) =&gt; `${c.COSMORelationType}: ${c.COSMOMappedValue} → PDP: ${c.COSMOAppliedPDPSection1}`).join("\n")}
+
+RUFUS QUESTIONS (should be answered in listing):
+${rufus.slice(0, 5).map((r) =&gt; `Q: ${r.RufusQuestion}\nA: ${(r.RufusAnswer || "").substring(0, 150)}`).join("\n\n")}
+
+REVIEW THEMES (should be addressed):
+${reviews.slice(0, 10).map((r) =&gt; `${r.ReviewTheme || "Theme"}: ${(r.ReviewRufusUsableInsight || "").substring(0, 100)}`).join("\n")}
+
+Return ONLY valid JSON.</pre>
+
+  <h3>Call 2 — rewrites for critical / warning findings</h3>
+
+<pre class="system"><span class="label">Rewrite system prompt — route.ts:226-236</span>You are a premium Amazon listing copywriter. For each content finding below, write a specific replacement text that fixes the identified issue while maintaining compliance, keyword coverage, and natural voice.
+
+Rules:
+- Match the original field's character limits (Title: 190-200, Detailed bullets: 390-400, Description: 1000-1200, Backend: ≤500 bytes)
+- Maintain ALL CAPS header + colon format for bullets
+- No medical claims, competitor names, emoji, or colon in titles/descriptions
+- Preserve existing keyword coverage while fixing the issue
+- Write as if you're a product expert, not a copywriter
+
+OUTPUT: Return ONLY a valid JSON array. Each object:
+{ "index": &lt;finding index 0-based&gt;, "rewrite": "&lt;the complete replacement text for the field&gt;" }</pre>
+
+  <h3>Outputs</h3>
+  <p>Returns a JSON object directly to the client. Persisted (when accepted) into <code>seo_quality_scores</code> — see schema section. Each finding may carry a <code>rewrite</code> string the user can one-click apply.</p>
+
+  <h3>Gotchas</h3>
+  <ul class="bullets">
+    <li>Rewrite call has its own try/catch — if it fails, the scores still return but no rewrites are attached. UI gets a warning event-log entry but no toast.</li>
+    <li>Backend rewrite character limit says <strong>≤500 bytes</strong> but the actual hard cap elsewhere is 249 bytes — a known inconsistency. (See <code>route.ts:230</code> vs the backend batch's 249-byte rule.)</li>
+    <li>Brand guidelines truncated to 500 chars here (vs 600 in S7 batches).</li>
+  </ul>
+</div>
+
+<!-- ═══════════════ S7-APLUS ═══════════════ -->
+<div class="phase" id="s7-aplus">
+  <h2><span class="ph">S7</span>A+ Module 7 — premium_qa generation</h2>
+  <p class="tagline">Generate 5 Decision-stage Q&amp;A pairs per ASIN for the Premium A+ Module 7 slot.</p>
+  <div class="phase-meta">
+    <span class="chip">Source: <code>src/app/api/seo/claude/aplus-qa/route.ts</code></span>
+    <span class="chip">Model: configured (<code>seo_content</code>)</span>
+    <span class="chip brand">Calls Claude: yes (one call for all ASINs)</span>
+    <span class="chip">Persistence: <code>seo_qa</code> (filled by S6 from S7 output)</span>
+  </div>
+
+  <h3>Inputs</h3>
+  <p>Brand, T1 keywords (top 15), brand guidelines (substring 0..300), the approved listing content rows. Pulls additional context from DB by <code>projectId</code>:</p>
+  <ul class="bullets">
+    <li>Top 50 reviews ordered by <code>helpful_votes DESC</code> — grouped per ASIN (with global fallback). Themes, objections (rating ≤ 2), praised aspects (rating ≥ 4) extracted.</li>
+    <li>Rufus Phase 1 — top 8 question/answer pairs (first 150 chars each).</li>
+    <li>COSMO triples — filtered to <code>confidence_level === "High"</code> or <code>confidence ≥ 0.8</code>, first 12.</li>
+  </ul>
+
+  <h3>Claude prompt <span class="tag">verbatim</span></h3>
+
+<pre class="system"><span class="label">System prompt — src/app/api/seo/claude/aplus-qa/route.ts:14-51</span>You are an Amazon A+ Premium Content specialist writing Module 7 (premium_qa) Q&amp;A pairs.
+
+HARD RULES:
+- Exactly 5 Q&amp;A pairs per ASIN.
+- Q (question): 115–120 characters exactly. Decision-stage buyer question — addresses a purchase objection, use-case fit, or key differentiator. Conversational and specific, as a real shopper would ask.
+- A (answer): 245–250 characters exactly. Complete, benefit-led answer. Start with a direct answer then supporting detail. No colons. No brand name repetition.
+
+SOURCING PRIORITY (use in this order):
+1. Customer reviews — surface the most repeated questions and objections real buyers raised. If an objection appears in the reviews, one Q&amp;A pair MUST address it directly.
+2. Rufus shopper questions — mirror the intent of questions real Rufus users asked about this product.
+3. COSMO relationships — reinforce the strongest product associations (use case, benefit, compatibility).
+4. Approved listing content (bullets/description) — ground every answer here; do not invent claims.
+
+VOICE (non-negotiable):
+- Native American English — direct, benefit-led, no AI vocabulary
+- Banned: delve, tapestry, foster, underscore, align with, crucial, pivotal, serves as, stands as, represents a
+- Use contractions naturally (doesn't, you'll, it's, won't)
+- No "This product…" — use "Our [product]…" or a direct answer
+
+CONTENT:
+- If ASIN is a child variant, Q5 must address its specific variation differentiator
+- No medical/disease/treatment/cure claims. No competitor names. No emoji. No colons in answers.
+
+OUTPUT: Return ONLY a valid JSON array — no markdown, no explanation:
+[
+  {
+    "asin": "B0XXXXXXX",
+    "questions": [
+      { "q": "115–120 char question here", "a": "245–250 char answer here" },
+      { "q": "...", "a": "..." },
+      { "q": "...", "a": "..." },
+      { "q": "...", "a": "..." },
+      { "q": "...", "a": "..." }
+    ]
+  }
+]
+
+BEFORE RETURNING: count every Q and A character. If any Q is outside 115–120 or any A is outside 245–250, rewrite that pair until it fits.</pre>
+
+<pre class="user"><span class="label">User prompt — route.ts:191-202</span>Generate 5 Decision-stage Premium A+ Q&amp;A pairs for each ASIN below.
+
+Brand: ${brandName}
+T1 Keywords: ${kwList}
+${guidelines ? `Brand guidelines: ${guidelines.substring(0, 300)}` : ""}
+${rufusContext ? `\n${rufusContext}` : ""}
+${cosmoContext ? `\n${cosmoContext}` : ""}
+
+APPROVED CONTENT (per ASIN — includes customer themes and objections):
+${contextBlocks}
+
+Return ONLY a valid JSON array as specified.</pre>
+
+  <p>Where the per-ASIN <code>contextBlocks</code> include: ASIN, ParentageLevel, variant attributes (Flavor/Style/Color/Size), Title, B1-B3 bullets, ProductDescription (first 400 chars), Customer themes (5 max), Objections (3 max — only rating ≤ 2), Praised aspects (3 max — only rating ≥ 4). Built by <code>buildContext()</code> at <code>route.ts:72-111</code>.</p>
+
+  <h3>Outputs</h3>
+  <p>Annotated <code>AsinQA[]</code>: <code>{asin, questions: [{q, a, qLen, aLen}]}</code>. Character lengths computed server-side and attached so the UI can flag any pairs that violated the 115-120 / 245-250 budget. Persisted into <code>seo_qa.pairs</code> and derived subsets (<code>aplusQaSubset</code> = decision-tier first 5, etc.) via the S6 transaction.</p>
+
+  <h3>UI surface</h3>
+  <p><code>/seo/[id]/seo</code> — A+ Q&amp;A panel triggered after main S7 content is approved. (Some setups expose it at <code>/seo/[id]/aplus</code> route — verify against the version you're on.)</p>
+
+  <h3>Gotchas</h3>
+  <ul class="bullets">
+    <li><strong>Brand guidelines truncated to 300 chars here</strong> — shorter than every other phase (S2/S5/S7 use 600, audit uses 500). Don't expect long guidelines to survive.</li>
+    <li>Q/A character bounds enforced via prompt only. UI must flag <code>qLen / aLen</code> outliers — server doesn't reject.</li>
+    <li>Rate-limited: 10 req/min per user.</li>
+    <li><code>maxDuration = 120</code> seconds — short. Large variation families (10+ ASINs) sometimes time out.</li>
+    <li>The <code>aplus-qa</code> route falls back to <code>SYSTEM_PROMPT</code> only — does NOT include the broader <code>NATIVE_VOICE_CONTRACT</code> or <code>ANTI_AI_PATTERNS</code> blocks from S7. Voice guardrails are inline only.</li>
+  </ul>
+</div>
+
+<!-- ═══════════════ Backend refine ═══════════════ -->
+<div class="phase" id="backend-refine">
+  <h2><span class="ph">S7+</span>Backend search terms refine</h2>
+  <p class="tagline">Standalone re-run of backend terms after title/bullet/description edits.</p>
+  <div class="phase-meta">
+    <span class="chip">Source: <code>src/app/api/seo/claude/seo-backend-refine/route.ts</code></span>
+    <span class="chip">Model: configured (<code>seo_content</code>)</span>
+    <span class="chip brand">Calls Claude: yes</span>
+  </div>
+
+  <p>Lightweight variant of S7 batch 4. Takes the current rows, computes per-ASIN exclusion sets from visible content, sends a stripped-down prompt with only T4 (+ T3 as gap-fill) and the exclusion + negative blocks. Hard-filters and hard-caps at 249 bytes server-side. Used when the user edits the description and wants backend to recompute without touching titles/bullets.</p>
+  <p>System prompt is identical in spirit to S7 batch 4 backend rules. See <code>route.ts:77-91</code>.</p>
+</div>
+
+<!-- ═══════════════ Coherence (seo-score) ═══════════════ -->
+<div class="phase" id="coherence">
+  <h2><span class="ph">S7+</span>Coherence + Human Score (bullets-only pass)</h2>
+  <p class="tagline">Pass-4 detractor analysis for bullets — produces accept/bypass paths per ASIN.</p>
+  <div class="phase-meta">
+    <span class="chip">Source: <code>src/lib/seo/coherence.ts</code> + <code>src/app/api/seo/claude/seo-score/route.ts</code></span>
+    <span class="chip brand">Calls Claude: yes (inside coherenceRows)</span>
+  </div>
+
+  <p>Pass 4 of the bullets generation. <code>coherenceRows()</code> analyzes the generated bullets against the existing product description and the must-keep keyword list, returning a list of <code>HumanScore</code> objects per ASIN. Each carries a score, a set of <code>detractors</code>, and a set of suggested <code>paths</code> (accept rewrite / bypass) the user can act on in the UI.</p>
+  <p>The standalone route <code>/api/seo/claude/seo-score</code> exposes the same logic outside the SSE stream — useful for re-scoring an already-saved bundle without regenerating.</p>
+</div>
+
+<!-- ═══════════════ S8 ═══════════════ -->
+<div class="phase" id="s8">
+  <h2><span class="ph">S8</span>Image plans <span style="font-size: 14px; color: var(--muted); font-weight: 400;">(stub)</span></h2>
+  <p class="tagline">Reserved for image-plan generation. Not implemented in the running pipeline.</p>
+  <div class="phase-meta">
+    <span class="chip">Source: <code>src/lib/seo/phases/s8.ts</code></span>
+    <span class="chip red">Calls Claude: no (stub)</span>
+    <span class="chip">Planned persistence: <code>seo_images</code></span>
+  </div>
+  <p>The <code>S8</code> phase executor throws <code>"S8 executor not implemented yet (Milestone H)"</code> on every method. The <code>seo_images</code> table exists with full per-image-slot schema (image_number 1-N, technical_name, image_type, image_purpose, cosmo_relationship, buyer_stage, dimensions, alt_text, ai_image_prompt, etc.), but nothing reads/writes it from the SEO pipeline today. UI surface: planned at <code>/seo/[id]/images</code>.</p>
+  <p>(unknown — see <code>src/lib/seo/phases/s8.ts</code>). When implemented, this is the slot for image direction + alt text + AI image prompt generation.</p>
+</div>
+
+<!-- ═══════════════ S9 ═══════════════ -->
+<div class="phase" id="s9">
+  <h2><span class="ph">S9</span>Quality score <span style="font-size: 14px; color: var(--muted); font-weight: 400;">(stub)</span></h2>
+  <p class="tagline">Reserved for canonical 5-Rufus-question coverage scoring + GEO score. Not implemented.</p>
+  <div class="phase-meta">
+    <span class="chip">Source: <code>src/lib/seo/phases/s9.ts</code></span>
+    <span class="chip red">Calls Claude: no (stub)</span>
+    <span class="chip">Planned persistence: <code>seo_scores</code></span>
+  </div>
+  <p>The <code>S9</code> executor throws <code>"S9 executor not implemented yet (Milestone I)"</code>. The <code>seo_scores</code> table exists with rufusCoveragePct, rufus5CanonicalCoverage JSONB, cosmoCoveragePct, cosmoDensityPer100Words, buyerJourneyAlignment, byteBudgetStatus, prohibitedWordViolations, missingRufusQuestions[], missingCosmoTriples[], overallGrade — but it's currently populated only by the Premium Audit (S7+) path into <code>seo_quality_scores</code> (note the table name difference). The full append-only per-ASIN score log table <code>seo_scores</code> remains unused.</p>
+  <p>(unknown — see <code>src/lib/seo/phases/s9.ts</code>).</p>
+</div>
+
+<!-- ═══════════════ GUIDELINES CASCADE ═══════════════ -->
+<div class="section" id="walkthrough">
+  <div class="section-label">10b — End-to-end example</div>
+  <h2>End-to-end worked example — one ASIN, full pipeline</h2>
+  <p>Concrete walk-through of generating a title for one ASIN, showing every guideline tier at work. Scenario: brand "Acme Kitchenware", variation "Insulated Bottles", group "Stainless 16oz", ASIN B0XYZ12345.</p>
+
+  <h3>Step 1 — Stored tier values (in the DB before generation)</h3>
+  <table>
+    <thead><tr><th>Tier</th><th>Storage</th><th>Stored value</th></tr></thead>
+    <tbody>
+      <tr><td><span class="tier-badge badge-brand">Brand</span></td><td><code>seo_projects.brand_guidelines</code></td><td><em>"Acme Kitchenware tone: warm, family-focused, no medical claims, avoid superlatives like 'best' or '#1'. Voice: friendly authority, second-person OK. Always reference 'home cooks' not 'consumers'."</em> (free text, 198 chars)</td></tr>
+      <tr><td><span class="tier-badge badge-variation">Variation</span></td><td><code>variations.content_guidelines</code></td><td><code>{ messagingAngle: ["everyday hydration"], targetAudience: ["families", "commuters"], keyFeatures: ["double-wall insulation"], doList: ["mention temp retention hours"], dontList: ["never compare to Yeti"] }</code></td></tr>
+      <tr><td><span class="tier-badge badge-group">Group</span></td><td><code>variation_groups.content_guidelines</code></td><td><code>{ keyFeatures: ["18/8 stainless", "leak-proof lid"], dontList: ["never claim BPA-free without lab cert"] }</code> <em>(other fields empty)</em></td></tr>
+      <tr><td><span class="tier-badge badge-listing">Listing</span></td><td><code>master.content_guidelines</code> for B0XYZ12345</td><td><code>{ messagingAngle: ["gift-ready for Mother's Day 2026"] }</code> <em>(other fields empty)</em></td></tr>
+    </tbody>
+  </table>
+
+  <h3>Step 2 — Load response (S1 intake)</h3>
+  <p>User clicks Generate on the titles batch. Client first hits <code>GET /api/seo/projects/:id/load?phase=s1_intake</code>. Response includes:</p>
+<pre><span class="label">/api/seo/projects/:id/load?phase=s1_intake — response (trimmed)</span>{
+  "project": {
+    "brand_name": "Acme Kitchenware",
+    "brand_guidelines": "Acme Kitchenware tone: warm, family-focused, no medical claims...",
+    "brand_guidelines_lock": { "brand_voice": "friendly authority", "words_to_avoid": ["best", "#1", "Yeti"] },
+    "variation_guidelines": {
+      "defaults": { "messagingAngle": ["everyday hydration"], "targetAudience": ["families","commuters"], "keyFeatures": ["double-wall insulation"], "doList": ["mention temp retention hours"], "dontList": ["never compare to Yeti"] },
+      "groups": [
+        { "name": "Stainless 16oz", "contentGuidelines": { "keyFeatures": ["18/8 stainless","leak-proof lid"], "dontList": ["never claim BPA-free without lab cert"] } }
+      ]
+    }
+  },
+  "asins": [
+    { "asin": "B0XYZ12345", "variation_group": "Stainless 16oz",
+      "listing_guidelines": { "messagingAngle": ["gift-ready for Mother's Day 2026"] } }
+  ]
+}</pre>
+
+  <h3>Step 3 — Per-field resolution (in the browser)</h3>
+  <p>For each field, the resolver walks <strong>Listing → Group → Variation</strong> and picks the first non-empty array:</p>
+  <table>
+    <thead><tr><th>Field</th><th>Listing</th><th>Group</th><th>Variation</th><th>Winner</th><th>Sent to Claude</th></tr></thead>
+    <tbody>
+      <tr><td><code>messagingAngle</code></td><td><strong style="color:var(--tier-listing);">["gift-ready for Mother's Day 2026"]</strong></td><td>—</td><td>["everyday hydration"]</td><td><span class="tier-badge badge-listing">Listing</span></td><td><code>gift-ready for Mother's Day 2026</code></td></tr>
+      <tr><td><code>targetAudience</code></td><td>—</td><td>—</td><td><strong style="color:var(--tier-variation);">["families","commuters"]</strong></td><td><span class="tier-badge badge-variation">Variation</span></td><td><code>families, commuters</code></td></tr>
+      <tr><td><code>keyFeatures</code></td><td>—</td><td><strong style="color:var(--tier-group);">["18/8 stainless","leak-proof lid"]</strong></td><td>["double-wall insulation"]</td><td><span class="tier-badge badge-group">Group</span></td><td><code>18/8 stainless, leak-proof lid</code> <em>— variation's "double-wall insulation" dropped</em></td></tr>
+      <tr><td><code>doList</code></td><td>—</td><td>—</td><td><strong style="color:var(--tier-variation);">["mention temp retention hours"]</strong></td><td><span class="tier-badge badge-variation">Variation</span></td><td><code>mention temp retention hours</code></td></tr>
+      <tr><td><code>dontList</code></td><td>—</td><td><strong style="color:var(--tier-group);">["never claim BPA-free without lab cert"]</strong></td><td>["never compare to Yeti"]</td><td><span class="tier-badge badge-group">Group</span></td><td><code>never claim BPA-free without lab cert</code> <em>— variation's "never compare to Yeti" dropped</em></td></tr>
+    </tbody>
+  </table>
+  <div class="callout warn" style="margin-top: 10px;">
+    <strong>Two variation rules silently lost:</strong> "double-wall insulation" and "never compare to Yeti" never reach Claude — the higher tier won those fields with totally different content. If the user wanted these preserved, they'd need to repeat them in the Group/Listing arrays.
+  </div>
+
+  <h3>Step 4 — Prompt assembly (server, route.ts:585)</h3>
+  <p>The two distinct blocks are stitched into the system prompt:</p>
+<pre><span class="label">Final Claude system prompt — guidelines portion</span>...COMPLIANCE (ABSOLUTE):
+- NO medical/disease/treatment/cure/guarantee claims
+- NO competitor names in content
+[...compliance rules continue...]
+
+BRAND GUIDELINES (LOCKED):
+Acme Kitchenware tone: warm, family-focused, no medical claims, avoid superlatives like 'best' or '#1'. Voice: friendly authority, second-person OK. Always reference 'home cooks' not 'consumers'.
+
+## Variation Content Guidelines
+Messaging angle: gift-ready for Mother's Day 2026
+Target audience: families, commuters
+Key features: 18/8 stainless, leak-proof lid
+Do: mention temp retention hours
+Don't: never claim BPA-free without lab cert
+
+[...competitive intel block...]</pre>
+
+  <h3>Step 5 — Claude responds</h3>
+  <p>With the merged context, Claude's title generation for B0XYZ12345 might produce:</p>
+<pre><span class="label">Claude output</span>Acme Kitchenware 18/8 Stainless Insulated Bottle - Leak-Proof 16oz Hydration for Families &amp; Commuters - Mother's Day Gift Ready</pre>
+  <p>Observe how the output reflects each surviving tier:</p>
+  <ul class="bullets">
+    <li><strong>Listing</strong> contributed the Mother's Day positioning.</li>
+    <li><strong>Group</strong> contributed "18/8 stainless" and "leak-proof".</li>
+    <li><strong>Variation</strong> contributed the families/commuters audience targeting.</li>
+    <li><strong>Brand</strong> shaped the voice (friendly, no "best/#1" superlatives, no Yeti reference).</li>
+    <li><strong>Variation's</strong> "double-wall insulation" is missing because Group's keyFeatures won that field.</li>
+  </ul>
+
+  <h3>Step 6 — Audit trail</h3>
+  <p>None. The resolved guidelines are sent to Claude but <strong>not</strong> persisted alongside the generated content. If you re-generate after editing tier values, there is no record of what guidelines drove the prior output. This is a known limitation — recommend taking a screenshot of the amber banner state before each Generate if you need to defend the result later.</p>
+</div>
+
+<div class="section" id="cascade">
+  <div class="section-label">11 — Critical</div>
+  <h2>Guidelines cascade — Brand &rarr; Variation &rarr; Group &rarr; Listing</h2>
+  <p>The cascade is the most-misunderstood part of the pipeline. It determines what voice context Claude sees when generating titles, bullets, and description. Read this section twice.</p>
+
+  <div class="callout info">
+    <div class="callout-title">🆕 Phase A grounding update (2026-05-29)</div>
+    Four changes shipped to fix SEO content hallucinations (wrong dimensions, invented mechanisms, off-positioning, unsupported claims):
+    <ul style="margin-top: 6px;">
+      <li><strong>Brand is now in the typed cascade.</strong> <code>resolveGuidelinesFieldByField()</code> accepts an optional 4th <code>brand?: ContentGuidelines</code> argument as a tier-0 fallback. Variation/group/listing still win for any field they set; brand only fills fields no higher tier provides. Free-text <code>brand_guidelines</code> is still passed separately into SOURCE FACTS.</li>
+      <li><strong>Brand truncation removed.</strong> The 600-char <code>guidelines.substring(0, 600)</code> at S7 is gone. Full brand text reaches the model.</li>
+      <li><strong>Reframed as SOURCE FACTS, not voice guidance.</strong> The combined cascade output is now injected under <code>## SOURCE FACTS &amp; GUIDELINES — TREAT AS FACTUAL GROUND TRUTH</code> with per-field <code>[tier]</code> annotations from <code>resolveGuidelinesWithTiers()</code>. The model treats this as factual ground truth, not soft style direction.</li>
+      <li><strong>LIVE LISTING block per ASIN.</strong> The S7 prompt now includes each ASIN's live Amazon title, bullets, description, and generic keywords — the strongest grounding signal for dimensions, materials, and mechanism. Combined with the new <code>GROUNDING (ABSOLUTE)</code> rule that forbids unsupported claims, category drift, and fabricated competitive frames.</li>
+    </ul>
+    Implementation: commits <code>df62319e</code>, <code>4eca3092</code>, <code>fbd4e07d</code>, <code>7cd21bcd</code>, <code>bc510a0d</code>, <code>29f15825</code>. Plan: <code>docs/superpowers/plans/2026-05-29-seo-grounding-cascade.md</code>.
+  </div>
+
+  <h3>The 4 tiers</h3>
+  <div class="pyramid">
+    <div class="tier tier-listing">
+      <span class="tier-dot dot-listing"></span>
+      <span class="tier-badge badge-listing">Listing</span>
+      <span class="tier-name">Per-ASIN override</span>
+      <span class="tier-where">master.content_guidelines</span>
+      <span class="tier-priority">Highest</span>
+    </div>
+    <div class="tier tier-group">
+      <span class="tier-dot dot-group"></span>
+      <span class="tier-badge badge-group">Group</span>
+      <span class="tier-name">Variation group</span>
+      <span class="tier-where">variation_groups.content_guidelines</span>
+      <span class="tier-priority">↑ 2nd</span>
+    </div>
+    <div class="tier tier-variation">
+      <span class="tier-dot dot-variation"></span>
+      <span class="tier-badge badge-variation">Variation</span>
+      <span class="tier-name">Variation defaults</span>
+      <span class="tier-where">variations.content_guidelines</span>
+      <span class="tier-priority">↑ 3rd</span>
+    </div>
+    <div class="tier tier-brand">
+      <span class="tier-dot dot-brand"></span>
+      <span class="tier-badge badge-brand">Brand</span>
+      <span class="tier-name">Brand voice baseline (locked snapshot, free text)</span>
+      <span class="tier-where">seo_projects.brand_guidelines</span>
+      <span class="tier-priority">Lowest</span>
+    </div>
+  </div>
+
+  <h3>Override rule in plain English</h3>
+  <div class="callout" style="background: rgba(232,167,0,0.08); border-left: 3px solid var(--brand); padding: 14px 16px; border-radius: 4px; margin: 10px 0;">
+    <p style="margin-bottom: 8px;"><strong>Listing wins over Group wins over Variation</strong> — checked per field, not per object.</p>
+    <p style="margin-bottom: 8px;">For each of the 5 fields (<code>messagingAngle</code>, <code>targetAudience</code>, <code>keyFeatures</code>, <code>doList</code>, <code>dontList</code>) the resolver walks <strong>Listing → Group → Variation</strong> and returns the <em>first non-empty array</em> it finds. Empty/missing means "fall through." There is no merge — once a tier wins for a field, that tier's whole array is used.</p>
+    <p style="margin-bottom: 0;"><strong>Brand is not in this override chain.</strong> Brand voice is a separate free-text block that rides <em>alongside</em> the resolved Variation/Group/Listing block in the Claude prompt — both are present, neither overrides the other. See the "How the cascade reaches Claude" subsection below.</p>
+  </div>
+
+  <h3>Per-field resolution flow</h3>
+  <p>Each field walks its own path. The diagram below shows all 5 fields evaluated independently — a single ASIN can pull different tiers for different fields in the same generation.</p>
+  <div style="background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 18px; margin: 12px 0; overflow-x: auto;">
+    <table style="border-collapse: collapse; width: 100%; font-size: 12px;">
+      <thead>
+        <tr style="border-bottom: 2px solid var(--border);">
+          <th style="text-align: left; padding: 8px 12px; color: var(--muted); font-weight: 600;">Field</th>
+          <th style="text-align: center; padding: 8px 12px; color: var(--tier-listing);">① Check Listing</th>
+          <th style="text-align: center; padding: 8px 12px; color: var(--muted);">→</th>
+          <th style="text-align: center; padding: 8px 12px; color: var(--tier-group);">② Check Group</th>
+          <th style="text-align: center; padding: 8px 12px; color: var(--muted);">→</th>
+          <th style="text-align: center; padding: 8px 12px; color: var(--tier-variation);">③ Check Variation</th>
+          <th style="text-align: center; padding: 8px 12px; color: var(--muted);">→</th>
+          <th style="text-align: left; padding: 8px 12px; color: var(--green);">Result</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom: 1px solid var(--border);">
+          <td style="padding: 10px 12px;"><code>messagingAngle</code></td>
+          <td colspan="7" style="padding: 10px 12px; color: var(--muted);">Listing? non-empty → use Listing &nbsp;·&nbsp; else Group? non-empty → use Group &nbsp;·&nbsp; else Variation? non-empty → use Variation &nbsp;·&nbsp; else <em>field omitted</em></td>
+        </tr>
+        <tr style="border-bottom: 1px solid var(--border);">
+          <td style="padding: 10px 12px;"><code>targetAudience</code></td>
+          <td colspan="7" style="padding: 10px 12px; color: var(--muted);">↑ same walk, independent of any other field</td>
+        </tr>
+        <tr style="border-bottom: 1px solid var(--border);">
+          <td style="padding: 10px 12px;"><code>keyFeatures</code></td>
+          <td colspan="7" style="padding: 10px 12px; color: var(--muted);">↑ same walk</td>
+        </tr>
+        <tr style="border-bottom: 1px solid var(--border);">
+          <td style="padding: 10px 12px;"><code>doList</code></td>
+          <td colspan="7" style="padding: 10px 12px; color: var(--muted);">↑ same walk</td>
+        </tr>
+        <tr>
+          <td style="padding: 10px 12px;"><code>dontList</code></td>
+          <td colspan="7" style="padding: 10px 12px; color: var(--muted);">↑ same walk</td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="margin-top: 12px; margin-bottom: 0; font-size: 12px; color: var(--muted); font-style: italic;">No merging. No accumulation. First non-empty tier wins the whole field's array and lower tiers are dropped for that field.</p>
+  </div>
+
+  <h3>Worked example</h3>
+  <p>Suppose a single ASIN has the following stored values:</p>
+  <table>
+    <thead><tr><th>Tier</th><th><code>messagingAngle</code></th><th><code>keyFeatures</code></th><th><code>doList</code></th><th><code>dontList</code></th></tr></thead>
+    <tbody>
+      <tr>
+        <td><span class="tier-badge badge-listing">Listing</span></td>
+        <td><em>(empty)</em></td>
+        <td><code>["FDA-approved"]</code></td>
+        <td><em>(empty)</em></td>
+        <td><em>(empty)</em></td>
+      </tr>
+      <tr>
+        <td><span class="tier-badge badge-group">Group</span></td>
+        <td><code>["family-friendly"]</code></td>
+        <td><code>["BPA-free", "dishwasher safe"]</code></td>
+        <td><em>(empty)</em></td>
+        <td><code>["medical claims"]</code></td>
+      </tr>
+      <tr>
+        <td><span class="tier-badge badge-variation">Variation</span></td>
+        <td><code>["premium positioning"]</code></td>
+        <td><code>["food-grade"]</code></td>
+        <td><code>["highlight warranty"]</code></td>
+        <td><code>["price comparisons"]</code></td>
+      </tr>
+    </tbody>
+  </table>
+  <p>The resolver walks each column top-down (Listing → Group → Variation) and picks the first non-empty cell:</p>
+  <table>
+    <thead><tr><th>Field</th><th>Winner</th><th>Value passed to Claude</th></tr></thead>
+    <tbody>
+      <tr><td><code>messagingAngle</code></td><td><span class="tier-badge badge-group">Group</span> (Listing empty)</td><td><code>["family-friendly"]</code></td></tr>
+      <tr><td><code>keyFeatures</code></td><td><span class="tier-badge badge-listing">Listing</span> (Listing wins outright)</td><td><code>["FDA-approved"]</code> — note: Group's <code>["BPA-free", "dishwasher safe"]</code> is <strong>dropped entirely</strong>, not merged</td></tr>
+      <tr><td><code>doList</code></td><td><span class="tier-badge badge-variation">Variation</span> (Listing + Group both empty)</td><td><code>["highlight warranty"]</code></td></tr>
+      <tr><td><code>dontList</code></td><td><span class="tier-badge badge-group">Group</span> (Listing empty)</td><td><code>["medical claims"]</code></td></tr>
+    </tbody>
+  </table>
+  <p>The <code>renderGuidelinesBlock()</code> output sent to Claude:</p>
+<pre><span class="label">Rendered prompt block (per worked example)</span>## Variation Content Guidelines
+Messaging angle: family-friendly
+Key features: FDA-approved
+Do: highlight warranty
+Don't: medical claims</pre>
+  <p>Note how <strong>Group's</strong> <code>["BPA-free", "dishwasher safe"]</code> never reaches Claude — Listing's single-item array took the whole <code>keyFeatures</code> slot. If you wanted Listing to <em>add</em> to Group, you'd have to repeat Group's values in the Listing array. This is the most common surprise for users.</p>
+
+  <h3>The algorithm (source)</h3>
+  <p>Implemented in <code>resolveGuidelinesFieldByField()</code> at <code>src/lib/variation-guidelines.ts</code>. The function is small enough to print in full:</p>
+<pre><span class="label">src/lib/variation-guidelines.ts</span>export type ContentGuidelines = {
+  keyFeatures?: string[];
+  messagingAngle?: string[];
+  targetAudience?: string[];
+  doList?: string[];
+  dontList?: string[];
+};
+
+function pickArray(
+  ...tiers: (string[] | null | undefined)[]
+): string[] | undefined {
+  for (const v of tiers) {
+    if (Array.isArray(v) &amp;&amp; v.length &gt; 0) return v;
+  }
+  return undefined;
+}
+
+/**
+ * Resolves effective guidelines field-by-field across up to 4 tiers.
+ * Each field independently picks the highest-priority non-empty value:
+ *   listing → group → variation → (caller falls back to brand voice if null returned)
+ */
+export function resolveGuidelinesFieldByField(
+  listing:   ContentGuidelines | null | undefined,
+  group:     ContentGuidelines | null | undefined,
+  variation: ContentGuidelines | null | undefined,
+): ContentGuidelines | null {
+  const result: ContentGuidelines = {
+    messagingAngle: pickArray(listing?.messagingAngle, group?.messagingAngle, variation?.messagingAngle),
+    targetAudience: pickArray(listing?.targetAudience, group?.targetAudience, variation?.targetAudience),
+    keyFeatures:    pickArray(listing?.keyFeatures,    group?.keyFeatures,    variation?.keyFeatures),
+    doList:         pickArray(listing?.doList,          group?.doList,         variation?.doList),
+    dontList:       pickArray(listing?.dontList,        group?.dontList,       variation?.dontList),
+  };
+  return isGuidelinesPresent(result) ? result : null;
+}
+
+/** Renders ContentGuidelines as a plain-text block for Claude prompts */
+export function renderGuidelinesBlock(gl: ContentGuidelines): string {
+  const lines: string[] = ["## Variation Content Guidelines"];
+  if (gl.messagingAngle?.length) lines.push(`Messaging angle: ${gl.messagingAngle.join(", ")}`);
+  if (gl.targetAudience?.length) lines.push(`Target audience: ${gl.targetAudience.join(", ")}`);
+  if (gl.keyFeatures?.length)    lines.push(`Key features: ${gl.keyFeatures.join(", ")}`);
+  if (gl.doList?.length)         lines.push(`Do: ${gl.doList.join(", ")}`);
+  if (gl.dontList?.length)       lines.push(`Don't: ${gl.dontList.join(", ")}`);
+  return lines.join("\n");
+}</pre>
+
+  <p>Key properties:</p>
+  <ul class="bullets">
+    <li><strong>Field-by-field, not all-or-nothing.</strong> Each of the 5 fields (messagingAngle / targetAudience / keyFeatures / doList / dontList) is resolved independently. A listing can override only <code>messagingAngle</code> and inherit the rest from group or variation.</li>
+    <li><strong>Empty equals not-set.</strong> Empty arrays and empty strings count as "not set" — they fall through to the next tier.</li>
+    <li><strong>Arrays are picked wholesale.</strong> When a tier wins for a list field, the entire array from that tier is used — arrays are <strong>not</strong> merged across tiers.</li>
+    <li><strong>Brand can now ride this function as an optional 4th tier (Phase A 2026-05-29).</strong> Free-text <code>brand_guidelines</code> is still passed separately into SOURCE FACTS, but if a structured <code>ContentGuidelines</code> brand object is supplied as the 4th arg it acts as a tier-0 fallback for fields no higher tier sets. <code>resolveGuidelinesWithTiers()</code> returns both the resolved object and a tier map for prompt provenance.</li>
+  </ul>
+
+  <h3>How the cascade reaches Claude <span class="tag">Updated 2026-05-29</span></h3>
+  <p>All cascade outputs (brand free-text + resolved variation/group/listing + per-ASIN live listing) now reach Claude through a <strong>single unified SOURCE FACTS block</strong>, built by <code>buildSourceFactsBlock()</code> and injected into <code>complianceRules</code> in <code>src/app/api/seo/claude/seo/route.ts</code>:</p>
+<pre><span class="label">Injection — src/app/api/seo/claude/seo/route.ts (in complianceRules template)</span>${buildSourceFactsBlock(guidelines, variationGuidelinesText, asinList)}${competitiveBlock}</pre>
+
+  <p>The block Claude sees:</p>
+<pre><span class="label">Rendered SOURCE FACTS block — example</span>## SOURCE FACTS &amp; GUIDELINES — TREAT AS FACTUAL GROUND TRUTH
+Order of precedence per field: listing &gt; group &gt; variation &gt; brand. Free-text brand guidelines apply to fields not covered by typed tiers.
+
+### Brand guidelines [tier: brand]
+&lt;full brand_guidelines text — no truncation&gt;
+
+### Resolved typed guidelines
+## SOURCE FACTS — resolved cascade (listing → group → variation → brand)
+Messaging angle [listing]: ...
+Key features [variation]: ...
+Don't [brand]: ...
+
+### LIVE LISTINGS — concrete facts from current Amazon listings (use these to verify dimensions, materials, mechanisms, capabilities)
+#### ASIN B0XXXXXXXX — current live listing
+Live title: ...
+Live bullets:
+  1. ...
+Live description: ...
+Live generic keywords: ...</pre>
+
+  <p>Where:</p>
+  <ul class="bullets">
+    <li><code>guidelines</code> = brand free text. <strong>No truncation</strong> — full text passed from <code>src/app/seo/[id]/seo/page.tsx:523</code> as <code>guidelines || undefined</code>.</li>
+    <li><code>variationGuidelinesText</code> = output of <code>renderGuidelinesBlock(resolvedGl, tiers?)</code>. When tiers are supplied (via <code>resolveGuidelinesWithTiers()</code>), each field is annotated with <code>[listing|group|variation|brand]</code>.</li>
+    <li><code>asinList</code> = the per-ASIN object that now carries <code>existing_title</code>, <code>existing_bullets</code>, <code>existing_description</code>, <code>existing_generic_keywords</code> sourced from <code>seo_asins.existing_content</code>.</li>
+    <li><code>competitiveBlock</code> = the S0 competitive intelligence block (if available).</li>
+  </ul>
+
+  <p>The block is paired with a <strong>GROUNDING (ABSOLUTE)</strong> rule at the top of <code>complianceRules</code> that points at SOURCE FACTS and forbids:</p>
+  <ul class="bullets">
+    <li>Any concrete claim (number, dimension, weight, time, temperature, material, mechanism, capability) not supported by SOURCE FACTS or LIVE LISTING for the same ASIN.</li>
+    <li>Inferences from category norms, brand stereotypes, training data, or competitor patterns.</li>
+    <li>Invented competitive frames ("no ice", "no batteries", "unlike &lt;category&gt;").</li>
+    <li>Category drift (calling a small towel a "beach towel" / "pool towel alternative" when SOURCE FACTS does not list those categories).</li>
+    <li>Unverifiable superlatives ("wrinkle-free", "holds water evenly", "works for everyone", "lasts forever").</li>
+  </ul>
+
+  <h3>Critical gotchas — read these</h3>
+  <div class="callout warn">
+    <div class="callout-title">⚠ Only first ASIN's group + listing used per batch</div>
+    At <code>src/app/seo/[id]/seo/page.tsx:509-512</code>:
+    <pre style="margin-top: 6px; margin-bottom: 0; font-size: 11px;">const firstGroupName = asins[0]?.variation_group ?? null;
+const groupGl = variationGuidelines?.groups.find(g =&gt; g.name === firstGroupName)?.contentGuidelines ?? null;
+const listingGl = (asins[0] as any)?.listing_guidelines ?? null;</pre>
+    The batch sends content for many ASINs but only resolves guidelines for <code>asins[0]</code>. If a batch mixes ASINs from different variation groups, only the first ASIN's group guidelines apply to the whole batch. Workaround: group batches by variation_group before submitting.
+  </div>
+
+  <div class="callout warn">
+    <div class="callout-title">⚠ Group matched by NAME, not ID</div>
+    <code>g.name === firstGroupName</code> at <code>page.tsx:510</code>. If the user renames a variation group, the lookup silently returns null and the group tier drops out of the cascade. Group guidelines orphan on rename — there's no migration step.
+  </div>
+
+  <div class="callout warn">
+    <div class="callout-title">⚠ S5 / S6 / aplus-qa do NOT use the cascade</div>
+    <ul style="margin-top: 6px;">
+      <li>S5 (COSMO): reads <strong>brand voice only</strong> from <code>brand_guidelines_lock.brand_voice</code>. See <code>src/lib/seo/phases/s5.ts:34</code>.</li>
+      <li>S6 (compliance): reads <code>brand_guidelines_lock.words_to_avoid</code> only — no cascade.</li>
+      <li>A+ Q&amp;A (Module 7): reads <code>guidelines.substring(0, 300)</code> — brand free text truncated to 300 chars. No variation/group/listing tiers reach this prompt.</li>
+    </ul>
+    Only S7 (titles / bullets / description / backend) consumes the full cascade.
+  </div>
+
+  <div class="callout info">
+    <div class="callout-title">ℹ Adoption stats (2026-05-26)</div>
+    Currently in production:
+    <ul style="margin-top: 6px;">
+      <li><strong>0</strong> variation_groups rows have <code>content_guidelines</code> populated</li>
+      <li><strong>0</strong> master (listing) rows have <code>content_guidelines</code> populated</li>
+      <li><strong>1</strong> variation has <code>content_guidelines</code> populated</li>
+    </ul>
+    Most projects today only have brand-tier guidelines reaching Claude. The infrastructure for the full cascade is built, but adoption is essentially zero. New projects should fill the variation tier as a minimum baseline.
+  </div>
+
+  <div class="callout info">
+    <div class="callout-title">ℹ Truncation table</div>
+    Different phases truncate brand guidelines to different lengths. If your brand guidelines are long, Claude sees less of them than you expect in every phase except S7:
+    <table class="io" style="margin-top: 8px;">
+      <thead><tr><th>Phase</th><th>Truncation</th><th>Where</th></tr></thead>
+      <tbody>
+        <tr><td>S2 keywords</td><td>600 chars</td><td><code>src/app/api/seo/claude/keywords/route.ts:110</code></td></tr>
+        <tr><td>S4 Rufus Phase 2</td><td>600 chars</td><td><code>route.ts:93</code></td></tr>
+        <tr><td>S4 Rufus Phase 3</td><td>600 chars</td><td><code>route.ts:195</code></td></tr>
+        <tr><td>S5 COSMO</td><td>600 chars</td><td><code>route.ts:145</code></td></tr>
+        <tr><td>S7 content (4 batches)</td><td><strong>Full (no truncation, Phase A 2026-05-29)</strong></td><td><code>src/app/seo/[id]/seo/page.tsx:523</code></td></tr>
+        <tr><td>S7 Premium audit</td><td>500 chars</td><td><code>route.ts:175</code></td></tr>
+        <tr><td>A+ Module 7 (premium_qa)</td><td>300 chars</td><td><code>route.ts:195</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════ DATA FLOW ═══════════════ -->
+<div class="section" id="dataflow">
+  <div class="section-label">12 — Architecture</div>
+  <h2>Data flow diagram</h2>
+  <p>End-to-end pipeline view. <b>Bold</b> = Claude call. <em>Blue</em> = DB write.</p>
+
+<div class="flow">
+                          ┌─────────────────────────────────┐
+                          │  User opens /seo/[id]            │
+                          │  (creates seo_projects row)      │
+                          └────────────┬────────────────────┘
+                                       │
+        ┌──────────────────────────────┴──────────────────────────────┐
+        │                                                              │
+        ▼                                                              ▼
+  ┌─────────────────┐                                          ┌──────────────────┐
+  │  S0 (optional)  │  competitor URLs + first 5 ASINs         │  S1 intake       │
+  │  <b>Claude(haiku)</b>     │ ──────────────────────────────────────▶  │  brand_guidelines│
+  │                 │                                          │  + ASIN grid     │
+  │  → <em>seo_settings</em> │                                          │  → <em>seo_asins</em>      │
+  │    (competitive:│                                          │  → <em>seo_projects</em>   │
+  │     &lt;projectId&gt;)│                                          │    .brand_lock   │
+  └─────────────────┘                                          └────────┬─────────┘
+                                                                        │
+                                                                        ▼
+                                                              ┌──────────────────┐
+                                                              │  S2 keywords     │
+                                                              │  Cerebro CSV     │
+                                                              │  <b>Claude(batched)</b>  │
+                                                              │  → <em>seo_keywords</em>   │
+                                                              └────────┬─────────┘
+                                                                        │
+                                                                        ▼
+                                                              ┌──────────────────┐
+                                                              │  S3 reviews      │
+                                                              │  reviews CSV     │
+                                                              │  <b>Claude(1 call)</b>   │
+                                                              │  → <em>seo_reviews</em>    │
+                                                              └────────┬─────────┘
+                                                                        │
+                                                                        ▼
+                                                              ┌──────────────────┐
+                                                              │  S4 Rufus        │
+                                                              │  P1: canonical Qs│
+                                                              │  P2: <b>Claude</b> 8-10 Qs│
+                                                              │  P3: <b>Claude</b> synthesis│
+                                                              │  → <em>seo_rufus</em>      │
+                                                              └────────┬─────────┘
+                                                                        │
+                                                                        ▼
+                                                              ┌──────────────────┐
+                                                              │  S5 COSMO        │
+                                                              │  <b>Claude(1 call)</b>   │
+                                                              │  brand voice ONLY│
+                                                              │  → <em>seo_cosmo_maps</em> │
+                                                              └────────┬─────────┘
+                                                                        │
+                                                                        ▼
+                                                              ┌──────────────────────────┐
+                                                              │  S7 content (per batch)  │
+                                                              │  ┌────────────────────┐  │
+                                                              │  │ titles | bullets   │  │
+                                                              │  │ description|backend│  │
+                                                              │  └────────────────────┘  │
+                                                              │  Pass 1: <b>Claude</b> gen   │
+                                                              │  Pass 2: <b>Claude</b> voice │
+                                                              │           (T/B only)     │
+                                                              │  Pass 3: <b>Claude</b> CMOS  │
+                                                              │           (T/B only)     │
+                                                              │  Pass 4: <b>Claude</b> coher.│
+                                                              │           (bullets only) │
+                                                              │  ─── injects ───         │
+                                                              │   • brand text (600c)    │
+                                                              │   • resolveGuidelines    │
+                                                              │     FieldByField(L,G,V)  │
+                                                              │   • COSMO/Rufus/Reviews  │
+                                                              │   • S0 competitive (opt) │
+                                                              │  → autosaved to client   │
+                                                              │    state, then S6        │
+                                                              └────────┬─────────────────┘
+                                                                        │
+                                                                        ▼
+                                                              ┌──────────────────┐
+                                                              │  S6 validation   │
+                                                              │  (no Claude call)│
+                                                              │  • compliance    │
+                                                              │  • byte budgets  │
+                                                              │  → <em>seo_listings</em>   │
+                                                              │  → <em>seo_passage_map</em>│
+                                                              │  → <em>seo_aplus_plans</em>│
+                                                              │    (stub modules)│
+                                                              │  → stamps        │
+                                                              │    s6_approved_at│
+                                                              └────────┬─────────┘
+                                                                        │
+                                                ┌───────────────────────┴─────────────────────────┐
+                                                │                                                  │
+                                                ▼                                                  ▼
+                                      ┌──────────────────┐                              ┌──────────────────┐
+                                      │ A+ Module 7      │                              │ Premium audit    │
+                                      │ premium_qa       │                              │ 12-dim scoring   │
+                                      │ <b>Claude(1 call)</b>   │                              │ <b>Claude(2 calls)</b>  │
+                                      │ 5 Q&amp;A per ASIN   │                              │ + rewrites       │
+                                      │ → <em>seo_qa</em>          │                              │ → <em>seo_quality_</em>  │
+                                      │                  │                              │   <em>scores</em>          │
+                                      └──────────────────┘                              └──────────────────┘
+
+                                  S8 images (stub — seo_images schema exists, no writer)
+                                  S9 score  (stub — seo_scores schema exists, no writer)
+</div>
+</div>
+
+<!-- ═══════════════ ENV ═══════════════ -->
+<div class="section" id="env">
+  <div class="section-label">13 — Operations</div>
+  <h2>Environment &amp; configuration</h2>
+  <p>Every environment variable the SEO pipeline depends on (server-side). Required unless marked optional.</p>
+  <table class="io">
+    <thead><tr><th>Variable</th><th>Used by</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="name">ANTHROPIC_API_KEY</td>
+        <td>
+          <code>src/lib/seo-skill-runner.ts</code> (S0)<br>
+          <code>src/app/api/seo/claude/seo/route.ts</code> (S7)<br>
+          <code>.../keywords/route.ts</code> (S2)<br>
+          <code>.../reviews/route.ts</code> (S3)<br>
+          <code>.../rufus/route.ts</code> (S4)<br>
+          <code>.../cosmo/route.ts</code> (S5)<br>
+          <code>.../aplus-qa/route.ts</code> (A+ Q&amp;A)<br>
+          <code>.../seo-audit/route.ts</code> (Audit)<br>
+          <code>.../seo-score/route.ts</code> (Coherence)<br>
+          <code>.../seo-backend-refine/route.ts</code><br>
+          <code>.../extract-doc/route.ts</code><br>
+          <code>src/lib/seo/claude-client.ts</code>
+        </td>
+        <td>Required. Returns 500 if missing.</td>
+      </tr>
+      <tr>
+        <td class="name">GOOGLE_DRIVE_FOLDER_ID</td>
+        <td><code>src/app/api/seo/projects/bulk/route.ts</code><br><code>.../projects/[id]/export-gdoc/route.ts</code></td>
+        <td>Optional. Root folder for SEO project doc exports.</td>
+      </tr>
+      <tr>
+        <td class="name">DATABASE_URL</td>
+        <td>All routes (via <code>src/lib/db</code>)</td>
+        <td>Supabase Postgres connection string.</td>
+      </tr>
+      <tr>
+        <td class="name">NEXTAUTH_SECRET / NEXTAUTH_URL</td>
+        <td>All authenticated routes (via <code>getAuthSession</code>)</td>
+        <td>NextAuth v5 session signing.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Feature config (DB-driven)</h3>
+  <p>Each phase asks <code>getAiFeatureConfig(featureKey)</code> from <code>src/lib/ai-config.server.ts</code> for its model + max_tokens + enabled flag. Feature keys per phase:</p>
+  <ul class="bullets">
+    <li><code>seo_keywords</code> — S2</li>
+    <li><code>seo_reviews</code> — S3</li>
+    <li><code>seo_rufus</code> — S4</li>
+    <li><code>seo_cosmo</code> — S5</li>
+    <li><code>seo_content</code> — S7 (all 4 batches + humanize + CMOS + coherence + backend refine + A+ Q&amp;A)</li>
+    <li><code>seo_audit</code> — Premium audit</li>
+  </ul>
+  <p>If any feature is disabled, the corresponding route returns <code>{ error: "Feature disabled" }</code> with HTTP 403.</p>
+
+  <h3>Rate limiting</h3>
+  <p>Every Claude-calling route uses <code>checkRateLimit(rlKey, 10, 60_000)</code> from <code>src/lib/rate-limit.ts</code> — 10 requests per minute per user (keyed on session email or X-Forwarded-For). 429 with <code>Retry-After</code> header when exceeded.</p>
+
+  <h3>Vercel function settings</h3>
+  <table class="io">
+    <thead><tr><th>Route</th><th>maxDuration</th></tr></thead>
+    <tbody>
+      <tr><td><code>/api/seo/claude/seo</code> (S7)</td><td>300 s</td></tr>
+      <tr><td><code>/api/seo/claude/keywords</code> (S2)</td><td>300 s</td></tr>
+      <tr><td><code>/api/seo/claude/reviews</code> (S3)</td><td>300 s</td></tr>
+      <tr><td><code>/api/seo/claude/rufus</code> (S4)</td><td>300 s</td></tr>
+      <tr><td><code>/api/seo/claude/cosmo</code> (S5)</td><td>300 s</td></tr>
+      <tr><td><code>/api/seo/claude/seo-audit</code></td><td>300 s</td></tr>
+      <tr><td><code>/api/seo/claude/aplus-qa</code></td><td>120 s</td></tr>
+      <tr><td><code>/api/seo/claude/seo-backend-refine</code></td><td>60 s</td></tr>
+      <tr><td><code>/api/seo/claude/seo-score</code></td><td>60 s</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ═══════════════ SCHEMA ═══════════════ -->
+<div class="section" id="schema">
+  <div class="section-label">14 — Data model</div>
+  <h2>Database schema</h2>
+  <p>SEO-related tables in <code>src/lib/db/schema.ts</code>. Key columns only — see source for indexes / constraints / cascade rules.</p>
+
+  <h3>seo_projects</h3>
+  <p>One row per SEO project. Owner = user email.</p>
+  <table class="io">
+    <tbody>
+      <tr><td class="name">id</td><td class="type">uuid PK</td><td></td></tr>
+      <tr><td class="name">created_by</td><td class="type">varchar(255)</td><td>User email.</td></tr>
+      <tr><td class="name">name</td><td class="type">varchar(255)</td><td></td></tr>
+      <tr><td class="name">status</td><td class="type">draft|in_progress|completed|archived</td><td></td></tr>
+      <tr><td class="name">current_phase</td><td class="type">S1..S6</td><td></td></tr>
+      <tr><td class="name">client_id_code / brand_name / client_name</td><td class="type">varchar</td><td></td></tr>
+      <tr><td class="name">client_bible_url / brand_url</td><td class="type">text</td><td></td></tr>
+      <tr><td class="name">competitors</td><td class="type">jsonb[]</td><td><code>{name, url}[]</code></td></tr>
+      <tr><td class="name">variation_theme / size_present / variety_pack_details</td><td class="type">mixed</td><td></td></tr>
+      <tr><td class="name">version</td><td class="type">integer</td><td>Auto-incremented per variation (V1, V2…).</td></tr>
+      <tr><td class="name">brand_guidelines</td><td class="type">text</td><td>Free text. <strong>This is what gets truncated to 300/500/600 chars before reaching Claude.</strong></td></tr>
+      <tr><td class="name">brand_guidelines_lock</td><td class="type">jsonb</td><td>Structured: <code>{status, brand_voice, language_preferences, words_to_avoid[], audience_notes, positioning, raw_text}</code>.</td></tr>
+      <tr><td class="name">content_rules</td><td class="type">jsonb</td><td>Per-section customization. Holds <code>s2_cerebro_csv</code>, <code>s3_reviews_csv</code> dimension uploads.</td></tr>
+      <tr><td class="name">s1..s9_approved_at</td><td class="type">timestamptz</td><td>Phase approval gates.</td></tr>
+      <tr><td class="name">s7_skipped / s8_skipped</td><td class="type">boolean</td><td></td></tr>
+      <tr><td class="name">assigned_to / linked_product_id / variation_id</td><td class="type">uuid FK</td><td>Hub integrations.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>seo_asins</h3>
+  <p>One row per ASIN inside a project.</p>
+  <table class="io">
+    <tbody>
+      <tr><td class="name">id / project_id (cascade)</td><td class="type">uuid</td><td></td></tr>
+      <tr><td class="name">asin / sku / amazon_url / website_url</td><td class="type">varchar/text</td><td></td></tr>
+      <tr><td class="name">variation_id / variation_product / variation_theme_name / variation_group</td><td class="type">varchar</td><td></td></tr>
+      <tr><td class="name">parentage_level</td><td class="type">Parent|Child</td><td></td></tr>
+      <tr><td class="name">flavor / style / color / size</td><td class="type">varchar(100)</td><td>Variant axes.</td></tr>
+      <tr><td class="name">existing_content</td><td class="type">jsonb</td><td><code>{item_name, detailed_bullets[], product_description, generic_keywords[], concise_bullets[], content_bullets[], key_features[]}</code></td></tr>
+      <tr><td class="name">baseline_analysis</td><td class="type">jsonb</td><td>S1 output: <code>{quality_score, keyword_integration, compliance_flags[], top_improvements[]}</code></td></tr>
+      <tr><td class="name">generated_content</td><td class="type">jsonb</td><td>S7 autosave: title / detailed_bullets[] / concise_bullets[] / content_bullets[] / key_features[] / description / search_terms_*</td></tr>
+    </tbody>
+  </table>
+
+  <h3>seo_keywords</h3>
+  <p>S2 output. One row per (project, keyword).</p>
+  <table class="io">
+    <tbody>
+      <tr><td class="name">text / search_volume</td><td class="type">text/integer</td><td></td></tr>
+      <tr><td class="name">priority_tier</td><td class="type">T1|T2|T3|T4</td><td></td></tr>
+      <tr><td class="name">search_intent / primary_use_location / match_type</td><td class="type">varchar</td><td></td></tr>
+      <tr><td class="name">cosmo_relationship / buyer_stage / semantic_group / cosmo_domain</td><td class="type">varchar</td><td></td></tr>
+      <tr><td class="name">cerebro_iq / competing_products / title_density / cpr</td><td class="type">integer</td><td>Cerebro pass-through.</td></tr>
+      <tr><td class="name">ppc_suggested_bid / _min_bid / _max_bid / competitor_rank_avg / composite_score</td><td class="type">numeric</td><td></td></tr>
+      <tr><td class="name">is_negative / negative_reason / is_competitor</td><td class="type">bool/text</td><td></td></tr>
+      <tr><td class="name">keyword_source</td><td class="type">varchar</td><td>Default "Client".</td></tr>
+    </tbody>
+  </table>
+
+  <h3>seo_reviews</h3>
+  <p>S3 output. One row per (project, review).</p>
+  <table class="io">
+    <tbody>
+      <tr><td class="name">review_id / date / reviewer_name / asin / product_variation</td><td class="type">varchar/text</td><td>Reviewer name anonymized to <code>Reviewer_NNN</code>.</td></tr>
+      <tr><td class="name">star_rating / helpful_votes</td><td class="type">integer</td><td></td></tr>
+      <tr><td class="name">title / text</td><td class="type">text</td><td></td></tr>
+      <tr><td class="name">sentiment</td><td class="type">Positive+|Positive|Neutral|Negative|Negative-</td><td></td></tr>
+      <tr><td class="name">key_themes / usage_mentioned / packaging_feedback / price_feedback / heat_level_feedback / rufus_usable_insight / bullet_mapping</td><td class="type">text</td><td>"None mentioned" / "Not applicable" when absent.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>seo_rufus</h3>
+  <p>S4 output. One row per project (unique constraint on <code>project_id</code>).</p>
+  <table class="io">
+    <tbody>
+      <tr><td class="name">phase1_questions / phase1_answers</td><td class="type">jsonb</td><td>Canonical 5.</td></tr>
+      <tr><td class="name">phase2_questions / phase2_answers</td><td class="type">jsonb</td><td>Claude-generated 8-10.</td></tr>
+      <tr><td class="name">phase3_questions / phase3_answers</td><td class="type">jsonb</td><td>Reserved.</td></tr>
+      <tr><td class="name">rows</td><td class="type">jsonb[]</td><td>Flat analyzed rows (Phase 3 output).</td></tr>
+      <tr><td class="name">optimization_summary</td><td class="type">jsonb</td><td><code>{seo_strategy, listing_plan, image_strategy, audience_segmentation, action_list[]}</code></td></tr>
+      <tr><td class="name">phase1/2/3_approved_at</td><td class="type">timestamptz</td><td></td></tr>
+    </tbody>
+  </table>
+
+  <h3>seo_cosmo_maps</h3>
+  <p>S5 output. One row per project (unique constraint).</p>
+  <table class="io">
+    <tbody>
+      <tr><td class="name">triples</td><td class="type">jsonb[]</td><td><code>{id, entity1, relationship, entity2, confidence, confidence_level, supporting_keyword_tier}[]</code></td></tr>
+      <tr><td class="name">rows</td><td class="type">jsonb[]</td><td>Flat COSMO rows from Claude (COSMOEntity, COSMORelationType, etc.).</td></tr>
+      <tr><td class="name">keyword_coverage</td><td class="type">jsonb</td><td><code>Record&lt;string, number&gt;</code></td></tr>
+      <tr><td class="name">competitive_positioning</td><td class="type">text</td><td></td></tr>
+      <tr><td class="name">relationship_categories_evaluated</td><td class="type">jsonb (string[])</td><td></td></tr>
+    </tbody>
+  </table>
+
+  <h3>seo_compliance_reports</h3>
+  <table class="io">
+    <tbody>
+      <tr><td class="name">issues</td><td class="type">jsonb[]</td><td><code>{id, asin, field, type, severity, message, word?, position?, bypassed}[]</code></td></tr>
+      <tr><td class="name">status</td><td class="type">clean|has_issues|bypassed</td><td></td></tr>
+    </tbody>
+  </table>
+
+  <h3>seo_listings</h3>
+  <p>Versioned per ASIN. Unique on (asin_id, version).</p>
+  <table class="io">
+    <tbody>
+      <tr><td class="name">project_id / asin_id (both cascade)</td><td class="type">uuid</td><td></td></tr>
+      <tr><td class="name">title</td><td class="type">varchar(220)</td><td></td></tr>
+      <tr><td class="name">bullets</td><td class="type">jsonb</td><td><code>{detailed: string[5], concise: string[5], content: string[5], key_features: string[5]}</code></td></tr>
+      <tr><td class="name">product_description / backend_search_terms</td><td class="type">text</td><td></td></tr>
+      <tr><td class="name">backend_categories</td><td class="type">jsonb</td><td><code>{core, supplement, symptom, audience, longtail}</code></td></tr>
+      <tr><td class="name">byte_usage</td><td class="type">jsonb</td><td><code>Record&lt;field, {used, max, ok}&gt;</code></td></tr>
+      <tr><td class="name">compliance_violations</td><td class="type">jsonb[]</td><td><code>{field, word, type, auto_corrected_to?, bypassed}[]</code></td></tr>
+      <tr><td class="name">version</td><td class="type">integer</td><td>Auto-incremented.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>seo_aplus_plans</h3>
+  <p>Versioned per ASIN. 7 modules per row.</p>
+  <table class="io">
+    <tbody>
+      <tr><td class="name">modules</td><td class="type">jsonb[]</td><td><code>{position 1-7, module_type, cosmo_relationship, fields, images[]}[]</code>. Position 7 = <code>premium_qa</code>.</td></tr>
+      <tr><td class="name">validation_errors</td><td class="type">jsonb[]</td><td><code>{position, field, message}[]</code></td></tr>
+      <tr><td class="name">version</td><td class="type">integer</td><td></td></tr>
+    </tbody>
+  </table>
+
+  <h3>seo_qa</h3>
+  <p>A+ Module 7 premium Q&amp;A storage. Versioned per ASIN.</p>
+  <table class="io">
+    <tbody>
+      <tr><td class="name">pairs</td><td class="type">jsonb[]</td><td><code>{id, question, answer_short, answer_long, intent_tier, source_rufus_question_id?, source_review_themes[]}[]</code></td></tr>
+      <tr><td class="name">aplus_qa_subset</td><td class="type">jsonb[]</td><td>Derived: <code>{id, question, answer}[]</code> — first 5 decision-tier pairs.</td></tr>
+      <tr><td class="name">customer_qa_export</td><td class="type">jsonb[]</td><td>Derived: every pair, mapped to {id, question, answer_long}.</td></tr>
+      <tr><td class="name">passage_map_qa</td><td class="type">jsonb[]</td><td>Derived: cross-links to Rufus/COSMO.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>seo_passage_map</h3>
+  <p>Per-ASIN passages mapped back to Rufus + COSMO + keywords.</p>
+  <table class="io">
+    <tbody>
+      <tr><td class="name">passages</td><td class="type">jsonb[]</td><td><code>{section, text, rufus_question_ids[], cosmo_triple_ids[], keywords_used[]}[]</code></td></tr>
+    </tbody>
+  </table>
+
+  <h3>seo_images <span style="font-size: 11px; color: var(--muted); font-weight: 400;">(schema exists, S8 stub — no writer)</span></h3>
+  <p>Versioned per (asin, image_number). Carries technical_name, image_type, image_purpose, cosmo_relationship, buyer_stage, dimensions, alt_text, ai_image_prompt.</p>
+
+  <h3>seo_scores <span style="font-size: 11px; color: var(--muted); font-weight: 400;">(schema exists, S9 stub — no writer)</span></h3>
+  <p>Versioned per ASIN, append-only. Carries rufusCoveragePct, rufus5CanonicalCoverage JSONB, cosmoCoveragePct, cosmoDensityPer100Words, buyerJourneyAlignment, byteBudgetStatus, prohibitedWordViolations[], missingRufusQuestions[], missingCosmoTriples[], overallGrade, probeTranscript.</p>
+
+  <h3>seo_quality_scores</h3>
+  <p>What the Premium Audit (S7+) actually writes to. Distinct table from <code>seo_scores</code>.</p>
+  <table class="io">
+    <tbody>
+      <tr><td class="name">overall_score</td><td class="type">integer</td><td>0-100.</td></tr>
+      <tr><td class="name">complianceScore / keywordCoverage / cosmoDensity / rufusCoverage / humanVoice / buyerJourney / variationConsistency / eeatScore / readabilityScore / citabilityScore / geoScore</td><td class="type">integer</td><td>12 dimensions.</td></tr>
+      <tr><td class="name">findings_count</td><td class="type">integer</td><td></td></tr>
+    </tbody>
+  </table>
+
+  <h3>seo_phase_runs</h3>
+  <p>Per-execution audit log + cost tracking + status machine.</p>
+  <table class="io">
+    <tbody>
+      <tr><td class="name">phase</td><td class="type">varchar(5)</td><td>S1..S9 etc.</td></tr>
+      <tr><td class="name">status / trigger</td><td class="type">varchar</td><td></td></tr>
+      <tr><td class="name">attempt</td><td class="type">smallint</td><td></td></tr>
+      <tr><td class="name">started_at / finished_at / duration_ms</td><td class="type">timestamptz/int</td><td></td></tr>
+      <tr><td class="name">claude_input_tokens / claude_output_tokens / claude_cost_usd / claude_model</td><td class="type">int/numeric/varchar</td><td></td></tr>
+      <tr><td class="name">output_artifact_version</td><td class="type">integer</td><td></td></tr>
+      <tr><td class="name">validation_errors / error_message</td><td class="type">jsonb[]/text</td><td></td></tr>
+      <tr><td class="name">parent_run_id</td><td class="type">uuid FK self</td><td>For retries.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>seo_exports</h3>
+  <p>Export history per project. Type = <code>google_doc | csv | tsv</code>. Carries URL + content snapshot.</p>
+
+  <h3>seo_settings</h3>
+  <p>KV store used by skills. S0 writes <code>competitive:&lt;projectId&gt;</code> here. Skill config flags (e.g. <code>skill_config</code>) live here too.</p>
+
+  <h3>Guidelines tables (outside SEO namespace)</h3>
+  <p>The cascade reads from non-<code>seo_</code> tables — these are the source of truth for the variation/group/listing tiers:</p>
+  <ul class="bullets">
+    <li><code>variations.content_guidelines</code> — variation defaults tier.</li>
+    <li><code>variation_groups.content_guidelines</code> — group tier.</li>
+    <li><code>master.content_guidelines</code> — per-ASIN listing tier.</li>
+  </ul>
+  <p>All three are <code>jsonb</code> typed as <code>ContentGuidelines</code> from <code>src/lib/variation-guidelines.ts</code>. Migration 0062 added the variation/group columns; the master column predates the cascade.</p>
+</div>
+
+<!-- ═══════════════ CROSSREF ═══════════════ -->
+<div class="section" id="crossref">
+  <div class="section-label">15 — Reference</div>
+  <h2>Cross-references</h2>
+
+  <h3>Key files (relative to repo root)</h3>
+  <table class="io">
+    <thead><tr><th>Path</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td><code>src/lib/seo/phases/s1.ts</code> .. <code>s9.ts</code></td><td>Phase executor contracts (S7/S8/S9 are stubs).</td></tr>
+      <tr><td><code>src/lib/seo/runner.ts</code></td><td>Phase orchestration / dispatch.</td></tr>
+      <tr><td><code>src/lib/seo/slot-fill.ts</code></td><td>Prompt template slot system.</td></tr>
+      <tr><td><code>src/lib/seo/skill-loader.ts</code></td><td>Loads prompt files for the executor system.</td></tr>
+      <tr><td><code>src/lib/seo/prompts/</code></td><td>Slot-based prompt templates (s1..s6) + canonical-rufus-questions + cosmo-relationships constants.</td></tr>
+      <tr><td><code>src/lib/seo/compliance.ts</code></td><td><code>scanCompliance</code>, <code>mergeBypass</code>.</td></tr>
+      <tr><td><code>src/lib/seo/byte-budget.ts</code></td><td><code>checkByteBudget</code>, <code>checkCharBudget</code>.</td></tr>
+      <tr><td><code>src/lib/seo/coherence.ts</code></td><td>Pass-4 coherence + Human Score logic.</td></tr>
+      <tr><td><code>src/lib/seo/claude-client.ts</code></td><td>Shared Claude SDK helper.</td></tr>
+      <tr><td><code>src/lib/seo-skill-runner.ts</code></td><td>S0 competitive analysis skill.</td></tr>
+      <tr><td><code>src/lib/seo-config-doc.ts</code></td><td><code>getConfigDocBlock</code> — pulls the latest SEO config doc into every system prompt.</td></tr>
+      <tr><td><code>src/lib/seo-pipeline-config.ts</code></td><td><code>CONTENT_VOICES</code>, <code>CHAR_LIMITS</code> constants.</td></tr>
+      <tr><td><code>src/lib/variation-guidelines.ts</code></td><td>The cascade resolver: <code>resolveGuidelinesFieldByField</code>, <code>renderGuidelinesBlock</code>.</td></tr>
+      <tr><td><code>src/lib/ai-config.server.ts</code></td><td>Per-feature model + maxTokens + enabled flag.</td></tr>
+      <tr><td><code>src/lib/rate-limit.ts</code></td><td>10 req/min token bucket.</td></tr>
+      <tr><td><code>src/app/api/seo/claude/seo/route.ts</code></td><td>S7 main generator (titles/bullets/desc/backend).</td></tr>
+      <tr><td><code>src/app/api/seo/claude/keywords/route.ts</code></td><td>S2 batched tiering.</td></tr>
+      <tr><td><code>src/app/api/seo/claude/reviews/route.ts</code></td><td>S3 review analysis.</td></tr>
+      <tr><td><code>src/app/api/seo/claude/rufus/route.ts</code></td><td>S4 Phase 2 + Phase 3.</td></tr>
+      <tr><td><code>src/app/api/seo/claude/cosmo/route.ts</code></td><td>S5 COSMO map.</td></tr>
+      <tr><td><code>src/app/api/seo/claude/aplus-qa/route.ts</code></td><td>A+ Module 7 premium_qa.</td></tr>
+      <tr><td><code>src/app/api/seo/claude/seo-audit/route.ts</code></td><td>12-dim audit + rewrites.</td></tr>
+      <tr><td><code>src/app/api/seo/claude/seo-score/route.ts</code></td><td>Coherence-only scoring.</td></tr>
+      <tr><td><code>src/app/api/seo/claude/seo-backend-refine/route.ts</code></td><td>Backend re-run after edits.</td></tr>
+      <tr><td><code>src/app/seo/[id]/seo/page.tsx</code></td><td>S7 UI. Contains the cascade resolution call site (lines 509-523).</td></tr>
+      <tr><td><code>src/app/seo/[id]/intake/page.tsx</code></td><td>S1 intake UI.</td></tr>
+      <tr><td><code>src/app/seo/[id]/keywords/page.tsx</code></td><td>S2 keywords UI.</td></tr>
+      <tr><td><code>src/app/seo/[id]/reviews/page.tsx</code></td><td>S3 reviews UI.</td></tr>
+      <tr><td><code>src/app/seo/[id]/rufus/page.tsx</code></td><td>S4 Rufus 3-phase wizard.</td></tr>
+      <tr><td><code>src/app/seo/[id]/cosmo/page.tsx</code></td><td>S5 COSMO map editor.</td></tr>
+      <tr><td><code>src/app/seo/[id]/compliance/page.tsx</code></td><td>S6 compliance grid.</td></tr>
+      <tr><td><code>src/app/seo/manager/page.tsx</code></td><td>SEO project hub — list of all projects.</td></tr>
+      <tr><td><code>src/lib/db/schema.ts</code></td><td>All Drizzle definitions, lines 650-1340 for SEO tables.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Skill specifications</h3>
+  <p>High-level phase specs live in <code>.claude/skills/1o8-seo-manager/phases/s1-intake.md</code> through <code>s9-score.md</code>. These predate the implementation in some places — code is source of truth.</p>
+</div>
+
+<div class="section" style="margin-bottom: 0;">
+  <div class="section-label">End</div>
+  <h2>Notes for future readers</h2>
+  <p>This document supersedes <code>docs/seo-manager-process.html</code> and <code>docs/seo-prompts-reference.html</code>. If you change a prompt, change this doc in the same commit. The cascade gotchas in particular are landmines that have bitten the team — keep that section accurate.</p>
+  <p style="margin-top: 12px; color: var(--muted); font-size: 12px;">
+    Generated 2026-05-26 against commit <code>ca79fe51</code>. Prompts quoted from production route files verbatim.
+  </p>
+</div>
+
+</body>
+</html>

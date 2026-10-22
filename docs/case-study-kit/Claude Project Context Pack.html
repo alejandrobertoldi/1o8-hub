@@ -1,0 +1,1294 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<title>SC Case Study — Claude Project Context Pack · market·foundry</title>
+<style>
+body{margin:0;background:#2A5059;color:#CBD6D8;font-family:'Outfit',ui-sans-serif,system-ui,sans-serif;font-size:15px;line-height:1.6;}
+.wrap{max-width:900px;margin:0 auto;padding:56px 32px 120px;}
+h1{color:#F2F7F8;font-size:34px;letter-spacing:-.02em;margin:0 0 6px;}
+h2{color:#F2F7F8;font-size:22px;margin:48px 0 12px;padding-top:20px;border-top:1px solid #4A4646;}
+p,li{max-width:75ch;}
+code{font-family:ui-monospace,monospace;font-size:.85em;background:#2F2C2C;border:1px solid #4A4646;border-radius:6px;padding:2px 6px;color:#F2F7F8;}
+pre{background:#2F2C2C;border:1px solid #4A4646;border-radius:12px;padding:16px 18px;overflow-x:auto;font-family:ui-monospace,monospace;font-size:12px;line-height:1.5;color:#CBD6D8;white-space:pre-wrap;word-break:break-word;}
+strong{color:#F2F7F8;}
+.mono{font-family:ui-monospace,monospace;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#9FB3B6;}
+.y{color:#FF751F;}
+details{margin:16px 0;}
+summary{cursor:pointer;color:#F2F7F8;font-weight:700;}
+</style>
+</head><body>
+<div class="wrap">
+<p class="mono">market·foundry · claude project context pack · sept 2026</p>
+<h1>Seller Central Case Study <span class="y">Generator</span> — High-Level &amp; Detailed</h1>
+<p>This single file is the complete context for producing market·foundry Seller Central case studies in <strong>either format</strong>: the 5-slide <strong>High-Level</strong> executive summary (section C) or the 14-slide <strong>Detailed / Granular</strong> deep dive (section D). Both share the brand look: slate-teal background, charcoal cards, orange accent, Outfit type. When the user asks for a case study, ask which format (or produce both); apply the same fill rules to either. Add it to a Claude Project (Project knowledge) — it contains: <strong>(A)</strong> instructions for Claude, <strong>(B)</strong> the fill-in playbook, and <strong>(C)</strong> the full 14-slide HTML template source with bracketed placeholders.</p>
+
+<h2>A · Instructions for Claude</h2>
+<p>You are producing a client case study deck from the HTML template in section C. When the user provides a client brief and performance data:</p>
+<ol>
+<li>Output a <strong>complete copy of the template</strong> as one HTML file named <code>&lt;Client&gt; - Seller Central Case Study.html</code>.</li>
+<li>Replace <strong>every</strong> bracketed placeholder (<code>[CLIENT NAME]</code>, <code>$[0.0]M</code>, <code>[Metric label]</code>, …) with real values from the user's data. Never leave a bracket; never invent a number — ask if data is missing.</li>
+<li>Rename every image-slot id from <code>tpl-*</code> to <code>&lt;client-slug&gt;-*</code> (e.g. <code>pura-cover-hero</code>). Do not remove the slots — the user drops images in later.</li>
+<li>Redraw the three SVG charts to the real figures using the geometry rules in section B §5 (slide 06 monthly bars, slide 08 cumulative curve, slide 09 two spend/sales line pairs). Update the axis labels to round values covering the max.</li>
+<li>Keep all styling, fonts, colors, layout, and the market·foundry brand frame exactly as-is. Only content changes.</li>
+<li>Write in the template's voice: short declarative headlines, orange accent on the key number, rounded display values, one exact total in slide 06 body copy, honest framing of weak metrics (e.g. launch ACOS as investment phase).</li>
+<li>If Subscribe &amp; Save is material for the client, you may convert slide 08 into a recurring-revenue slide; otherwise keep the Demand Curve.</li>
+<li>Update the inline SVG thumbnail near the top of the file (client name + headline stat).</li>
+</ol>
+
+<h2>B · Playbook (fill-in guide, data requirements, chart geometry)</h2>
+<details open><summary>Full playbook</summary>
+<pre>&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;&lt;head&gt;
+&lt;meta charset="utf-8"&gt;
+&lt;title&gt;SC Case Study Template · Instructions · market·foundry&lt;/title&gt;
+&lt;link rel="preconnect" href="https://fonts.googleapis.com"&gt;
+&lt;link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"&gt;
+&lt;style&gt;
+:root{--bg:#2A5059;--card:#2F2C2C;--line:#4A4646;--white:#F0EFF6;--mute:#9FB3B6;--mute2:#CBD6D8;--yellow:#FF751F;--teal:#5FA6B5;--green:#6CE0A3;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--mute2);font-family:'Outfit',sans-serif;font-size:16px;line-height:1.6;}
+.wrap{max-width:880px;margin:0 auto;padding:64px 32px 120px;}
+h1{font-size:44px;font-weight:800;letter-spacing:-.02em;color:var(--white);line-height:1.1;margin:0 0 8px;}
+h2{font-size:26px;font-weight:700;color:var(--white);margin:56px 0 16px;padding-top:24px;border-top:1px solid var(--line);}
+h3{font-size:18px;font-weight:700;color:var(--white);margin:28px 0 8px;}
+p{margin:0 0 14px;}
+code,kbd{font-family:'Outfit',sans-serif;letter-spacing:.06em;font-size:.86em;background:var(--card);border:1px solid var(--line);border-radius:6px;padding:2px 7px;color:var(--white);}
+pre{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px;overflow-x:auto;font-family:'Outfit',sans-serif;letter-spacing:.06em;font-size:13px;line-height:1.55;color:var(--mute2);white-space:pre-wrap;}
+.mono{font-family:'Outfit',sans-serif;letter-spacing:.06em;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);}
+.tag{display:inline-block;font-family:'Outfit',sans-serif;letter-spacing:.06em;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--yellow);border:1px solid rgba(255,117,31,.4);border-radius:999px;padding:3px 12px;margin-bottom:18px;}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14.5px;}
+th{font-family:'Outfit',sans-serif;letter-spacing:.06em;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);}
+td{padding:10px 12px;border-bottom:1px solid rgba(38,72,81,.5);vertical-align:top;}
+td:first-child{color:var(--white);font-weight:600;white-space:nowrap;}
+ul,ol{margin:0 0 16px;padding-left:22px;}
+li{margin-bottom:8px;}
+strong{color:var(--white);}
+.callout{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--yellow);border-radius:10px;padding:16px 20px;margin:20px 0;}
+.callout.warn{border-left-color:#E05C5C;}
+a{color:var(--teal);}a:hover{color:var(--white);}
+.y{color:var(--yellow);}
+&lt;/style&gt;
+&lt;/head&gt;&lt;body&gt;
+&lt;div class="wrap"&gt;
+&lt;div class="tag"&gt;market·foundry · internal playbook&lt;/div&gt;
+&lt;h1&gt;Seller Central Case Studies — Template Instructions&lt;/h1&gt;
+&lt;p class="mono"&gt;Detailed Case Study Template.html · 14 slides &amp;nbsp;·&amp;nbsp; High Level Case Study Template.html · 5 slides &amp;nbsp;·&amp;nbsp; 1920×1080 · market·foundry brand look&lt;/p&gt;
+
+&lt;h2&gt;1 · What this template is&lt;/h2&gt;
+&lt;p&gt;Two sibling formats sharing one visual language (slate teal, charcoal cards, orange accent, Outfit):&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;strong&gt;Detailed / Granular&lt;/strong&gt; — 14 slides. The deep dive: monthly sales chart, product mix, demand curve, paid media by channel, and four creative slides.&lt;/li&gt;&lt;li&gt;&lt;strong&gt;High-Level&lt;/strong&gt; — 5 slides. The executive summary: Cover (headline + 3 KPI chips + client card), The Challenge (start vs target), The Results (six proof points), The Approach (five pillars), The Creative (brand story + 9-tile listing grid + A+ + storefront, orange CTA band).&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;Fill rules, voice, charts and image-slot behaviour below apply to both; chart-drawing (§5) applies to the detailed deck only. Pick High-Level for prospects and quick shares; Detailed for QBRs and case-study deep dives.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Figure banding (High-Level only).&lt;/strong&gt; Private absolute $ figures — revenue, ordered sales, ad-attributed sales, spend, ASP, starting-point sales — never show real numbers: band them as "Low/Mid/High N-Fig" (e.g. Mid 7-Fig). Percentages, ratios (ROAS, growth multiples), impression/unit counts and module/ASIN counts stay real. Where a $ context line would leak a figure, swap it for a ratio (e.g. "on $28.5K spend" → "1.3× blended ROAS"). The Detailed deck is internal/QBR-facing and keeps exact figures. It is a single self-contained HTML file (plus &lt;code&gt;assets/image-slot.js&lt;/code&gt; for drag-and-drop image slots). Every client value is written as a bracketed placeholder like &lt;code&gt;[CLIENT NAME]&lt;/code&gt; or &lt;code&gt;$[0.0]M&lt;/code&gt; — fill every bracket, drop in creative assets, and the deck is done.&lt;/p&gt;
+&lt;p&gt;Navigation: arrow keys, click, or swipe. Slides are &lt;code&gt;&amp;lt;section class="slide" data-label="…"&amp;gt;&lt;/code&gt; children of the deck stage; the file scales itself to any window.&lt;/p&gt;
+
+&lt;h2&gt;2 · The 14 slides and what each needs&lt;/h2&gt;
+&lt;table&gt;
+&lt;tr&gt;&lt;th&gt;#&lt;/th&gt;&lt;th&gt;Slide&lt;/th&gt;&lt;th&gt;Data needed&lt;/th&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;01&lt;/td&gt;&lt;td&gt;Cover&lt;/td&gt;&lt;td&gt;Client name, date range, positioning line, one-sentence engagement summary with headline result. Images: hero product photo, client logo (white card).&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;02&lt;/td&gt;&lt;td&gt;The Brief&lt;/td&gt;&lt;td&gt;Three-line hook headline, 2–3 sentence situation + mandate, starting point, deliverables, single numeric target.&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;03&lt;/td&gt;&lt;td&gt;Results&lt;/td&gt;&lt;td&gt;Six proof-point KPIs: headline sales, ad impressions, ad-attributed sales, growth multiple, Buy Box %, conversion rate. Source line.&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;04&lt;/td&gt;&lt;td&gt;Account Snapshot&lt;/td&gt;&lt;td&gt;Total sales, units, avg price, SKU count, page views, fulfilment (FBA/FBM), sessions, CVR, Buy Box %, ROAS, organic/paid split line.&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;05&lt;/td&gt;&lt;td&gt;Approach&lt;/td&gt;&lt;td&gt;Five pillars (name + one line each). Keep them client-specific, not generic.&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;06&lt;/td&gt;&lt;td&gt;Sales Growth&lt;/td&gt;&lt;td&gt;Monthly ordered-sales bar chart (12 bars, SVG), total, organic vs ad-attributed $ and %, avg price, units.&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;07&lt;/td&gt;&lt;td&gt;Product Mix&lt;/td&gt;&lt;td&gt;Top 3 products by revenue and by units (bar rows), concentration %, total units + SKU count.&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;08&lt;/td&gt;&lt;td&gt;Demand Curve&lt;/td&gt;&lt;td&gt;Cumulative-sales line chart (SVG), peak month, H2-vs-H1 delta. (Swap for a Subscribe &amp;amp; Save slide only if S&amp;amp;S is material.)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;09&lt;/td&gt;&lt;td&gt;Paid Media&lt;/td&gt;&lt;td&gt;Two channel cards: Sponsored Products, and SB + SD combined. Each: spend, sales, ACOS, orders + monthly spend/sales line chart. Blended ROAS headline.&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;10&lt;/td&gt;&lt;td&gt;Brand Story&lt;/td&gt;&lt;td&gt;Full-width brand-story banner image (~1464×625 native, 1200/230 frame) + one line on its job.&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;11&lt;/td&gt;&lt;td&gt;Listing Images&lt;/td&gt;&lt;td&gt;1 hero (square) + 8 supporting frames (grid). Update the copy to the real image count and CVR.&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;12&lt;/td&gt;&lt;td&gt;Premium A+&lt;/td&gt;&lt;td&gt;Up to 12 module screenshots in three vertical stacks (a/b/c columns, 1200/492 each). KPIs: module count, ASINs live.&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;13&lt;/td&gt;&lt;td&gt;Storefront&lt;/td&gt;&lt;td&gt;Three full-page storefront screenshots (tall, top-aligned, fit-to-width).&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;14&lt;/td&gt;&lt;td&gt;Next Steps / CTA&lt;/td&gt;&lt;td&gt;Three forward-looking moves + contact line. Usually needs only light editing.&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;h2&gt;3 · Duplication workflow (per new client)&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Copy the file.&lt;/strong&gt; Duplicate &lt;code&gt;Case Study Template.html&lt;/code&gt; → &lt;code&gt;&amp;lt;Client&amp;gt; - Seller Central Case Study.html&lt;/code&gt;. Never edit the template directly.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Rename slot ids.&lt;/strong&gt; Global find-replace &lt;code&gt;id="tpl-&lt;/code&gt; → &lt;code&gt;id="&amp;lt;client-slug&amp;gt;-&lt;/code&gt; (e.g. &lt;code&gt;id="pura-&lt;/code&gt;). Slot ids must be unique per deck or dropped images will collide across decks.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Pull the data.&lt;/strong&gt; Twelve months (or engagement period) from Seller Central + Sponsored Ads reporting: monthly ordered sales &amp;amp; units; sessions, page views, CVR (unit-session rate), Buy Box %; top products by sales and units; ad spend / revenue / clicks / impressions / orders by campaign type by month.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Fill every bracket.&lt;/strong&gt; Search for &lt;code&gt;[&lt;/code&gt; until none remain (the SVG thumbnail block at the top too).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Redraw the three SVG charts&lt;/strong&gt; (see §5).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Fill the image slots&lt;/strong&gt; — drop files or paste Drive links — then &lt;strong&gt;bake to committed files&lt;/strong&gt; before final export (see §6).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Update page numbers&lt;/strong&gt; only if slides were added/removed (footers read &lt;code&gt;NN / 14&lt;/code&gt;).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;QA pass&lt;/strong&gt;: every slide, no placeholder text, no clipped charts, honest numbers.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2&gt;4 · Voice &amp;amp; numbers&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Headlines are short and declarative; the accent color (&lt;code&gt;--c-yellow&lt;/code&gt;, orange &lt;code&gt;#FF751F&lt;/code&gt;) carries the key number or phrase.&lt;/li&gt;
+&lt;li&gt;Round display values (&lt;code&gt;$64.6K&lt;/code&gt;, &lt;code&gt;5.2×&lt;/code&gt;, &lt;code&gt;98.9%&lt;/code&gt;); cite one exact total in the Sales Growth body copy.&lt;/li&gt;
+&lt;li&gt;Be honest with unflattering metrics (launch ACOS etc.) — frame as investment phase, don't hide.&lt;/li&gt;
+&lt;li&gt;Every stat must come from real reporting. No invented numbers, ever.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2&gt;5 · Redrawing the SVG charts&lt;/h2&gt;
+&lt;p&gt;Three charts are hand-drawn SVG: monthly sales bars (slide 06), cumulative demand curve (slide 08), and two spend/sales lines (slide 09). Each has a fixed plot area; map values linearly.&lt;/p&gt;
+&lt;h3&gt;Slide 06 — bars&lt;/h3&gt;
+&lt;pre&gt;viewBox 0 0 880 340 · baseline y=280 · top gridline y=40 (=axis max)
+bar height = value / axisMax × 240 ;  y = 280 − height
+12 bars: width 44, first x=74, pitch 65.85
+Set the three y-axis labels to round values ≥ the max month.&lt;/pre&gt;
+&lt;h3&gt;Slide 08 — cumulative line&lt;/h3&gt;
+&lt;pre&gt;viewBox 0 0 880 340 · plot y 40–250 (210px) · x from 60 to 860, 11 equal steps
+y = 250 − cumValue / axisMax × 210 ;  close the fill path to y=250.&lt;/pre&gt;
+&lt;h3&gt;Slide 09 — spend vs sales lines&lt;/h3&gt;
+&lt;pre&gt;viewBox 0 0 880 300 · plot y 40–240 · x 50→860, 11 steps
+Orange = sales, teal = spend, one shared max per card. Dot marks the peak point.&lt;/pre&gt;
+
+&lt;h2&gt;6 · Image slots — the rules that matter&lt;/h2&gt;
+&lt;p&gt;Slots are &lt;code&gt;&amp;lt;image-slot&amp;gt;&lt;/code&gt; elements. Three ways to fill one: &lt;strong&gt;drag a file&lt;/strong&gt; onto it, click &lt;strong&gt;Browse file&lt;/strong&gt;, or click &lt;strong&gt;Paste Drive link&lt;/strong&gt; (Drive logo pill) and paste a Google Drive share link or any direct image URL — paste auto-submits. Share Drive files to the &lt;strong&gt;marketfoundry.agency domain&lt;/strong&gt; ("anyone in this domain with the link") — public sharing is not needed; images load for anyone signed into their work Google account. A filled slot shows &lt;strong&gt;Replace / Edit / Delete&lt;/strong&gt; controls on hover (Edit = pan/zoom reframe; Delete clears the drop and reveals any baked &lt;code&gt;src&lt;/code&gt;). Key attributes: &lt;code&gt;fit="cover|contain|width"&lt;/code&gt;, &lt;code&gt;align="top"&lt;/code&gt;, &lt;code&gt;shape&lt;/code&gt;/&lt;code&gt;radius&lt;/code&gt;, &lt;code&gt;placeholder&lt;/code&gt;, and &lt;code&gt;src&lt;/code&gt; for a committed file.&lt;/p&gt;
+&lt;div class="callout warn"&gt;&lt;strong&gt;The workflow: draft with Drive links → bake → export.&lt;/strong&gt; Reports are drafted internally (all image handling by marketfoundry.agency users, domain-shared Drive links — short URLs that never hit the persistence cap). Before sharing anything externally, &lt;strong&gt;bake every image to a committed asset&lt;/strong&gt; (e.g. &lt;code&gt;assets/&amp;lt;slug&amp;gt;-li-3.webp&lt;/code&gt;, wired via the slot's &lt;code&gt;src&lt;/code&gt;): Drive links only render for signed-in domain users, so an unbaked deck looks broken to clients. Dropped &lt;em&gt;files&lt;/em&gt; (not links) live in a hidden state file with a size cap — bake those too and clear the state file. Then export the shareable PDF/PPTX from the baked deck.&lt;/div&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Storefront slots&lt;/strong&gt; use &lt;code&gt;fit="width" align="top"&lt;/code&gt; — full-page screenshots show from the top and crop at the bottom.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;A+ stacks&lt;/strong&gt; use &lt;code&gt;fit="cover"&lt;/code&gt; in fixed 1200/492 frames so modules butt flush.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Cover hero / logo / brand story&lt;/strong&gt; use &lt;code&gt;fit="contain"&lt;/code&gt; — never crop brand art.&lt;/li&gt;
+&lt;li&gt;Recommended native sizes: A+ modules 1200–1464px wide; brand story banner ~1464×625; listing images square ≥1000px; storefront full-page captures ~3000px wide.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2&gt;7 · Exports&lt;/h2&gt;
+&lt;table&gt;
+&lt;tr&gt;&lt;th&gt;Format&lt;/th&gt;&lt;th&gt;How&lt;/th&gt;&lt;th&gt;Notes&lt;/th&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;PDF (client deliverable)&lt;/td&gt;&lt;td&gt;Bake images → PPTX → Save as PDF&lt;/td&gt;&lt;td&gt;The standard shareable output. Never export with unbaked Drive links — they render only for domain users.&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Standalone HTML&lt;/td&gt;&lt;td&gt;Bundle/inline into one file&lt;/td&gt;&lt;td&gt;Offline, keeps navigation. Bake images first — Drive links are not embedded.&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;PPTX&lt;/td&gt;&lt;td&gt;Screenshot export, 1920×1080&lt;/td&gt;&lt;td&gt;Pixel-perfect, not editable. Pin the stage to top-left and show one slide at a time during capture. The deck shell has no print support — don't print the HTML directly.&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;h2&gt;8 · Design tokens (do not restyle per client)&lt;/h2&gt;
+&lt;pre&gt;Background  #2A5059 (slate teal)   Card #2F2C2C (charcoal)   Line #4A4646
+Text        #F0EFF6 (white) · #CBD6D8 (body) · #9FB3B6 (muted)
+Accent      #FF751F (orange — key numbers, bars, lines, accent KPI card)
+Secondary   #5FA6B5 (teal — spend lines) · #6CE0A3 (green — positive deltas)
+Fonts       Outfit only — 800 display · 400–600 body · 600–700 spaced-caps labels
+Slide size  1920×1080 · min body text 23px · footer: mf-mark + "NN / 14"&lt;/pre&gt;
+&lt;p&gt;The market·foundry brand frame (topbar label, orange slide number, footer mark) is fixed. Only content changes per client.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/body&gt;&lt;/html&gt;
+</pre>
+</details>
+
+<h2>C · High-Level template source (High Level Case Study Template.html)</h2>
+<p>The 5-slide executive format. Reproduce in full, substituting placeholders; keep sibling references (assets/image-slot.js, assets/mf-logo.png, assets/mf-mark.png) unchanged; rename image-slot ids from tplhl-* to &lt;client-slug&gt;-*.</p>
+<details><summary>Full template HTML (5 slides)</summary>
+<pre>&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;&lt;head&gt;
+&lt;meta charset="utf-8"&gt;
+&lt;title&gt;High Level Case Study Template · market·foundry&lt;/title&gt;
+&lt;meta name="viewport" content="width=device-width,initial-scale=1"&gt;
+&lt;link rel="preconnect" href="https://fonts.googleapis.com"&gt;
+&lt;link rel="preconnect" href="https://fonts.gstatic.com" crossorigin&gt;
+&lt;link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"&gt;
+&lt;style&gt;
+/* =============================================================
+   CASE STUDY TEMPLATE — market·foundry visual system
+   Authored at 1920×1080. 1px = 1 stage px.
+   Placeholders are wrapped in [SQUARE BRACKETS] — replace them.
+   Duplicate this file for each new case study.
+   ============================================================= */
+:root{
+  --c-ink:#2A5059; --c-ink-90:#2F2C2C; --c-ink-80:#383434; --c-ink-70:#423D3D;
+  --c-line:#4A4646; --c-line-soft:#3E5F66; --c-mute:#9FB3B6; --c-mute-2:#CBD6D8;
+  --c-white:#FFFFFF; --c-paper:#F0EFF6; --c-paper-2:#E3E2EE;
+  --c-yellow:#FF751F; --c-yellow-2:#FF9048; --c-yellow-ink:#2B1508;
+  --c-cherry:#C81E3C;
+  --pad-x:96px;
+  --font-display:'Outfit',system-ui,sans-serif;
+  --font-body:'Outfit',system-ui,-apple-system,sans-serif;
+  --font-mono:'Outfit',system-ui,sans-serif;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;background:#000;height:100%;overflow:hidden;}
+deck-stage{display:block;position:absolute;top:50%;left:50%;transform-origin:center center;}
+
+section.slide{
+  font-family:var(--font-body); color:var(--c-white); background:var(--c-ink);
+  font-size:28px; line-height:1.45; overflow:hidden; position:absolute; inset:0;
+}
+section.slide.light{background:var(--c-white); color:var(--c-ink);}
+section.slide.paper{background:var(--c-paper); color:var(--c-ink);}
+section.slide.yellow{background:var(--c-yellow); color:var(--c-yellow-ink);}
+
+/* Type */
+.eyebrow{font-family:var(--font-body); font-weight:700; font-size:18px; letter-spacing:.22em;
+  text-transform:uppercase; line-height:1; color:var(--c-yellow); display:inline-flex; align-items:center; gap:16px;}
+.eyebrow.ink{color:var(--c-ink);}
+.eyebrow .dash{width:56px; height:2px; background:currentColor; opacity:.4;}
+.display{font-family:var(--font-display); font-weight:800; text-transform:uppercase; line-height:.86; letter-spacing:-.025em;}
+.title-xl{font-family:var(--font-display); font-weight:800; text-transform:uppercase; font-size:96px; line-height:.95; letter-spacing:-.022em; margin:0;}
+.title-lg{font-family:var(--font-display); font-weight:800; text-transform:uppercase; font-size:96px; line-height:.92; letter-spacing:-.02em; margin:0;}
+.title-md{font-family:var(--font-display); font-weight:800; text-transform:uppercase; font-size:64px; line-height:.95; letter-spacing:-.015em; margin:0;}
+.subhead{font-family:var(--font-body); font-weight:600; font-size:48px; line-height:1.15; letter-spacing:-.01em; margin:0;}
+.body{font-family:var(--font-body); font-weight:400; font-size:28px; line-height:1.5; text-wrap:pretty; margin:0; max-width:30ch;}
+.body.lg{font-size:32px;} .body.sm{font-size:22px;}
+.muted{color:var(--c-mute-2);} .muted.ink{color:var(--c-mute);}
+.metric{font-family:var(--font-display); font-weight:800; font-size:168px; font-variant-numeric:tabular-nums; letter-spacing:-.04em; line-height:.86; margin:0;}
+.metric .pct,.metric .unit{font-size:.55em; color:var(--c-yellow); letter-spacing:-.02em;}
+.metric-label{font-family:var(--font-body); font-weight:600; font-size:24px; letter-spacing:.04em; text-transform:uppercase; color:var(--c-mute-2); line-height:1.3; max-width:22ch; margin-top:18px;}
+.light .metric-label,.paper .metric-label,.yellow .metric-label{color:var(--c-ink); opacity:.6;}
+.yellow-dot{display:inline-block; width:.55em; height:.55em; border-radius:999px; background:var(--c-yellow); vertical-align:.05em;}
+
+/* Chrome */
+.slide-frame{position:absolute; inset:0; padding:80px var(--pad-x) 130px; display:flex; flex-direction:column;}
+.slide-frame.tight{padding:72px var(--pad-x);}
+.topbar{display:flex; justify-content:space-between; align-items:center; position:absolute; inset:36px var(--pad-x) auto;
+  font-family:var(--font-mono); font-size:24px; letter-spacing:.12em; text-transform:uppercase; color:var(--c-mute-2); z-index:2;}
+.light .topbar,.paper .topbar{color:var(--c-mute);}
+.yellow .topbar{color:var(--c-yellow-ink); opacity:.7;}
+.topbar .right{display:flex; gap:28px;}
+.bottombar{position:absolute; inset:auto var(--pad-x) 36px; display:flex; justify-content:space-between; align-items:center;
+  font-family:var(--font-mono); font-size:24px; letter-spacing:.18em; text-transform:uppercase; color:var(--c-mute); z-index:2;}
+.light .bottombar,.paper .bottombar{color:var(--c-mute);}
+.brand-mark{font-family:var(--font-display); font-size:32px; letter-spacing:-.02em; text-transform:lowercase; color:inherit; line-height:1;}
+.brand-mark .o{color:var(--c-yellow);}
+
+/* Cards / KPIs */
+.card{background:var(--c-ink-90); border:1px solid var(--c-line); border-radius:18px; padding:36px 40px; position:relative; overflow:hidden;}
+.light .card,.paper .card{background:var(--c-white); border-color:#E5E5E5; box-shadow:0 1px 0 rgba(0,0,0,.04);}
+.kpi{background:var(--c-ink-90); border:1px solid var(--c-line); border-radius:20px; padding:44px 44px 40px; display:flex; flex-direction:column; justify-content:space-between; gap:18px; position:relative; overflow:hidden;}
+.kpi.accent{background:var(--c-yellow); border-color:var(--c-yellow); color:var(--c-yellow-ink);}
+.kpi.accent .metric .pct,.kpi.accent .metric .unit{color:var(--c-yellow-ink);}
+.kpi.accent .metric-label{color:var(--c-yellow-ink); opacity:.7;}
+.kpi.invert{background:var(--c-white); color:var(--c-ink);}
+.kpi.invert .metric .pct,.kpi.invert .metric .unit{color:var(--c-ink);}
+.kpi.invert .metric-label{color:var(--c-ink); opacity:.6;}
+.kpi-hint{font-family:var(--font-body); font-weight:500; font-size:24px; color:var(--c-mute-2); line-height:1.35;}
+.kpi.accent .kpi-hint,.kpi.invert .kpi-hint{color:var(--c-ink); opacity:.65;}
+.kpi-up{display:inline-flex; align-items:center; gap:6px; background:rgba(31,138,91,.18); color:#6CE0A3; font-family:var(--font-mono); font-size:24px; font-weight:700; padding:6px 14px; border-radius:8px; letter-spacing:-.01em; white-space:nowrap;}
+.kpi-down{display:inline-flex; align-items:center; gap:6px; background:rgba(200,30,60,.16); color:#FF7A8A; font-family:var(--font-mono); font-size:24px; font-weight:700; padding:6px 14px; border-radius:8px; letter-spacing:-.01em; white-space:nowrap;}
+.kpi.accent .kpi-up,.kpi.invert .kpi-up{background:rgba(10,10,10,.1); color:var(--c-ink);}
+
+/* Pillars */
+.pillar{display:flex; flex-direction:column; gap:18px; padding:32px 28px 32px 0; position:relative; flex:1 1 0; min-width:0; border-top:2px solid var(--c-line);}
+.light .pillar,.paper .pillar{border-top-color:#DCDCDC;}
+.pillar .num{font-family:var(--font-mono); font-size:24px; font-weight:700; letter-spacing:.15em; color:var(--c-yellow);}
+.pillar .h{font-family:var(--font-display); font-size:36px; text-transform:uppercase; line-height:.95; letter-spacing:-.015em;}
+.pillar .desc{font-size:24px; line-height:1.45; color:var(--c-mute-2); max-width:24ch;}
+.light .pillar .desc,.paper .pillar .desc{color:var(--c-mute);}
+
+/* Logo lockup */
+.logo-108{font-family:var(--font-display); font-size:56px; letter-spacing:-.04em; line-height:.9; text-transform:lowercase; color:inherit; display:inline-block;}
+.logo-108 .o{display:inline-block; width:.74em; height:.74em; border-radius:999px; background:var(--c-yellow); vertical-align:-.04em; margin:0 -.03em;}
+.logo-108 .agency{display:block; font-family:var(--font-body); font-weight:700; font-size:.30em; letter-spacing:.32em; text-transform:uppercase; margin-top:8px; color:inherit; opacity:.9;}
+.mf-logo{display:inline-block; height:132px; width:auto;}
+.mf-mark{height:38px; width:auto; display:inline-block; vertical-align:middle;}
+.mf-mark.on-accent,.mf-logo.on-accent{filter:brightness(0) invert(1);}
+
+/* Browser chrome */
+.browser{background:var(--c-ink-80); border:1px solid var(--c-line); border-radius:14px; overflow:hidden; box-shadow:0 30px 60px rgba(0,0,0,.4);}
+.light .browser,.paper .browser{background:#FAFAFA; border-color:#DCDCDC; box-shadow:0 20px 50px rgba(10,10,10,.12);}
+.browser .bar{display:flex; align-items:center; gap:14px; padding:14px 20px; border-bottom:1px solid var(--c-line); background:var(--c-ink-90);}
+.browser .dots{display:inline-flex; gap:8px;}
+.browser .dots i{width:12px; height:12px; border-radius:999px; background:var(--c-line); display:inline-block;}
+.browser .url{flex:1; font-family:var(--font-mono); font-size:18px; color:var(--c-mute-2); background:var(--c-ink); padding:8px 14px; border-radius:6px; border:1px solid var(--c-line); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+
+/* Channel badge */
+.chan{display:inline-flex; align-items:center; gap:10px; font-family:var(--font-mono); font-size:22px; font-weight:700; letter-spacing:.04em; padding:8px 16px; border-radius:8px; text-transform:uppercase;}
+.chan.vc{background:rgba(95,166,181,.16); color:#8FC6D2;}
+.chan.sc{background:rgba(255,117,31,.16); color:var(--c-yellow);}
+.chan i{width:10px; height:10px; border-radius:99px; display:inline-block;}
+.chan.vc i{background:#5FA6B5;} .chan.sc i{background:var(--c-yellow);}
+
+/* Image placeholder */
+.imgslot{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; background:var(--c-ink-80);
+  border:1.5px dashed rgba(255,255,255,.16); border-radius:18px; color:var(--c-mute-2); text-align:center; padding:24px;}
+.light .imgslot,.paper .imgslot{background:#F4F4F4; border-color:#DCDCDC; color:var(--c-mute);}
+.imgslot .ic{width:54px; height:54px; opacity:.5;}
+.imgslot .lbl{font-family:var(--font-mono); font-size:20px; letter-spacing:.06em; text-transform:uppercase;}
+
+strong{font-weight:600;}
+
+/* image-slot empty-state caption → brand white */
+image-slot{color:#FFFFFF !important;}
+
+/* ===== Navigation UI ===== */
+#nav{position:fixed; left:50%; bottom:22px; transform:translateX(-50%); z-index:50; display:flex; align-items:center; gap:14px;
+  background:rgba(17,17,17,.82); backdrop-filter:blur(8px); border:1px solid #4A4646; border-radius:999px; padding:9px 14px;
+  font-family:var(--font-mono); color:#CBD6D8; box-shadow:0 10px 40px rgba(0,0,0,.5);}
+#nav button{all:unset; cursor:pointer; width:34px; height:34px; display:flex; align-items:center; justify-content:center; border-radius:999px; color:#E5E5E5; font-size:18px;}
+#nav button:hover{background:#4A4646; color:var(--c-yellow);}
+#nav .count{font-size:15px; letter-spacing:.12em; min-width:62px; text-align:center; user-select:none;}
+#nav .count b{color:var(--c-yellow); font-weight:500;}
+#prog{position:fixed; top:0; left:0; height:3px; background:var(--c-yellow); z-index:50; transition:width .25s ease;}
+#hint{position:fixed; right:18px; bottom:24px; z-index:50; font-family:var(--font-mono); font-size:12px; letter-spacing:.1em; color:#5a5a5a; text-transform:uppercase;}
+@media print{#nav,#prog,#hint{display:none;}}
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+&lt;template id="__bundler_thumbnail" data-bg-color="#2A5059"&gt;
+  &lt;svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg"&gt;
+    &lt;rect width="1200" height="800" fill="#2A5059"/&gt;
+    &lt;text x="90" y="330" font-family="Outfit, Arial, sans-serif" font-size="150" font-weight="800" fill="#ffffff"&gt;ZERO TO&lt;/text&gt;
+    &lt;text x="90" y="480" font-family="Outfit, Arial, sans-serif" font-size="150" font-weight="800" fill="#FF751F"&gt;[0.0]×.&lt;/text&gt;
+    &lt;text x="94" y="560" font-family="Outfit, monospace" font-size="30" letter-spacing="6" fill="#FF751F"&gt;[CLIENT] · HIGH-LEVEL&lt;/text&gt;
+    &lt;circle cx="1050" cy="250" r="120" fill="#2F2C2C"/&gt;
+  &lt;/svg&gt;
+&lt;/template&gt;
+
+&lt;div id="prog"&gt;&lt;/div&gt;
+
+&lt;deck-stage width="1920" height="1080"&gt;
+
+  &lt;!-- 01 — COVER --&gt;
+  &lt;section class="slide" data-label="Cover"&gt;
+    &lt;div class="slide-frame" style="padding:48px var(--pad-x) 44px;"&gt;
+      &lt;div style="display:flex; justify-content:space-between; align-items:flex-start;"&gt;
+        &lt;img class="mf-logo" src="assets/mf-logo.png" alt="market foundry"&gt;
+        &lt;div style="text-align:right; font-family:var(--font-mono); font-size:24px; letter-spacing:.22em; text-transform:uppercase; color:var(--c-mute-2);"&gt;
+          &lt;div&gt;Amazon Case Study · High-Level&lt;/div&gt;
+          &lt;div style="margin-top:10px; opacity:.55;"&gt;[Date range]&lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div style="flex:1; display:grid; grid-template-columns:1.5fr 1fr; gap:80px; align-items:center; margin-top:8px;"&gt;
+        &lt;div style="display:flex; flex-direction:column; gap:36px;"&gt;
+          &lt;h1 class="title-xl" style="font-size:120px;"&gt;[Bold claim.]&lt;br&gt;&lt;span style="color:var(--c-yellow);"&gt;[Key result.]&lt;/span&gt;&lt;/h1&gt;
+          &lt;p class="body lg" style="max-width:42ch; color:var(--c-mute-2);"&gt;[One-paragraph summary — the engagement and headline result. Band private $ figures: &lt;strong style="color:var(--c-white);"&gt;High 6-Figure&lt;/strong&gt;, Mid 7-Figure, etc.; percentages and ratios stay real.]&lt;/p&gt;
+          &lt;div style="display:flex; gap:20px;"&gt;
+            &lt;div class="card" style="padding:24px 32px;"&gt;&lt;div style="font-family:var(--font-display); font-weight:800; font-size:52px; line-height:1; color:var(--c-white);"&gt;[Band]&lt;/div&gt;&lt;div style="font-family:var(--font-mono); font-size:19px; letter-spacing:.14em; text-transform:uppercase; color:var(--c-mute); margin-top:10px;"&gt;[KPI one · line 1]&lt;br&gt;[line 2]&lt;/div&gt;&lt;/div&gt;
+            &lt;div class="card" style="padding:24px 32px;"&gt;&lt;div style="font-family:var(--font-display); font-weight:800; font-size:52px; line-height:1; color:var(--c-yellow);"&gt;[0.0]×&lt;/div&gt;&lt;div style="font-family:var(--font-mono); font-size:19px; letter-spacing:.14em; text-transform:uppercase; color:var(--c-mute); margin-top:10px;"&gt;[KPI two]&lt;/div&gt;&lt;/div&gt;
+            &lt;div class="card" style="padding:24px 32px;"&gt;&lt;div style="font-family:var(--font-display); font-weight:800; font-size:52px; line-height:1; color:var(--c-white);"&gt;[Band]&lt;/div&gt;&lt;div style="font-family:var(--font-mono); font-size:19px; letter-spacing:.14em; text-transform:uppercase; color:var(--c-mute); margin-top:10px;"&gt;[KPI three]&lt;/div&gt;&lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div style="display:flex; flex-direction:column; gap:18px; justify-self:end; width:100%; max-width:520px; align-self:stretch; padding:24px 0;"&gt;
+          &lt;div style="width:100%; flex:1; min-height:0; display:flex; align-items:center; justify-content:center;"&gt;
+            &lt;image-slot id="tplhl-cover-hero" shape="rounded" radius="18" fit="contain" placeholder="Drop hero product photo" style="width:100%;height:100%"&gt;&lt;/image-slot&gt;
+          &lt;/div&gt;
+          &lt;div style="display:flex; align-items:center; gap:24px;"&gt;
+            &lt;div style="width:150px; height:84px; flex-shrink:0; border-radius:12px; display:flex; align-items:center; justify-content:center;"&gt;
+              &lt;image-slot id="tplhl-cover-logo" shape="rounded" radius="8" fit="contain" placeholder="Logo" style="width:100%;height:100%"&gt;&lt;/image-slot&gt;
+            &lt;/div&gt;
+            &lt;div&gt;
+              &lt;div style="font-family:var(--font-mono); font-size:22px; letter-spacing:.2em; text-transform:uppercase; color:var(--c-mute); margin-bottom:8px;"&gt;Client&lt;/div&gt;
+              &lt;div style="font-family:var(--font-display); font-weight:800; font-size:36px; line-height:1; color:var(--c-white); text-transform:uppercase;"&gt;[CLIENT NAME]&lt;/div&gt;
+              &lt;div style="font-size:22px; color:var(--c-mute-2); margin-top:8px;"&gt;[Category]&lt;/div&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div style="display:flex; justify-content:space-between; align-items:flex-end;"&gt;
+        &lt;div style="font-family:var(--font-mono); font-size:22px; letter-spacing:.22em; text-transform:uppercase; color:var(--c-mute-2);"&gt;Amazon · Seller Central · [Engagement]&lt;/div&gt;
+        &lt;div style="font-family:var(--font-mono); font-size:22px; letter-spacing:.18em; color:var(--c-mute);"&gt;01 / 05&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;!-- 02 — CHALLENGE --&gt;
+  &lt;section class="slide" data-label="The Challenge"&gt;
+    &lt;div class="slide-frame"&gt;
+      &lt;div class="topbar"&gt;&lt;span&gt;&lt;span style="color:var(--c-yellow); font-weight:700;"&gt;■&lt;/span&gt; &amp;nbsp;The Challenge&lt;/span&gt;&lt;span class="right"&gt;[CLIENT NAME]&lt;/span&gt;&lt;/div&gt;
+      &lt;div style="display:flex; flex-direction:column; gap:36px; margin-top:60px; flex:1; justify-content:center;"&gt;
+        &lt;h1 class="title-lg" style="font-size:84px; max-width:26ch;"&gt;[Challenge headline&lt;br&gt;with &lt;span style="color:var(--c-yellow);"&gt;accent phrase.&lt;/span&gt;]&lt;/h1&gt;
+        &lt;p class="body lg" style="max-width:62ch; color:var(--c-mute-2);"&gt;[2–3 sentences: the client\u2019s situation, what made it hard, and the mandate. State the goal plainly.]&lt;/p&gt;
+        &lt;div style="display:grid; grid-template-columns:1fr 1fr; gap:28px; margin-top:12px;"&gt;
+          &lt;div class="card" style="padding:40px 44px;"&gt;
+            &lt;div class="chan sc" style="margin-bottom:24px;"&gt;&lt;i&gt;&lt;/i&gt;The starting point&lt;/div&gt;
+            &lt;div style="font-family:var(--font-display); font-weight:800; font-size:56px; line-height:1; color:var(--c-white);"&gt;[Band]&lt;/div&gt;
+            &lt;div style="font-size:24px; color:var(--c-mute-2); margin-top:14px;"&gt;[Where the account was at the start · banded if a $ figure]&lt;/div&gt;
+          &lt;/div&gt;
+          &lt;div class="card" style="padding:40px 44px; border-color:rgba(255,117,31,.35);"&gt;
+            &lt;div class="chan sc" style="margin-bottom:24px;"&gt;&lt;i&gt;&lt;/i&gt;The target&lt;/div&gt;
+            &lt;div style="font-family:var(--font-display); font-weight:800; font-size:56px; line-height:1; color:var(--c-yellow);"&gt;[0×]&lt;/div&gt;
+            &lt;div style="font-size:24px; color:var(--c-mute-2); margin-top:14px;"&gt;[The single target that defined success]&lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class="bottombar"&gt;&lt;img class="mf-mark" src="assets/mf-mark.png" alt="market foundry"&gt;&lt;span&gt;02 / 05&lt;/span&gt;&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;!-- 03 — RESULTS --&gt;
+  &lt;section class="slide" data-label="The Results"&gt;
+    &lt;div class="slide-frame"&gt;
+      &lt;div class="topbar"&gt;&lt;span&gt;&lt;span style="color:var(--c-yellow); font-weight:700;"&gt;■&lt;/span&gt; &amp;nbsp;The Results&lt;/span&gt;&lt;span class="right"&gt;Seller Central · [Period]&lt;/span&gt;&lt;/div&gt;
+      &lt;h1 class="title-lg" style="font-size:76px; margin-top:70px;"&gt;[Headline,] &lt;span style="color:var(--c-yellow);"&gt;six proof points.&lt;/span&gt;&lt;/h1&gt;
+      &lt;div style="display:grid; grid-template-columns:repeat(3,1fr); grid-auto-rows:1fr; gap:24px; flex:1; margin-top:40px; margin-bottom:20px;"&gt;
+        &lt;div class="kpi accent"&gt;&lt;div class="metric" style="font-size:96px;"&gt;[Mid 7]&lt;span class="pct" style="color:var(--c-yellow-ink);"&gt;-Fig&lt;/span&gt;&lt;/div&gt;&lt;div class="metric-label"&gt;[Headline $ metric · banded]&lt;/div&gt;&lt;/div&gt;
+        &lt;div class="kpi"&gt;&lt;div class="metric" style="font-size:96px;"&gt;[0.0]&lt;span class="pct"&gt;×&lt;/span&gt;&lt;/div&gt;&lt;div class="metric-label"&gt;[Metric two]&lt;/div&gt;&lt;/div&gt;
+        &lt;div class="kpi"&gt;&lt;div class="metric" style="font-size:96px;"&gt;[0.0]&lt;span class="unit"&gt;M&lt;/span&gt;&lt;/div&gt;&lt;div class="metric-label"&gt;[Metric three]&lt;/div&gt;&lt;/div&gt;
+        &lt;div class="kpi"&gt;&lt;div class="metric" style="font-size:96px;"&gt;[High 6]&lt;span class="unit"&gt;-Fig&lt;/span&gt;&lt;/div&gt;&lt;div class="metric-label"&gt;[$ metric · banded, pair with a real ratio]&lt;/div&gt;&lt;/div&gt;
+        &lt;div class="kpi"&gt;&lt;div class="metric" style="font-size:96px;"&gt;[00]&lt;span class="pct"&gt;%&lt;/span&gt;&lt;/div&gt;&lt;div class="metric-label"&gt;[Metric five]&lt;/div&gt;&lt;/div&gt;
+        &lt;div class="kpi"&gt;&lt;div class="metric" style="font-size:96px;"&gt;[0.0]&lt;span class="pct"&gt;%&lt;/span&gt;&lt;/div&gt;&lt;div class="metric-label"&gt;[Metric six]&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class="bottombar"&gt;&lt;img class="mf-mark" src="assets/mf-mark.png" alt="market foundry"&gt;&lt;span&gt;03 / 05&lt;/span&gt;&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;!-- 04 — APPROACH --&gt;
+  &lt;section class="slide" data-label="The Approach"&gt;
+    &lt;div class="slide-frame"&gt;
+      &lt;div class="topbar"&gt;&lt;span&gt;&lt;span style="color:var(--c-yellow); font-weight:700;"&gt;■&lt;/span&gt; &amp;nbsp;The Approach&lt;/span&gt;&lt;span class="right"&gt;One playbook · launch year&lt;/span&gt;&lt;/div&gt;
+      &lt;div style="margin-top:80px;"&gt;
+        &lt;h1 class="title-lg" style="font-size:76px;"&gt;[Approach headline,] &lt;span style="color:var(--c-yellow);"&gt;[accent.]&lt;/span&gt;&lt;/h1&gt;
+        &lt;p class="body lg" style="max-width:60ch; color:var(--c-mute-2); margin-top:28px;"&gt;[One line on the method — how the five levers compound.]&lt;/p&gt;
+      &lt;/div&gt;
+      &lt;div style="display:flex; gap:32px; flex:1; align-items:stretch; margin-top:44px; margin-bottom:30px;"&gt;
+        &lt;div class="pillar"&gt;&lt;div class="num"&gt;01&lt;/div&gt;&lt;div class="h"&gt;[Pillar one]&lt;/div&gt;&lt;div class="desc"&gt;[One-line description.]&lt;/div&gt;&lt;/div&gt;
+        &lt;div class="pillar"&gt;&lt;div class="num"&gt;02&lt;/div&gt;&lt;div class="h"&gt;[Pillar two]&lt;/div&gt;&lt;div class="desc"&gt;[One-line description.]&lt;/div&gt;&lt;/div&gt;
+        &lt;div class="pillar"&gt;&lt;div class="num"&gt;03&lt;/div&gt;&lt;div class="h"&gt;[Pillar three]&lt;/div&gt;&lt;div class="desc"&gt;[One-line description.]&lt;/div&gt;&lt;/div&gt;
+        &lt;div class="pillar"&gt;&lt;div class="num"&gt;04&lt;/div&gt;&lt;div class="h"&gt;[Pillar four]&lt;/div&gt;&lt;div class="desc"&gt;[One-line description.]&lt;/div&gt;&lt;/div&gt;
+        &lt;div class="pillar"&gt;&lt;div class="num"&gt;05&lt;/div&gt;&lt;div class="h"&gt;[Pillar five]&lt;/div&gt;&lt;div class="desc"&gt;[One-line description.]&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class="bottombar"&gt;&lt;img class="mf-mark" src="assets/mf-mark.png" alt="market foundry"&gt;&lt;span&gt;04 / 05&lt;/span&gt;&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;!-- 05 — CREATIVE --&gt;
+  &lt;section class="slide" data-label="The Creative"&gt;
+    &lt;div class="slide-frame" style="padding-bottom:0;"&gt;
+      &lt;div class="topbar"&gt;&lt;span&gt;&lt;span style="color:var(--c-yellow); font-weight:700;"&gt;■&lt;/span&gt; &amp;nbsp;The Creative&lt;/span&gt;&lt;span class="right"&gt;Amazon design system&lt;/span&gt;&lt;/div&gt;
+      &lt;h1 class="title-lg" style="font-size:64px; margin-top:64px;"&gt;Not a product. &lt;span style="color:var(--c-yellow);"&gt;The brand.&lt;/span&gt;&lt;/h1&gt;
+      &lt;div style="display:grid; grid-template-columns:1.9fr 1fr 1fr; gap:40px; flex:1; margin-top:30px; min-height:0;"&gt;
+        &lt;div style="display:flex; flex-direction:column; min-height:0; gap:10px;"&gt;
+          &lt;div style="display:flex; align-items:baseline; gap:14px;"&gt;&lt;span style="font-family:var(--font-mono); font-size:20px; font-weight:700; letter-spacing:.12em; color:var(--c-yellow);"&gt;01&lt;/span&gt;&lt;span style="font-family:var(--font-display); font-weight:800; font-size:26px; text-transform:uppercase; letter-spacing:.02em;"&gt;Brand Story&lt;/span&gt;&lt;/div&gt;
+          &lt;div style="font-size:19px; color:var(--c-mute-2);"&gt;Swipeable module below A+ — [its job in one line]&lt;/div&gt;
+          &lt;div style="width:100%; aspect-ratio:1200 / 240; position:relative; margin-top:4px;"&gt;&lt;image-slot id="tplhl-bs" shape="rounded" radius="10" fit="contain" placeholder="Brand story banner" style="position:absolute;inset:0;width:100%;height:100%"&gt;&lt;/image-slot&gt;&lt;/div&gt;
+          &lt;div style="display:flex; align-items:baseline; gap:14px; margin-top:18px;"&gt;&lt;span style="font-family:var(--font-mono); font-size:20px; font-weight:700; letter-spacing:.12em; color:var(--c-yellow);"&gt;02&lt;/span&gt;&lt;span style="font-family:var(--font-display); font-weight:800; font-size:26px; text-transform:uppercase; letter-spacing:.02em;"&gt;Listing Images&lt;/span&gt;&lt;/div&gt;
+          &lt;div style="font-size:19px; color:var(--c-mute-2);"&gt;[N]-image sets per hero ASIN — behind a [0.0]% conversion rate&lt;/div&gt;
+          &lt;div style="display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-top:4px; align-content:start;"&gt;
+            &lt;div style="position:relative; aspect-ratio:1 / 1; min-width:0;"&gt;&lt;span style="position:absolute; top:6px; left:6px; z-index:3; font-family:var(--font-mono); font-size:13px; font-weight:700; color:var(--c-yellow-ink); background:var(--c-yellow); padding:2px 8px; border-radius:5px;"&gt;HERO&lt;/span&gt;&lt;image-slot id="tplhl-li1" shape="rounded" radius="10" fit="cover" placeholder="Image 1" style="position:absolute;inset:0;width:100%;height:100%"&gt;&lt;/image-slot&gt;&lt;/div&gt;
+            &lt;div style="position:relative; aspect-ratio:1 / 1; min-width:0;"&gt;&lt;image-slot id="tplhl-li2" shape="rounded" radius="10" fit="cover" placeholder="Image 2" style="position:absolute;inset:0;width:100%;height:100%"&gt;&lt;/image-slot&gt;&lt;/div&gt;
+            &lt;div style="position:relative; aspect-ratio:1 / 1; min-width:0;"&gt;&lt;image-slot id="tplhl-li3" shape="rounded" radius="10" fit="cover" placeholder="Image 3" style="position:absolute;inset:0;width:100%;height:100%"&gt;&lt;/image-slot&gt;&lt;/div&gt;
+            &lt;div style="position:relative; aspect-ratio:1 / 1; min-width:0;"&gt;&lt;image-slot id="tplhl-li4" shape="rounded" radius="10" fit="cover" placeholder="Image 4" style="position:absolute;inset:0;width:100%;height:100%"&gt;&lt;/image-slot&gt;&lt;/div&gt;
+            &lt;div style="position:relative; aspect-ratio:1 / 1; min-width:0;"&gt;&lt;image-slot id="tplhl-li5" shape="rounded" radius="10" fit="cover" placeholder="Image 5" style="position:absolute;inset:0;width:100%;height:100%"&gt;&lt;/image-slot&gt;&lt;/div&gt;
+            &lt;div style="position:relative; aspect-ratio:1 / 1; min-width:0;"&gt;&lt;image-slot id="tplhl-li6" shape="rounded" radius="10" fit="cover" placeholder="Image 6" style="position:absolute;inset:0;width:100%;height:100%"&gt;&lt;/image-slot&gt;&lt;/div&gt;
+            &lt;div style="position:relative; aspect-ratio:1 / 1; min-width:0;"&gt;&lt;image-slot id="tplhl-li7" shape="rounded" radius="10" fit="cover" placeholder="Image 7" style="position:absolute;inset:0;width:100%;height:100%"&gt;&lt;/image-slot&gt;&lt;/div&gt;
+            &lt;div style="position:relative; aspect-ratio:1 / 1; min-width:0;"&gt;&lt;image-slot id="tplhl-li8" shape="rounded" radius="10" fit="cover" placeholder="Image 8" style="position:absolute;inset:0;width:100%;height:100%"&gt;&lt;/image-slot&gt;&lt;/div&gt;
+            &lt;div style="position:relative; aspect-ratio:1 / 1; min-width:0;"&gt;&lt;image-slot id="tplhl-li9" shape="rounded" radius="10" fit="cover" placeholder="Image 9" style="position:absolute;inset:0;width:100%;height:100%"&gt;&lt;/image-slot&gt;&lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div style="display:flex; flex-direction:column; min-height:0; gap:10px;"&gt;
+          &lt;div style="display:flex; align-items:baseline; gap:14px;"&gt;&lt;span style="font-family:var(--font-mono); font-size:20px; font-weight:700; letter-spacing:.12em; color:var(--c-yellow);"&gt;03&lt;/span&gt;&lt;span style="font-family:var(--font-display); font-weight:800; font-size:26px; text-transform:uppercase; letter-spacing:.02em;"&gt;Premium A+&lt;/span&gt;&lt;/div&gt;
+          &lt;div style="flex:1; min-height:0; border-radius:10px; overflow:hidden; display:flex; flex-direction:column;"&gt;
+            &lt;div style="position:relative; width:100%; aspect-ratio:1200 / 492;"&gt;&lt;image-slot id="tplhl-ap1" shape="rect" fit="cover" placeholder="A+ module 1" style="position:absolute;inset:0;width:100%;height:100%"&gt;&lt;/image-slot&gt;&lt;/div&gt;
+            &lt;div style="position:relative; width:100%; aspect-ratio:1200 / 492;"&gt;&lt;image-slot id="tplhl-ap2" shape="rect" fit="cover" placeholder="A+ module 2" style="position:absolute;inset:0;width:100%;height:100%"&gt;&lt;/image-slot&gt;&lt;/div&gt;
+            &lt;div style="position:relative; width:100%; aspect-ratio:1200 / 492;"&gt;&lt;image-slot id="tplhl-ap3" shape="rect" fit="cover" placeholder="A+ module 3" style="position:absolute;inset:0;width:100%;height:100%"&gt;&lt;/image-slot&gt;&lt;/div&gt;
+            &lt;div style="position:relative; width:100%; flex:1; min-height:0;"&gt;&lt;image-slot id="tplhl-ap4" shape="rect" fit="cover" align="top" placeholder="A+ module 4" style="position:absolute;inset:0;width:100%;height:100%"&gt;&lt;/image-slot&gt;&lt;/div&gt;
+          &lt;/div&gt;
+          &lt;div style="font-size:19px; color:var(--c-mute-2);"&gt;&lt;strong style="color:var(--c-yellow);"&gt;[0]&lt;/strong&gt; Premium modules · [00] ASINs live&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div style="display:flex; flex-direction:column; min-height:0; gap:10px;"&gt;
+          &lt;div style="display:flex; align-items:baseline; gap:14px;"&gt;&lt;span style="font-family:var(--font-mono); font-size:20px; font-weight:700; letter-spacing:.12em; color:var(--c-yellow);"&gt;04&lt;/span&gt;&lt;span style="font-family:var(--font-display); font-weight:800; font-size:26px; text-transform:uppercase; letter-spacing:.02em;"&gt;Storefront&lt;/span&gt;&lt;/div&gt;
+          &lt;div style="flex:1; min-height:0; position:relative; border-radius:10px; overflow:hidden;"&gt;&lt;image-slot id="tplhl-sf" shape="rect" fit="width" align="top" placeholder="Storefront page" style="position:absolute;inset:0;width:100%;height:100%"&gt;&lt;/image-slot&gt;&lt;/div&gt;
+          &lt;div style="font-size:19px; color:var(--c-mute-2);"&gt;Multi-page destination · &lt;strong style="color:var(--c-yellow);"&gt;[00]%&lt;/strong&gt; Buy Box&lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div style="margin:26px calc(-1 * var(--pad-x)) 0; background:var(--c-yellow); color:var(--c-yellow-ink); display:flex; justify-content:space-between; align-items:center; padding:24px var(--pad-x);"&gt;
+        &lt;div style="display:flex; align-items:center; gap:24px;"&gt;&lt;img class="mf-mark" src="assets/mf-mark.png" alt="market foundry" style="filter:brightness(0);"&gt;&lt;span style="font-family:var(--font-display); font-weight:800; font-size:38px; text-transform:uppercase; letter-spacing:-.01em;"&gt;Every image earns the click.&lt;/span&gt;&lt;/div&gt;
+        &lt;div style="font-family:var(--font-mono); font-size:23px; font-weight:600; letter-spacing:.06em;"&gt;hello@marketfoundry.com &amp;nbsp;·&amp;nbsp; 05 / 05&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+&lt;/deck-stage&gt;
+
+&lt;div id="nav"&gt;
+  &lt;button id="prev" aria-label="Previous slide"&gt;&amp;#8249;&lt;/button&gt;
+  &lt;div class="count"&gt;&lt;b id="cur"&gt;1&lt;/b&gt; / &lt;span id="tot"&gt;15&lt;/span&gt;&lt;/div&gt;
+  &lt;button id="next" aria-label="Next slide"&gt;&amp;#8250;&lt;/button&gt;
+&lt;/div&gt;
+&lt;div id="hint"&gt;← → to navigate&lt;/div&gt;
+
+&lt;script&gt;
+(function(){
+  var stage = document.querySelector('deck-stage');
+  var W = +stage.getAttribute('width')||1920, H = +stage.getAttribute('height')||1080;
+  var slides = Array.prototype.slice.call(stage.querySelectorAll('section.slide'));
+  var idx = 0, n = slides.length;
+  stage.style.width = W+'px'; stage.style.height = H+'px';
+  slides.forEach(function(s,i){ s.style.display = i===0 ? 'block':'none'; });
+  document.getElementById('tot').textContent = n;
+
+  function fit(){
+    var sc = Math.min(window.innerWidth/W, (window.innerHeight)/H);
+    stage.style.transform = 'translate(-50%,-50%) scale('+sc+')';
+  }
+  function show(k){
+    idx = Math.max(0, Math.min(n-1, k));
+    slides.forEach(function(s,i){ s.style.display = i===idx ? 'block':'none'; });
+    document.getElementById('cur').textContent = idx+1;
+    document.getElementById('prog').style.width = ((idx+1)/n*100)+'%';
+  }
+  document.getElementById('prev').addEventListener('click', function(){ show(idx-1); });
+  document.getElementById('next').addEventListener('click', function(){ show(idx+1); });
+  document.addEventListener('keydown', function(e){
+    if(['ArrowRight','ArrowDown','PageDown',' '].indexOf(e.key)&gt;-1){ show(idx+1); e.preventDefault(); }
+    else if(['ArrowLeft','ArrowUp','PageUp'].indexOf(e.key)&gt;-1){ show(idx-1); e.preventDefault(); }
+    else if(e.key==='Home'){ show(0); } else if(e.key==='End'){ show(n-1); }
+  });
+  // click halves (ignore clicks on nav)
+  document.addEventListener('click', function(e){
+    if(e.target.closest('#nav') || e.target.closest('image-slot')) return;
+    var x = e.clientX / window.innerWidth;
+    if(x &gt; 0.62) show(idx+1); else if(x &lt; 0.38) show(idx-1);
+  });
+  // wheel nav, debounced
+  var wlock=false;
+  window.addEventListener('wheel', function(e){
+    if(wlock) return;
+    if(Math.abs(e.deltaY) &lt; 24 &amp;&amp; Math.abs(e.deltaX) &lt; 24) return;
+    wlock=true; setTimeout(function(){wlock=false;}, 520);
+    if((e.deltaY||e.deltaX) &gt; 0) show(idx+1); else show(idx-1);
+  }, {passive:true});
+  // swipe
+  var tx=0,ty=0;
+  window.addEventListener('touchstart', function(e){ tx=e.touches[0].clientX; ty=e.touches[0].clientY; }, {passive:true});
+  window.addEventListener('touchend', function(e){
+    var dx=e.changedTouches[0].clientX-tx, dy=e.changedTouches[0].clientY-ty;
+    if(Math.abs(dx)&gt;50 &amp;&amp; Math.abs(dx)&gt;Math.abs(dy)){ show(dx&lt;0 ? idx+1 : idx-1); }
+  }, {passive:true});
+
+  window.addEventListener('resize', fit);
+  fit(); show(0);
+  setTimeout(function(){ var h=document.getElementById('hint'); if(h) h.style.transition='opacity 1s'; if(h) h.style.opacity='0'; }, 4000);
+})();
+&lt;/script&gt;
+
+&lt;script src="assets/image-slot.js"&gt;&lt;/script&gt;
+&lt;/body&gt;&lt;/html&gt;
+</pre>
+</details>
+<h2>D · Detailed template source (Detailed Case Study Template.html)</h2>
+<p>The 14-slide granular format. Same rules; rename image-slot ids from tpl-* to &lt;client-slug&gt;-*; redraw the three SVG charts per playbook §5.</p>
+<details><summary>Full template HTML (14 slides)</summary>
+<pre>&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;&lt;head&gt;
+&lt;meta charset="utf-8"&gt;
+&lt;title&gt;Case Study Template · market·foundry&lt;/title&gt;
+&lt;meta name="viewport" content="width=device-width,initial-scale=1"&gt;
+&lt;link rel="preconnect" href="https://fonts.googleapis.com"&gt;
+&lt;link rel="preconnect" href="https://fonts.gstatic.com" crossorigin&gt;
+&lt;link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"&gt;
+&lt;style&gt;
+/* =============================================================
+   CASE STUDY TEMPLATE — market·foundry visual system
+   Authored at 1920×1080. 1px = 1 stage px.
+   Placeholders are wrapped in [SQUARE BRACKETS] — replace them.
+   Duplicate this file for each new case study.
+   ============================================================= */
+:root{
+  --c-ink:#2A5059; --c-ink-90:#2F2C2C; --c-ink-80:#383434; --c-ink-70:#423D3D;
+  --c-line:#4A4646; --c-line-soft:#3E5F66; --c-mute:#9FB3B6; --c-mute-2:#CBD6D8;
+  --c-white:#FFFFFF; --c-paper:#F0EFF6; --c-paper-2:#E3E2EE;
+  --c-yellow:#FF751F; --c-yellow-2:#FF9048; --c-yellow-ink:#2B1508;
+  --c-cherry:#C81E3C;
+  --pad-x:96px;
+  --font-display:'Outfit',system-ui,sans-serif;
+  --font-body:'Outfit',system-ui,-apple-system,sans-serif;
+  --font-mono:'Outfit',system-ui,sans-serif;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;background:#000;height:100%;overflow:hidden;}
+deck-stage{display:block;position:absolute;top:50%;left:50%;transform-origin:center center;}
+
+section.slide{
+  font-family:var(--font-body); color:var(--c-white); background:var(--c-ink);
+  font-size:28px; line-height:1.45; overflow:hidden; position:absolute; inset:0;
+}
+section.slide.light{background:var(--c-white); color:var(--c-ink);}
+section.slide.paper{background:var(--c-paper); color:var(--c-ink);}
+section.slide.yellow{background:var(--c-yellow); color:var(--c-yellow-ink);}
+
+/* Type */
+.eyebrow{font-family:var(--font-body); font-weight:700; font-size:18px; letter-spacing:.22em;
+  text-transform:uppercase; line-height:1; color:var(--c-yellow); display:inline-flex; align-items:center; gap:16px;}
+.eyebrow.ink{color:var(--c-ink);}
+.eyebrow .dash{width:56px; height:2px; background:currentColor; opacity:.4;}
+.display{font-family:var(--font-display); font-weight:800; text-transform:uppercase; line-height:.86; letter-spacing:-.025em;}
+.title-xl{font-family:var(--font-display); font-weight:800; text-transform:uppercase; font-size:96px; line-height:.95; letter-spacing:-.022em; margin:0;}
+.title-lg{font-family:var(--font-display); font-weight:800; text-transform:uppercase; font-size:96px; line-height:.92; letter-spacing:-.02em; margin:0;}
+.title-md{font-family:var(--font-display); font-weight:800; text-transform:uppercase; font-size:64px; line-height:.95; letter-spacing:-.015em; margin:0;}
+.subhead{font-family:var(--font-body); font-weight:600; font-size:48px; line-height:1.15; letter-spacing:-.01em; margin:0;}
+.body{font-family:var(--font-body); font-weight:400; font-size:28px; line-height:1.5; text-wrap:pretty; margin:0; max-width:30ch;}
+.body.lg{font-size:32px;} .body.sm{font-size:22px;}
+.muted{color:var(--c-mute-2);} .muted.ink{color:var(--c-mute);}
+.metric{font-family:var(--font-display); font-weight:800; font-size:168px; font-variant-numeric:tabular-nums; letter-spacing:-.04em; line-height:.86; margin:0;}
+.metric .pct,.metric .unit{font-size:.55em; color:var(--c-yellow); letter-spacing:-.02em;}
+.metric-label{font-family:var(--font-body); font-weight:600; font-size:24px; letter-spacing:.04em; text-transform:uppercase; color:var(--c-mute-2); line-height:1.3; max-width:22ch; margin-top:18px;}
+.light .metric-label,.paper .metric-label,.yellow .metric-label{color:var(--c-ink); opacity:.6;}
+.yellow-dot{display:inline-block; width:.55em; height:.55em; border-radius:999px; background:var(--c-yellow); vertical-align:.05em;}
+
+/* Chrome */
+.slide-frame{position:absolute; inset:0; padding:80px var(--pad-x) 130px; display:flex; flex-direction:column;}
+.slide-frame.tight{padding:72px var(--pad-x);}
+.topbar{display:flex; justify-content:space-between; align-items:center; position:absolute; inset:36px var(--pad-x) auto;
+  font-family:var(--font-mono); font-size:24px; letter-spacing:.12em; text-transform:uppercase; color:var(--c-mute-2); z-index:2;}
+.light .topbar,.paper .topbar{color:var(--c-mute);}
+.yellow .topbar{color:var(--c-yellow-ink); opacity:.7;}
+.topbar .right{display:flex; gap:28px;}
+.bottombar{position:absolute; inset:auto var(--pad-x) 36px; display:flex; justify-content:space-between; align-items:center;
+  font-family:var(--font-mono); font-size:24px; letter-spacing:.18em; text-transform:uppercase; color:var(--c-mute); z-index:2;}
+.light .bottombar,.paper .bottombar{color:var(--c-mute);}
+.brand-mark{font-family:var(--font-display); font-size:32px; letter-spacing:-.02em; text-transform:lowercase; color:inherit; line-height:1;}
+.brand-mark .o{color:var(--c-yellow);}
+
+/* Cards / KPIs */
+.card{background:var(--c-ink-90); border:1px solid var(--c-line); border-radius:18px; padding:36px 40px; position:relative; overflow:hidden;}
+.light .card,.paper .card{background:var(--c-white); border-color:#E5E5E5; box-shadow:0 1px 0 rgba(0,0,0,.04);}
+.kpi{background:var(--c-ink-90); border:1px solid var(--c-line); border-radius:20px; padding:44px 44px 40px; display:flex; flex-direction:column; justify-content:space-between; gap:18px; position:relative; overflow:hidden;}
+.kpi.accent{background:var(--c-yellow); border-color:var(--c-yellow); color:var(--c-yellow-ink);}
+.kpi.accent .metric .pct,.kpi.accent .metric .unit{color:var(--c-yellow-ink);}
+.kpi.accent .metric-label{color:var(--c-yellow-ink); opacity:.7;}
+.kpi.invert{background:var(--c-white); color:var(--c-ink);}
+.kpi.invert .metric .pct,.kpi.invert .metric .unit{color:var(--c-ink);}
+.kpi.invert .metric-label{color:var(--c-ink); opacity:.6;}
+.kpi-hint{font-family:var(--font-body); font-weight:500; font-size:24px; color:var(--c-mute-2); line-height:1.35;}
+.kpi.accent .kpi-hint,.kpi.invert .kpi-hint{color:var(--c-ink); opacity:.65;}
+.kpi-up{display:inline-flex; align-items:center; gap:6px; background:rgba(31,138,91,.18); color:#6CE0A3; font-family:var(--font-mono); font-size:24px; font-weight:700; padding:6px 14px; border-radius:8px; letter-spacing:-.01em; white-space:nowrap;}
+.kpi-down{display:inline-flex; align-items:center; gap:6px; background:rgba(200,30,60,.16); color:#FF7A8A; font-family:var(--font-mono); font-size:24px; font-weight:700; padding:6px 14px; border-radius:8px; letter-spacing:-.01em; white-space:nowrap;}
+.kpi.accent .kpi-up,.kpi.invert .kpi-up{background:rgba(10,10,10,.1); color:var(--c-ink);}
+
+/* Pillars */
+.pillar{display:flex; flex-direction:column; gap:18px; padding:32px 28px 32px 0; position:relative; flex:1 1 0; min-width:0; border-top:2px solid var(--c-line);}
+.light .pillar,.paper .pillar{border-top-color:#DCDCDC;}
+.pillar .num{font-family:var(--font-mono); font-size:24px; font-weight:700; letter-spacing:.15em; color:var(--c-yellow);}
+.pillar .h{font-family:var(--font-display); font-size:36px; text-transform:uppercase; line-height:.95; letter-spacing:-.015em;}
+.pillar .desc{font-size:24px; line-height:1.45; color:var(--c-mute-2); max-width:24ch;}
+.light .pillar .desc,.paper .pillar .desc{color:var(--c-mute);}
+
+/* Logo lockup */
+.logo-108{font-family:var(--font-display); font-size:56px; letter-spacing:-.04em; line-height:.9; text-transform:lowercase; color:inherit; display:inline-block;}
+.logo-108 .o{display:inline-block; width:.74em; height:.74em; border-radius:999px; background:var(--c-yellow); vertical-align:-.04em; margin:0 -.03em;}
+.logo-108 .agency{display:block; font-family:var(--font-body); font-weight:700; font-size:.30em; letter-spacing:.32em; text-transform:uppercase; margin-top:8px; color:inherit; opacity:.9;}
+.mf-logo{display:inline-block; height:132px; width:auto;}
+.mf-mark{height:38px; width:auto; display:inline-block; vertical-align:middle;}
+.mf-mark.on-accent,.mf-logo.on-accent{filter:brightness(0) invert(1);}
+
+/* Browser chrome */
+.browser{background:var(--c-ink-80); border:1px solid var(--c-line); border-radius:14px; overflow:hidden; box-shadow:0 30px 60px rgba(0,0,0,.4);}
+.light .browser,.paper .browser{background:#FAFAFA; border-color:#DCDCDC; box-shadow:0 20px 50px rgba(10,10,10,.12);}
+.browser .bar{display:flex; align-items:center; gap:14px; padding:14px 20px; border-bottom:1px solid var(--c-line); background:var(--c-ink-90);}
+.browser .dots{display:inline-flex; gap:8px;}
+.browser .dots i{width:12px; height:12px; border-radius:999px; background:var(--c-line); display:inline-block;}
+.browser .url{flex:1; font-family:var(--font-mono); font-size:18px; color:var(--c-mute-2); background:var(--c-ink); padding:8px 14px; border-radius:6px; border:1px solid var(--c-line); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+
+/* Channel badge */
+.chan{display:inline-flex; align-items:center; gap:10px; font-family:var(--font-mono); font-size:22px; font-weight:700; letter-spacing:.04em; padding:8px 16px; border-radius:8px; text-transform:uppercase;}
+.chan.vc{background:rgba(95,166,181,.16); color:#8FC6D2;}
+.chan.sc{background:rgba(255,117,31,.16); color:var(--c-yellow);}
+.chan i{width:10px; height:10px; border-radius:99px; display:inline-block;}
+.chan.vc i{background:#5FA6B5;} .chan.sc i{background:var(--c-yellow);}
+
+/* Image placeholder */
+.imgslot{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; background:var(--c-ink-80);
+  border:1.5px dashed rgba(255,255,255,.16); border-radius:18px; color:var(--c-mute-2); text-align:center; padding:24px;}
+.light .imgslot,.paper .imgslot{background:#F4F4F4; border-color:#DCDCDC; color:var(--c-mute);}
+.imgslot .ic{width:54px; height:54px; opacity:.5;}
+.imgslot .lbl{font-family:var(--font-mono); font-size:20px; letter-spacing:.06em; text-transform:uppercase;}
+
+strong{font-weight:600;}
+
+/* image-slot empty-state caption → brand white */
+image-slot{color:#FFFFFF !important;}
+
+/* ===== Navigation UI ===== */
+#nav{position:fixed; left:50%; bottom:22px; transform:translateX(-50%); z-index:50; display:flex; align-items:center; gap:14px;
+  background:rgba(17,17,17,.82); backdrop-filter:blur(8px); border:1px solid #4A4646; border-radius:999px; padding:9px 14px;
+  font-family:var(--font-mono); color:#CBD6D8; box-shadow:0 10px 40px rgba(0,0,0,.5);}
+#nav button{all:unset; cursor:pointer; width:34px; height:34px; display:flex; align-items:center; justify-content:center; border-radius:999px; color:#E5E5E5; font-size:18px;}
+#nav button:hover{background:#4A4646; color:var(--c-yellow);}
+#nav .count{font-size:15px; letter-spacing:.12em; min-width:62px; text-align:center; user-select:none;}
+#nav .count b{color:var(--c-yellow); font-weight:500;}
+#prog{position:fixed; top:0; left:0; height:3px; background:var(--c-yellow); z-index:50; transition:width .25s ease;}
+#hint{position:fixed; right:18px; bottom:24px; z-index:50; font-family:var(--font-mono); font-size:12px; letter-spacing:.1em; color:#5a5a5a; text-transform:uppercase;}
+@media print{#nav,#prog,#hint{display:none;}}
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+&lt;template id="__bundler_thumbnail" data-bg-color="#2A5059"&gt;
+  &lt;svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg"&gt;
+    &lt;rect width="1200" height="800" fill="#2A5059"/&gt;
+    &lt;text x="90" y="330" font-family="Outfit, Arial, sans-serif" font-size="150" font-weight="800" fill="#ffffff"&gt;ZERO TO&lt;/text&gt;
+    &lt;text x="90" y="480" font-family="Outfit, Arial, sans-serif" font-size="150" font-weight="800" fill="#FF751F"&gt;$[0.0]M.&lt;/text&gt;
+    &lt;text x="94" y="560" font-family="Outfit, monospace" font-size="30" letter-spacing="6" fill="#FF751F"&gt;[CLIENT] · SELLER CENTRAL&lt;/text&gt;
+    &lt;circle cx="1050" cy="250" r="120" fill="#2F2C2C"/&gt;
+  &lt;/svg&gt;
+&lt;/template&gt;
+
+&lt;div id="prog"&gt;&lt;/div&gt;
+
+&lt;deck-stage width="1920" height="1080"&gt;
+
+  &lt;!-- 01 — COVER --&gt;
+  &lt;section class="slide" data-label="Cover"&gt;
+    &lt;div class="slide-frame" style="padding:48px var(--pad-x) 44px;"&gt;
+      &lt;div style="display:flex; justify-content:space-between; align-items:flex-start;"&gt;
+        &lt;img class="mf-logo" src="assets/mf-logo.png" alt="market foundry"&gt;
+        &lt;div style="text-align:right; font-family:var(--font-mono); font-size:24px; letter-spacing:.22em; text-transform:uppercase; color:var(--c-mute-2);"&gt;
+          &lt;div&gt;Amazon Seller Central Case Study&lt;/div&gt;
+          &lt;div style="margin-top:10px; opacity:.55;"&gt;[Date range]&lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+
+      &lt;div style="flex:1; display:grid; grid-template-columns:1.4fr 1fr; gap:80px; align-items:center; margin-top:8px;"&gt;
+        &lt;div style="display:flex; flex-direction:column; gap:34px;"&gt;
+          &lt;div class="eyebrow" style="font-size:26px;"&gt;&lt;span class="dash"&gt;&lt;/span&gt;&lt;span&gt;[Positioning line · one phrase]&lt;/span&gt;&lt;/div&gt;
+          &lt;h1 class="display" style="font-size:158px; line-height:.84; color:var(--c-white); margin:0;"&gt;
+            [Bold&lt;br&gt;&lt;span style="color:var(--c-yellow);"&gt;claim.]&lt;span class="yellow-dot" style="background:var(--c-white); width:.12em; height:.12em; margin-left:.02em; vertical-align:.18em;"&gt;&lt;/span&gt;&lt;/span&gt;
+          &lt;/h1&gt;
+          &lt;p class="body lg" style="max-width:30ch; color:var(--c-mute-2); font-size:30px; line-height:1.4;"&gt;
+            How &lt;strong style="color:var(--c-white);"&gt;[CLIENT NAME]&lt;/strong&gt; [did what] — [one-sentence summary of the engagement and the single headline result].
+          &lt;/p&gt;
+        &lt;/div&gt;
+
+        &lt;div style="display:flex; flex-direction:column; gap:18px; justify-self:end; width:100%; max-width:560px; align-self:stretch;"&gt;
+          &lt;div style="width:100%; flex:1; min-height:0; display:flex; align-items:center; justify-content:center; padding:8px;"&gt;
+            &lt;image-slot id="tpl-cover-hero" shape="rounded" radius="18" fit="contain" placeholder="Drop hero product photo" style="width:100%;height:100%"&gt;&lt;/image-slot&gt;
+          &lt;/div&gt;
+          &lt;div style="display:flex; align-items:center; gap:24px;"&gt;
+            &lt;div style="width:170px; height:96px; flex-shrink:0; border-radius:12px; display:flex; align-items:center; justify-content:center; padding:14px;"&gt;
+              &lt;image-slot id="tpl-cover-logo" shape="rounded" radius="8" fit="contain" placeholder="Logo" style="width:100%;height:100%"&gt;&lt;/image-slot&gt;
+            &lt;/div&gt;
+            &lt;div&gt;
+              &lt;div style="font-family:var(--font-mono); font-size:24px; letter-spacing:.2em; text-transform:uppercase; color:var(--c-mute); margin-bottom:10px;"&gt;Client&lt;/div&gt;
+              &lt;div style="font-family:var(--font-display); font-size:40px; line-height:1; color:var(--c-white); text-transform:uppercase; letter-spacing:-.015em;"&gt;[CLIENT NAME]&lt;/div&gt;
+              &lt;div style="font-family:var(--font-body); font-size:24px; color:var(--c-mute-2); margin-top:10px;"&gt;[Category]&lt;/div&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+
+      &lt;div style="display:flex; justify-content:space-between; align-items:flex-end; gap:32px;"&gt;
+        &lt;div style="font-family:var(--font-mono); font-size:24px; letter-spacing:.22em; text-transform:uppercase; color:var(--c-mute-2);"&gt;Amazon · Seller Central&lt;/div&gt;
+        &lt;div style="font-family:var(--font-body); font-style:italic; font-size:23px; color:var(--c-mute-2); text-align:right; white-space:nowrap;"&gt;“[Short client or positioning quote.]”&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;!-- 02 — THE BRIEF --&gt;
+  &lt;section class="slide" data-label="The Brief"&gt;
+    &lt;div class="slide-frame"&gt;
+      &lt;div class="topbar"&gt;&lt;span&gt;&lt;span style="color:var(--c-yellow); font-weight:700;"&gt;02&lt;/span&gt; &amp;nbsp;·&amp;nbsp; The Brief&lt;/span&gt;&lt;span class="right"&gt;[CLIENT NAME]&lt;/span&gt;&lt;/div&gt;
+      &lt;div style="flex:1; display:grid; grid-template-columns:1.05fr 1fr; gap:80px; align-items:center; margin-top:24px;"&gt;
+        &lt;div style="display:flex; flex-direction:column; gap:32px;"&gt;
+          &lt;h1 class="title-xl" style="color:var(--c-white); line-height:1.04; font-size:92px;"&gt;
+            &lt;span style="display:block;"&gt;[Line one.]&lt;/span&gt;
+            &lt;span style="display:block;"&gt;&lt;span style="color:var(--c-mute-2);"&gt;[Line]&lt;/span&gt; &lt;span style="color:var(--c-yellow);"&gt;[two.]&lt;/span&gt;&lt;/span&gt;
+            &lt;span style="display:block;"&gt;[Line three.]&lt;/span&gt;
+          &lt;/h1&gt;
+          &lt;p class="body" style="max-width:33ch; color:var(--c-mute-2); font-size:26px;"&gt;
+            [Set up the client's Seller Central situation and your mandate in 2–3 sentences. What were you asked to grow or fix? What made it hard? State the goal plainly.]
+          &lt;/p&gt;
+        &lt;/div&gt;
+        &lt;div style="display:grid; grid-template-columns:1fr; gap:20px;"&gt;
+          &lt;div class="kpi" style="flex-direction:row; align-items:center; gap:32px; padding:26px 34px;"&gt;
+            &lt;div class="chan sc" style="font-size:24px; padding:12px 18px;"&gt;&lt;i&gt;&lt;/i&gt;▸&lt;/div&gt;
+            &lt;div&gt;&lt;div style="font-family:var(--font-display); font-size:30px; text-transform:uppercase; line-height:1; letter-spacing:-.015em;"&gt;The starting point&lt;/div&gt;
+              &lt;div class="kpi-hint" style="margin-top:8px;"&gt;[Where the account was when we took over]&lt;/div&gt;&lt;/div&gt;
+          &lt;/div&gt;
+          &lt;div class="kpi" style="flex-direction:row; align-items:center; gap:32px; padding:26px 34px;"&gt;
+            &lt;div class="chan sc" style="font-size:24px; padding:12px 18px;"&gt;&lt;i&gt;&lt;/i&gt;▸&lt;/div&gt;
+            &lt;div&gt;&lt;div style="font-family:var(--font-display); font-size:30px; text-transform:uppercase; line-height:1; letter-spacing:-.015em;"&gt;The mandate&lt;/div&gt;
+              &lt;div class="kpi-hint" style="margin-top:8px;"&gt;[What we were asked to deliver]&lt;/div&gt;&lt;/div&gt;
+          &lt;/div&gt;
+          &lt;div class="kpi" style="flex-direction:row; align-items:center; gap:32px; padding:26px 34px;"&gt;
+            &lt;div class="metric" style="font-size:56px; min-width:120px; text-align:center; color:var(--c-yellow);"&gt;[0.0×]&lt;/div&gt;
+            &lt;div&gt;&lt;div style="font-family:var(--font-display); font-size:30px; text-transform:uppercase; line-height:1; letter-spacing:-.015em;"&gt;The goal&lt;/div&gt;
+              &lt;div class="kpi-hint" style="margin-top:8px;"&gt;[The single target that defined success]&lt;/div&gt;&lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class="bottombar"&gt;&lt;img class="mf-mark" src="assets/mf-mark.png" alt="market foundry"&gt;&lt;span&gt;02 / 14&lt;/span&gt;&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;!-- 03 — RESULTS AT A GLANCE --&gt;
+  &lt;section class="slide" data-label="Results at a Glance"&gt;
+    &lt;div class="slide-frame" style="padding-bottom:130px;"&gt;
+      &lt;div class="topbar"&gt;&lt;span&gt;&lt;span style="color:var(--c-yellow); font-weight:700;"&gt;03&lt;/span&gt; &amp;nbsp;·&amp;nbsp; Results&lt;/span&gt;&lt;span class="right"&gt;[Scope · period]&lt;/span&gt;&lt;/div&gt;
+      &lt;div style="margin-top:16px; display:flex; align-items:end; justify-content:space-between; gap:48px;"&gt;
+        &lt;h1 class="title-xl" style="color:var(--c-white); max-width:18ch; font-size:84px;"&gt;[Headline,&lt;br&gt;&lt;span style="color:var(--c-yellow);"&gt;six&lt;/span&gt; proof points.]&lt;/h1&gt;
+        &lt;p class="body" style="max-width:32ch; color:var(--c-mute-2); font-size:24px;"&gt;Seller Central and Sponsored Ads reporting · [Date range].&lt;/p&gt;
+      &lt;/div&gt;
+      &lt;div style="margin-top:28px; flex:1; display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:1fr 1fr; gap:22px;"&gt;
+        &lt;div class="kpi accent" style="padding:32px 36px;"&gt;
+          &lt;div class="metric" style="font-size:104px;"&gt;$[0.0]&lt;span class="pct"&gt;M&lt;/span&gt;&lt;/div&gt;
+          &lt;div&gt;&lt;div class="metric-label" style="margin-top:8px;"&gt;[Headline metric]&lt;/div&gt;&lt;div class="kpi-hint" style="margin-top:6px;"&gt;[Short context]&lt;/div&gt;&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class="kpi" style="padding:32px 36px;"&gt;
+          &lt;div class="metric" style="font-size:104px;"&gt;[000]&lt;span class="unit"&gt;K&lt;/span&gt;&lt;/div&gt;
+          &lt;div&gt;&lt;div class="metric-label" style="margin-top:8px;"&gt;[Metric label]&lt;/div&gt;&lt;div class="kpi-hint" style="margin-top:6px;"&gt;[Short context]&lt;/div&gt;&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class="kpi" style="padding:32px 36px;"&gt;
+          &lt;div class="metric" style="font-size:104px;"&gt;$[000]&lt;span class="unit"&gt;K&lt;/span&gt;&lt;/div&gt;
+          &lt;div&gt;&lt;div class="metric-label" style="margin-top:8px;"&gt;[Metric label]&lt;/div&gt;&lt;div class="kpi-hint" style="margin-top:6px;"&gt;[Short context]&lt;/div&gt;&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class="kpi" style="padding:32px 36px;"&gt;
+          &lt;div class="metric" style="font-size:104px;"&gt;[0.0]&lt;span class="pct"&gt;×&lt;/span&gt;&lt;/div&gt;
+          &lt;div&gt;&lt;div class="metric-label" style="margin-top:8px;"&gt;[Metric label]&lt;/div&gt;&lt;div class="kpi-hint" style="margin-top:6px;"&gt;&lt;span class="kpi-up"&gt;[delta / context]&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class="kpi" style="padding:32px 36px;"&gt;
+          &lt;div class="metric" style="font-size:104px;"&gt;[00]&lt;span class="pct"&gt;%&lt;/span&gt;&lt;/div&gt;
+          &lt;div&gt;&lt;div class="metric-label" style="margin-top:8px;"&gt;[Metric label]&lt;/div&gt;&lt;div class="kpi-hint" style="margin-top:6px;"&gt;[Short context]&lt;/div&gt;&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class="kpi" style="padding:32px 36px;"&gt;
+          &lt;div class="metric" style="font-size:104px;"&gt;[00]&lt;span class="pct"&gt;%&lt;/span&gt;&lt;/div&gt;
+          &lt;div&gt;&lt;div class="metric-label" style="margin-top:8px;"&gt;[Metric label]&lt;/div&gt;&lt;div class="kpi-hint" style="margin-top:6px;"&gt;[Short context]&lt;/div&gt;&lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class="bottombar"&gt;&lt;img class="mf-mark" src="assets/mf-mark.png" alt="market foundry"&gt;&lt;span&gt;03 / 14&lt;/span&gt;&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;!-- 04 — SELLER CENTRAL SNAPSHOT --&gt;
+  &lt;section class="slide" data-label="Seller Central Snapshot"&gt;
+    &lt;div class="slide-frame"&gt;
+      &lt;div class="topbar"&gt;&lt;span&gt;&lt;span style="color:var(--c-yellow); font-weight:700;"&gt;04&lt;/span&gt; &amp;nbsp;·&amp;nbsp; Seller Central Snapshot&lt;/span&gt;&lt;span class="right"&gt;[CLIENT NAME] · [period]&lt;/span&gt;&lt;/div&gt;
+      &lt;div style="margin-top:14px; display:flex; align-items:end; justify-content:space-between; gap:48px;"&gt;
+        &lt;h1 class="title-xl" style="color:var(--c-white); font-size:80px;"&gt;One storefront, &lt;span style="color:var(--c-yellow);"&gt;every lever.&lt;/span&gt;&lt;/h1&gt;
+        &lt;p class="body" style="max-width:34ch; color:var(--c-mute-2); font-size:24px;"&gt;[One line on the shape of the account — catalogue size, organic vs paid mix, and where revenue concentrates.]&lt;/p&gt;
+      &lt;/div&gt;
+      &lt;div style="margin-top:30px; flex:1; display:grid; grid-template-columns:1.15fr 1fr; gap:28px;"&gt;
+
+        &lt;!-- Left: headline SC economics --&gt;
+        &lt;div class="card" style="display:flex; flex-direction:column; gap:22px; padding:34px 38px;"&gt;
+          &lt;div style="display:flex; justify-content:space-between; align-items:center;"&gt;
+            &lt;div class="chan sc"&gt;&lt;i&gt;&lt;/i&gt;Seller Central&lt;/div&gt;
+            &lt;div style="font-family:var(--font-mono); font-size:22px; color:var(--c-mute);"&gt;[Period]&lt;/div&gt;
+          &lt;/div&gt;
+          &lt;div style="display:flex; align-items:baseline; gap:18px;"&gt;
+            &lt;div style="font-family:var(--font-display); font-size:104px; line-height:.9; color:var(--c-white); letter-spacing:-.03em;"&gt;$[0.0]&lt;span style="color:var(--c-yellow); font-size:.5em;"&gt;M&lt;/span&gt;&lt;/div&gt;
+            &lt;div class="kpi-hint"&gt;[Headline]&lt;br&gt;&lt;span style="color:var(--c-mute);"&gt;[context]&lt;/span&gt;&lt;/div&gt;
+          &lt;/div&gt;
+          &lt;div style="height:1px; background:var(--c-line);"&gt;&lt;/div&gt;
+          &lt;div style="display:flex; flex-direction:column; gap:15px; font-size:22px;"&gt;
+            &lt;div style="display:flex; justify-content:space-between; gap:16px;"&gt;&lt;span class="muted" style="white-space:nowrap;"&gt;Units sold&lt;/span&gt;&lt;span&gt;&lt;strong style="color:var(--c-white);"&gt;[000,000]&lt;/strong&gt;&lt;/span&gt;&lt;/div&gt;
+            &lt;div style="display:flex; justify-content:space-between; gap:16px;"&gt;&lt;span class="muted" style="white-space:nowrap;"&gt;Avg. unit price&lt;/span&gt;&lt;span&gt;&lt;strong style="color:var(--c-white);"&gt;$[00.00]&lt;/strong&gt;&lt;/span&gt;&lt;/div&gt;
+            &lt;div style="display:flex; justify-content:space-between; gap:16px;"&gt;&lt;span class="muted" style="white-space:nowrap;"&gt;Active ASINs&lt;/span&gt;&lt;span style="white-space:nowrap;"&gt;&lt;strong style="color:var(--c-white);"&gt;[00]&lt;/strong&gt; SKUs&lt;/span&gt;&lt;/div&gt;
+            &lt;div style="display:flex; justify-content:space-between; gap:16px;"&gt;&lt;span class="muted" style="white-space:nowrap;"&gt;Page views&lt;/span&gt;&lt;span style="white-space:nowrap;"&gt;&lt;strong style="color:var(--c-white);"&gt;[value]&lt;/strong&gt;&lt;/span&gt;&lt;/div&gt;
+            &lt;div style="display:flex; justify-content:space-between; gap:16px;"&gt;&lt;span class="muted" style="white-space:nowrap;"&gt;Fulfilment&lt;/span&gt;&lt;span&gt;FBA&lt;/span&gt;&lt;/div&gt;
+          &lt;/div&gt;
+          &lt;div style="margin-top:auto; background:rgba(255,117,31,.08); border:1px solid rgba(255,117,31,.25); border-radius:12px; padding:18px 22px; font-size:23px; color:var(--c-mute-2);"&gt;
+            The &lt;strong style="color:var(--c-yellow);"&gt;whole business runs here.&lt;/strong&gt; [One line on why Seller Central is the growth engine.]
+          &lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;!-- Right: funnel / efficiency grid --&gt;
+        &lt;div style="display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; gap:20px;"&gt;
+          &lt;div class="kpi" style="padding:28px 32px;"&gt;
+            &lt;div class="metric" style="font-size:80px;"&gt;[000]&lt;span class="unit"&gt;K&lt;/span&gt;&lt;/div&gt;
+            &lt;div&gt;&lt;div class="metric-label" style="margin-top:8px;"&gt;Sessions&lt;/div&gt;&lt;div class="kpi-hint" style="margin-top:6px;"&gt;[Period]&lt;/div&gt;&lt;/div&gt;
+          &lt;/div&gt;
+          &lt;div class="kpi" style="padding:28px 32px;"&gt;
+            &lt;div class="metric" style="font-size:80px;"&gt;[00]&lt;span class="pct"&gt;%&lt;/span&gt;&lt;/div&gt;
+            &lt;div&gt;&lt;div class="metric-label" style="margin-top:8px;"&gt;Conversion&lt;/div&gt;&lt;div class="kpi-hint" style="margin-top:6px;"&gt;Unit session rate&lt;/div&gt;&lt;/div&gt;
+          &lt;/div&gt;
+          &lt;div class="kpi" style="padding:28px 32px;"&gt;
+            &lt;div class="metric" style="font-size:80px;"&gt;[00]&lt;span class="pct"&gt;%&lt;/span&gt;&lt;/div&gt;
+            &lt;div&gt;&lt;div class="metric-label" style="margin-top:8px;"&gt;Buy Box&lt;/div&gt;&lt;div class="kpi-hint" style="margin-top:6px;"&gt;Featured-offer share&lt;/div&gt;&lt;/div&gt;
+          &lt;/div&gt;
+          &lt;div class="kpi accent" style="padding:28px 32px;"&gt;
+            &lt;div class="metric" style="font-size:80px;"&gt;[0.0]&lt;span class="unit"&gt;×&lt;/span&gt;&lt;/div&gt;
+            &lt;div&gt;&lt;div class="metric-label" style="margin-top:8px;"&gt;Blended ROAS&lt;/div&gt;&lt;div class="kpi-hint" style="margin-top:6px;"&gt;Across all Sponsored Ads&lt;/div&gt;&lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class="bottombar"&gt;&lt;img class="mf-mark" src="assets/mf-mark.png" alt="market foundry"&gt;&lt;span&gt;04 / 14&lt;/span&gt;&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;!-- 05 — OUR APPROACH --&gt;
+  &lt;section class="slide light" data-label="Our Approach"&gt;
+    &lt;div class="slide-frame"&gt;
+      &lt;div class="topbar"&gt;&lt;span&gt;&lt;span style="color:var(--c-yellow); font-weight:700;"&gt;05&lt;/span&gt; &amp;nbsp;·&amp;nbsp; Our Approach&lt;/span&gt;&lt;span class="right"&gt;5 pillars · Seller Central&lt;/span&gt;&lt;/div&gt;
+      &lt;div style="margin-top:18px; max-width:60ch;"&gt;
+        &lt;h1 class="title-xl" style="color:var(--c-ink); font-size:84px;"&gt;One playbook,&lt;br&gt;built for &lt;span style="color:#D2570F;"&gt;Seller Central.&lt;/span&gt;&lt;/h1&gt;
+        &lt;p class="body" style="max-width:46ch; color:var(--c-mute); font-size:26px; margin-top:24px;"&gt;[One line on the method — the levers pulled and how they compound. Set up the five pillars below.]&lt;/p&gt;
+      &lt;/div&gt;
+      &lt;div style="margin-top:40px; flex:1; display:grid; grid-template-columns:repeat(5,1fr); gap:28px; align-items:stretch;"&gt;
+        &lt;div class="pillar"&gt;&lt;div class="num"&gt;01&lt;/div&gt;&lt;div class="h" style="color:var(--c-ink);"&gt;[Pillar one]&lt;/div&gt;&lt;div class="desc"&gt;[One-line description of the lever and what you did.]&lt;/div&gt;&lt;/div&gt;
+        &lt;div class="pillar"&gt;&lt;div class="num"&gt;02&lt;/div&gt;&lt;div class="h" style="color:var(--c-ink);"&gt;[Pillar two]&lt;/div&gt;&lt;div class="desc"&gt;[One-line description of the lever and what you did.]&lt;/div&gt;&lt;/div&gt;
+        &lt;div class="pillar"&gt;&lt;div class="num"&gt;03&lt;/div&gt;&lt;div class="h" style="color:var(--c-ink);"&gt;[Pillar three]&lt;/div&gt;&lt;div class="desc"&gt;[One-line description of the lever and what you did.]&lt;/div&gt;&lt;/div&gt;
+        &lt;div class="pillar"&gt;&lt;div class="num"&gt;04&lt;/div&gt;&lt;div class="h" style="color:var(--c-ink);"&gt;[Pillar four]&lt;/div&gt;&lt;div class="desc"&gt;[One-line description of the lever and what you did.]&lt;/div&gt;&lt;/div&gt;
+        &lt;div class="pillar"&gt;&lt;div class="num"&gt;05&lt;/div&gt;&lt;div class="h" style="color:var(--c-ink);"&gt;[Pillar five]&lt;/div&gt;&lt;div class="desc"&gt;[One-line description of the lever and what you did.]&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class="bottombar"&gt;&lt;img class="mf-mark" src="assets/mf-mark.png" alt="market foundry"&gt;&lt;span&gt;05 / 14&lt;/span&gt;&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;!-- 06 — SALES PERFORMANCE --&gt;
+  &lt;section class="slide" data-label="Sales Performance"&gt;
+    &lt;div class="slide-frame"&gt;
+      &lt;div class="topbar"&gt;&lt;span&gt;&lt;span style="color:var(--c-yellow); font-weight:700;"&gt;06&lt;/span&gt; &amp;nbsp;·&amp;nbsp; Sales Performance&lt;/span&gt;&lt;span class="right"&gt;[Metric · period]&lt;/span&gt;&lt;/div&gt;
+      &lt;div style="display:grid; grid-template-columns:.92fr 1.3fr; gap:64px; margin-top:36px; flex:1; align-items:center;"&gt;
+        &lt;div style="display:flex; flex-direction:column; gap:26px;"&gt;
+          &lt;h1 class="title-xl" style="color:var(--c-white); font-size:80px;"&gt;&lt;span style="color:var(--c-yellow);"&gt;$[0.0]M&lt;/span&gt;&lt;br&gt;on Seller&lt;br&gt;Central.&lt;/h1&gt;
+          &lt;p class="body" style="max-width:32ch; color:var(--c-mute-2); font-size:25px;"&gt;[Two sentences on the shape of the year — the base, the peaks, and what drove growth. Cite the total: &lt;strong style="color:var(--c-white);"&gt;$[0,000,000]&lt;/strong&gt;.]&lt;/p&gt;
+          &lt;div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:4px;"&gt;
+            &lt;div&gt;&lt;div style="font-family:var(--font-display); font-size:54px; line-height:1; color:var(--c-white); letter-spacing:-.03em;"&gt;$[000]&lt;span style="color:var(--c-yellow); font-size:.55em;"&gt;K&lt;/span&gt;&lt;/div&gt;&lt;div class="kpi-hint" style="margin-top:8px;"&gt;Organic · [00]%&lt;/div&gt;&lt;/div&gt;
+            &lt;div&gt;&lt;div style="font-family:var(--font-display); font-size:54px; line-height:1; color:var(--c-white); letter-spacing:-.03em;"&gt;$[000]&lt;span style="color:var(--c-yellow); font-size:.55em;"&gt;K&lt;/span&gt;&lt;/div&gt;&lt;div class="kpi-hint" style="margin-top:8px;"&gt;Ad-attributed · [00]%&lt;/div&gt;&lt;/div&gt;
+            &lt;div&gt;&lt;div style="font-family:var(--font-display); font-size:54px; line-height:1; color:var(--c-white); letter-spacing:-.03em;"&gt;$[00]&lt;span style="color:var(--c-yellow); font-size:.55em;"&gt;.00&lt;/span&gt;&lt;/div&gt;&lt;div class="kpi-hint" style="margin-top:8px;"&gt;Avg. unit price&lt;/div&gt;&lt;/div&gt;
+            &lt;div&gt;&lt;div style="font-family:var(--font-display); font-size:54px; line-height:1; color:var(--c-white); letter-spacing:-.03em;"&gt;[0.0]&lt;span style="color:var(--c-yellow); font-size:.55em;"&gt;K&lt;/span&gt;&lt;/div&gt;&lt;div class="kpi-hint" style="margin-top:8px;"&gt;Units sold&lt;/div&gt;&lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;!-- stacked monthly bars — SAMPLE DATA, redraw to your figures --&gt;
+        &lt;div class="card" style="padding:38px 36px 30px;"&gt;
+          &lt;div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:18px;"&gt;
+            &lt;div&gt;&lt;div style="font-family:var(--font-mono); font-size:22px; letter-spacing:.18em; color:var(--c-mute); text-transform:uppercase;"&gt;Ordered sales · USD&lt;/div&gt;
+              &lt;div style="font-family:var(--font-display); font-size:36px; color:var(--c-white); margin-top:6px;"&gt;Monthly ramp&lt;/div&gt;&lt;/div&gt;
+            &lt;div style="display:flex; gap:18px; font-family:var(--font-mono); font-size:22px; color:var(--c-mute);"&gt;
+              &lt;span style="display:inline-flex; align-items:center; gap:8px;"&gt;&lt;span style="width:16px; height:10px; background:var(--c-yellow); border-radius:2px;"&gt;&lt;/span&gt;[Headline metric]&lt;/span&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+          &lt;svg viewBox="0 0 880 380" style="width:100%; height:330px; display:block;"&gt;
+            &lt;g stroke="#4A4646" stroke-width="1"&gt;&lt;line x1="70" y1="40" x2="860" y2="40"/&gt;&lt;line x1="70" y1="120" x2="860" y2="120"/&gt;&lt;line x1="70" y1="200" x2="860" y2="200"/&gt;&lt;line x1="70" y1="280" x2="860" y2="280"/&gt;&lt;/g&gt;
+            &lt;g fill="#9FB3B6" font-family="Outfit" font-size="20" text-anchor="end"&gt;&lt;text x="60" y="46"&gt;$9K&lt;/text&gt;&lt;text x="60" y="126"&gt;$6K&lt;/text&gt;&lt;text x="60" y="206"&gt;$3K&lt;/text&gt;&lt;text x="60" y="286"&gt;0&lt;/text&gt;&lt;/g&gt;
+            &lt;g&gt;
+              &lt;rect x="74" y="243.4" width="44" height="36.6" fill="#FF751F" rx="2"/&gt;&lt;rect x="139.8" y="202.4" width="44" height="77.6" fill="#FF751F" rx="2"/&gt;&lt;rect x="205.7" y="190.8" width="44" height="89.2" fill="#FF751F" rx="2"/&gt;&lt;rect x="271.5" y="178.3" width="44" height="101.7" fill="#FF751F" rx="2"/&gt;&lt;rect x="337.3" y="64.3" width="44" height="215.7" fill="#FF751F" rx="2"/&gt;&lt;rect x="403.2" y="149.5" width="44" height="130.5" fill="#FF751F" rx="2"/&gt;&lt;rect x="469" y="116.7" width="44" height="163.3" fill="#FF751F" rx="2"/&gt;&lt;rect x="534.8" y="77.7" width="44" height="202.3" fill="#FF751F" rx="2"/&gt;&lt;rect x="600.7" y="124" width="44" height="156" fill="#FF751F" rx="2"/&gt;&lt;rect x="666.5" y="99.9" width="44" height="180.1" fill="#FF751F" rx="2"/&gt;&lt;rect x="732.3" y="115.7" width="44" height="164.3" fill="#FF751F" rx="2"/&gt;&lt;rect x="798.2" y="91.3" width="44" height="188.7" fill="#FF751F" rx="2"/&gt;
+              &lt;g fill="#CBD6D8" font-family="Outfit" font-size="19" text-anchor="middle"&gt;&lt;text x="96" y="306"&gt;S&lt;/text&gt;&lt;text x="161.8" y="306"&gt;O&lt;/text&gt;&lt;text x="227.7" y="306"&gt;N&lt;/text&gt;&lt;text x="293.5" y="306"&gt;D&lt;/text&gt;&lt;text x="359.3" y="306"&gt;J&lt;/text&gt;&lt;text x="425.2" y="306"&gt;F&lt;/text&gt;&lt;text x="491" y="306"&gt;M&lt;/text&gt;&lt;text x="556.8" y="306"&gt;A&lt;/text&gt;&lt;text x="622.7" y="306"&gt;M&lt;/text&gt;&lt;text x="688.5" y="306"&gt;J&lt;/text&gt;&lt;text x="754.3" y="306"&gt;J&lt;/text&gt;&lt;text x="820.2" y="306"&gt;A&lt;/text&gt;&lt;/g&gt;
+            &lt;/g&gt;
+          &lt;/svg&gt;
+          &lt;div style="font-family:var(--font-mono); font-size:20px; color:var(--c-mute); margin-top:8px; text-align:center;"&gt;Ordered sales by month · [Date range]&lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class="bottombar"&gt;&lt;img class="mf-mark" src="assets/mf-mark.png" alt="market foundry"&gt;&lt;span&gt;06 / 14&lt;/span&gt;&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;!-- 07 — PRODUCT / SERVICE MIX --&gt;
+  &lt;section class="slide" data-label="Product Mix"&gt;
+    &lt;div class="slide-frame"&gt;
+      &lt;div class="topbar"&gt;&lt;span&gt;&lt;span style="color:var(--c-yellow); font-weight:700;"&gt;07&lt;/span&gt; &amp;nbsp;·&amp;nbsp; Product Mix&lt;/span&gt;&lt;span class="right"&gt;Where revenue concentrates&lt;/span&gt;&lt;/div&gt;
+      &lt;div style="margin-top:14px;"&gt;
+        &lt;h1 class="title-xl" style="color:var(--c-white); font-size:78px;"&gt;[A few ASINs &lt;span style="color:var(--c-yellow);"&gt;carry the catalogue.&lt;/span&gt;]&lt;/h1&gt;
+        &lt;p class="body" style="max-width:60ch; color:var(--c-mute-2); font-size:24px; margin-top:18px;"&gt;[One line on how the catalogue concentrates — hero ASINs vs the long tail.]&lt;/p&gt;
+      &lt;/div&gt;
+      &lt;div style="margin-top:26px; flex:1; display:grid; grid-template-columns:1fr 1fr; gap:28px;"&gt;
+        &lt;!-- Top sellers by revenue --&gt;
+        &lt;div class="card" style="padding:30px 36px; display:flex; flex-direction:column; gap:18px;"&gt;
+          &lt;div class="chan sc" style="align-self:flex-start;"&gt;&lt;i&gt;&lt;/i&gt;Top ASINs · by revenue&lt;/div&gt;
+          &lt;div style="display:flex; flex-direction:column; gap:22px; margin-top:4px;"&gt;
+            &lt;div&gt;&lt;div style="display:flex; justify-content:space-between; font-size:21px; align-items:baseline; gap:12px;"&gt;&lt;span style="white-space:nowrap;"&gt;[Product one]&lt;/span&gt;&lt;strong style="color:var(--c-white);"&gt;$[000]K&lt;/strong&gt;&lt;/div&gt;&lt;div style="height:12px; background:var(--c-ink-70); border-radius:6px; margin-top:8px; overflow:hidden;"&gt;&lt;div style="width:100%; height:100%; background:var(--c-yellow);"&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+            &lt;div&gt;&lt;div style="display:flex; justify-content:space-between; font-size:21px; align-items:baseline; gap:12px;"&gt;&lt;span style="white-space:nowrap;"&gt;[Product two]&lt;/span&gt;&lt;strong style="color:var(--c-white);"&gt;$[000]K&lt;/strong&gt;&lt;/div&gt;&lt;div style="height:12px; background:var(--c-ink-70); border-radius:6px; margin-top:8px; overflow:hidden;"&gt;&lt;div style="width:69%; height:100%; background:var(--c-yellow);"&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+            &lt;div&gt;&lt;div style="display:flex; justify-content:space-between; font-size:21px; align-items:baseline; gap:12px;"&gt;&lt;span style="white-space:nowrap;"&gt;[Product three]&lt;/span&gt;&lt;strong style="color:var(--c-white);"&gt;$[000]K&lt;/strong&gt;&lt;/div&gt;&lt;div style="height:12px; background:var(--c-ink-70); border-radius:6px; margin-top:8px; overflow:hidden;"&gt;&lt;div style="width:51%; height:100%; background:var(--c-yellow);"&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+          &lt;/div&gt;
+          &lt;div style="margin-top:auto; font-family:var(--font-mono); font-size:21px; color:var(--c-mute); padding-top:8px;"&gt;[Top ASINs] = &lt;strong style="color:var(--c-yellow);"&gt;[00]%&lt;/strong&gt; of revenue&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;!-- By units sold --&gt;
+        &lt;div class="card" style="padding:30px 36px; display:flex; flex-direction:column; gap:18px; border-color:rgba(95,166,181,.3);"&gt;
+          &lt;div class="chan sc" style="align-self:flex-start; background:rgba(95,166,181,.16); color:#8FC6D2;"&gt;&lt;i style="background:#5FA6B5;"&gt;&lt;/i&gt;Top ASINs · by units&lt;/div&gt;
+          &lt;div style="display:flex; flex-direction:column; gap:22px; margin-top:4px;"&gt;
+            &lt;div&gt;&lt;div style="display:flex; justify-content:space-between; font-size:21px; align-items:baseline; gap:12px;"&gt;&lt;span style="white-space:nowrap;"&gt;[Product one]&lt;/span&gt;&lt;strong style="color:var(--c-white);"&gt;[0,000]&lt;/strong&gt;&lt;/div&gt;&lt;div style="height:12px; background:var(--c-ink-70); border-radius:6px; margin-top:8px; overflow:hidden;"&gt;&lt;div style="width:100%; height:100%; background:#5FA6B5;"&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+            &lt;div&gt;&lt;div style="display:flex; justify-content:space-between; font-size:21px; align-items:baseline; gap:12px;"&gt;&lt;span style="white-space:nowrap;"&gt;[Product two]&lt;/span&gt;&lt;strong style="color:var(--c-white);"&gt;[0,000]&lt;/strong&gt;&lt;/div&gt;&lt;div style="height:12px; background:var(--c-ink-70); border-radius:6px; margin-top:8px; overflow:hidden;"&gt;&lt;div style="width:69%; height:100%; background:#5FA6B5;"&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+            &lt;div&gt;&lt;div style="display:flex; justify-content:space-between; font-size:21px; align-items:baseline; gap:12px;"&gt;&lt;span style="white-space:nowrap;"&gt;[Product three]&lt;/span&gt;&lt;strong style="color:var(--c-white);"&gt;[0,000]&lt;/strong&gt;&lt;/div&gt;&lt;div style="height:12px; background:var(--c-ink-70); border-radius:6px; margin-top:8px; overflow:hidden;"&gt;&lt;div style="width:50%; height:100%; background:#5FA6B5;"&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+          &lt;/div&gt;
+          &lt;div style="margin-top:auto; font-family:var(--font-mono); font-size:21px; color:var(--c-mute); padding-top:8px;"&gt;[0,000] units across &lt;strong style="color:#8FC6D2;"&gt;[0]&lt;/strong&gt; SKUs&lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class="bottombar"&gt;&lt;img class="mf-mark" src="assets/mf-mark.png" alt="market foundry"&gt;&lt;span&gt;07 / 14&lt;/span&gt;&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;!-- 08 — DEMAND CURVE --&gt;
+  &lt;section class="slide" data-label="Demand Curve"&gt;
+    &lt;div class="slide-frame"&gt;
+      &lt;div class="topbar"&gt;&lt;span&gt;&lt;span style="color:var(--c-yellow); font-weight:700;"&gt;08&lt;/span&gt; &amp;nbsp;·&amp;nbsp; Demand Curve&lt;/span&gt;&lt;span class="right"&gt;Cumulative sales · [period]&lt;/span&gt;&lt;/div&gt;
+      &lt;div style="display:grid; grid-template-columns:.82fr 1.32fr; gap:60px; margin-top:32px; flex:1; align-items:center;"&gt;
+        &lt;div style="display:flex; flex-direction:column; gap:24px;"&gt;
+          &lt;h1 class="title-xl" style="color:var(--c-white); font-size:78px;"&gt;[From zero to&lt;br&gt;&lt;span style="color:var(--c-yellow);"&gt;$[00]K&lt;/span&gt;, steadily.]&lt;/h1&gt;
+          &lt;p class="body" style="max-width:32ch; color:var(--c-mute-2); font-size:25px;"&gt;[Two lines on the cumulative curve — where it started, where it ended, what steepened it.]&lt;/p&gt;
+          &lt;div style="display:flex; flex-direction:column; gap:14px; margin-top:4px;"&gt;
+            &lt;div class="card" style="padding:20px 24px; display:flex; align-items:center; gap:20px; border-color:rgba(255,117,31,.3);"&gt;
+              &lt;div class="chan sc" style="flex-shrink:0;"&gt;&lt;i&gt;&lt;/i&gt;Peak&lt;/div&gt;
+              &lt;div style="font-size:23px; color:var(--c-mute-2);"&gt;[Peak month — &lt;strong style="color:var(--c-white);"&gt;$[0.0]K&lt;/strong&gt; ordered sales]&lt;/div&gt;
+            &lt;/div&gt;
+            &lt;div class="card" style="padding:20px 24px; display:flex; align-items:center; gap:20px;"&gt;
+              &lt;div class="chan sc" style="flex-shrink:0;"&gt;&lt;i&gt;&lt;/i&gt;Base&lt;/div&gt;
+              &lt;div style="font-size:23px; color:var(--c-mute-2);"&gt;[H2 base — &lt;strong style="color:var(--c-white);"&gt;$[0.0]K&lt;/strong&gt; / month — &lt;strong style="color:#6CE0A3;"&gt;▲ +[00]%&lt;/strong&gt; vs H1]&lt;/div&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class="card" style="padding:38px 36px 30px;"&gt;
+          &lt;div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:20px; flex-wrap:wrap; gap:18px;"&gt;
+            &lt;div&gt;&lt;div style="font-family:var(--font-mono); font-size:22px; letter-spacing:.18em; color:var(--c-mute); text-transform:uppercase;"&gt;Cumulative ordered sales&lt;/div&gt;
+              &lt;div style="display:flex; align-items:baseline; gap:14px; margin-top:8px;"&gt;&lt;div style="font-family:var(--font-display); font-size:60px; color:var(--c-white); letter-spacing:-.03em; line-height:1;"&gt;$[00.0]K&lt;/div&gt;&lt;div class="kpi-up"&gt;▲ full year&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+            &lt;div style="display:flex; gap:18px; font-family:var(--font-mono); font-size:21px; color:var(--c-mute);"&gt;
+              &lt;span style="display:inline-flex; align-items:center; gap:8px;"&gt;&lt;span style="width:16px; height:3px; background:var(--c-yellow); border-radius:2px;"&gt;&lt;/span&gt;Cumulative sales&lt;/span&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+          &lt;svg viewBox="0 0 880 340" style="width:100%; height:300px; display:block;"&gt;
+            &lt;defs&gt;&lt;linearGradient id="snsFill" x1="0" x2="0" y1="0" y2="1"&gt;&lt;stop offset="0%" stop-color="#FF751F" stop-opacity=".30"/&gt;&lt;stop offset="100%" stop-color="#FF751F" stop-opacity="0"/&gt;&lt;/linearGradient&gt;&lt;/defs&gt;
+            &lt;g stroke="#4A4646" stroke-width="1"&gt;&lt;line x1="60" y1="40" x2="860" y2="40"/&gt;&lt;line x1="60" y1="110" x2="860" y2="110"/&gt;&lt;line x1="60" y1="180" x2="860" y2="180"/&gt;&lt;line x1="60" y1="250" x2="860" y2="250"/&gt;&lt;/g&gt;
+            &lt;g fill="#9FB3B6" font-family="Outfit" font-size="20" text-anchor="end"&gt;&lt;text x="52" y="46"&gt;$70K&lt;/text&gt;&lt;text x="52" y="116"&gt;$47K&lt;/text&gt;&lt;text x="52" y="186"&gt;$23K&lt;/text&gt;&lt;text x="52" y="256"&gt;0&lt;/text&gt;&lt;/g&gt;
+            &lt;path d="M60 245.9 L132.7 237.2 L205.5 227.1 L278.2 215.7 L350.9 191.4 L423.6 176.7 L496.4 158.4 L569.1 135.6 L641.8 118.1 L714.5 97.8 L787.3 79.3 L860 58.1 L860 250 L60 250 Z" fill="url(#snsFill)"/&gt;
+            &lt;path d="M60 245.9 L132.7 237.2 L205.5 227.1 L278.2 215.7 L350.9 191.4 L423.6 176.7 L496.4 158.4 L569.1 135.6 L641.8 118.1 L714.5 97.8 L787.3 79.3 L860 58.1" fill="none" stroke="#FF751F" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/&gt;
+            &lt;circle cx="860" cy="58.1" r="9" fill="#FF751F"/&gt;&lt;circle cx="860" cy="58.1" r="4.5" fill="#2A5059"/&gt;
+            &lt;g fill="#9FB3B6" font-family="Outfit" font-size="19" text-anchor="middle"&gt;&lt;text x="60" y="284"&gt;Sep&lt;/text&gt;&lt;text x="278" y="284"&gt;Dec&lt;/text&gt;&lt;text x="496" y="284"&gt;Mar&lt;/text&gt;&lt;text x="715" y="284"&gt;Jun&lt;/text&gt;&lt;text x="860" y="284"&gt;Aug&lt;/text&gt;&lt;/g&gt;
+          &lt;/svg&gt;
+          &lt;div style="font-family:var(--font-mono); font-size:20px; color:var(--c-mute); margin-top:6px; text-align:center;"&gt;Cumulative ordered sales · [Date range]&lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class="bottombar"&gt;&lt;img class="mf-mark" src="assets/mf-mark.png" alt="market foundry"&gt;&lt;span&gt;08 / 14&lt;/span&gt;&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;!-- 09 — PAID MEDIA --&gt;
+  &lt;section class="slide" data-label="Paid Media"&gt;
+    &lt;div class="slide-frame"&gt;
+      &lt;div class="topbar"&gt;&lt;span&gt;&lt;span style="color:var(--c-yellow); font-weight:700;"&gt;09&lt;/span&gt; &amp;nbsp;·&amp;nbsp; Paid Media&lt;/span&gt;&lt;span class="right"&gt;Full-funnel · Sponsored Ads&lt;/span&gt;&lt;/div&gt;
+      &lt;div style="display:grid; grid-template-columns:1fr 1.28fr; gap:72px; margin-top:24px; flex:1; align-items:center;"&gt;
+        &lt;div style="display:flex; flex-direction:column; gap:22px;"&gt;
+          &lt;h1 class="title-xl" style="color:var(--c-white); font-size:76px;"&gt;Full-funnel&lt;br&gt;&lt;span style="color:var(--c-yellow);"&gt;paid media,&lt;/span&gt;&lt;br&gt;optimised daily.&lt;/h1&gt;
+          &lt;p class="body" style="max-width:36ch; color:var(--c-mute-2); font-size:23px; line-height:1.5;"&gt;[Describe the paid-media approach — funnel stages and ad types you ran, and how you balanced efficiency and growth.]&lt;/p&gt;
+          &lt;div style="display:flex; align-items:flex-end; gap:26px; margin-top:2px;"&gt;
+            &lt;div style="font-family:var(--font-display); font-size:172px; line-height:.85; letter-spacing:-.04em; color:var(--c-yellow);"&gt;$[000]&lt;span style="font-size:.42em;"&gt;K&lt;/span&gt;&lt;/div&gt;
+            &lt;div style="font-family:var(--font-body); font-weight:600; font-size:23px; color:var(--c-mute-2); line-height:1.35; max-width:20ch; padding-bottom:16px;"&gt;in ad-attributed sales on &lt;span style="color:var(--c-white);"&gt;$[00]K&lt;/span&gt; spend — a [0.0]× blended ROAS.&lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;div style="display:flex; flex-direction:column; gap:18px;"&gt;
+          &lt;!-- Sponsored Products card --&gt;
+          &lt;div style="background:var(--c-ink-90); border:1px solid rgba(255,117,31,.28); border-radius:18px; padding:26px 32px;"&gt;
+            &lt;div style="display:flex; align-items:center; gap:14px; margin-bottom:16px;"&gt;&lt;div class="chan sc"&gt;&lt;i&gt;&lt;/i&gt;Sponsored Products&lt;/div&gt;
+              &lt;div style="display:grid; grid-template-columns:repeat(4,auto); gap:14px 30px; margin-left:auto;"&gt;
+                &lt;div&gt;&lt;div style="font-family:var(--font-mono); font-size:20px; color:#5FA6B5;"&gt;Spend&lt;/div&gt;&lt;div style="font-family:var(--font-display); font-size:30px; color:var(--c-white); margin-top:3px;"&gt;$[00]&lt;span style="color:var(--c-mute-2); font-size:.55em;"&gt;K&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+                &lt;div&gt;&lt;div style="font-family:var(--font-mono); font-size:20px; color:#F39A1F;"&gt;Sales&lt;/div&gt;&lt;div style="font-family:var(--font-display); font-size:30px; color:var(--c-white); margin-top:3px;"&gt;$[000]&lt;span style="color:var(--c-mute-2); font-size:.55em;"&gt;K&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+                &lt;div&gt;&lt;div style="font-family:var(--font-mono); font-size:20px; color:#E25CFF;"&gt;ACOS&lt;/div&gt;&lt;div style="font-family:var(--font-display); font-size:30px; color:var(--c-white); margin-top:3px;"&gt;[00]&lt;span style="color:var(--c-mute-2); font-size:.55em;"&gt;%&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+                &lt;div&gt;&lt;div style="font-family:var(--font-mono); font-size:20px; color:#6CE0A3;"&gt;Orders&lt;/div&gt;&lt;div style="font-family:var(--font-display); font-size:30px; color:var(--c-white); margin-top:3px;"&gt;[0.0]&lt;span style="color:var(--c-mute-2); font-size:.55em;"&gt;K&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+            &lt;div style="display:flex; gap:24px; margin-bottom:10px; font-family:var(--font-mono); font-size:18px; color:var(--c-mute);"&gt;&lt;span style="display:inline-flex;align-items:center;gap:8px;"&gt;&lt;span style="width:18px;height:3px;background:#FF751F;border-radius:2px;"&gt;&lt;/span&gt;Ad sales&lt;/span&gt;&lt;span style="display:inline-flex;align-items:center;gap:8px;"&gt;&lt;span style="width:18px;height:3px;background:#5FA6B5;border-radius:2px;"&gt;&lt;/span&gt;Spend&lt;/span&gt;&lt;/div&gt;
+            &lt;svg viewBox="0 0 880 250" preserveAspectRatio="none" style="width:100%; height:150px; display:block;"&gt;
+              &lt;defs&gt;&lt;linearGradient id="ppcVc" x1="0" x2="0" y1="0" y2="1"&gt;&lt;stop offset="0%" stop-color="#FF751F" stop-opacity=".30"/&gt;&lt;stop offset="100%" stop-color="#FF751F" stop-opacity="0"/&gt;&lt;/linearGradient&gt;&lt;/defs&gt;
+              &lt;g stroke="#4A4646" stroke-width="1"&gt;&lt;line x1="50" y1="40" x2="860" y2="40"/&gt;&lt;line x1="50" y1="110" x2="860" y2="110"/&gt;&lt;line x1="50" y1="180" x2="860" y2="180"/&gt;&lt;line x1="50" y1="240" x2="860" y2="240"/&gt;&lt;/g&gt;
+              &lt;path d="M50 219.7 L123.6 195.9 L197.3 185.9 L270.9 160.3 L344.5 50.6 L418.2 146.4 L491.8 123.3 L565.5 88.4 L639.1 105.8 L712.7 126.9 L786.4 124.5 L860 85.6 L860 240 L50 240 Z" fill="url(#ppcVc)"/&gt;
+              &lt;path d="M50 226.2 L123.6 204 L197.3 190 L270.9 161.5 L344.5 134.6 L418.2 181.2 L491.8 184 L565.5 116.6 L639.1 161.8 L712.7 166.4 L786.4 144.4 L860 126.2" fill="none" stroke="#5FA6B5" stroke-width="3"/&gt;
+              &lt;path d="M50 219.7 L123.6 195.9 L197.3 185.9 L270.9 160.3 L344.5 50.6 L418.2 146.4 L491.8 123.3 L565.5 88.4 L639.1 105.8 L712.7 126.9 L786.4 124.5 L860 85.6" fill="none" stroke="#FF751F" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/&gt;
+              &lt;circle cx="344.5" cy="50.6" r="8" fill="#FF751F"/&gt;&lt;circle cx="344.5" cy="50.6" r="4" fill="#2A5059"/&gt;
+              
+            &lt;/svg&gt;
+            &lt;div style="position:relative; height:24px; font-family:var(--font-mono); font-size:17px; color:var(--c-mute);"&gt;&lt;span style="position:absolute; left:5.7%; transform:translateX(-50%);"&gt;Sep&lt;/span&gt;&lt;span style="position:absolute; left:22.4%; transform:translateX(-50%);"&gt;Nov&lt;/span&gt;&lt;span style="position:absolute; left:39.2%; transform:translateX(-50%);"&gt;Jan&lt;/span&gt;&lt;span style="position:absolute; left:55.9%; transform:translateX(-50%);"&gt;Mar&lt;/span&gt;&lt;span style="position:absolute; left:72.6%; transform:translateX(-50%);"&gt;May&lt;/span&gt;&lt;span style="position:absolute; left:89.3%; transform:translateX(-50%);"&gt;Jul&lt;/span&gt;&lt;/div&gt;
+          &lt;/div&gt;
+          &lt;!-- Sponsored Brands / Display card --&gt;
+          &lt;div style="background:var(--c-ink-90); border:1px solid rgba(255,117,31,.28); border-radius:18px; padding:26px 32px;"&gt;
+            &lt;div style="display:flex; align-items:center; gap:14px; margin-bottom:16px;"&gt;&lt;div class="chan sc"&gt;&lt;i&gt;&lt;/i&gt;Sponsored Brands + Display&lt;/div&gt;
+              &lt;div style="display:grid; grid-template-columns:repeat(4,auto); gap:14px 30px; margin-left:auto;"&gt;
+                &lt;div&gt;&lt;div style="font-family:var(--font-mono); font-size:20px; color:#5FA6B5;"&gt;Spend&lt;/div&gt;&lt;div style="font-family:var(--font-display); font-size:30px; color:var(--c-white); margin-top:3px;"&gt;$[00]&lt;span style="color:var(--c-mute-2); font-size:.55em;"&gt;K&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+                &lt;div&gt;&lt;div style="font-family:var(--font-mono); font-size:20px; color:#F39A1F;"&gt;Sales&lt;/div&gt;&lt;div style="font-family:var(--font-display); font-size:30px; color:var(--c-white); margin-top:3px;"&gt;$[00]&lt;span style="color:var(--c-mute-2); font-size:.55em;"&gt;K&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+                &lt;div&gt;&lt;div style="font-family:var(--font-mono); font-size:20px; color:#E25CFF;"&gt;ACOS&lt;/div&gt;&lt;div style="font-family:var(--font-display); font-size:30px; color:var(--c-white); margin-top:3px;"&gt;[00]&lt;span style="color:var(--c-mute-2); font-size:.55em;"&gt;%&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+                &lt;div&gt;&lt;div style="font-family:var(--font-mono); font-size:20px; color:#6CE0A3;"&gt;Orders&lt;/div&gt;&lt;div style="font-family:var(--font-display); font-size:30px; color:var(--c-white); margin-top:3px;"&gt;[000]&lt;span style="color:var(--c-mute-2); font-size:.55em;"&gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+            &lt;div style="display:flex; gap:24px; margin-bottom:10px; font-family:var(--font-mono); font-size:18px; color:var(--c-mute);"&gt;&lt;span style="display:inline-flex;align-items:center;gap:8px;"&gt;&lt;span style="width:18px;height:3px;background:#FF751F;border-radius:2px;"&gt;&lt;/span&gt;Ad sales&lt;/span&gt;&lt;span style="display:inline-flex;align-items:center;gap:8px;"&gt;&lt;span style="width:18px;height:3px;background:#5FA6B5;border-radius:2px;"&gt;&lt;/span&gt;Spend&lt;/span&gt;&lt;/div&gt;
+            &lt;svg viewBox="0 0 880 250" preserveAspectRatio="none" style="width:100%; height:150px; display:block;"&gt;
+              &lt;defs&gt;&lt;linearGradient id="ppcSc" x1="0" x2="0" y1="0" y2="1"&gt;&lt;stop offset="0%" stop-color="#FF751F" stop-opacity=".30"/&gt;&lt;stop offset="100%" stop-color="#FF751F" stop-opacity="0"/&gt;&lt;/linearGradient&gt;&lt;/defs&gt;
+              &lt;g stroke="#4A4646" stroke-width="1"&gt;&lt;line x1="50" y1="40" x2="860" y2="40"/&gt;&lt;line x1="50" y1="110" x2="860" y2="110"/&gt;&lt;line x1="50" y1="180" x2="860" y2="180"/&gt;&lt;line x1="50" y1="240" x2="860" y2="240"/&gt;&lt;/g&gt;
+              &lt;path d="M50 198 L123.6 200.3 L197.3 212.3 L270.9 187.9 L344.5 96 L418.2 191.5 L491.8 159.9 L565.5 65 L639.1 171.3 L712.7 171.7 L786.4 160.9 L860 203 L860 240 L50 240 Z" fill="url(#ppcSc)"/&gt;
+              &lt;path d="M50 206.8 L123.6 163.2 L197.3 147 L270.9 126.4 L344.5 77.8 L418.2 174.4 L491.8 166.3 L565.5 73 L639.1 112 L712.7 175.6 L786.4 178.5 L860 209.5" fill="none" stroke="#5FA6B5" stroke-width="3"/&gt;
+              &lt;path d="M50 198 L123.6 200.3 L197.3 212.3 L270.9 187.9 L344.5 96 L418.2 191.5 L491.8 159.9 L565.5 65 L639.1 171.3 L712.7 171.7 L786.4 160.9 L860 203" fill="none" stroke="#FF751F" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/&gt;
+              &lt;circle cx="565.5" cy="65" r="8" fill="#FF751F"/&gt;&lt;circle cx="565.5" cy="65" r="4" fill="#2A5059"/&gt;
+              
+            &lt;/svg&gt;
+            &lt;div style="position:relative; height:24px; font-family:var(--font-mono); font-size:17px; color:var(--c-mute);"&gt;&lt;span style="position:absolute; left:5.7%; transform:translateX(-50%);"&gt;Sep&lt;/span&gt;&lt;span style="position:absolute; left:22.4%; transform:translateX(-50%);"&gt;Nov&lt;/span&gt;&lt;span style="position:absolute; left:39.2%; transform:translateX(-50%);"&gt;Jan&lt;/span&gt;&lt;span style="position:absolute; left:55.9%; transform:translateX(-50%);"&gt;Mar&lt;/span&gt;&lt;span style="position:absolute; left:72.6%; transform:translateX(-50%);"&gt;May&lt;/span&gt;&lt;span style="position:absolute; left:89.3%; transform:translateX(-50%);"&gt;Jul&lt;/span&gt;&lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class="bottombar"&gt;&lt;img class="mf-mark" src="assets/mf-mark.png" alt="market foundry"&gt;&lt;span&gt;09 / 14&lt;/span&gt;&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;!-- 10 — BRAND STORY --&gt;
+  &lt;section class="slide" data-label="Brand Story"&gt;
+    &lt;div class="slide-frame"&gt;
+      &lt;div class="topbar"&gt;&lt;span&gt;&lt;span style="color:var(--c-yellow); font-weight:700;"&gt;10&lt;/span&gt; &amp;nbsp;·&amp;nbsp; Brand Story&lt;/span&gt;&lt;span class="right"&gt;Creative foundation&lt;/span&gt;&lt;/div&gt;
+      &lt;div style="display:flex; flex-direction:column; flex:1; margin-top:18px; min-height:0;"&gt;
+        &lt;div style="display:flex; align-items:flex-end; justify-content:space-between; gap:56px;"&gt;
+          &lt;div style="display:flex; flex-direction:column;"&gt;
+            &lt;div class="eyebrow"&gt;&lt;span class="dash"&gt;&lt;/span&gt;Amazon Brand Story&lt;/div&gt;
+            &lt;h1 class="title-xl" style="color:var(--c-white); font-size:60px; margin-top:20px;"&gt;Not a product. &lt;span style="color:var(--c-yellow);"&gt;The brand.&lt;/span&gt;&lt;/h1&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div style="width:100%; aspect-ratio:1200 / 230; margin-top:28px; position:relative;"&gt;&lt;image-slot id="tpl-bs-hero" shape="rounded" radius="14" fit="contain" placeholder="Drop brand story banner  ·  wide" style="position:absolute;inset:0;width:100%;height:100%"&gt;&lt;/image-slot&gt;&lt;/div&gt;
+        &lt;p class="body" style="max-width:80ch; color:var(--c-mute-2); font-size:23px; margin-top:24px;"&gt;A rich, swipeable module below A+ content on every detail page — it introduces [CLIENT NAME], cross-sells the full range, and turns first-time visitors into brand shoppers.&lt;/p&gt;
+        &lt;div style="display:flex; flex-wrap:wrap; gap:14px; margin-top:auto; padding-top:28px;"&gt;
+          &lt;span class="chan sc"&gt;&lt;i&gt;&lt;/i&gt;Builds trust&lt;/span&gt;
+          &lt;span class="chan sc"&gt;&lt;i&gt;&lt;/i&gt;Cross-sells the catalogue&lt;/span&gt;
+          &lt;span class="chan sc"&gt;&lt;i&gt;&lt;/i&gt;Differentiates the brand&lt;/span&gt;
+          &lt;span class="chan sc"&gt;&lt;i&gt;&lt;/i&gt;Drives product discovery&lt;/span&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class="bottombar"&gt;&lt;img class="mf-mark" src="assets/mf-mark.png" alt="market foundry"&gt;&lt;span&gt;10 / 14&lt;/span&gt;&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;!-- 11 — LISTING IMAGES --&gt;
+  &lt;section class="slide" data-label="Listing Images"&gt;
+    &lt;div class="slide-frame"&gt;
+      &lt;div class="topbar"&gt;&lt;span&gt;&lt;span style="color:var(--c-yellow); font-weight:700;"&gt;11&lt;/span&gt; &amp;nbsp;·&amp;nbsp; Listing Images&lt;/span&gt;&lt;span class="right"&gt;Product detail page&lt;/span&gt;&lt;/div&gt;
+      &lt;div style="margin-top:12px;"&gt;
+        &lt;h1 class="title-xl" style="color:var(--c-white); font-size:60px;"&gt;Every image &lt;span style="color:var(--c-yellow);"&gt;earns the click.&lt;/span&gt;&lt;/h1&gt;
+        &lt;p class="body" style="max-width:72ch; color:var(--c-mute-2); font-size:22px; margin-top:12px;"&gt;A full 9-image set per hero ASIN — main hero plus eight supporting frames covering benefits, ingredients, lifestyle, comparison, and how-to — the sequence behind a [00]% conversion rate.&lt;/p&gt;
+      &lt;/div&gt;
+      &lt;div style="margin-top:24px; flex:1; display:grid; grid-template-columns:auto minmax(0,1fr); gap:26px; min-height:0; align-items:stretch;"&gt;
+        &lt;div style="position:relative; align-self:center; width:400px; aspect-ratio:1 / 1;"&gt;
+          &lt;div style="position:absolute; top:14px; left:14px; z-index:3; font-family:var(--font-mono); font-size:16px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--c-yellow-ink); background:var(--c-yellow); padding:6px 12px; border-radius:7px;"&gt;01 · Hero&lt;/div&gt;
+          &lt;image-slot id="tpl-li-main" shape="rounded" radius="16" fit="contain" placeholder="Drop hero image" style="position:absolute;inset:0;width:100%;height:100%"&gt;&lt;/image-slot&gt;
+        &lt;/div&gt;
+        &lt;div style="display:grid; grid-template-columns:repeat(4,1fr); grid-auto-rows:1fr; gap:16px; min-height:0; min-width:0;"&gt;
+          &lt;div style="position:relative; min-height:0; min-width:0;"&gt;&lt;span style="position:absolute; top:9px; left:9px; z-index:3; font-family:var(--font-mono); font-size:14px; font-weight:700; color:var(--c-mute-2); background:rgba(47,44,44,.85); padding:3px 8px; border-radius:6px;"&gt;02&lt;/span&gt;&lt;image-slot id="tpl-li-2" shape="rounded" radius="12" fit="contain" placeholder="Benefits" style="position:absolute;inset:0;width:100%;height:100%"&gt;&lt;/image-slot&gt;&lt;/div&gt;
+          &lt;div style="position:relative; min-height:0; min-width:0;"&gt;&lt;span style="position:absolute; top:9px; left:9px; z-index:3; font-family:var(--font-mono); font-size:14px; font-weight:700; color:var(--c-mute-2); background:rgba(47,44,44,.85); padding:3px 8px; border-radius:6px;"&gt;03&lt;/span&gt;&lt;image-slot id="tpl-li-3" shape="rounded" radius="12" fit="contain" placeholder="Ingredients" style="position:absolute;inset:0;width:100%;height:100%"&gt;&lt;/image-slot&gt;&lt;/div&gt;
+          &lt;div style="position:relative; min-height:0; min-width:0;"&gt;&lt;span style="position:absolute; top:9px; left:9px; z-index:3; font-family:var(--font-mono); font-size:14px; font-weight:700; color:var(--c-mute-2); background:rgba(47,44,44,.85); padding:3px 8px; border-radius:6px;"&gt;04&lt;/span&gt;&lt;image-slot id="tpl-li-4" shape="rounded" radius="12" fit="contain" placeholder="Lifestyle" style="position:absolute;inset:0;width:100%;height:100%"&gt;&lt;/image-slot&gt;&lt;/div&gt;
+          &lt;div style="position:relative; min-height:0; min-width:0;"&gt;&lt;span style="position:absolute; top:9px; left:9px; z-index:3; font-family:var(--font-mono); font-size:14px; font-weight:700; color:var(--c-mute-2); background:rgba(47,44,44,.85); padding:3px 8px; border-radius:6px;"&gt;05&lt;/span&gt;&lt;image-slot id="tpl-li-5" shape="rounded" radius="12" fit="contain" placeholder="Comparison" style="position:absolute;inset:0;width:100%;height:100%"&gt;&lt;/image-slot&gt;&lt;/div&gt;
+          &lt;div style="position:relative; min-height:0; min-width:0;"&gt;&lt;span style="position:absolute; top:9px; left:9px; z-index:3; font-family:var(--font-mono); font-size:14px; font-weight:700; color:var(--c-mute-2); background:rgba(47,44,44,.85); padding:3px 8px; border-radius:6px;"&gt;06&lt;/span&gt;&lt;image-slot id="tpl-li-6" shape="rounded" radius="12" fit="contain" placeholder="Ingredients" style="position:absolute;inset:0;width:100%;height:100%"&gt;&lt;/image-slot&gt;&lt;/div&gt;
+          &lt;div style="position:relative; min-height:0; min-width:0;"&gt;&lt;span style="position:absolute; top:9px; left:9px; z-index:3; font-family:var(--font-mono); font-size:14px; font-weight:700; color:var(--c-mute-2); background:rgba(47,44,44,.85); padding:3px 8px; border-radius:6px;"&gt;07&lt;/span&gt;&lt;image-slot id="tpl-li-7" shape="rounded" radius="12" fit="contain" placeholder="How-to" style="position:absolute;inset:0;width:100%;height:100%"&gt;&lt;/image-slot&gt;&lt;/div&gt;
+          &lt;div style="position:relative; min-height:0; min-width:0;"&gt;&lt;span style="position:absolute; top:9px; left:9px; z-index:3; font-family:var(--font-mono); font-size:14px; font-weight:700; color:var(--c-mute-2); background:rgba(47,44,44,.85); padding:3px 8px; border-radius:6px;"&gt;08&lt;/span&gt;&lt;image-slot id="tpl-li-8" shape="rounded" radius="12" fit="contain" placeholder="Trust / guarantee" style="position:absolute;inset:0;width:100%;height:100%"&gt;&lt;/image-slot&gt;&lt;/div&gt;
+          &lt;div style="position:relative; min-height:0; min-width:0;"&gt;&lt;span style="position:absolute; top:9px; left:9px; z-index:3; font-family:var(--font-mono); font-size:14px; font-weight:700; color:var(--c-mute-2); background:rgba(47,44,44,.85); padding:3px 8px; border-radius:6px;"&gt;09&lt;/span&gt;&lt;image-slot id="tpl-li-9" shape="rounded" radius="12" fit="contain" placeholder="PT09" style="position:absolute;inset:0;width:100%;height:100%"&gt;&lt;/image-slot&gt;&lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class="bottombar"&gt;&lt;img class="mf-mark" src="assets/mf-mark.png" alt="market foundry"&gt;&lt;span&gt;11 / 14&lt;/span&gt;&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;!-- 12 — PREMIUM A+ CONTENT --&gt;
+  &lt;section class="slide" data-label="Premium A+ Content"&gt;
+    &lt;div class="slide-frame"&gt;
+      &lt;div class="topbar"&gt;&lt;span&gt;&lt;span style="color:var(--c-yellow); font-weight:700;"&gt;12&lt;/span&gt; &amp;nbsp;·&amp;nbsp; Premium A+ Content&lt;/span&gt;&lt;span class="right"&gt;Brand-controlled detail page&lt;/span&gt;&lt;/div&gt;
+      &lt;div style="display:grid; grid-template-columns:0.62fr 2.38fr; gap:32px; flex:1; margin-top:16px; min-height:0; align-items:center;"&gt;
+        &lt;div style="display:flex; flex-direction:column; justify-content:center;"&gt;
+          &lt;div class="eyebrow"&gt;&lt;span class="dash"&gt;&lt;/span&gt;Enhanced detail page&lt;/div&gt;
+          &lt;h1 class="title-xl" style="color:var(--c-white); font-size:64px; margin-top:24px;"&gt;Premium&lt;br&gt;A+ modules.&lt;/h1&gt;
+          &lt;p class="body" style="max-width:34ch; color:var(--c-mute-2); font-size:23px; margin-top:22px;"&gt;Amazon's richest detail-page format — larger visuals, interactive hotspots, comparison charts and video. It educates shoppers, sets accurate expectations to reduce returns, and lifts conversion.&lt;/p&gt;
+          &lt;div style="display:flex; gap:40px; margin-top:34px;"&gt;
+            &lt;div&gt;&lt;div style="font-family:var(--font-display); font-size:52px; color:var(--c-white); line-height:1;"&gt;[0]&lt;/div&gt;&lt;div class="kpi-hint" style="margin-top:6px;"&gt;Premium modules&lt;/div&gt;&lt;/div&gt;
+            &lt;div&gt;&lt;div style="font-family:var(--font-display); font-size:52px; color:var(--c-white); line-height:1;"&gt;[0]&lt;/div&gt;&lt;div class="kpi-hint" style="margin-top:6px;"&gt;ASINs live&lt;/div&gt;&lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div style="display:flex; gap:8px; justify-content:flex-end; align-items:center; height:100%; min-width:0;"&gt;
+          &lt;div style="flex:1 1 0; min-width:0; border-radius:14px; overflow:hidden; display:flex; flex-direction:column; gap:0;"&gt;
+            &lt;div style="position:relative; width:100%; aspect-ratio:1200 / 492;"&gt;&lt;image-slot id="tpl-ap-1" shape="rect" fit="cover" placeholder="A+ module 1" style="position:absolute;inset:0;width:100%;height:100%"&gt;&lt;/image-slot&gt;&lt;/div&gt;
+            &lt;div style="position:relative; width:100%; aspect-ratio:1200 / 492;"&gt;&lt;image-slot id="tpl-ap-2" shape="rect" fit="cover" placeholder="A+ module 2" style="position:absolute;inset:0;width:100%;height:100%"&gt;&lt;/image-slot&gt;&lt;/div&gt;
+            &lt;div style="position:relative; width:100%; aspect-ratio:1200 / 492;"&gt;&lt;image-slot id="tpl-ap-3" shape="rect" fit="cover" placeholder="A+ module 3" style="position:absolute;inset:0;width:100%;height:100%"&gt;&lt;/image-slot&gt;&lt;/div&gt;
+            &lt;div style="position:relative; width:100%; aspect-ratio:1200 / 492;"&gt;&lt;image-slot id="tpl-ap-4" shape="rect" fit="cover" placeholder="A+ module 4" style="position:absolute;inset:0;width:100%;height:100%"&gt;&lt;/image-slot&gt;&lt;/div&gt;
+          &lt;/div&gt;
+          &lt;div style="flex:1 1 0; min-width:0; border-radius:14px; overflow:hidden; display:flex; flex-direction:column; gap:0;"&gt;
+            &lt;div style="position:relative; width:100%; aspect-ratio:1200 / 492;"&gt;&lt;image-slot id="tpl-ap-b1" shape="rect" fit="cover" placeholder="A+ module 1" style="position:absolute;inset:0;width:100%;height:100%"&gt;&lt;/image-slot&gt;&lt;/div&gt;
+            &lt;div style="position:relative; width:100%; aspect-ratio:1200 / 492;"&gt;&lt;image-slot id="tpl-ap-b2" shape="rect" fit="cover" placeholder="A+ module 2" style="position:absolute;inset:0;width:100%;height:100%"&gt;&lt;/image-slot&gt;&lt;/div&gt;
+            &lt;div style="position:relative; width:100%; aspect-ratio:1200 / 492;"&gt;&lt;image-slot id="tpl-ap-b3" shape="rect" fit="cover" placeholder="A+ module 3" style="position:absolute;inset:0;width:100%;height:100%"&gt;&lt;/image-slot&gt;&lt;/div&gt;
+            &lt;div style="position:relative; width:100%; aspect-ratio:1200 / 492;"&gt;&lt;image-slot id="tpl-ap-b4" shape="rect" fit="cover" placeholder="A+ module 4" style="position:absolute;inset:0;width:100%;height:100%"&gt;&lt;/image-slot&gt;&lt;/div&gt;
+          &lt;/div&gt;
+          &lt;div style="flex:1 1 0; min-width:0; border-radius:14px; overflow:hidden; display:flex; flex-direction:column; gap:0;"&gt;
+            &lt;div style="position:relative; width:100%; aspect-ratio:1200 / 492;"&gt;&lt;image-slot id="tpl-ap-c1" shape="rect" fit="cover" placeholder="A+ module 1" style="position:absolute;inset:0;width:100%;height:100%"&gt;&lt;/image-slot&gt;&lt;/div&gt;
+            &lt;div style="position:relative; width:100%; aspect-ratio:1200 / 492;"&gt;&lt;image-slot id="tpl-ap-c2" shape="rect" fit="cover" placeholder="A+ module 2" style="position:absolute;inset:0;width:100%;height:100%"&gt;&lt;/image-slot&gt;&lt;/div&gt;
+            &lt;div style="position:relative; width:100%; aspect-ratio:1200 / 492;"&gt;&lt;image-slot id="tpl-ap-c3" shape="rect" fit="cover" placeholder="A+ module 3" style="position:absolute;inset:0;width:100%;height:100%"&gt;&lt;/image-slot&gt;&lt;/div&gt;
+            &lt;div style="position:relative; width:100%; aspect-ratio:1200 / 492;"&gt;&lt;image-slot id="tpl-ap-c4" shape="rect" fit="cover" placeholder="A+ module 4" style="position:absolute;inset:0;width:100%;height:100%"&gt;&lt;/image-slot&gt;&lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class="bottombar"&gt;&lt;img class="mf-mark" src="assets/mf-mark.png" alt="market foundry"&gt;&lt;span&gt;12 / 14&lt;/span&gt;&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;!-- 13 — STOREFRONT --&gt;
+  &lt;section class="slide" data-label="Storefront"&gt;
+    &lt;div class="slide-frame" style="padding:64px var(--pad-x) 92px;"&gt;
+      &lt;div class="topbar"&gt;&lt;span&gt;&lt;span style="color:var(--c-yellow); font-weight:700;"&gt;13&lt;/span&gt; &amp;nbsp;·&amp;nbsp; Storefront&lt;/span&gt;&lt;span class="right"&gt;The brand's home on Amazon&lt;/span&gt;&lt;/div&gt;
+      &lt;div style="display:grid; grid-template-columns:0.62fr 2.38fr; gap:32px; flex:1; margin-top:16px; min-height:0; align-items:center;"&gt;
+        &lt;div style="display:flex; flex-direction:column; justify-content:center;"&gt;
+          &lt;div class="eyebrow"&gt;&lt;span class="dash"&gt;&lt;/span&gt;Multi-page store&lt;/div&gt;
+          &lt;h1 class="title-xl" style="color:var(--c-white); font-size:64px; margin-top:24px;"&gt;One&lt;br&gt;destination,&lt;br&gt;&lt;span style="color:var(--c-yellow);"&gt;whole brand.&lt;/span&gt;&lt;/h1&gt;
+          &lt;p class="body" style="max-width:34ch; color:var(--c-mute-2); font-size:23px; margin-top:22px;"&gt;A customizable, multi-page brand destination — the landing page for Sponsored Brands, Posts and external traffic, built to showcase the full catalogue and guide shoppers through curated, cross-sell-ready collections.&lt;/p&gt;
+        &lt;/div&gt;
+        &lt;div style="display:flex; gap:8px; justify-content:flex-end; align-items:flex-start; height:100%; min-width:0;"&gt;
+          &lt;div style="flex:1 1 0; min-width:0; aspect-ratio:3000 / 6500; max-height:100%; border-radius:14px; overflow:hidden; display:flex; flex-direction:column; gap:0;"&gt;
+            &lt;div style="position:relative; width:100%; aspect-ratio:3000 / 6500;"&gt;&lt;image-slot id="tpl-sf-a1" align="top" shape="rect" fit="width" placeholder="Storefront page · 3000 × 6500" style="width:100%;height:100%"&gt;&lt;/image-slot&gt;&lt;/div&gt;
+          &lt;/div&gt;
+          &lt;div style="flex:1 1 0; min-width:0; aspect-ratio:3000 / 6500; max-height:100%; border-radius:14px; overflow:hidden; display:flex; flex-direction:column; gap:0;"&gt;
+            &lt;div style="position:relative; width:100%; aspect-ratio:3000 / 6500;"&gt;&lt;image-slot id="tpl-sf-b1" align="top" shape="rect" fit="width" placeholder="Storefront page · 3000 × 6500" style="width:100%;height:100%"&gt;&lt;/image-slot&gt;&lt;/div&gt;
+          &lt;/div&gt;
+          &lt;div style="flex:1 1 0; min-width:0; aspect-ratio:3000 / 6500; max-height:100%; border-radius:14px; overflow:hidden; display:flex; flex-direction:column; gap:0;"&gt;
+            &lt;div style="position:relative; width:100%; aspect-ratio:3000 / 6500;"&gt;&lt;image-slot id="tpl-sf-c1" align="top" shape="rect" fit="width" placeholder="Storefront page · 3000 × 6500" style="width:100%;height:100%"&gt;&lt;/image-slot&gt;&lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class="bottombar"&gt;&lt;img class="mf-mark" src="assets/mf-mark.png" alt="market foundry"&gt;&lt;span&gt;13 / 14&lt;/span&gt;&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+
+  &lt;!-- 13 — NEXT STEPS / CTA --&gt;
+  &lt;section class="slide yellow" data-label="Next Steps"&gt;
+    &lt;div class="slide-frame"&gt;
+      &lt;div class="topbar" style="color:var(--c-yellow-ink); opacity:.7;"&gt;&lt;span&gt;14 &amp;nbsp;·&amp;nbsp; Next Steps&lt;/span&gt;&lt;span class="right"&gt;hello@marketfoundry.com&lt;/span&gt;&lt;/div&gt;
+      &lt;div style="flex:1; display:flex; flex-direction:column; justify-content:center; gap:48px; padding-bottom:20px;"&gt;
+        &lt;h1 class="display" style="font-size:176px; line-height:.88; color:var(--c-yellow-ink); margin:0; max-width:20ch;"&gt;Let's do&lt;br&gt;something&lt;br&gt;original.&lt;span class="yellow-dot" style="background:var(--c-yellow-ink); width:.15em; height:.15em; vertical-align:.5em; margin-left:.04em;"&gt;&lt;/span&gt;&lt;/h1&gt;
+        &lt;div style="display:grid; grid-template-columns:1.1fr 1fr; gap:64px; align-items:end;"&gt;
+          &lt;p class="body" style="max-width:36ch; color:var(--c-yellow-ink); font-size:30px; line-height:1.4;"&gt;We work with CPG brands to win the shopping cart &lt;span style="font-style:italic;"&gt;@&lt;/span&gt; retail&lt;span style="opacity:.4;"&gt; · &lt;/span&gt;amazon&lt;span style="opacity:.4;"&gt; · &lt;/span&gt;shopify.&lt;br&gt;&lt;span style="opacity:.7;"&gt;Bring us your hardest growth problem.&lt;/span&gt;&lt;/p&gt;
+          &lt;div style="display:flex; flex-direction:column; gap:12px; justify-self:end; align-items:flex-end; text-align:right;"&gt;
+            &lt;img class="mf-logo on-accent" src="assets/mf-logo.png" style="height:168px; margin-bottom:14px;" alt="market foundry"&gt;
+            &lt;div style="font-family:var(--font-mono); font-size:24px; letter-spacing:.2em; text-transform:uppercase; color:var(--c-yellow-ink); opacity:.65;"&gt;Get in touch&lt;/div&gt;
+            &lt;div style="font-family:var(--font-display); font-size:44px; color:var(--c-yellow-ink); text-transform:uppercase; letter-spacing:-.015em;"&gt;hello@marketfoundry.com&lt;/div&gt;
+            &lt;div style="font-family:var(--font-body); font-size:24px; color:var(--c-yellow-ink); opacity:.75;"&gt;market·foundry&lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class="bottombar" style="color:var(--c-yellow-ink); opacity:.7;"&gt;&lt;img class="mf-mark on-accent" src="assets/mf-mark.png" alt="market foundry"&gt;&lt;span&gt;14 / 14&lt;/span&gt;&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+
+  &lt;/deck-stage&gt;
+
+&lt;div id="nav"&gt;
+  &lt;button id="prev" aria-label="Previous slide"&gt;&amp;#8249;&lt;/button&gt;
+  &lt;div class="count"&gt;&lt;b id="cur"&gt;1&lt;/b&gt; / &lt;span id="tot"&gt;15&lt;/span&gt;&lt;/div&gt;
+  &lt;button id="next" aria-label="Next slide"&gt;&amp;#8250;&lt;/button&gt;
+&lt;/div&gt;
+&lt;div id="hint"&gt;← → to navigate&lt;/div&gt;
+
+&lt;script&gt;
+(function(){
+  var stage = document.querySelector('deck-stage');
+  var W = +stage.getAttribute('width')||1920, H = +stage.getAttribute('height')||1080;
+  var slides = Array.prototype.slice.call(stage.querySelectorAll('section.slide'));
+  var idx = 0, n = slides.length;
+  stage.style.width = W+'px'; stage.style.height = H+'px';
+  slides.forEach(function(s,i){ s.style.display = i===0 ? 'block':'none'; });
+  document.getElementById('tot').textContent = n;
+
+  function fit(){
+    var sc = Math.min(window.innerWidth/W, (window.innerHeight)/H);
+    stage.style.transform = 'translate(-50%,-50%) scale('+sc+')';
+  }
+  function show(k){
+    idx = Math.max(0, Math.min(n-1, k));
+    slides.forEach(function(s,i){ s.style.display = i===idx ? 'block':'none'; });
+    document.getElementById('cur').textContent = idx+1;
+    document.getElementById('prog').style.width = ((idx+1)/n*100)+'%';
+  }
+  document.getElementById('prev').addEventListener('click', function(){ show(idx-1); });
+  document.getElementById('next').addEventListener('click', function(){ show(idx+1); });
+  document.addEventListener('keydown', function(e){
+    if(['ArrowRight','ArrowDown','PageDown',' '].indexOf(e.key)&gt;-1){ show(idx+1); e.preventDefault(); }
+    else if(['ArrowLeft','ArrowUp','PageUp'].indexOf(e.key)&gt;-1){ show(idx-1); e.preventDefault(); }
+    else if(e.key==='Home'){ show(0); } else if(e.key==='End'){ show(n-1); }
+  });
+  // click halves (ignore clicks on nav)
+  document.addEventListener('click', function(e){
+    if(e.target.closest('#nav') || e.target.closest('image-slot')) return;
+    var x = e.clientX / window.innerWidth;
+    if(x &gt; 0.62) show(idx+1); else if(x &lt; 0.38) show(idx-1);
+  });
+  // wheel nav, debounced
+  var wlock=false;
+  window.addEventListener('wheel', function(e){
+    if(wlock) return;
+    if(Math.abs(e.deltaY) &lt; 24 &amp;&amp; Math.abs(e.deltaX) &lt; 24) return;
+    wlock=true; setTimeout(function(){wlock=false;}, 520);
+    if((e.deltaY||e.deltaX) &gt; 0) show(idx+1); else show(idx-1);
+  }, {passive:true});
+  // swipe
+  var tx=0,ty=0;
+  window.addEventListener('touchstart', function(e){ tx=e.touches[0].clientX; ty=e.touches[0].clientY; }, {passive:true});
+  window.addEventListener('touchend', function(e){
+    var dx=e.changedTouches[0].clientX-tx, dy=e.changedTouches[0].clientY-ty;
+    if(Math.abs(dx)&gt;50 &amp;&amp; Math.abs(dx)&gt;Math.abs(dy)){ show(dx&lt;0 ? idx+1 : idx-1); }
+  }, {passive:true});
+
+  window.addEventListener('resize', fit);
+  fit(); show(0);
+  setTimeout(function(){ var h=document.getElementById('hint'); if(h) h.style.transition='opacity 1s'; if(h) h.style.opacity='0'; }, 4000);
+})();
+&lt;/script&gt;
+
+&lt;script src="assets/image-slot.js"&gt;&lt;/script&gt;
+&lt;/body&gt;&lt;/html&gt;
+</pre>
+</details>
+</div>
+</body></html>

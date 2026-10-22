@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<title>SC Case Study Template · Instructions · market·foundry</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#2A5059;--card:#2F2C2C;--line:#4A4646;--white:#F0EFF6;--mute:#9FB3B6;--mute2:#CBD6D8;--yellow:#FF751F;--teal:#5FA6B5;--green:#6CE0A3;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--mute2);font-family:'Outfit',sans-serif;font-size:16px;line-height:1.6;}
+.wrap{max-width:880px;margin:0 auto;padding:64px 32px 120px;}
+h1{font-size:44px;font-weight:800;letter-spacing:-.02em;color:var(--white);line-height:1.1;margin:0 0 8px;}
+h2{font-size:26px;font-weight:700;color:var(--white);margin:56px 0 16px;padding-top:24px;border-top:1px solid var(--line);}
+h3{font-size:18px;font-weight:700;color:var(--white);margin:28px 0 8px;}
+p{margin:0 0 14px;}
+code,kbd{font-family:'Outfit',sans-serif;letter-spacing:.06em;font-size:.86em;background:var(--card);border:1px solid var(--line);border-radius:6px;padding:2px 7px;color:var(--white);}
+pre{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px;overflow-x:auto;font-family:'Outfit',sans-serif;letter-spacing:.06em;font-size:13px;line-height:1.55;color:var(--mute2);white-space:pre-wrap;}
+.mono{font-family:'Outfit',sans-serif;letter-spacing:.06em;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);}
+.tag{display:inline-block;font-family:'Outfit',sans-serif;letter-spacing:.06em;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--yellow);border:1px solid rgba(255,117,31,.4);border-radius:999px;padding:3px 12px;margin-bottom:18px;}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14.5px;}
+th{font-family:'Outfit',sans-serif;letter-spacing:.06em;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);}
+td{padding:10px 12px;border-bottom:1px solid rgba(38,72,81,.5);vertical-align:top;}
+td:first-child{color:var(--white);font-weight:600;white-space:nowrap;}
+ul,ol{margin:0 0 16px;padding-left:22px;}
+li{margin-bottom:8px;}
+strong{color:var(--white);}
+.callout{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--yellow);border-radius:10px;padding:16px 20px;margin:20px 0;}
+.callout.warn{border-left-color:#E05C5C;}
+a{color:var(--teal);}a:hover{color:var(--white);}
+.y{color:var(--yellow);}
+</style>
+</head><body>
+<div class="wrap">
+<div class="tag">market·foundry · internal playbook</div>
+<h1>Seller Central Case Studies — Template Instructions</h1>
+<p class="mono">Detailed Case Study Template.html · 14 slides &nbsp;·&nbsp; High Level Case Study Template.html · 5 slides &nbsp;·&nbsp; 1920×1080 · market·foundry brand look</p>
+
+<h2>1 · What this template is</h2>
+<p>Two sibling formats sharing one visual language (slate teal, charcoal cards, orange accent, Outfit):</p><ul><li><strong>Detailed / Granular</strong> — 14 slides. The deep dive: monthly sales chart, product mix, demand curve, paid media by channel, and four creative slides.</li><li><strong>High-Level</strong> — 5 slides. The executive summary: Cover (headline + 3 KPI chips + client card), The Challenge (start vs target), The Results (six proof points), The Approach (five pillars), The Creative (brand story + 9-tile listing grid + A+ + storefront, orange CTA band).</li></ul><p>Fill rules, voice, charts and image-slot behaviour below apply to both; chart-drawing (§5) applies to the detailed deck only. Pick High-Level for prospects and quick shares; Detailed for QBRs and case-study deep dives.</p><p><strong>Figure banding (High-Level only).</strong> Private absolute $ figures — revenue, ordered sales, ad-attributed sales, spend, ASP, starting-point sales — never show real numbers: band them as "Low/Mid/High N-Fig" (e.g. Mid 7-Fig). Percentages, ratios (ROAS, growth multiples), impression/unit counts and module/ASIN counts stay real. Where a $ context line would leak a figure, swap it for a ratio (e.g. "on $28.5K spend" → "1.3× blended ROAS"). The Detailed deck is internal/QBR-facing and keeps exact figures. It is a single self-contained HTML file (plus <code>assets/image-slot.js</code> for drag-and-drop image slots). Every client value is written as a bracketed placeholder like <code>[CLIENT NAME]</code> or <code>$[0.0]M</code> — fill every bracket, drop in creative assets, and the deck is done.</p>
+<p>Navigation: arrow keys, click, or swipe. Slides are <code>&lt;section class="slide" data-label="…"&gt;</code> children of the deck stage; the file scales itself to any window.</p>
+
+<h2>2 · The 14 slides and what each needs</h2>
+<table>
+<tr><th>#</th><th>Slide</th><th>Data needed</th></tr>
+<tr><td>01</td><td>Cover</td><td>Client name, date range, positioning line, one-sentence engagement summary with headline result. Images: hero product photo, client logo (white card).</td></tr>
+<tr><td>02</td><td>The Brief</td><td>Three-line hook headline, 2–3 sentence situation + mandate, starting point, deliverables, single numeric target.</td></tr>
+<tr><td>03</td><td>Results</td><td>Six proof-point KPIs: headline sales, ad impressions, ad-attributed sales, growth multiple, Buy Box %, conversion rate. Source line.</td></tr>
+<tr><td>04</td><td>Account Snapshot</td><td>Total sales, units, avg price, SKU count, page views, fulfilment (FBA/FBM), sessions, CVR, Buy Box %, ROAS, organic/paid split line.</td></tr>
+<tr><td>05</td><td>Approach</td><td>Five pillars (name + one line each). Keep them client-specific, not generic.</td></tr>
+<tr><td>06</td><td>Sales Growth</td><td>Monthly ordered-sales bar chart (12 bars, SVG), total, organic vs ad-attributed $ and %, avg price, units.</td></tr>
+<tr><td>07</td><td>Product Mix</td><td>Top 3 products by revenue and by units (bar rows), concentration %, total units + SKU count.</td></tr>
+<tr><td>08</td><td>Demand Curve</td><td>Cumulative-sales line chart (SVG), peak month, H2-vs-H1 delta. (Swap for a Subscribe &amp; Save slide only if S&amp;S is material.)</td></tr>
+<tr><td>09</td><td>Paid Media</td><td>Two channel cards: Sponsored Products, and SB + SD combined. Each: spend, sales, ACOS, orders + monthly spend/sales line chart. Blended ROAS headline.</td></tr>
+<tr><td>10</td><td>Brand Story</td><td>Full-width brand-story banner image (~1464×625 native, 1200/230 frame) + one line on its job.</td></tr>
+<tr><td>11</td><td>Listing Images</td><td>1 hero (square) + 8 supporting frames (grid). Update the copy to the real image count and CVR.</td></tr>
+<tr><td>12</td><td>Premium A+</td><td>Up to 12 module screenshots in three vertical stacks (a/b/c columns, 1200/492 each). KPIs: module count, ASINs live.</td></tr>
+<tr><td>13</td><td>Storefront</td><td>Three full-page storefront screenshots (tall, top-aligned, fit-to-width).</td></tr>
+<tr><td>14</td><td>Next Steps / CTA</td><td>Three forward-looking moves + contact line. Usually needs only light editing.</td></tr>
+</table>
+
+<h2>3 · Duplication workflow (per new client)</h2>
+<ol>
+<li><strong>Copy the file.</strong> Duplicate <code>Case Study Template.html</code> → <code>&lt;Client&gt; - Seller Central Case Study.html</code>. Never edit the template directly.</li>
+<li><strong>Rename slot ids.</strong> Global find-replace <code>id="tpl-</code> → <code>id="&lt;client-slug&gt;-</code> (e.g. <code>id="pura-</code>). Slot ids must be unique per deck or dropped images will collide across decks.</li>
+<li><strong>Pull the data.</strong> Twelve months (or engagement period) from Seller Central + Sponsored Ads reporting: monthly ordered sales &amp; units; sessions, page views, CVR (unit-session rate), Buy Box %; top products by sales and units; ad spend / revenue / clicks / impressions / orders by campaign type by month.</li>
+<li><strong>Fill every bracket.</strong> Search for <code>[</code> until none remain (the SVG thumbnail block at the top too).</li>
+<li><strong>Redraw the three SVG charts</strong> (see §5).</li>
+<li><strong>Fill the image slots</strong> — drop files or paste Drive links — then <strong>bake to committed files</strong> before final export (see §6).</li>
+<li><strong>Update page numbers</strong> only if slides were added/removed (footers read <code>NN / 14</code>).</li>
+<li><strong>QA pass</strong>: every slide, no placeholder text, no clipped charts, honest numbers.</li>
+</ol>
+
+<h2>4 · Voice &amp; numbers</h2>
+<ul>
+<li>Headlines are short and declarative; the accent color (<code>--c-yellow</code>, orange <code>#FF751F</code>) carries the key number or phrase.</li>
+<li>Round display values (<code>$64.6K</code>, <code>5.2×</code>, <code>98.9%</code>); cite one exact total in the Sales Growth body copy.</li>
+<li>Be honest with unflattering metrics (launch ACOS etc.) — frame as investment phase, don't hide.</li>
+<li>Every stat must come from real reporting. No invented numbers, ever.</li>
+</ul>
+
+<h2>5 · Redrawing the SVG charts</h2>
+<p>Three charts are hand-drawn SVG: monthly sales bars (slide 06), cumulative demand curve (slide 08), and two spend/sales lines (slide 09). Each has a fixed plot area; map values linearly.</p>
+<h3>Slide 06 — bars</h3>
+<pre>viewBox 0 0 880 340 · baseline y=280 · top gridline y=40 (=axis max)
+bar height = value / axisMax × 240 ;  y = 280 − height
+12 bars: width 44, first x=74, pitch 65.85
+Set the three y-axis labels to round values ≥ the max month.</pre>
+<h3>Slide 08 — cumulative line</h3>
+<pre>viewBox 0 0 880 340 · plot y 40–250 (210px) · x from 60 to 860, 11 equal steps
+y = 250 − cumValue / axisMax × 210 ;  close the fill path to y=250.</pre>
+<h3>Slide 09 — spend vs sales lines</h3>
+<pre>viewBox 0 0 880 300 · plot y 40–240 · x 50→860, 11 steps
+Orange = sales, teal = spend, one shared max per card. Dot marks the peak point.</pre>
+
+<h2>6 · Image slots — the rules that matter</h2>
+<p>Slots are <code>&lt;image-slot&gt;</code> elements. Three ways to fill one: <strong>drag a file</strong> onto it, click <strong>Browse file</strong>, or click <strong>Paste Drive link</strong> (Drive logo pill) and paste a Google Drive share link or any direct image URL — paste auto-submits. Share Drive files to the <strong>marketfoundry.agency domain</strong> ("anyone in this domain with the link") — public sharing is not needed; images load for anyone signed into their work Google account. A filled slot shows <strong>Replace / Edit / Delete</strong> controls on hover (Edit = pan/zoom reframe; Delete clears the drop and reveals any baked <code>src</code>). Key attributes: <code>fit="cover|contain|width"</code>, <code>align="top"</code>, <code>shape</code>/<code>radius</code>, <code>placeholder</code>, and <code>src</code> for a committed file.</p>
+<div class="callout warn"><strong>The workflow: draft with Drive links → bake → export.</strong> Reports are drafted internally (all image handling by marketfoundry.agency users, domain-shared Drive links — short URLs that never hit the persistence cap). Before sharing anything externally, <strong>bake every image to a committed asset</strong> (e.g. <code>assets/&lt;slug&gt;-li-3.webp</code>, wired via the slot's <code>src</code>): Drive links only render for signed-in domain users, so an unbaked deck looks broken to clients. Dropped <em>files</em> (not links) live in a hidden state file with a size cap — bake those too and clear the state file. Then export the shareable PDF/PPTX from the baked deck.</div>
+<ul>
+<li><strong>Storefront slots</strong> use <code>fit="width" align="top"</code> — full-page screenshots show from the top and crop at the bottom.</li>
+<li><strong>A+ stacks</strong> use <code>fit="cover"</code> in fixed 1200/492 frames so modules butt flush.</li>
+<li><strong>Cover hero / logo / brand story</strong> use <code>fit="contain"</code> — never crop brand art.</li>
+<li>Recommended native sizes: A+ modules 1200–1464px wide; brand story banner ~1464×625; listing images square ≥1000px; storefront full-page captures ~3000px wide.</li>
+</ul>
+
+<h2>7 · Exports</h2>
+<table>
+<tr><th>Format</th><th>How</th><th>Notes</th></tr>
+<tr><td>PDF (client deliverable)</td><td>Bake images → PPTX → Save as PDF</td><td>The standard shareable output. Never export with unbaked Drive links — they render only for domain users.</td></tr>
+<tr><td>Standalone HTML</td><td>Bundle/inline into one file</td><td>Offline, keeps navigation. Bake images first — Drive links are not embedded.</td></tr>
+<tr><td>PPTX</td><td>Screenshot export, 1920×1080</td><td>Pixel-perfect, not editable. Pin the stage to top-left and show one slide at a time during capture. The deck shell has no print support — don't print the HTML directly.</td></tr>
+</table>
+
+<h2>8 · Design tokens (do not restyle per client)</h2>
+<pre>Background  #2A5059 (slate teal)   Card #2F2C2C (charcoal)   Line #4A4646
+Text        #F0EFF6 (white) · #CBD6D8 (body) · #9FB3B6 (muted)
+Accent      #FF751F (orange — key numbers, bars, lines, accent KPI card)
+Secondary   #5FA6B5 (teal — spend lines) · #6CE0A3 (green — positive deltas)
+Fonts       Outfit only — 800 display · 400–600 body · 600–700 spaced-caps labels
+Slide size  1920×1080 · min body text 23px · footer: mf-mark + "NN / 14"</pre>
+<p>The market·foundry brand frame (topbar label, orange slide number, footer mark) is fixed. Only content changes per client.</p>
+</div>
+</body></html>

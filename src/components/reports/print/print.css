@@ -1,0 +1,127 @@
+/* ============================================================
+   MF paper document — A4 landscape, 14mm/18mm margins.
+   Matches src/components/monthly-report/styles/report.css:834-846.
+   Colours come from the app's --mf-* tokens (src/app/globals.css);
+   this file defines none of its own.
+   ============================================================ */
+
+@page {
+  size: A4 landscape;
+  margin: 14mm 18mm;
+}
+
+/* Named page context — the paper document's geometry must not depend on
+   stylesheet load order.
+   globals.css:589-592 declares a competing `@page { size: landscape; margin: 12mm }`
+   inside @media print. Its neighbours are prefixed `body.mf-print-report`, but an
+   @page rule CANNOT be scoped by a selector, so that rule applies to every print
+   in the app. Measured with Chrome (preferCSSPageSize, no puppeteer format
+   override): with only the unnamed rule above, whichever stylesheet loads LAST
+   wins — and when the legacy rule wins on a US-Letter default the page becomes
+   279.4mm wide, giving a 255.4mm content box that clips ~6mm off this 261mm
+   canvas on every page. With this named context the result is A4 landscape in
+   EITHER load order. Note that puppeteer's page.pdf({format,margin}) overrides
+   CSS @page, so a puppeteer-based check cannot observe this class of bug at all —
+   only real browser Save-as-PDF can.
+   The unnamed rule above is retained as the fallback for engines without
+   named-page support. Task 13 deletes the legacy block; this stays useful after
+   that, because it makes the geometry immune to any future global @page. */
+@page mfpaper {
+  size: A4 landscape;
+  margin: 14mm 18mm;
+}
+
+/* The printable content box: 297mm − 2×18mm = 261mm.
+   ⚠️ LOAD-BEARING: this width must be IDENTICAL on screen and on paper.
+   Recharts' ResponsiveContainer measures its parent once, on screen, and does
+   not re-measure when Chrome re-runs layout for the page box. A media-dependent
+   width here reintroduces the exact chart-sizing bug this feature fixes.
+   Never wrap it in @media print, and never set it to auto. */
+.mf-paper {
+  width: 261mm;
+  margin: 0 auto;
+  page: mfpaper;
+  background: var(--mf-white);
+  color: var(--mf-ink);
+  font-family: var(--font-outfit), system-ui, sans-serif;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+/* Sections sized for a viewport must not reserve a viewport on paper.
+   PerformanceOverviewV2 drops its own wrapper under printMode; this covers any
+   nested min-h-screen inside the five other sections. */
+.mf-paper .min-h-screen {
+  min-height: 0 !important;
+}
+
+/* Every v2 card reaches paper through Surface, which carries data-report-card. */
+.mf-paper [data-report-card] {
+  box-shadow: none !important;
+  border-color: var(--mf-line);
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.mf-paper table thead {
+  display: table-header-group;
+}
+.mf-paper tr,
+.mf-paper img,
+.mf-paper svg {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+.mf-paper h1,
+.mf-paper h2,
+.mf-paper h3 {
+  break-after: avoid;
+  page-break-after: avoid;
+}
+
+/* One report sub-section per page where a section component uses <section>,
+   the same rule the monthly report applies. Harmless where absent. */
+.mf-paper section + section {
+  break-before: page;
+  page-break-before: always;
+}
+
+/* App chrome that LayoutRouter structurally CANNOT remove.
+   LayoutRouter returns bare children for the /reports/<segment>/print routes,
+   but it lives in the
+   ROOT layout, so every route-segment layout below it still renders. In
+   particular src/app/portal/layout.tsx mounts AdminPreviewToggle (an in-flow
+   banner) and ProspectSampleBadge (position: fixed) into every portal print
+   document. Both now carry .mf-no-print.
+   Hidden in ALL media, not just print: a print route is a paper document, not an
+   app page, so the chrome has no business on screen there either. This
+   stylesheet is imported by print-document.tsx and therefore only ships in the
+   print routes' chunk, which is what scopes this rule to them. */
+.mf-no-print {
+  display: none !important;
+}
+
+/* ── Cover block ─────────────────────────────────────────── */
+.mf-cover {
+  border-bottom: 1px solid var(--mf-line);
+  padding-bottom: 10mm;
+  margin-bottom: 8mm;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+@media print {
+  html,
+  body {
+    background: var(--mf-white) !important;
+    margin: 0;
+    padding: 0;
+  }
+  /* Designed document: the orange hero fills and status tints are content, not
+     decoration, so keep them exactly as rendered. */
+  .mf-paper,
+  .mf-paper * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

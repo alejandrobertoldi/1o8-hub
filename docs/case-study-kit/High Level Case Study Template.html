@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<title>High Level Case Study Template · market·foundry</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* =============================================================
+   CASE STUDY TEMPLATE — market·foundry visual system
+   Authored at 1920×1080. 1px = 1 stage px.
+   Placeholders are wrapped in [SQUARE BRACKETS] — replace them.
+   Duplicate this file for each new case study.
+   ============================================================= */
+:root{
+  --c-ink:#2A5059; --c-ink-90:#2F2C2C; --c-ink-80:#383434; --c-ink-70:#423D3D;
+  --c-line:#4A4646; --c-line-soft:#3E5F66; --c-mute:#9FB3B6; --c-mute-2:#CBD6D8;
+  --c-white:#FFFFFF; --c-paper:#F0EFF6; --c-paper-2:#E3E2EE;
+  --c-yellow:#FF751F; --c-yellow-2:#FF9048; --c-yellow-ink:#2B1508;
+  --c-cherry:#C81E3C;
+  --pad-x:96px;
+  --font-display:'Outfit',system-ui,sans-serif;
+  --font-body:'Outfit',system-ui,-apple-system,sans-serif;
+  --font-mono:'Outfit',system-ui,sans-serif;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;background:#000;height:100%;overflow:hidden;}
+deck-stage{display:block;position:absolute;top:50%;left:50%;transform-origin:center center;}
+
+section.slide{
+  font-family:var(--font-body); color:var(--c-white); background:var(--c-ink);
+  font-size:28px; line-height:1.45; overflow:hidden; position:absolute; inset:0;
+}
+section.slide.light{background:var(--c-white); color:var(--c-ink);}
+section.slide.paper{background:var(--c-paper); color:var(--c-ink);}
+section.slide.yellow{background:var(--c-yellow); color:var(--c-yellow-ink);}
+
+/* Type */
+.eyebrow{font-family:var(--font-body); font-weight:700; font-size:18px; letter-spacing:.22em;
+  text-transform:uppercase; line-height:1; color:var(--c-yellow); display:inline-flex; align-items:center; gap:16px;}
+.eyebrow.ink{color:var(--c-ink);}
+.eyebrow .dash{width:56px; height:2px; background:currentColor; opacity:.4;}
+.display{font-family:var(--font-display); font-weight:800; text-transform:uppercase; line-height:.86; letter-spacing:-.025em;}
+.title-xl{font-family:var(--font-display); font-weight:800; text-transform:uppercase; font-size:96px; line-height:.95; letter-spacing:-.022em; margin:0;}
+.title-lg{font-family:var(--font-display); font-weight:800; text-transform:uppercase; font-size:96px; line-height:.92; letter-spacing:-.02em; margin:0;}
+.title-md{font-family:var(--font-display); font-weight:800; text-transform:uppercase; font-size:64px; line-height:.95; letter-spacing:-.015em; margin:0;}
+.subhead{font-family:var(--font-body); font-weight:600; font-size:48px; line-height:1.15; letter-spacing:-.01em; margin:0;}
+.body{font-family:var(--font-body); font-weight:400; font-size:28px; line-height:1.5; text-wrap:pretty; margin:0; max-width:30ch;}
+.body.lg{font-size:32px;} .body.sm{font-size:22px;}
+.muted{color:var(--c-mute-2);} .muted.ink{color:var(--c-mute);}
+.metric{font-family:var(--font-display); font-weight:800; font-size:168px; font-variant-numeric:tabular-nums; letter-spacing:-.04em; line-height:.86; margin:0;}
+.metric .pct,.metric .unit{font-size:.55em; color:var(--c-yellow); letter-spacing:-.02em;}
+.metric-label{font-family:var(--font-body); font-weight:600; font-size:24px; letter-spacing:.04em; text-transform:uppercase; color:var(--c-mute-2); line-height:1.3; max-width:22ch; margin-top:18px;}
+.light .metric-label,.paper .metric-label,.yellow .metric-label{color:var(--c-ink); opacity:.6;}
+.yellow-dot{display:inline-block; width:.55em; height:.55em; border-radius:999px; background:var(--c-yellow); vertical-align:.05em;}
+
+/* Chrome */
+.slide-frame{position:absolute; inset:0; padding:80px var(--pad-x) 130px; display:flex; flex-direction:column;}
+.slide-frame.tight{padding:72px var(--pad-x);}
+.topbar{display:flex; justify-content:space-between; align-items:center; position:absolute; inset:36px var(--pad-x) auto;
+  font-family:var(--font-mono); font-size:24px; letter-spacing:.12em; text-transform:uppercase; color:var(--c-mute-2); z-index:2;}
+.light .topbar,.paper .topbar{color:var(--c-mute);}
+.yellow .topbar{color:var(--c-yellow-ink); opacity:.7;}
+.topbar .right{display:flex; gap:28px;}
+.bottombar{position:absolute; inset:auto var(--pad-x) 36px; display:flex; justify-content:space-between; align-items:center;
+  font-family:var(--font-mono); font-size:24px; letter-spacing:.18em; text-transform:uppercase; color:var(--c-mute); z-index:2;}
+.light .bottombar,.paper .bottombar{color:var(--c-mute);}
+.brand-mark{font-family:var(--font-display); font-size:32px; letter-spacing:-.02em; text-transform:lowercase; color:inherit; line-height:1;}
+.brand-mark .o{color:var(--c-yellow);}
+
+/* Cards / KPIs */
+.card{background:var(--c-ink-90); border:1px solid var(--c-line); border-radius:18px; padding:36px 40px; position:relative; overflow:hidden;}
+.light .card,.paper .card{background:var(--c-white); border-color:#E5E5E5; box-shadow:0 1px 0 rgba(0,0,0,.04);}
+.kpi{background:var(--c-ink-90); border:1px solid var(--c-line); border-radius:20px; padding:44px 44px 40px; display:flex; flex-direction:column; justify-content:space-between; gap:18px; position:relative; overflow:hidden;}
+.kpi.accent{background:var(--c-yellow); border-color:var(--c-yellow); color:var(--c-yellow-ink);}
+.kpi.accent .metric .pct,.kpi.accent .metric .unit{color:var(--c-yellow-ink);}
+.kpi.accent .metric-label{color:var(--c-yellow-ink); opacity:.7;}
+.kpi.invert{background:var(--c-white); color:var(--c-ink);}
+.kpi.invert .metric .pct,.kpi.invert .metric .unit{color:var(--c-ink);}
+.kpi.invert .metric-label{color:var(--c-ink); opacity:.6;}
+.kpi-hint{font-family:var(--font-body); font-weight:500; font-size:24px; color:var(--c-mute-2); line-height:1.35;}
+.kpi.accent .kpi-hint,.kpi.invert .kpi-hint{color:var(--c-ink); opacity:.65;}
+.kpi-up{display:inline-flex; align-items:center; gap:6px; background:rgba(31,138,91,.18); color:#6CE0A3; font-family:var(--font-mono); font-size:24px; font-weight:700; padding:6px 14px; border-radius:8px; letter-spacing:-.01em; white-space:nowrap;}
+.kpi-down{display:inline-flex; align-items:center; gap:6px; background:rgba(200,30,60,.16); color:#FF7A8A; font-family:var(--font-mono); font-size:24px; font-weight:700; padding:6px 14px; border-radius:8px; letter-spacing:-.01em; white-space:nowrap;}
+.kpi.accent .kpi-up,.kpi.invert .kpi-up{background:rgba(10,10,10,.1); color:var(--c-ink);}
+
+/* Pillars */
+.pillar{display:flex; flex-direction:column; gap:18px; padding:32px 28px 32px 0; position:relative; flex:1 1 0; min-width:0; border-top:2px solid var(--c-line);}
+.light .pillar,.paper .pillar{border-top-color:#DCDCDC;}
+.pillar .num{font-family:var(--font-mono); font-size:24px; font-weight:700; letter-spacing:.15em; color:var(--c-yellow);}
+.pillar .h{font-family:var(--font-display); font-size:36px; text-transform:uppercase; line-height:.95; letter-spacing:-.015em;}
+.pillar .desc{font-size:24px; line-height:1.45; color:var(--c-mute-2); max-width:24ch;}
+.light .pillar .desc,.paper .pillar .desc{color:var(--c-mute);}
+
+/* Logo lockup */
+.logo-108{font-family:var(--font-display); font-size:56px; letter-spacing:-.04em; line-height:.9; text-transform:lowercase; color:inherit; display:inline-block;}
+.logo-108 .o{display:inline-block; width:.74em; height:.74em; border-radius:999px; background:var(--c-yellow); vertical-align:-.04em; margin:0 -.03em;}
+.logo-108 .agency{display:block; font-family:var(--font-body); font-weight:700; font-size:.30em; letter-spacing:.32em; text-transform:uppercase; margin-top:8px; color:inherit; opacity:.9;}
+.mf-logo{display:inline-block; height:132px; width:auto;}
+.mf-mark{height:38px; width:auto; display:inline-block; vertical-align:middle;}
+.mf-mark.on-accent,.mf-logo.on-accent{filter:brightness(0) invert(1);}
+
+/* Browser chrome */
+.browser{background:var(--c-ink-80); border:1px solid var(--c-line); border-radius:14px; overflow:hidden; box-shadow:0 30px 60px rgba(0,0,0,.4);}
+.light .browser,.paper .browser{background:#FAFAFA; border-color:#DCDCDC; box-shadow:0 20px 50px rgba(10,10,10,.12);}
+.browser .bar{display:flex; align-items:center; gap:14px; padding:14px 20px; border-bottom:1px solid var(--c-line); background:var(--c-ink-90);}
+.browser .dots{display:inline-flex; gap:8px;}
+.browser .dots i{width:12px; height:12px; border-radius:999px; background:var(--c-line); display:inline-block;}
+.browser .url{flex:1; font-family:var(--font-mono); font-size:18px; color:var(--c-mute-2); background:var(--c-ink); padding:8px 14px; border-radius:6px; border:1px solid var(--c-line); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+
+/* Channel badge */
+.chan{display:inline-flex; align-items:center; gap:10px; font-family:var(--font-mono); font-size:22px; font-weight:700; letter-spacing:.04em; padding:8px 16px; border-radius:8px; text-transform:uppercase;}
+.chan.vc{background:rgba(95,166,181,.16); color:#8FC6D2;}
+.chan.sc{background:rgba(255,117,31,.16); color:var(--c-yellow);}
+.chan i{width:10px; height:10px; border-radius:99px; display:inline-block;}
+.chan.vc i{background:#5FA6B5;} .chan.sc i{background:var(--c-yellow);}
+
+/* Image placeholder */
+.imgslot{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; background:var(--c-ink-80);
+  border:1.5px dashed rgba(255,255,255,.16); border-radius:18px; color:var(--c-mute-2); text-align:center; padding:24px;}
+.light .imgslot,.paper .imgslot{background:#F4F4F4; border-color:#DCDCDC; color:var(--c-mute);}
+.imgslot .ic{width:54px; height:54px; opacity:.5;}
+.imgslot .lbl{font-family:var(--font-mono); font-size:20px; letter-spacing:.06em; text-transform:uppercase;}
+
+strong{font-weight:600;}
+
+/* image-slot empty-state caption → brand white */
+image-slot{color:#FFFFFF !important;}
+
+/* ===== Navigation UI ===== */
+#nav{position:fixed; left:50%; bottom:22px; transform:translateX(-50%); z-index:50; display:flex; align-items:center; gap:14px;
+  background:rgba(17,17,17,.82); backdrop-filter:blur(8px); border:1px solid #4A4646; border-radius:999px; padding:9px 14px;
+  font-family:var(--font-mono); color:#CBD6D8; box-shadow:0 10px 40px rgba(0,0,0,.5);}
+#nav button{all:unset; cursor:pointer; width:34px; height:34px; display:flex; align-items:center; justify-content:center; border-radius:999px; color:#E5E5E5; font-size:18px;}
+#nav button:hover{background:#4A4646; color:var(--c-yellow);}
+#nav .count{font-size:15px; letter-spacing:.12em; min-width:62px; text-align:center; user-select:none;}
+#nav .count b{color:var(--c-yellow); font-weight:500;}
+#prog{position:fixed; top:0; left:0; height:3px; background:var(--c-yellow); z-index:50; transition:width .25s ease;}
+#hint{position:fixed; right:18px; bottom:24px; z-index:50; font-family:var(--font-mono); font-size:12px; letter-spacing:.1em; color:#5a5a5a; text-transform:uppercase;}
+@media print{#nav,#prog,#hint{display:none;}}
+</style>
+</head>
+<body>
+
+<template id="__bundler_thumbnail" data-bg-color="#2A5059">
+  <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1200" height="800" fill="#2A5059"/>
+    <text x="90" y="330" font-family="Outfit, Arial, sans-serif" font-size="150" font-weight="800" fill="#ffffff">ZERO TO</text>
+    <text x="90" y="480" font-family="Outfit, Arial, sans-serif" font-size="150" font-weight="800" fill="#FF751F">[0.0]×.</text>
+    <text x="94" y="560" font-family="Outfit, monospace" font-size="30" letter-spacing="6" fill="#FF751F">[CLIENT] · HIGH-LEVEL</text>
+    <circle cx="1050" cy="250" r="120" fill="#2F2C2C"/>
+  </svg>
+</template>
+
+<div id="prog"></div>
+
+<deck-stage width="1920" height="1080">
+
+  <!-- 01 — COVER -->
+  <section class="slide" data-label="Cover">
+    <div class="slide-frame" style="padding:48px var(--pad-x) 44px;">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+        <img class="mf-logo" src="assets/mf-logo.png" alt="market foundry">
+        <div style="text-align:right; font-family:var(--font-mono); font-size:24px; letter-spacing:.22em; text-transform:uppercase; color:var(--c-mute-2);">
+          <div>Amazon Case Study · High-Level</div>
+          <div style="margin-top:10px; opacity:.55;">[Date range]</div>
+        </div>
+      </div>
+      <div style="flex:1; display:grid; grid-template-columns:1.5fr 1fr; gap:80px; align-items:center; margin-top:8px;">
+        <div style="display:flex; flex-direction:column; gap:36px;">
+          <h1 class="title-xl" style="font-size:120px;">[Bold claim.]<br><span style="color:var(--c-yellow);">[Key result.]</span></h1>
+          <p class="body lg" style="max-width:42ch; color:var(--c-mute-2);">[One-paragraph summary — the engagement and headline result. Band private $ figures: <strong style="color:var(--c-white);">High 6-Figure</strong>, Mid 7-Figure, etc.; percentages and ratios stay real.]</p>
+          <div style="display:flex; gap:20px;">
+            <div class="card" style="padding:24px 32px;"><div style="font-family:var(--font-display); font-weight:800; font-size:52px; line-height:1; color:var(--c-white);">[Band]</div><div style="font-family:var(--font-mono); font-size:19px; letter-spacing:.14em; text-transform:uppercase; color:var(--c-mute); margin-top:10px;">[KPI one · line 1]<br>[line 2]</div></div>
+            <div class="card" style="padding:24px 32px;"><div style="font-family:var(--font-display); font-weight:800; font-size:52px; line-height:1; color:var(--c-yellow);">[0.0]×</div><div style="font-family:var(--font-mono); font-size:19px; letter-spacing:.14em; text-transform:uppercase; color:var(--c-mute); margin-top:10px;">[KPI two]</div></div>
+            <div class="card" style="padding:24px 32px;"><div style="font-family:var(--font-display); font-weight:800; font-size:52px; line-height:1; color:var(--c-white);">[Band]</div><div style="font-family:var(--font-mono); font-size:19px; letter-spacing:.14em; text-transform:uppercase; color:var(--c-mute); margin-top:10px;">[KPI three]</div></div>
+          </div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:18px; justify-self:end; width:100%; max-width:520px; align-self:stretch; padding:24px 0;">
+          <div style="width:100%; flex:1; min-height:0; display:flex; align-items:center; justify-content:center;">
+            <image-slot id="tplhl-cover-hero" shape="rounded" radius="18" fit="contain" placeholder="Drop hero product photo" style="width:100%;height:100%"></image-slot>
+          </div>
+          <div style="display:flex; align-items:center; gap:24px;">
+            <div style="width:150px; height:84px; flex-shrink:0; border-radius:12px; display:flex; align-items:center; justify-content:center;">
+              <image-slot id="tplhl-cover-logo" shape="rounded" radius="8" fit="contain" placeholder="Logo" style="width:100%;height:100%"></image-slot>
+            </div>
+            <div>
+              <div style="font-family:var(--font-mono); font-size:22px; letter-spacing:.2em; text-transform:uppercase; color:var(--c-mute); margin-bottom:8px;">Client</div>
+              <div style="font-family:var(--font-display); font-weight:800; font-size:36px; line-height:1; color:var(--c-white); text-transform:uppercase;">[CLIENT NAME]</div>
+              <div style="font-size:22px; color:var(--c-mute-2); margin-top:8px;">[Category]</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex; justify-content:space-between; align-items:flex-end;">
+        <div style="font-family:var(--font-mono); font-size:22px; letter-spacing:.22em; text-transform:uppercase; color:var(--c-mute-2);">Amazon · Seller Central · [Engagement]</div>
+        <div style="font-family:var(--font-mono); font-size:22px; letter-spacing:.18em; color:var(--c-mute);">01 / 05</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 — CHALLENGE -->
+  <section class="slide" data-label="The Challenge">
+    <div class="slide-frame">
+      <div class="topbar"><span><span style="color:var(--c-yellow); font-weight:700;">■</span> &nbsp;The Challenge</span><span class="right">[CLIENT NAME]</span></div>
+      <div style="display:flex; flex-direction:column; gap:36px; margin-top:60px; flex:1; justify-content:center;">
+        <h1 class="title-lg" style="font-size:84px; max-width:26ch;">[Challenge headline<br>with <span style="color:var(--c-yellow);">accent phrase.</span>]</h1>
+        <p class="body lg" style="max-width:62ch; color:var(--c-mute-2);">[2–3 sentences: the client\u2019s situation, what made it hard, and the mandate. State the goal plainly.]</p>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:28px; margin-top:12px;">
+          <div class="card" style="padding:40px 44px;">
+            <div class="chan sc" style="margin-bottom:24px;"><i></i>The starting point</div>
+            <div style="font-family:var(--font-display); font-weight:800; font-size:56px; line-height:1; color:var(--c-white);">[Band]</div>
+            <div style="font-size:24px; color:var(--c-mute-2); margin-top:14px;">[Where the account was at the start · banded if a $ figure]</div>
+          </div>
+          <div class="card" style="padding:40px 44px; border-color:rgba(255,117,31,.35);">
+            <div class="chan sc" style="margin-bottom:24px;"><i></i>The target</div>
+            <div style="font-family:var(--font-display); font-weight:800; font-size:56px; line-height:1; color:var(--c-yellow);">[0×]</div>
+            <div style="font-size:24px; color:var(--c-mute-2); margin-top:14px;">[The single target that defined success]</div>
+          </div>
+        </div>
+      </div>
+      <div class="bottombar"><img class="mf-mark" src="assets/mf-mark.png" alt="market foundry"><span>02 / 05</span></div>
+    </div>
+  </section>
+
+  <!-- 03 — RESULTS -->
+  <section class="slide" data-label="The Results">
+    <div class="slide-frame">
+      <div class="topbar"><span><span style="color:var(--c-yellow); font-weight:700;">■</span> &nbsp;The Results</span><span class="right">Seller Central · [Period]</span></div>
+      <h1 class="title-lg" style="font-size:76px; margin-top:70px;">[Headline,] <span style="color:var(--c-yellow);">six proof points.</span></h1>
+      <div style="display:grid; grid-template-columns:repeat(3,1fr); grid-auto-rows:1fr; gap:24px; flex:1; margin-top:40px; margin-bottom:20px;">
+        <div class="kpi accent"><div class="metric" style="font-size:96px;">[Mid 7]<span class="pct" style="color:var(--c-yellow-ink);">-Fig</span></div><div class="metric-label">[Headline $ metric · banded]</div></div>
+        <div class="kpi"><div class="metric" style="font-size:96px;">[0.0]<span class="pct">×</span></div><div class="metric-label">[Metric two]</div></div>
+        <div class="kpi"><div class="metric" style="font-size:96px;">[0.0]<span class="unit">M</span></div><div class="metric-label">[Metric three]</div></div>
+        <div class="kpi"><div class="metric" style="font-size:96px;">[High 6]<span class="unit">-Fig</span></div><div class="metric-label">[$ metric · banded, pair with a real ratio]</div></div>
+        <div class="kpi"><div class="metric" style="font-size:96px;">[00]<span class="pct">%</span></div><div class="metric-label">[Metric five]</div></div>
+        <div class="kpi"><div class="metric" style="font-size:96px;">[0.0]<span class="pct">%</span></div><div class="metric-label">[Metric six]</div></div>
+      </div>
+      <div class="bottombar"><img class="mf-mark" src="assets/mf-mark.png" alt="market foundry"><span>03 / 05</span></div>
+    </div>
+  </section>
+
+  <!-- 04 — APPROACH -->
+  <section class="slide" data-label="The Approach">
+    <div class="slide-frame">
+      <div class="topbar"><span><span style="color:var(--c-yellow); font-weight:700;">■</span> &nbsp;The Approach</span><span class="right">One playbook · launch year</span></div>
+      <div style="margin-top:80px;">
+        <h1 class="title-lg" style="font-size:76px;">[Approach headline,] <span style="color:var(--c-yellow);">[accent.]</span></h1>
+        <p class="body lg" style="max-width:60ch; color:var(--c-mute-2); margin-top:28px;">[One line on the method — how the five levers compound.]</p>
+      </div>
+      <div style="display:flex; gap:32px; flex:1; align-items:stretch; margin-top:44px; margin-bottom:30px;">
+        <div class="pillar"><div class="num">01</div><div class="h">[Pillar one]</div><div class="desc">[One-line description.]</div></div>
+        <div class="pillar"><div class="num">02</div><div class="h">[Pillar two]</div><div class="desc">[One-line description.]</div></div>
+        <div class="pillar"><div class="num">03</div><div class="h">[Pillar three]</div><div class="desc">[One-line description.]</div></div>
+        <div class="pillar"><div class="num">04</div><div class="h">[Pillar four]</div><div class="desc">[One-line description.]</div></div>
+        <div class="pillar"><div class="num">05</div><div class="h">[Pillar five]</div><div class="desc">[One-line description.]</div></div>
+      </div>
+      <div class="bottombar"><img class="mf-mark" src="assets/mf-mark.png" alt="market foundry"><span>04 / 05</span></div>
+    </div>
+  </section>
+
+  <!-- 05 — CREATIVE -->
+  <section class="slide" data-label="The Creative">
+    <div class="slide-frame" style="padding-bottom:0;">
+      <div class="topbar"><span><span style="color:var(--c-yellow); font-weight:700;">■</span> &nbsp;The Creative</span><span class="right">Amazon design system</span></div>
+      <h1 class="title-lg" style="font-size:64px; margin-top:64px;">Not a product. <span style="color:var(--c-yellow);">The brand.</span></h1>
+      <div style="display:grid; grid-template-columns:1.9fr 1fr 1fr; gap:40px; flex:1; margin-top:30px; min-height:0;">
+        <div style="display:flex; flex-direction:column; min-height:0; gap:10px;">
+          <div style="display:flex; align-items:baseline; gap:14px;"><span style="font-family:var(--font-mono); font-size:20px; font-weight:700; letter-spacing:.12em; color:var(--c-yellow);">01</span><span style="font-family:var(--font-display); font-weight:800; font-size:26px; text-transform:uppercase; letter-spacing:.02em;">Brand Story</span></div>
+          <div style="font-size:19px; color:var(--c-mute-2);">Swipeable module below A+ — [its job in one line]</div>
+          <div style="width:100%; aspect-ratio:1200 / 240; position:relative; margin-top:4px;"><image-slot id="tplhl-bs" shape="rounded" radius="10" fit="contain" placeholder="Brand story banner" style="position:absolute;inset:0;width:100%;height:100%"></image-slot></div>
+          <div style="display:flex; align-items:baseline; gap:14px; margin-top:18px;"><span style="font-family:var(--font-mono); font-size:20px; font-weight:700; letter-spacing:.12em; color:var(--c-yellow);">02</span><span style="font-family:var(--font-display); font-weight:800; font-size:26px; text-transform:uppercase; letter-spacing:.02em;">Listing Images</span></div>
+          <div style="font-size:19px; color:var(--c-mute-2);">[N]-image sets per hero ASIN — behind a [0.0]% conversion rate</div>
+          <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-top:4px; align-content:start;">
+            <div style="position:relative; aspect-ratio:1 / 1; min-width:0;"><span style="position:absolute; top:6px; left:6px; z-index:3; font-family:var(--font-mono); font-size:13px; font-weight:700; color:var(--c-yellow-ink); background:var(--c-yellow); padding:2px 8px; border-radius:5px;">HERO</span><image-slot id="tplhl-li1" shape="rounded" radius="10" fit="cover" placeholder="Image 1" style="position:absolute;inset:0;width:100%;height:100%"></image-slot></div>
+            <div style="position:relative; aspect-ratio:1 / 1; min-width:0;"><image-slot id="tplhl-li2" shape="rounded" radius="10" fit="cover" placeholder="Image 2" style="position:absolute;inset:0;width:100%;height:100%"></image-slot></div>
+            <div style="position:relative; aspect-ratio:1 / 1; min-width:0;"><image-slot id="tplhl-li3" shape="rounded" radius="10" fit="cover" placeholder="Image 3" style="position:absolute;inset:0;width:100%;height:100%"></image-slot></div>
+            <div style="position:relative; aspect-ratio:1 / 1; min-width:0;"><image-slot id="tplhl-li4" shape="rounded" radius="10" fit="cover" placeholder="Image 4" style="position:absolute;inset:0;width:100%;height:100%"></image-slot></div>
+            <div style="position:relative; aspect-ratio:1 / 1; min-width:0;"><image-slot id="tplhl-li5" shape="rounded" radius="10" fit="cover" placeholder="Image 5" style="position:absolute;inset:0;width:100%;height:100%"></image-slot></div>
+            <div style="position:relative; aspect-ratio:1 / 1; min-width:0;"><image-slot id="tplhl-li6" shape="rounded" radius="10" fit="cover" placeholder="Image 6" style="position:absolute;inset:0;width:100%;height:100%"></image-slot></div>
+            <div style="position:relative; aspect-ratio:1 / 1; min-width:0;"><image-slot id="tplhl-li7" shape="rounded" radius="10" fit="cover" placeholder="Image 7" style="position:absolute;inset:0;width:100%;height:100%"></image-slot></div>
+            <div style="position:relative; aspect-ratio:1 / 1; min-width:0;"><image-slot id="tplhl-li8" shape="rounded" radius="10" fit="cover" placeholder="Image 8" style="position:absolute;inset:0;width:100%;height:100%"></image-slot></div>
+            <div style="position:relative; aspect-ratio:1 / 1; min-width:0;"><image-slot id="tplhl-li9" shape="rounded" radius="10" fit="cover" placeholder="Image 9" style="position:absolute;inset:0;width:100%;height:100%"></image-slot></div>
+          </div>
+        </div>
+        <div style="display:flex; flex-direction:column; min-height:0; gap:10px;">
+          <div style="display:flex; align-items:baseline; gap:14px;"><span style="font-family:var(--font-mono); font-size:20px; font-weight:700; letter-spacing:.12em; color:var(--c-yellow);">03</span><span style="font-family:var(--font-display); font-weight:800; font-size:26px; text-transform:uppercase; letter-spacing:.02em;">Premium A+</span></div>
+          <div style="flex:1; min-height:0; border-radius:10px; overflow:hidden; display:flex; flex-direction:column;">
+            <div style="position:relative; width:100%; aspect-ratio:1200 / 492;"><image-slot id="tplhl-ap1" shape="rect" fit="cover" placeholder="A+ module 1" style="position:absolute;inset:0;width:100%;height:100%"></image-slot></div>
+            <div style="position:relative; width:100%; aspect-ratio:1200 / 492;"><image-slot id="tplhl-ap2" shape="rect" fit="cover" placeholder="A+ module 2" style="position:absolute;inset:0;width:100%;height:100%"></image-slot></div>
+            <div style="position:relative; width:100%; aspect-ratio:1200 / 492;"><image-slot id="tplhl-ap3" shape="rect" fit="cover" placeholder="A+ module 3" style="position:absolute;inset:0;width:100%;height:100%"></image-slot></div>
+            <div style="position:relative; width:100%; flex:1; min-height:0;"><image-slot id="tplhl-ap4" shape="rect" fit="cover" align="top" placeholder="A+ module 4" style="position:absolute;inset:0;width:100%;height:100%"></image-slot></div>
+          </div>
+          <div style="font-size:19px; color:var(--c-mute-2);"><strong style="color:var(--c-yellow);">[0]</strong> Premium modules · [00] ASINs live</div>
+        </div>
+        <div style="display:flex; flex-direction:column; min-height:0; gap:10px;">
+          <div style="display:flex; align-items:baseline; gap:14px;"><span style="font-family:var(--font-mono); font-size:20px; font-weight:700; letter-spacing:.12em; color:var(--c-yellow);">04</span><span style="font-family:var(--font-display); font-weight:800; font-size:26px; text-transform:uppercase; letter-spacing:.02em;">Storefront</span></div>
+          <div style="flex:1; min-height:0; position:relative; border-radius:10px; overflow:hidden;"><image-slot id="tplhl-sf" shape="rect" fit="width" align="top" placeholder="Storefront page" style="position:absolute;inset:0;width:100%;height:100%"></image-slot></div>
+          <div style="font-size:19px; color:var(--c-mute-2);">Multi-page destination · <strong style="color:var(--c-yellow);">[00]%</strong> Buy Box</div>
+        </div>
+      </div>
+      <div style="margin:26px calc(-1 * var(--pad-x)) 0; background:var(--c-yellow); color:var(--c-yellow-ink); display:flex; justify-content:space-between; align-items:center; padding:24px var(--pad-x);">
+        <div style="display:flex; align-items:center; gap:24px;"><img class="mf-mark" src="assets/mf-mark.png" alt="market foundry" style="filter:brightness(0);"><span style="font-family:var(--font-display); font-weight:800; font-size:38px; text-transform:uppercase; letter-spacing:-.01em;">Every image earns the click.</span></div>
+        <div style="font-family:var(--font-mono); font-size:23px; font-weight:600; letter-spacing:.06em;">hello@marketfoundry.com &nbsp;·&nbsp; 05 / 05</div>
+      </div>
+    </div>
+  </section>
+
+</deck-stage>
+
+<div id="nav">
+  <button id="prev" aria-label="Previous slide">&#8249;</button>
+  <div class="count"><b id="cur">1</b> / <span id="tot">15</span></div>
+  <button id="next" aria-label="Next slide">&#8250;</button>
+</div>
+<div id="hint">← → to navigate</div>
+
+<script>
+(function(){
+  var stage = document.querySelector('deck-stage');
+  var W = +stage.getAttribute('width')||1920, H = +stage.getAttribute('height')||1080;
+  var slides = Array.prototype.slice.call(stage.querySelectorAll('section.slide'));
+  var idx = 0, n = slides.length;
+  stage.style.width = W+'px'; stage.style.height = H+'px';
+  slides.forEach(function(s,i){ s.style.display = i===0 ? 'block':'none'; });
+  document.getElementById('tot').textContent = n;
+
+  function fit(){
+    var sc = Math.min(window.innerWidth/W, (window.innerHeight)/H);
+    stage.style.transform = 'translate(-50%,-50%) scale('+sc+')';
+  }
+  function show(k){
+    idx = Math.max(0, Math.min(n-1, k));
+    slides.forEach(function(s,i){ s.style.display = i===idx ? 'block':'none'; });
+    document.getElementById('cur').textContent = idx+1;
+    document.getElementById('prog').style.width = ((idx+1)/n*100)+'%';
+  }
+  document.getElementById('prev').addEventListener('click', function(){ show(idx-1); });
+  document.getElementById('next').addEventListener('click', function(){ show(idx+1); });
+  document.addEventListener('keydown', function(e){
+    if(['ArrowRight','ArrowDown','PageDown',' '].indexOf(e.key)>-1){ show(idx+1); e.preventDefault(); }
+    else if(['ArrowLeft','ArrowUp','PageUp'].indexOf(e.key)>-1){ show(idx-1); e.preventDefault(); }
+    else if(e.key==='Home'){ show(0); } else if(e.key==='End'){ show(n-1); }
+  });
+  // click halves (ignore clicks on nav)
+  document.addEventListener('click', function(e){
+    if(e.target.closest('#nav') || e.target.closest('image-slot')) return;
+    var x = e.clientX / window.innerWidth;
+    if(x > 0.62) show(idx+1); else if(x < 0.38) show(idx-1);
+  });
+  // wheel nav, debounced
+  var wlock=false;
+  window.addEventListener('wheel', function(e){
+    if(wlock) return;
+    if(Math.abs(e.deltaY) < 24 && Math.abs(e.deltaX) < 24) return;
+    wlock=true; setTimeout(function(){wlock=false;}, 520);
+    if((e.deltaY||e.deltaX) > 0) show(idx+1); else show(idx-1);
+  }, {passive:true});
+  // swipe
+  var tx=0,ty=0;
+  window.addEventListener('touchstart', function(e){ tx=e.touches[0].clientX; ty=e.touches[0].clientY; }, {passive:true});
+  window.addEventListener('touchend', function(e){
+    var dx=e.changedTouches[0].clientX-tx, dy=e.changedTouches[0].clientY-ty;
+    if(Math.abs(dx)>50 && Math.abs(dx)>Math.abs(dy)){ show(dx<0 ? idx+1 : idx-1); }
+  }, {passive:true});
+
+  window.addEventListener('resize', fit);
+  fit(); show(0);
+  setTimeout(function(){ var h=document.getElementById('hint'); if(h) h.style.transition='opacity 1s'; if(h) h.style.opacity='0'; }, 4000);
+})();
+</script>
+
+<script src="assets/image-slot.js"></script>
+</body></html>

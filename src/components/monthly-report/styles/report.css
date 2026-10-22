@@ -1,0 +1,1333 @@
+/* ============================================
+   MONTHLY REPORT — 1o8 paper
+   Outfit + --mf-* tokens. Puppeteer paginates via @page.
+   ============================================ */
+
+:root {
+  --orange: var(--mf-orange);
+  --grey: var(--mf-charcoal);
+  --grey-2: var(--mf-charcoal-900);
+  --grey-3: var(--mf-charcoal-700);
+  --black: #000000;
+  --white: var(--mf-white);
+
+  --bg: var(--mf-white);
+  --bg-soft: var(--mf-ghost);
+  --bg-card: var(--mf-white);
+  --rule: var(--mf-line);
+  --rule-2: color-mix(in oklab, var(--mf-charcoal) 10%, transparent);
+
+  --ink: var(--mf-ink);
+  --ink-soft: color-mix(in oklab, var(--mf-ink) 72%, var(--mf-muted));
+  --muted: var(--mf-muted);
+
+  --positive: var(--mf-positive);
+  --neutral: var(--mf-warning);
+  --negative: var(--mf-negative);
+
+  /* Report.tsx mirrors meta.accent into both --accent and --orange so that
+     primitives that bind either name track per-client overrides. Do not
+     re-declare --orange on .report-doc — that would shadow the override. */
+  --accent: var(--orange);
+}
+
+/*
+  Dark mode sits on --background (#2C2B35). Cards/charts stay company white
+  (--mf-white) with paper ink. Only canvas type (headings, leads, labels)
+  flips to --foreground so it does not sit off-black on the green page.
+  print-mode and @media print stay on light paper.
+*/
+html.dark .report-doc:not(.print-mode),
+.report-doc:not(.print-mode):is(.dark *) {
+  --bg: transparent;
+  --bg-card: var(--mf-white);
+  --bg-soft: var(--mf-ghost);
+  --rule: var(--mf-line);
+  --rule-2: color-mix(in oklab, var(--mf-charcoal) 10%, transparent);
+  --positive: var(--brand-green);
+  --negative: var(--brand-red);
+  --neutral: var(--brand-yellow);
+}
+
+/* Canvas type on #2C2B35 — not inside white cards/charts. */
+@media not print {
+  html.dark .report-doc:not(.print-mode) h1:not(.cover-title),
+  html.dark .report-doc:not(.print-mode) h2,
+  html.dark .report-doc:not(.print-mode) h3,
+  html.dark .report-doc:not(.print-mode) p.lead,
+  .report-doc:not(.print-mode):is(.dark *) h1:not(.cover-title),
+  .report-doc:not(.print-mode):is(.dark *) h2,
+  .report-doc:not(.print-mode):is(.dark *) h3,
+  .report-doc:not(.print-mode):is(.dark *) p.lead {
+    color: var(--foreground);
+  }
+  html.dark .report-doc:not(.print-mode) .snapshot-label,
+  html.dark .report-doc:not(.print-mode) ul.regular li,
+  html.dark .report-doc:not(.print-mode) section#appendix .container > div p,
+  .report-doc:not(.print-mode):is(.dark *) .snapshot-label,
+  .report-doc:not(.print-mode):is(.dark *) ul.regular li,
+  .report-doc:not(.print-mode):is(.dark *) section#appendix .container > div p {
+    color: var(--muted-foreground);
+  }
+}
+
+/* Paper surfaces keep company white + off-black, even if a parent remaps ink. */
+html.dark .report-doc:not(.print-mode) :is(.stat-cell, .hero-cell, .chart-card, .insight, .callout, .pullquote, .section-note, .rung, .sku-card),
+.report-doc:not(.print-mode):is(.dark *) :is(.stat-cell, .hero-cell, .chart-card, .insight, .callout, .pullquote, .section-note, .rung, .sku-card) {
+  --ink: var(--mf-ink);
+  --ink-soft: color-mix(in oklab, var(--mf-ink) 72%, var(--mf-muted));
+  --muted: var(--mf-muted);
+  --bg-card: var(--mf-white);
+  --rule: var(--mf-line);
+  background: var(--mf-white);
+  color: var(--mf-ink);
+}
+html.dark .report-doc:not(.print-mode) .dt td,
+.report-doc:not(.print-mode):is(.dark *) .dt td {
+  background: var(--mf-white);
+  color: var(--mf-ink);
+}
+
+.report-doc *, .report-doc *::before, .report-doc *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+.report-doc {
+  font-family: var(--font-outfit), system-ui, -apple-system, sans-serif;
+  background: transparent;
+  color: var(--ink);
+  line-height: 1.6;
+  font-size: 13px;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.container { max-width: 1140px; margin: 0 auto; padding: 0 48px; }
+.report-doc:not(.print-mode) .container {
+  max-width: none;
+  padding: 0;
+}
+
+/* === TOP BAR === */
+.top-bar {
+  background: var(--black);
+  color: var(--white);
+  padding: 14px 0;
+  border-bottom: 3px solid var(--orange);
+  position: sticky;
+  top: 0;
+  /* Below hub/portal header (z-50) so chrome stays on top while scrolling. */
+  z-index: 40;
+}
+.top-bar-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  color: rgba(255,255,255,0.85);
+}
+.logo-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+}
+.logo-wrap img { height: 22px; width: auto; flex-shrink: 0; display: block; }
+.logo-tag {
+  color: rgba(255,255,255,0.6);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  border-left: 1px solid rgba(255,255,255,0.2);
+  padding-left: 12px;
+  margin-left: 4px;
+}
+.confidential {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  color: var(--negative);
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border: 1px solid var(--negative);
+  border-radius: 2px;
+}
+
+/* === TOC NAV === */
+.toc {
+  background: var(--grey);
+  color: var(--white);
+  border-bottom: 1px solid var(--orange);
+  position: sticky;
+  top: 53px;
+  /* Below hub/portal header (z-50). Document TOC tucks under topnav on scroll. */
+  z-index: 39;
+}
+.toc-inner {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 12px 0;
+  overflow-x: auto;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+.toc a {
+  color: rgba(255,255,255,0.75);
+  text-decoration: none;
+  padding: 6px 14px;
+  border-right: 1px solid rgba(255,255,255,0.12);
+  transition: color 0.15s;
+  text-transform: uppercase;
+}
+.toc a:first-child { border-left: 1px solid rgba(255,255,255,0.12); }
+.toc a:hover { color: var(--orange); }
+.toc a.brand {
+  color: var(--orange);
+  font-weight: 700;
+  border-right: 1px solid var(--orange);
+  margin-right: 4px;
+}
+
+/* Hub chrome variant — sits in TopNav row 4, matching REPORT_TABS. */
+.toc.toc--chrome {
+  position: static;
+  top: auto;
+  z-index: auto;
+  background: transparent;
+  color: inherit;
+  border-bottom: none;
+}
+.toc.toc--chrome .container {
+  max-width: none;
+  padding: 0 1rem;
+}
+@media (min-width: 1024px) {
+  .toc.toc--chrome .container {
+    padding: 0 1.5rem;
+  }
+}
+.toc.toc--chrome .toc-inner {
+  justify-content: center;
+  padding: 0;
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  font-family: var(--font-outfit), system-ui, sans-serif;
+}
+.toc.toc--chrome a {
+  color: var(--muted-foreground);
+  border: none;
+  text-transform: none;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 16px;
+  letter-spacing: 0;
+  font-weight: 500;
+}
+.toc.toc--chrome a:first-child { border-left: none; }
+.toc.toc--chrome a:hover { color: var(--sidebar-foreground); }
+.toc.toc--chrome a.brand {
+  color: var(--mf-orange);
+  font-weight: 500;
+  border-right: none;
+  border-bottom: 2px solid var(--mf-orange);
+  margin-right: 0;
+}
+
+/* === COVER === */
+.cover {
+  background: var(--grey);
+  color: var(--white);
+  padding: 56px 40px 48px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+}
+.cover-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 100%;
+  gap: 28px;
+}
+.cover-client-logo {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+.cover-client-logo img {
+  height: 72px;
+  width: auto;
+  max-width: min(420px, 70%);
+  object-fit: contain;
+  display: block;
+}
+.cover-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--orange);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  margin-bottom: 32px;
+}
+.cover-title {
+  font-weight: 700;
+  font-size: clamp(40px, 5.5vw, 64px);
+  line-height: 1.0;
+  letter-spacing: -0.04em;
+  color: var(--white);
+  margin-bottom: 22px;
+  max-width: 22ch;
+}
+.report-doc h1.cover-title { color: var(--white); }
+.cover-title em { font-style: normal; color: var(--orange); }
+.cover-deck {
+  font-size: 13px;
+  color: rgba(255,255,255,0.85);
+  max-width: 64ch;
+  line-height: 1.6;
+  margin-top: 24px;
+}
+.cover-deck strong { color: var(--orange); font-weight: 700; }
+.cover-meta {
+  margin-top: 50px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255,255,255,0.15);
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 28px;
+}
+.cover-meta div { padding-right: 12px; }
+.cover-meta .label {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 6px;
+}
+.cover-meta .value {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--white);
+}
+.cover-logo {
+  position: absolute;
+  top: 36px;
+  right: 40px;
+  display: flex;
+  align-items: center;
+  z-index: 1;
+}
+.cover-logo img { height: 96px; width: auto; display: block; }
+.report-doc footer .cover-logo img { height: 56px; }
+.cover-period {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+  margin-top: 14px;
+  margin-bottom: 8px;
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+}
+.cover-period .month {
+  font-weight: 700;
+  font-size: clamp(48px, 8vw, 72px);
+  color: var(--orange);
+}
+.cover-period .year {
+  display: block;
+  font-weight: 700;
+  font-size: clamp(22px, 3.4vw, 34px);
+  color: rgba(255,255,255,0.55);
+  margin-top: 4px;
+}
+
+/* === SECTIONS === */
+.report-doc section {
+  padding: 48px 0;
+  border-bottom: 1px solid var(--rule);
+  background: transparent;
+}
+.report-doc section.dark {
+  background: var(--grey);
+  color: var(--white);
+  padding: 48px 28px;
+  border-radius: 16px;
+  border-bottom: none;
+  margin: 16px 0;
+}
+.report-doc section.dark h1,
+.report-doc section.dark h2,
+.report-doc section.dark h3,
+.report-doc section.dark p strong { color: var(--white); }
+.report-doc section.dark p { color: rgba(255,255,255,0.85); }
+.report-doc section.dark .lead { color: var(--white); }
+.report-doc section.dark .section-tag { color: var(--orange); }
+.report-doc section.soft { background: transparent; }
+
+.section-tag {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: var(--orange);
+  text-transform: uppercase;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  margin-bottom: 14px;
+  display: block;
+}
+
+.section-note-wrap {
+  padding: 0 0 36px;
+}
+.section-note {
+  border-left: 3px solid var(--grey);
+  background: var(--bg-soft);
+  padding: 16px 20px;
+  margin-top: 8px;
+}
+.section-note-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.section-note-body {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ink);
+  margin: 0 0 8px;
+}
+.section-note-body:last-of-type { margin-bottom: 0; }
+.section-note-by {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 8px;
+}
+.section-note-input {
+  display: block;
+  width: 100%;
+  min-height: 72px;
+  resize: vertical;
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ink);
+  background: var(--bg-card);
+  border: 1px solid var(--rule);
+  padding: 10px 12px;
+}
+.section-note-input:focus {
+  outline: 2px solid var(--grey);
+  outline-offset: 1px;
+}
+.section-note-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 10px;
+}
+.section-note-save {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: var(--grey);
+  color: var(--white);
+  border: 0;
+  padding: 8px 14px;
+  cursor: pointer;
+}
+.section-note-save:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.report-doc h1 {
+  font-weight: 700;
+  font-size: clamp(28px, 3.2vw, 36px);
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+  color: var(--ink);
+  margin-bottom: 18px;
+}
+.report-doc h1 em { font-style: normal; color: var(--orange); }
+
+.report-doc h2 {
+  font-weight: 700;
+  font-size: clamp(20px, 2.8vw, 26px);
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  color: var(--ink);
+  margin-bottom: 18px;
+  max-width: 26ch;
+}
+.report-doc h2 em { font-style: normal; color: var(--orange); }
+
+.report-doc h3 {
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1.3;
+  color: var(--ink);
+  margin: 28px 0 10px;
+  letter-spacing: -0.005em;
+}
+.report-doc h3 em { font-style: normal; color: var(--orange); }
+
+.report-doc h4 {
+  font-weight: 700;
+  font-size: 11px;
+  line-height: 1.3;
+  color: var(--orange);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  margin: 22px 0 8px;
+}
+
+.report-doc p {
+  margin-bottom: 12px;
+  max-width: 76ch;
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--ink-soft);
+}
+.report-doc p.lead {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.45;
+  color: var(--ink);
+  max-width: 60ch;
+  margin-bottom: 24px;
+  letter-spacing: -0.005em;
+}
+.report-doc p.lead em { font-style: normal; color: var(--orange); font-weight: 600; }
+.report-doc p.muted { color: var(--muted); font-size: 12px; }
+.report-doc strong { color: var(--ink); font-weight: 600; }
+.report-doc section.dark strong { color: var(--white); }
+
+ul.regular { list-style: none; margin: 14px 0; max-width: 76ch; }
+ul.regular li {
+  padding: 8px 0 8px 22px;
+  position: relative;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+ul.regular li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: var(--orange);
+  font-weight: 700;
+}
+ul.regular li strong { color: var(--ink); }
+
+/* === STATS BAR (4-up KPI grid) === */
+.stats-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin: 28px 0 16px;
+  border: none;
+  background: transparent;
+}
+@media (max-width: 800px) { .stats-bar { grid-template-columns: repeat(2, 1fr); } }
+.stats-bar--5 { grid-template-columns: repeat(5, 1fr); }
+@media (max-width: 800px) { .stats-bar--5 { grid-template-columns: repeat(3, 1fr); } }
+.stats-bar--3 { grid-template-columns: repeat(3, 1fr); }
+@media (max-width: 800px) { .stats-bar--3 { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 600px) { .stats-bar--3 { grid-template-columns: 1fr; } }
+.snapshot-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 10px;
+  margin-top: 28px;
+}
+.stat-cell {
+  background: var(--bg-card);
+  padding: 20px;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  position: relative;
+}
+.stat-cell:last-child { border-right: 1px solid var(--rule); }
+.stat-cell::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0;
+  width: 28px;
+  height: 3px;
+  background: var(--orange);
+  border-radius: 12px 0 0 0;
+}
+@media (max-width: 800px) {
+  .stat-cell:nth-child(2) { border-right: 1px solid var(--rule); }
+  .stat-cell:nth-child(-n+2) { border-bottom: 1px solid var(--rule); }
+}
+.stat-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+.stat-value {
+  font-weight: 700;
+  font-size: 32px;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.stat-value.crit { color: var(--negative); }
+.stat-value.ok { color: var(--positive); }
+.stat-value.warn { color: var(--neutral); }
+.stat-value.brand { color: var(--orange); }
+.stat-meta {
+  font-size: 11px;
+  margin-top: 8px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+/* === HERO STAT (2-up large) === */
+.hero-stat {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 32px 0 20px;
+  border: none;
+  background: transparent;
+}
+@media (max-width: 700px) { .hero-stat { grid-template-columns: 1fr; } }
+.hero-cell {
+  background: var(--bg-card);
+  padding: 24px 22px;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  position: relative;
+}
+.hero-cell:last-child { border-right: 1px solid var(--rule); }
+.hero-cell::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0;
+  width: 32px;
+  height: 3px;
+  background: var(--orange);
+  border-radius: 12px 0 0 0;
+}
+@media (max-width: 700px) {
+  .hero-cell { border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+  .hero-cell:last-child { border-bottom: 1px solid var(--rule); }
+}
+.hero-cell .label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+.hero-cell .value {
+  font-weight: 700;
+  font-size: 42px;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.hero-cell .value.positive { color: var(--positive); }
+.hero-cell .value.crit { color: var(--negative); }
+.hero-cell .value.brand { color: var(--orange); }
+.hero-cell .meta {
+  margin-top: 12px;
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  line-height: 1.5;
+}
+
+/* === CALLOUT === */
+.callout {
+  margin: 24px 0;
+  padding: 22px 26px;
+  background: var(--bg-soft);
+  border-left: 4px solid var(--orange);
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ink);
+  max-width: 80ch;
+}
+.callout.crit { border-left-color: var(--negative); background: var(--mf-negative-bg); }
+.callout.ok { border-left-color: var(--positive); background: var(--mf-positive-bg); }
+.callout.sky { border-left-color: var(--orange); background: var(--mf-orange-100); }
+.callout-tag {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--orange);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  margin-bottom: 8px;
+}
+.callout.crit .callout-tag { color: var(--negative); }
+.callout.ok .callout-tag { color: var(--positive); }
+.callout strong { color: var(--ink); }
+.callout em { font-style: normal; color: var(--orange); font-weight: 600; }
+
+/* === PULLQUOTE === */
+.pullquote {
+  margin: 36px 0;
+  padding: 30px 36px 30px 48px;
+  background: var(--bg-soft);
+  border-left: 4px solid var(--orange);
+  border-radius: 12px;
+  font-size: 19px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--ink);
+  letter-spacing: -0.005em;
+  position: relative;
+  max-width: 50ch;
+}
+.pullquote::before {
+  content: "\201C";
+  position: absolute;
+  left: 16px;
+  top: 26px;
+  font-size: 48px;
+  line-height: 0.5;
+  color: var(--orange);
+  font-weight: 800;
+  font-family: var(--font-outfit), system-ui, sans-serif;
+}
+.pullquote em { font-style: normal; color: var(--orange); font-weight: 700; }
+
+/* === DATA TABLES === */
+.dt {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  margin: 18px 0;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.dt th {
+  background: var(--grey);
+  color: var(--white);
+  text-align: left;
+  padding: 10px 12px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--grey-3);
+}
+.dt th.r, .dt td.r { text-align: right; }
+.dt td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--rule);
+  background: var(--bg-card);
+  font-size: 12px;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+.dt td.label, .dt tbody tr td:first-child {
+  font-weight: 500;
+  color: var(--ink);
+}
+.dt tbody tr:hover td { background: var(--bg-soft); }
+.dt .crit, .dt .negative { color: var(--negative); font-weight: 600; }
+.dt .ok, .dt .positive { color: var(--positive); font-weight: 600; }
+.dt .warn, .dt .neutral { color: var(--neutral); font-weight: 600; }
+.dt .brand { color: var(--orange); font-weight: 600; }
+.dt tfoot td {
+  background: var(--grey-2);
+  color: var(--white);
+  border-top: 2px solid var(--orange);
+  border-bottom: none;
+  font-weight: 700;
+  font-size: 12.5px;
+}
+.dt code {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 11.5px;
+  color: var(--ink);
+}
+
+/* Grade pill (used inside Scorecard table cells) */
+.grade-pill {
+  display: inline-block;
+  padding: 3px 10px;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  border-radius: 2px;
+}
+.grade-pill.red    { background: var(--mf-negative-bg); color: var(--negative); }
+.grade-pill.amber  { background: var(--mf-warning-bg); color: var(--neutral); }
+.grade-pill.green  { background: var(--mf-positive-bg); color: var(--positive); }
+
+/* === LADDER (kept as primitive library; no V1.2 consumer) === */
+.ladder {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin: 28px 0;
+}
+@media (max-width: 700px) { .ladder { grid-template-columns: repeat(2, 1fr); gap: 10px; } }
+.rung {
+  border: 1px solid var(--rule);
+  background: var(--bg-card);
+  padding: 18px 14px;
+  text-align: center;
+  border-radius: 12px;
+}
+.rung.live { border-top: 3px solid var(--positive); }
+.rung.next {
+  border-top: 3px solid var(--orange);
+  border-left: 1px dashed var(--orange);
+  border-right: 1px dashed var(--orange);
+  border-bottom: 1px dashed var(--orange);
+}
+.rung .pack {
+  font-weight: 800;
+  font-size: 30px;
+  line-height: 1;
+  color: var(--ink);
+  letter-spacing: -0.025em;
+}
+.rung.live .pack { color: var(--positive); }
+.rung.next .pack { color: var(--orange); }
+
+/* === SKU CARDS (kept as primitive library; no V1.2 consumer) === */
+.sku-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin: 24px 0;
+}
+@media (max-width: 700px) { .sku-cards { grid-template-columns: 1fr; } }
+.sku-card { border: 1px solid var(--rule); background: var(--bg-card); border-radius: 12px; }
+.sku-card.loss { border-top: 3px solid var(--negative); }
+.sku-card.profit { border-top: 3px solid var(--positive); }
+.econ-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.econ-table td { padding: 9px 18px; border-bottom: 1px solid var(--rule); }
+
+/* === INSIGHTS (numbered cards — used by Findings + Directions) === */
+.insights {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin: 28px 0;
+}
+@media (max-width: 800px) { .insights { grid-template-columns: 1fr; } }
+.insight {
+  border: 1px solid var(--rule);
+  background: var(--bg-card);
+  padding: 24px 22px;
+  border-top: 3px solid var(--orange);
+  border-radius: 12px;
+}
+.insight-num {
+  font-weight: 800;
+  font-size: 26px;
+  line-height: 1;
+  color: var(--orange);
+  margin-bottom: 12px;
+  letter-spacing: -0.02em;
+}
+.insight h4 {
+  font-size: 15px;
+  color: var(--ink);
+  line-height: 1.25;
+  text-transform: none;
+  text-decoration: none;
+  letter-spacing: -0.005em;
+  margin: 0 0 8px;
+  font-weight: 700;
+}
+.insight p {
+  font-size: 12.5px;
+  margin: 0 0 8px;
+  color: var(--ink-soft);
+  line-height: 1.55;
+  max-width: none;
+}
+.insight p.muted {
+  font-size: 10px;
+  color: var(--muted);
+}
+
+/* === CHART CARD === */
+.chart-card {
+  background: var(--bg-card);
+  border: 1px solid var(--rule);
+  padding: 24px 24px 20px;
+  margin: 28px 0;
+  border-top: 3px solid var(--orange);
+  border-radius: 12px;
+}
+.chart-card-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 18px;
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 12px;
+}
+.chart-card-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.chart-card-axis {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Inline legend below a chart (e.g. CampaignManagerSection multi-line chart). */
+.chart-legend {
+  display: flex;
+  gap: 22px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid var(--rule);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--ink-soft);
+}
+.chart-legend .legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.chart-legend .swatch {
+  display: inline-block;
+  width: 14px;
+  height: 2px;
+  border-radius: 1px;
+}
+
+/* Side-by-side chart pair (e.g. KPI compareSales: Sales $ + Units #). */
+.chart-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin: 28px 0;
+}
+.chart-pair .chart-card { margin: 0; }
+@media (max-width: 800px) {
+  .chart-pair { grid-template-columns: 1fr; gap: 20px; }
+}
+
+/* === PHASES (kept as primitive library; no V1.2 consumer) === */
+.phases {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  margin: 28px 0;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+@media (max-width: 800px) { .phases { grid-template-columns: 1fr; } }
+.phase {
+  padding: 28px 24px;
+  border-right: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.02);
+  position: relative;
+}
+.phase:last-child { border-right: none; }
+.phase::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0;
+  width: 36px;
+  height: 3px;
+  background: var(--orange);
+}
+.phase-num {
+  font-weight: 800;
+  font-size: 64px;
+  line-height: 0.85;
+  color: var(--orange);
+  letter-spacing: -0.04em;
+}
+
+/* === FOOTER === */
+.report-doc footer {
+  padding: 32px 28px;
+  background: var(--grey);
+  color: var(--white);
+  border-top: 3px solid var(--orange);
+  border-radius: 16px;
+  margin-top: 16px;
+  position: relative;
+}
+.report-doc footer .container {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 40px;
+  align-items: end;
+  padding-right: 108px;
+}
+.report-doc footer .sig {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.report-doc footer .sig em { font-style: normal; color: var(--orange); }
+.report-doc footer .meta {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.6);
+  text-align: right;
+  line-height: 1.7;
+}
+
+/* === PRINT BUTTON (now inline inside top-bar) === */
+.print-btn {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 6px 12px;
+  background: var(--mf-white);
+  color: var(--mf-ink);
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+}
+.print-btn:hover { background: var(--orange); color: #111; }
+
+@media (max-width: 700px) {
+  .container { padding: 0 22px; }
+  .report-doc:not(.print-mode) .container { padding: 0; }
+  .report-doc section { padding: 36px 0; }
+  .cover { padding: 40px 20px 48px; }
+  .cover-meta { grid-template-columns: repeat(2, 1fr); gap: 18px; }
+  .pullquote { padding: 24px 22px 24px 38px; font-size: 16px; }
+  .pullquote::before { left: 12px; font-size: 38px; }
+}
+
+/* === PRINT MODE (selector page suppresses TopBar via showTopBar=false; the
+       print route suppresses everything via printMode=true which adds
+       body.print-mode and the @media print rules below take over). === */
+.report-doc.print-mode { background: var(--mf-white); page: monthly-report; }
+.report-doc.print-mode .top-bar,
+.report-doc.print-mode .toc,
+.report-doc.print-mode .print-btn,
+.report-doc.print-mode .report-chrome { display: none !important; }
+.report-doc.print-mode footer { display: none !important; }
+.print-running-logo { display: none; }
+.print-ready-sentinel {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+.report-doc.print-mode section { padding: 0 !important; }
+.report-doc.print-mode .cover,
+.report-doc.print-mode section.dark {
+  padding-left: 0;
+  padding-right: 0;
+  border-radius: 0;
+}
+.report-doc.print-mode .cover {
+  background: var(--grey);
+  overflow: visible;
+}
+
+@page {
+  size: A4 landscape;
+  margin: 16mm 14mm 16mm 14mm;
+  @bottom-center {
+    content: counter(page);
+    font-family: Outfit, system-ui, sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    color: #2C2B35;
+  }
+}
+/* Named page so globals.css's unscoped `@page { size: landscape }` cannot
+   steal the box (it omits A4). One geometry for every sheet. */
+@page monthly-report {
+  size: A4 landscape;
+  margin: 16mm 14mm 16mm 14mm;
+  @bottom-center {
+    content: counter(page);
+    font-family: Outfit, system-ui, sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    color: #2C2B35;
+  }
+}
+
+@media print {
+  html, body {
+    background: var(--mf-white);
+    height: auto !important;
+    margin: 0;
+    overflow: visible;
+  }
+  /* Browser print from dark mode must not keep light ink on white paper. */
+  .report-doc {
+    --ink: var(--mf-ink);
+    --ink-soft: color-mix(in oklab, var(--mf-ink) 72%, var(--mf-muted));
+    --muted: var(--mf-muted);
+    --bg: var(--mf-white);
+    --bg-soft: var(--mf-ghost);
+    --bg-card: var(--mf-white);
+    --rule: var(--mf-line);
+    --rule-2: color-mix(in oklab, var(--mf-charcoal) 10%, transparent);
+    --grey: var(--mf-charcoal);
+    --positive: var(--mf-positive);
+    --negative: var(--mf-negative);
+    --neutral: var(--mf-warning);
+    --mf-positive-bg: #e9f7ef;
+    --mf-negative-bg: #fff0f0;
+    --mf-warning-bg: #fff7df;
+    --mf-orange-100: #FEF6DC;
+  }
+  nextjs-portal { display: none !important; }
+  .top-bar, .toc, .print-btn, .report-chrome { display: none !important; }
+  .section-note-input, .section-note-actions, .section-note-save { display: none !important; }
+
+  .report-doc.print-mode { page: monthly-report; background: var(--mf-white); overflow: visible; }
+  .report-doc.print-mode footer {
+    display: none !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+  }
+  [data-report-ready] { display: none !important; height: 0 !important; }
+
+  /* Repeats on every printed sheet — bottom-right, next to centered page numbers. */
+  .print-running-logo {
+    position: fixed;
+    bottom: 4mm;
+    right: 12mm;
+    height: 28px;
+    width: auto;
+    z-index: 1000;
+    display: block;
+  }
+
+  /* Cover mark stays large in the cover's top-right. Running logo is bottom-right. */
+  .report-doc .cover-logo {
+    display: flex !important;
+    top: 8px;
+    right: 8px;
+    z-index: 1001;
+  }
+  .report-doc .cover-logo img { height: 132px; }
+
+  /* Landscape is wide enough for the dashboard grids; pin them so a narrow
+     print viewport cannot stack columns and overflow one page. */
+  .stats-bar { grid-template-columns: repeat(4, 1fr) !important; }
+  .stats-bar--5 { grid-template-columns: repeat(5, 1fr) !important; }
+  .stats-bar--3 { grid-template-columns: repeat(3, 1fr) !important; }
+  .hero-stat, .chart-pair { grid-template-columns: 1fr 1fr !important; }
+  .insights { grid-template-columns: repeat(3, 1fr) !important; }
+  .cover-meta { grid-template-columns: repeat(5, 1fr) !important; }
+
+  /* A4 landscape content box = 210mm − 16mm − 16mm = 178mm. Every dashboard
+     section is contracted to that sheet so Chrome cannot orphan a heading. */
+  .report-doc .cover {
+    break-after: page;
+    break-inside: avoid;
+    height: 178mm;
+    max-height: 178mm;
+    min-height: 0;
+    box-sizing: border-box;
+    padding: 16px 16px 20px !important;
+    margin: 0;
+    border-radius: 0;
+    overflow: hidden;
+    background: var(--grey);
+    display: flex;
+    flex-direction: column;
+  }
+  .report-doc .cover .cover-body {
+    flex: 1;
+    justify-content: space-between;
+    gap: 20px;
+  }
+  .report-doc .cover .cover-eyebrow { margin-bottom: 12px; }
+  .report-doc .cover .cover-meta { margin-top: 0; }
+  .report-doc .cover .cover-period { margin-top: 0; margin-bottom: 0; }
+  .report-doc .cover-client-logo img { height: 72px; max-width: min(420px, 58%); }
+  .cover-period .month { font-size: 64px; }
+  .cover-period .year { font-size: 30px; }
+  .cover-title { font-size: 40px; margin-bottom: 8px; padding-right: 160px; }
+
+  .report-doc section + section { break-before: page; }
+  .report-doc section:last-of-type {
+    break-after: avoid !important;
+    page-break-after: avoid !important;
+  }
+  .report-doc.print-mode section {
+    padding: 0 !important;
+    margin: 0;
+    overflow: visible;
+    display: block;
+  }
+
+  /* One-sheet dashboards. Inner cards must NOT use break-inside:avoid — that
+     is what kicked charts onto a second page after the KPI strip. */
+  .report-doc section#kpis,
+  .report-doc section#campaigns,
+  .report-doc section#mom,
+  .report-doc section#highlights,
+  .report-doc section#goals,
+  .report-doc section#risks,
+  .report-doc section#appendix {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    break-after: auto;
+    height: 178mm;
+    max-height: 178mm;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+  }
+  .report-doc section#kpis .container,
+  .report-doc section#campaigns .container,
+  .report-doc section#mom .container,
+  .report-doc section#highlights .container,
+  .report-doc section#goals .container,
+  .report-doc section#risks .container,
+  .report-doc section#appendix .container {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .stats-bar,
+  .hero-stat,
+  .chart-pair,
+  .chart-card,
+  .chart-card svg {
+    break-inside: auto;
+    page-break-inside: auto;
+  }
+
+  .report-doc section#kpis .chart-pair,
+  .report-doc section#campaigns .chart-card,
+  .report-doc section#mom .chart-card {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .report-doc section#kpis .chart-card {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  /* Pin SVG height in mm. height:auto + full page width was ~90mm per chart
+     and shoved Sales/Campaigns/Trends onto a second sheet. */
+  .report-doc section#kpis .chart-card svg {
+    width: 100%;
+    height: 42mm !important;
+    max-height: 42mm !important;
+  }
+  .report-doc section#campaigns .chart-card svg {
+    width: 100%;
+    height: 78mm !important;
+    max-height: 78mm !important;
+    min-height: 0;
+  }
+  .report-doc section#mom .chart-card svg {
+    width: 100%;
+    height: 64mm !important;
+    max-height: 64mm !important;
+    min-height: 0;
+  }
+  .report-doc section#mom:has(.chart-card + .chart-card) .chart-card svg {
+    height: 36mm !important;
+    max-height: 36mm !important;
+  }
+  .report-doc section#mom table.dt { flex: 0 0 auto; }
+  .report-doc section#kpis .compare-table { flex: 0 0 auto; margin: 4px 0; }
+  .report-doc section#kpis .hero-stat { flex: 0 0 auto; margin: 4px 0; }
+
+  /* Product catalogs run long — table continues, header repeats, rows stay intact. */
+  .report-doc section#products {
+    break-inside: auto;
+    page-break-inside: auto;
+    height: auto;
+    max-height: none;
+  }
+  .report-doc section#products .container,
+  .report-doc section#products table.dt {
+    break-inside: auto;
+    page-break-inside: auto;
+    overflow: visible;
+    border-radius: 0;
+  }
+  .report-doc section#products tr { break-inside: avoid; page-break-inside: avoid; }
+  .report-doc section#products tfoot { display: table-row-group; }
+  .report-doc section#mom tfoot { display: none; }
+  table.dt td.product-title {
+    max-width: 92mm;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  table.dt { overflow: visible; }
+  table.dt th { white-space: nowrap; }
+  .report-doc h1 { font-size: 18px; margin-bottom: 4px; page-break-after: avoid; break-after: avoid; }
+  .report-doc h2 { font-size: 14px; margin-bottom: 4px; }
+  .report-doc p.lead { font-size: 10px; margin-bottom: 6px; }
+  .snapshot-label { margin-top: 4px; margin-bottom: 4px; }
+  .stats-bar, .hero-stat, .chart-card, .chart-pair { margin: 4px 0; }
+  .stat-cell, .hero-cell { padding: 8px 8px; }
+  .stat-value { font-size: 18px; }
+  .hero-cell .value { font-size: 18px; }
+  .hero-cell { padding: 8px; }
+  .chart-card { padding: 6px 10px 4px; }
+  .chart-card-meta { margin-bottom: 6px; padding-bottom: 6px; }
+  .chart-legend { margin-top: 6px; padding-top: 6px; }
+  .container { padding: 0 4px; max-width: none; }
+  table.dt { font-size: 9px; margin: 4px 0; }
+  table.dt th, table.dt td { padding: 3px 5px; font-size: 9px; }
+  table.dt thead { display: table-header-group; }
+  .report-doc section#products thead { display: table-header-group; }
+}
+

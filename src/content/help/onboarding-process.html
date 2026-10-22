@@ -1,0 +1,497 @@
+  <!-- Overview -->
+  <h2 class="section-title" style="margin-top: 0;">Overview</h2>
+  <div class="overview-grid">
+    <div class="ov-card">
+      <div class="num">11</div>
+      <div class="label">Major Steps</div>
+    </div>
+    <div class="ov-card">
+      <div class="num">29</div>
+      <div class="label">Total Sub-tasks</div>
+    </div>
+    <div class="ov-card">
+      <div class="num">2</div>
+      <div class="label">Client Types — AIA (existing Amazon seller) · NTA (new to Amazon)</div>
+    </div>
+  </div>
+
+  <!-- ══ STEPS ══ -->
+  <h2 class="section-title">Onboarding Steps</h2>
+  <div class="steps-list">
+
+    <!-- Step 1 -->
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">Create Client</div>
+          <div class="step-desc">Create the client record in the app. This is the first entry point — all subsequent steps depend on the client existing in 1o8 Hub.</div>
+        </div>
+      </div>
+      <div class="substeps">
+        <div class="substep">
+          <div class="substep-dot"></div>
+          <div>
+            <div class="substep-label">Client ID Code</div>
+            <div class="substep-desc">
+              Formed as <strong>{FIRST 3 LETTERS OF CLIENT NAME}_{MARKETPLACE}_{COUNTRY}</strong>.<br>
+              Example: <em>Toad Elemental</em> on Seller Central US → <code style="background:#f1f1f1;padding:1px 6px;border-radius:4px;font-size:12px;">TOA_SC_US</code>
+            </div>
+          </div>
+        </div>
+        <div class="substep">
+          <div class="substep-dot"></div>
+          <div>
+            <div class="substep-label">Status</div>
+            <div class="substep-desc" style="display:flex;flex-direction:column;gap:8px;margin-top:6px;">
+              <div style="display:flex;align-items:flex-start;gap:10px;">
+                <span class="type-pill s-active">Active</span>
+                <span>Set when creating a new client that is onboarding. Default for any new client starting work with 1o8.</span>
+              </div>
+              <div style="display:flex;align-items:flex-start;gap:10px;">
+                <span class="type-pill s-prospect">Prospect</span>
+                <span>A potential client who needs limited access to test the app before officially onboarding. They can log in but have restricted visibility.</span>
+              </div>
+              <div style="display:flex;align-items:flex-start;gap:10px;">
+                <span class="type-pill s-inactive">Inactive</span>
+                <span>A former client no longer working with 1o8. <strong>Do not use when creating a new client.</strong> See the Client Status Changes section for Drive folder consequences.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="substep">
+          <div class="substep-dot"></div>
+          <div>
+            <div class="substep-label">Template</div>
+            <div class="substep-desc" style="display:flex;flex-direction:column;gap:8px;margin-top:6px;">
+              <div style="display:flex;align-items:flex-start;gap:10px;">
+                <span class="type-pill aia">AIA</span>
+                <span><strong>Already In Amazon</strong> — the client already has products listed on Amazon. Use AIA.</span>
+              </div>
+              <div style="display:flex;align-items:flex-start;gap:10px;">
+                <span class="type-pill nta">NTA</span>
+                <span><strong>New To Amazon</strong> — the client has no existing listings on Amazon. Use NTA.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="substep">
+          <div class="substep-dot"></div>
+          <div>
+            <div class="substep-label">Save Changes</div>
+            <div class="substep-desc">Once all fields are filled in, click the <strong>Save Changes</strong> button to create the client record.</div>
+          </div>
+        </div>
+      </div>
+      <div style="padding: 0 20px 16px 68px;">
+        <img src="/help/edit-client-dialog.png" alt="Edit Client dialog" style="width:280px;border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,0.15);" />
+      </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">Assign Team</div>
+          <div class="step-desc">Assign team roles for this client. Once all required team members have been added, this step is <strong>automatically marked as complete</strong>.</div>
+        </div>
+      </div>
+      <div style="padding: 0 20px 16px 68px;">
+        <img src="/help/step2.png" alt="Assign Team" style="width:100%;max-width:700px;border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,0.12);" />
+      </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">Setup Asana Project</div>
+          <div class="step-desc">Create a project in Asana under 1o8 with onboarding, content, and PPC sections. Asana is the source of truth for task-level tracking. Once the team is assigned, remaining onboarding tasks are auto-assigned to the Account Manager (1o8), except FeedbackWhiz which goes to the Executive Strategist. Creating the project generates the <strong>Asana Project ID</strong>, which is stored on the client record and used to link all subsequent task assignments.</div>
+        </div>
+      </div>
+      <div style="padding: 0 20px 16px 68px;">
+        <img src="/help/step3.png" alt="Setup Asana Project" style="width:100%;max-width:700px;border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,0.12);" />
+      </div>
+      <div class="substeps">
+        <div class="substep">
+          <div class="substep-dot"></div>
+          <div>
+            <div class="substep-label">Link an existing Asana project</div>
+            <div class="substep-desc">
+              If the client is already in our system but the Asana project was <strong>not</strong> imported into the hub, you can link it manually instead of creating a new one. In Asana, open the project, click the dropdown next to the project name → <strong>Copy project link</strong>, then paste it into the <strong>"Link an existing Asana project"</strong> text field in the hub. The Project ID is extracted automatically from the pasted link.
+            </div>
+            <div style="margin-top:12px;display:flex;flex-direction:column;gap:12px;">
+              <img src="/help/step3-asana-menu.png" alt="Asana project menu — Copy project link" style="width:100%;max-width:560px;border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,0.12);" />
+              <img src="/help/step3-asana-link.png" alt="Asana project — Copy project link option" style="width:100%;max-width:560px;border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,0.12);" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 4 -->
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <div class="step-title">Setup Starting Day &amp; Timeline</div>
+          <div class="step-desc">Set the onboarding start date and initialize the 13-week Gantt timeline from the AIA or NTA template. This anchors all deliverable due dates.</div>
+        </div>
+      </div>
+      <div style="padding: 0 20px 16px 68px;">
+        <img src="/help/step4.png" alt="Setup Starting Day & Timeline" style="width:100%;max-width:700px;border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,0.12);" />
+      </div>
+    </div>
+
+    <!-- Step 5 -->
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <div class="step-title">Add Client Users</div>
+          <div class="step-desc">Set up all client-side access to the 1o8 Hub portal. Consists of 4 sub-tasks completed in sequence, then saved to the hub.</div>
+        </div>
+      </div>
+      <div class="substeps">
+        <div class="substep">
+          <div class="substep-dot"></div>
+          <div>
+            <div class="substep-label">Add Contact Email(s)</div>
+            <div class="substep-desc">Enter the client's contact email address(es) for portal access and communication.</div>
+          </div>
+        </div>
+        <div class="substep">
+          <div class="substep-dot"></div>
+          <div>
+            <div class="substep-label">Add Client Account(s)</div>
+            <div class="substep-desc">Add client's Gmail account(s) to 1o8 Hub Users section (Admin → Users).</div>
+          </div>
+        </div>
+        <div class="substep">
+          <div class="substep-dot"></div>
+          <div>
+            <div class="substep-label">Assign Client Role</div>
+            <div class="substep-desc">Set user role to "client" in Admin → Users.</div>
+          </div>
+        </div>
+        <div class="substep">
+          <div class="substep-dot"></div>
+          <div>
+            <div class="substep-label">Assign Client Project</div>
+            <div class="substep-desc">Link the user to their client account (assign clientIdCode) so they see only their data.</div>
+          </div>
+        </div>
+        <div class="substep">
+          <div class="substep-dot"></div>
+          <div>
+            <div class="substep-label">Add to Hub</div>
+            <div class="substep-desc">Once all users are filled in, click the <strong>Add to Hub</strong> button to register them in 1o8 Hub.</div>
+          </div>
+        </div>
+      </div>
+      <div style="padding: 0 20px 16px 68px;">
+        <img src="/help/step5.png" alt="Add Client Users" style="width:100%;max-width:700px;border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,0.12);" />
+      </div>
+    </div>
+
+    <!-- Step 6 -->
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num">6</div>
+        <div class="step-body">
+          <div class="step-title">Create Drive Folders</div>
+          <div class="step-desc">Create the full folder tree in the 1o8 Hub Google Shared Drive for client assets, graphics, SEO, PPC, and documentation.</div>
+        </div>
+      </div>
+      <div class="substeps" style="padding: 16px 20px 16px 20px;">
+        <div class="folder-tree" style="border:none;background:transparent;padding:0;">
+          <div class="folder-root">📁 {CLIENT_ID_CODE}_{Client Name}</div>
+          <div style="margin-left: 16px;">
+            <div>📁 Amazon Documentation</div>
+            <div style="margin-left: 24px;">📁 Climate Pledge Friendly Program</div>
+            <div>📁 Client Resources</div>
+            <div style="margin-left: 24px;">
+              <div>📁 Shortcuts</div>
+              <div>📁 Images</div>
+              <div style="margin-left: 24px;">📁 Logos</div>
+              <div>📁 Videos</div>
+              <div>📁 Guidelines</div>
+              <div style="margin-left: 24px;">📁 Fonts</div>
+              <div>📁 Certificates</div>
+            </div>
+            <div>📁 Graphics</div>
+            <div style="margin-left: 24px;">
+              <div>📁 A+ Content <span style="font-size:11px;color:#aaa;">(subfolders created per-product on first upload)</span></div>
+              <div>📁 Listing Images <span style="font-size:11px;color:#aaa;">(subfolders created per-product on first upload)</span></div>
+              <div>📁 Storefront <span style="font-size:11px;color:#aaa;">(subfolders created per-product on first upload)</span></div>
+              <div>📁 Brand Story <span style="font-size:11px;color:#aaa;">(subfolders created per-product on first upload)</span></div>
+              <div>📁 Custom Creative Images</div>
+              <div style="margin-left: 24px;"><div>📁 Lifestyle Images</div><div>📁 AI Generated Images</div></div>
+            </div>
+            <div>📁 PPC</div>
+            <div style="margin-left: 24px;"><div>📁 PPC Keywords research</div><div>📁 Records</div></div>
+            <div>📁 SEO</div>
+            <div style="margin-left: 24px;"><div>📁 SEO Keywords research</div><div>📁 SEO Files</div></div>
+            <div>📁 Research</div>
+            <div>📁 Success</div>
+            <div>📁 ZOld Files</div>
+            <div>📁 Reports</div>
+          </div>
+        </div>
+      </div>
+      <div style="padding: 0 20px 16px 20px;">
+        <img src="/help/step6.png" alt="Create Drive Folders" style="width:100%;max-width:700px;border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,0.12);" />
+      </div>
+    </div>
+
+    <!-- Step 7 -->
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num">7</div>
+        <div class="step-body">
+          <div class="step-title">Send Onboarding Email</div>
+          <div class="step-desc">Send the welcome email to the client with portal info, strategy overview, and onboarding requirements. Assigned to the Executive Strategist.</div>
+        </div>
+      </div>
+      <div style="padding: 0 20px 16px 68px;">
+        <img src="/help/step7.png" alt="Send Onboarding Email" style="width:100%;max-width:700px;border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,0.12);" />
+      </div>
+      <div style="padding: 0 20px 16px 68px;">
+        <div class="confirm-note" style="margin-top:0;">
+          <span>⚠️</span>
+          <span><strong>Still pending.</strong> The email template and the wiring to the automatic sending process are not yet finished — this step is still under development.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 8 -->
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num">8</div>
+        <div class="step-body">
+          <div class="step-title">Amazon Access</div>
+          <div class="step-desc">Obtain and configure access to the client's Amazon account. Includes importing catalog data to register products in the hub.</div>
+        </div>
+      </div>
+      <div class="substeps">
+        <div class="substep">
+          <div class="substep-dot"></div>
+          <div>
+            <div class="substep-label">Request Amazon Access</div>
+            <div class="substep-desc">Request access to Amazon Seller Central from the client.</div>
+          </div>
+        </div>
+        <div class="substep">
+          <div class="substep-dot"></div>
+          <div>
+            <div class="substep-label">Provide Team Access</div>
+            <div class="substep-desc">Provide all relevant team members access to Amazon Seller Central.</div>
+          </div>
+        </div>
+        <div class="substep">
+          <div class="substep-dot"></div>
+          <div>
+            <div class="substep-label">Import Product Attributes (CLR)</div>
+            <div class="substep-desc">Upload the Amazon Category Listing Report (.xlsm) to register attribute schemas and, for AIA clients, stage per-SKU values. Prerequisite for generating a listings sheet.<br><span style="color:#6b6b6b;font-size:12px;">📍 Location in Seller Central: ☰ (three-line menu) → Reports → Inventory Reports → Category Listing Reports</span></div>
+          </div>
+        </div>
+        <div class="substep">
+          <div class="substep-dot"></div>
+          <div>
+            <div class="substep-label">Link SKU↔ASIN (ALR) and merge to master <span class="badge badge-aia">AIA only</span></div>
+            <div class="substep-desc">Upload the Amazon All Listings Report to stage SKU↔ASIN links, then merge staged CLR + ALR data into master (filtered by status).<br><span style="color:#6b6b6b;font-size:12px;">📍 Location in Seller Central: ☰ (three-line menu) → Reports → Inventory Reports → All Listings Reports</span></div>
+          </div>
+        </div>
+        <div class="substep">
+          <div class="substep-dot"></div>
+          <div>
+            <div class="substep-label">Generate Listings Sheet <span class="badge badge-aia">AIA only</span> <span class="badge badge-optional">Optional</span></div>
+            <div class="substep-desc">Create a Google Sheet with minimum + necessary attributes for the client to fill in. Imported back as new master listings.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 9 -->
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num">9</div>
+        <div class="step-body">
+          <div class="step-title">Setup Intentwise</div>
+          <div class="step-desc">Configure Intentwise analytics integration for Seller Central and Sponsored Ads data. 5 sequential sub-tasks.</div>
+        </div>
+      </div>
+      <div class="substeps">
+        <div class="substep">
+          <div class="substep-dot"></div>
+          <div>
+            <div class="substep-label">Get Merchant ID</div>
+            <div class="substep-desc">Retrieve the Merchant ID from Amazon Seller Central.<br><span style="color:#6b6b6b;font-size:12px;">📍 Location in Seller Central: Seller Account → Account Info → Merchant Token</span></div>
+          </div>
+        </div>
+        <div class="substep">
+          <div class="substep-dot"></div>
+          <div>
+            <div class="substep-label">Request Subscriptions</div>
+            <div class="substep-desc">Contact Intentwise with the Merchant ID to request Amazon Seller Central and Amazon Sponsored Ads subscriptions.</div>
+          </div>
+        </div>
+        <div class="substep">
+          <div class="substep-dot"></div>
+          <div>
+            <div class="substep-label">Enter Intentwise ID &amp; Name</div>
+            <div class="substep-desc">Enter the Intentwise ID and Intentwise Name provided by Intentwise after subscriptions are set up.</div>
+          </div>
+        </div>
+        <div class="substep">
+          <div class="substep-dot"></div>
+          <div>
+            <div class="substep-label">Request Enable</div>
+            <div class="substep-desc">Request Intentwise to enable both Amazon Seller Central and Sponsored Ads subscriptions.</div>
+          </div>
+        </div>
+        <div class="substep">
+          <div class="substep-dot"></div>
+          <div>
+            <div class="substep-label">Confirm Enabled</div>
+            <div class="substep-desc">Confirm that both Amazon Seller Central and Sponsored Ads subscriptions are active and enabled in Intentwise.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 10 -->
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num">10</div>
+        <div class="step-body">
+          <div class="step-title">Setup Intentwise AMC</div>
+          <div class="step-desc">Configure Amazon Marketing Cloud (AMC) subscription through Intentwise for advanced advertising analytics. 4 sequential sub-tasks.</div>
+        </div>
+      </div>
+      <div class="substeps">
+        <div class="substep">
+          <div class="substep-dot"></div>
+          <div>
+            <div class="substep-label">Request Amazon Marketing Cloud</div>
+            <div class="substep-desc">Contact Intentwise to request Amazon Marketing Cloud (AMC) subscription setup.</div>
+          </div>
+        </div>
+        <div class="substep">
+          <div class="substep-dot"></div>
+          <div>
+            <div class="substep-label">Enter AMC ID &amp; Name</div>
+            <div class="substep-desc">Enter the Intentwise AMC ID and Intentwise AMC Name provided by Intentwise after AMC is set up.</div>
+          </div>
+        </div>
+        <div class="substep">
+          <div class="substep-dot"></div>
+          <div>
+            <div class="substep-label">Request Enable</div>
+            <div class="substep-desc">Request Intentwise to enable the Amazon Marketing Cloud subscription.</div>
+          </div>
+        </div>
+        <div class="substep">
+          <div class="substep-dot"></div>
+          <div>
+            <div class="substep-label">Confirm Enabled</div>
+            <div class="substep-desc">Confirm that the Amazon Marketing Cloud subscription is active and enabled in Intentwise.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 11 -->
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num">11</div>
+        <div class="step-body">
+          <div class="step-title">Setup FeedbackWhiz</div>
+          <div class="step-desc">Set up FeedbackWhiz review monitoring for the client's products. Assigned to the Executive Strategist (1o8).</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /steps-list -->
+
+
+  <!-- ══ CLIENT STATUS CHANGES ══ -->
+  <h2 class="section-title">Client Status Changes &amp; Drive Consequences</h2>
+
+  <div class="status-grid">
+
+    <!-- Inactive -->
+    <div class="status-card inactive">
+      <div class="status-card-title">
+        <div class="dot-status"></div>
+        Marking a Client as Inactive
+      </div>
+      <ul class="consequence-list">
+        <li><span class="c-icon">⚠️</span><span>A confirmation dialog is displayed in the app before any change is saved.</span></li>
+        <li><span class="c-icon">📁</span><span>The client's root Drive folder is automatically moved from the <strong>1o8 Hub shared drive</strong> to the <strong>Inactive Clients</strong> folder.</span></li>
+        <li><span class="c-icon">🔒</span><span>The client's status is set to <strong>Inactive</strong> in the database and synced to BigQuery.</span></li>
+        <li><span class="c-icon">👁️</span><span>The client still exists in the system and all data is preserved — nothing is deleted.</span></li>
+      </ul>
+    </div>
+
+    <!-- Active -->
+    <div class="status-card active">
+      <div class="status-card-title">
+        <div class="dot-status"></div>
+        Re-activating an Inactive Client
+      </div>
+      <ul class="consequence-list">
+        <li><span class="c-icon">⚠️</span><span>A confirmation dialog is displayed in the app before any change is saved.</span></li>
+        <li><span class="c-icon">📁</span><span>The client's root Drive folder is automatically moved from <strong>Inactive Clients</strong> back to the root of the <strong>1o8 Hub shared drive</strong>.</span></li>
+        <li><span class="c-icon">✅</span><span>The client's status is set to <strong>Active</strong> in the database and synced to BigQuery.</span></li>
+        <li><span class="c-icon">🔄</span><span>All existing data, products, and folder contents are fully restored — no re-onboarding required.</span></li>
+      </ul>
+    </div>
+
+    <!-- Prospect -->
+    <div class="status-card prospect">
+      <div class="status-card-title">
+        <div class="dot-status"></div>
+        Prospect Clients &amp; Drive Routing
+      </div>
+      <ul class="consequence-list">
+        <li><span class="c-icon">📁</span><span>When you run <strong>Create Drive Folders</strong> for a <strong>Prospect</strong>, the full <code>{CLIENT_ID_CODE}_{Client Name}</code> tree is created <strong>inside the Prospect folder</strong> instead of at the root of the 1o8 Hub shared drive.</span></li>
+        <li><span class="c-icon">🔁</span><span>Changing an existing client's status re-homes its root Drive folder to match: <strong>Prospect</strong> → Prospect folder, <strong>Active</strong> → 1o8 Hub shared-drive root, <strong>Inactive</strong> → Inactive Clients.</span></li>
+        <li><span class="c-icon">🗑️</span><span>If a folder was previously sent to Trash, re-running Create Drive Folders now recreates the tree instead of reusing the trashed folder.</span></li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- Flow diagrams -->
+  <div class="flow-arrow">
+    <span class="flow-pill active">Active</span>
+    <span class="arrow">→</span>
+    <span style="font-size:13px;color:var(--muted);">User selects Inactive</span>
+    <span class="arrow">→</span>
+    <span style="font-size:13px;font-style:italic;color:var(--muted);">Confirmation dialog</span>
+    <span class="arrow">→</span>
+    <span class="flow-pill inactive">Inactive</span>
+    <span class="arrow">+</span>
+    <span class="flow-pill drive">📁 → Inactive Clients</span>
+  </div>
+
+  <div class="flow-arrow">
+    <span class="flow-pill inactive">Inactive</span>
+    <span class="arrow">→</span>
+    <span style="font-size:13px;color:var(--muted);">User selects Active</span>
+    <span class="arrow">→</span>
+    <span style="font-size:13px;font-style:italic;color:var(--muted);">Confirmation dialog</span>
+    <span class="arrow">→</span>
+    <span class="flow-pill active">Active</span>
+    <span class="arrow">+</span>
+    <span class="flow-pill drive">📁 → 1o8 Hub Drive</span>
+  </div>
+
+  <div class="confirm-note">
+    <span>⚠️</span>
+    <span><strong>Both operations require explicit confirmation.</strong> If the user cancels the dialog, the status is not saved and the Drive folder is not moved. The Drive move is best-effort and runs asynchronously — if Drive is unavailable the status change still saves, and the error is logged server-side.</span>
+  </div>
+

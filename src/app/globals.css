@@ -1,0 +1,949 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+/* Amazon Ember font */
+@font-face {
+  font-family: "Amazon Ember";
+  font-weight: 400;
+  font-style: normal;
+  src: url("/fonts/AmazonEmber_Rg.woff2") format("woff2");
+  font-display: swap;
+}
+@font-face {
+  font-family: "Amazon Ember";
+  font-weight: 700;
+  font-style: normal;
+  src: url("/fonts/AmazonEmber_Bd.woff2") format("woff2");
+  font-display: swap;
+}
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-geist-mono);
+  --font-ember: "Amazon Ember", Arial, sans-serif;
+  /* Brand White — strict fidelity: every bg-white / text-white / border-white
+     utility renders 1o8 White (#FEFEFE), not pure #fff. Tailwind's
+     `black` is intentionally left at pure #000 (image/modal dimming scrims). */
+  --color-white: #FEFEFE;
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-brand: var(--brand);
+  --color-sku: var(--sku);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-brand-solid: var(--brand-solid);
+  --color-brand-solid-hover: var(--brand-solid-hover);
+  --color-portal-accent: var(--portal-accent);
+  --color-portal-accent-hover: var(--portal-accent-hover);
+  /* Reports redesign (--mf-*) Tailwind utilities. --color-mf-ink added beyond
+     the plan's list: text-mf-ink is used by Surface/TableToolbar primitives. */
+  --color-mf-orange: var(--mf-orange);
+  --color-mf-charcoal: var(--mf-charcoal);
+  --color-mf-charcoal-900: var(--mf-charcoal-900);
+  --color-mf-charcoal-700: var(--mf-charcoal-700);
+  --color-mf-ghost: var(--mf-ghost);
+  --color-mf-ink: var(--mf-ink);
+  --color-mf-muted: var(--mf-muted);
+  --color-mf-line: var(--mf-line);
+  --color-mf-positive: var(--mf-positive);
+  --color-mf-positive-bg: var(--mf-positive-bg);
+  --color-mf-negative: var(--mf-negative);
+  --color-mf-negative-bg: var(--mf-negative-bg);
+  --color-mf-warning: var(--mf-warning);
+  --color-mf-warning-bg: var(--mf-warning-bg);
+  --color-section-title: var(--section-title);
+  --color-field-bg: var(--field-bg);
+  --color-field-text: var(--field-text);
+  --color-field-border: var(--field-border);
+  /* SEO page surface/brand aliases */
+  --color-surface-0: var(--background);
+  --color-surface-1: var(--card);
+  --color-surface-2: var(--muted);
+  --color-surface-4: var(--border);
+  --color-brand-500: var(--brand);
+  --color-brand-400: var(--brand-hover);
+  --color-accent-green: oklch(0.55 0.17 155);
+  --color-brand-red: var(--brand-red);
+  --color-asana: var(--asana);
+  --color-brand-green: var(--brand-green);
+  --color-brand-yellow: var(--brand-yellow);
+  --color-brand-orange: var(--brand-orange);
+  --color-brand-vp: var(--brand-vp);
+  --color-brand-group: var(--brand-group);
+  --color-brand-nta: var(--brand-nta);
+  --color-status-active: var(--status-active);
+  --color-status-oos: var(--status-oos);
+  --color-status-discontinued: var(--status-discontinued);
+  --color-status-closed: var(--status-closed);
+  --color-status-inactive: var(--status-inactive);
+  --color-status-incomplete: var(--status-incomplete);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+  --color-brand-glow: var(--brand-glow);
+  --color-overtime-blue: var(--overtime-blue);
+  --color-overtime-blue-foreground: var(--overtime-blue-foreground);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   LIGHT THEME — Warm parchment with gold accents
+   ═══════════════════════════════════════════════════════════════════ */
+:root {
+  /* MF code pins var(--font-outfit) in ~120 places; 1o8 uses Inter everywhere. */
+  --font-outfit: var(--font-inter);
+}
+
+:root, .light-surface {
+  --radius: 0.75rem;
+  /* Page canvas — Ghost White */
+  --background: #F4F4F2;
+  --foreground: #2C2B35;
+  /* Raised panels / cards — brand White */
+  --card: #FEFEFE;
+  --card-foreground: #2C2B35;
+  /* Popovers / dropdowns */
+  --popover: #FEFEFE;
+  --popover-foreground: #2C2B35;
+  /* Primary action */
+  --primary: #2C2B35;
+  --primary-foreground: #FFFFFF;
+  /* Secondary surfaces */
+  --secondary: oklch(0.94 0.005 80);
+  --secondary-foreground: oklch(0.25 0.01 250);
+  /* Muted surfaces */
+  --muted: oklch(0.94 0.006 80);
+  --muted-foreground: #6E6C77; /* 1o8 Slate, darkened from #817F8A to clear WCAG AA */
+  /* Accent */
+  --accent: oklch(0.93 0.008 75);
+  --accent-foreground: oklch(0.18 0.01 250);
+  /* Destructive */
+  --destructive: oklch(0.55 0.22 25);
+  /* Borders & inputs */
+  --border: oklch(0 0 0 / 8%);
+  --input: oklch(0 0 0 / 10%);
+  --ring: oklch(0.65 0.01 250);
+  /* Charts — CVD-safe categorical palette (orange·blue·green·violet·magenta).
+     Replaces the prior red-heavy set where chart-1/chart-5 collided under
+     protanopia/deuteranopia. Validated both modes; worst adjacent ΔE ≈ 13. */
+  --chart-1: #d95a00;
+  --chart-2: #006bbb;
+  --chart-3: #05893e;
+  --chart-4: #653cbd;
+  --chart-5: #b94f87;
+  /* Sidebar — matches page background */
+  --sidebar: #F4F4F2;
+  --sidebar-foreground: #2C2B35;
+  --sidebar-primary: #2C2B35;
+  --sidebar-primary-foreground: #F4F4F2;
+  --sidebar-accent: oklch(0.93 0.005 80);
+  --sidebar-accent-foreground: #2C2B35;
+  --sidebar-border: oklch(0 0 0 / 8%);
+  --sidebar-ring: oklch(0.55 0.012 250);
+  /* Brand — 1o8 Yellow (docs/brand/1O8-BRAND.md). Never used as text on light
+     surfaces; text on yellow is always Ink (--brand-foreground). */
+  --brand: #F7BF1D;
+  --brand-hover: #E5AE0E;
+  /* SKU identifier colour (sky-700) — see DESIGN.md "Identifiers" */
+  --sku: #0369A1;
+  --brand-foreground: #2C2B35;
+  --brand-glow: rgba(247, 191, 29, 0.15);
+  /* Solid brand fill for TEXT-BEARING surfaces (buttons, badges, toggles).
+     A deeper orange so WHITE text clears WCAG AA (~5:1). #F7BF1D above is
+     kept for accents/borders/icons/bars where white would fail (~2.7:1). */
+  --brand-solid: #2C2B35;
+  --brand-solid-hover: #3D3C48;
+  /* Portal accent — client-facing /portal/* only, never mix with --brand */
+  --portal-accent: #2C2B35;
+  --portal-accent-hover: #1F1E26;
+  /* ── Reports redesign tokens (prototype market-foundry-dashboard-redesign.html).
+     Adopted verbatim per spec §4.1. NOTE: --mf-orange is identical to --brand
+     (#F7BF1D); kept as a distinct name for prototype-parity, NOT a new color.
+     --mf-positive/negative/warning are DARKER text-on-tint status colors (AA on
+     light bg) and intentionally coexist with --brand-green/red/yellow (badge fills). */
+  --mf-orange: #F7BF1D;
+  --mf-orange-700: #A67C00;
+  --mf-orange-100: #FEF6DC;
+  --mf-charcoal: #2C2B35;
+  --mf-charcoal-900: #1E1D25;
+  --mf-charcoal-700: #3A3944;
+  --mf-ghost: #F4F4F2;
+  --mf-white: #fefefe;
+  --mf-ink: #2C2B35;
+  --mf-muted: #6E6C77;
+  --mf-line: #D8D7DC;
+  --mf-positive: #18864b;
+  --mf-positive-bg: #e9f7ef;
+  --mf-negative: #c73737;
+  --mf-negative-bg: #fff0f0;
+  --mf-warning: #a66600;
+  --mf-warning-bg: #fff7df;
+  --mf-info: #356bb3;
+  /* Brand semantic colors */
+  --brand-red: #FF5C5F;
+  --brand-green: #34C759;
+  --brand-yellow: #FAC800;
+  --brand-orange: #F7BF1D;
+  /* Third-party: Asana Coral — marks Asana-sourced items only (see DESIGN.md) */
+  --asana: #FF584A;
+  --brand-vp: oklch(0.60 0.12 192);
+  --brand-group: oklch(0.55 0.18 280);
+  --brand-nta: #a855f7;
+  /* Hours overtime background scale — deep red fill so overtime cells contrast with
+     the orange bucket ramp and with the pure-red 8h+ border. Solid stage-4 clears
+     WCAG AA with brand White text. Token name is historical (--overtime-blue).
+     Fixed value in both themes, same as --brand-red: semantic status colors aren't
+     theme-tinted. */
+  --overtime-blue: #C62828;
+  --overtime-blue-foreground: #FEFEFE;
+  /* Status colors */
+  --status-active: oklch(0.72 0.19 155);
+  --status-oos: oklch(0.45 0.24 300);
+  --status-discontinued: oklch(0.58 0.22 25);
+  --status-closed: oklch(0.55 0.01 250);
+  --status-inactive: oklch(0.75 0.17 80);
+  --status-incomplete: oklch(0.70 0.18 55);
+  /* Section titles */
+  --section-title: oklch(0.48 0.01 250);
+  /* Field inputs */
+  --field-bg: #FEFEFE;
+  --field-text: #2C2B35;
+  --field-border: #D8D7DC;
+  /* PDP */
+  --pdp-bg: #ffffff;
+  --pdp-text: #0F1111;
+  --pdp-border: #e3e6e6;
+  --pdp-link: #007185;
+  --pdp-secondary-text: #565959;
+  --pdp-price: #B12704;
+}
+
+/* .mf-paper: Order Geography cards are a fixed light "paper" surface in both themes; this re-pins the
+   light theme's variables so theme-coloured children (the FBA stock layer) stay legible under .dark. */
+.mf-paper {
+  color-scheme: light;
+  color: var(--foreground);
+  --background: #F4F4F2;
+  --foreground: #2C2B35;
+  --card: #FEFEFE;
+  --card-foreground: #2C2B35;
+  --popover: #FEFEFE;
+  --popover-foreground: #2C2B35;
+  --muted: oklch(0.94 0.006 80);
+  --muted-foreground: oklch(0.55 0.01 250);
+  --border: oklch(0 0 0 / 8%);
+  --input: oklch(0 0 0 / 10%);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   DARK THEME — Refined slate with warm gold
+   ═══════════════════════════════════════════════════════════════════ */
+
+.dark {
+  --background: #2C2B35;
+  --foreground: oklch(0.93 0.005 290);
+  --card: oklch(0.18 0.012 290);
+  --card-foreground: oklch(0.93 0.005 290);
+  --popover: oklch(0.20 0.012 290);
+  --popover-foreground: oklch(0.93 0.005 290);
+  --primary: oklch(0.93 0.005 290);
+  --primary-foreground: oklch(0.13 0.012 290);
+  --secondary: oklch(0.23 0.012 290);
+  --secondary-foreground: oklch(0.93 0.005 290);
+  --muted: oklch(0.21 0.012 290);
+  /* Lighter than the light-theme muted-foreground on purpose: the dark bg is
+     #2C2B35 (charcoal blue, not near-black), so a mid-grey collapses to ~2.3:1.
+     This light grey clears WCAG AA (~4.5:1) for secondary text app-wide. */
+  --muted-foreground: oklch(0.75 0.012 290);
+  --accent: oklch(0.24 0.012 290);
+  --accent-foreground: oklch(0.93 0.005 290);
+  --destructive: oklch(0.65 0.2 25);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 14%);
+  --ring: oklch(0.55 0.012 290);
+  /* Charts — CVD-safe categorical palette (dark-mode variant, brighter L). */
+  --chart-1: #e76709;
+  --chart-2: #2f8adc;
+  --chart-3: #25984d;
+  --chart-4: #8663e6;
+  --chart-5: #ca5e96;
+  --sidebar: #2C2B35;
+  --sidebar-foreground: oklch(0.93 0.005 290);
+  --sidebar-primary: oklch(0.93 0.005 290);
+  --sidebar-primary-foreground: oklch(0.13 0.012 290);
+  --sidebar-accent: oklch(0.18 0.012 290);
+  --sidebar-accent-foreground: oklch(0.93 0.005 290);
+  --sidebar-border: oklch(1 0 0 / 8%);
+  --sidebar-ring: oklch(0.55 0.012 290);
+  --brand: #F7BF1D;
+  --brand-hover: #FFD04A;
+  /* SKU identifier colour (sky-300) */
+  --sku: #7DD3FC;
+  --brand-foreground: #2C2B35;
+  --brand-glow: rgba(247, 191, 29, 0.14);
+  /* Solid brand fill for text-bearing surfaces (see :root note). Same value
+     in dark mode: it reads as orange on the #2C2B35 bg and carries white. */
+  --brand-solid: #2C2B35;
+  --brand-solid-hover: #3D3C48;
+  /* Portal accent (dark) — Charcoal Blue lightened for contrast on near-black */
+  --portal-accent: #A9A7B5;
+  --portal-accent-hover: #C9C7D2;
+  /* Brand semantic colors */
+  --brand-red: #FF5C5F;
+  --brand-green: #34C759;
+  --brand-yellow: #FAC800;
+  --brand-orange: #F7BF1D;
+  /* Third-party: Asana Coral — marks Asana-sourced items only (see DESIGN.md) */
+  --asana: #FF584A;
+  --brand-vp: oklch(0.78 0.14 175);
+  --brand-group: oklch(0.68 0.17 285);
+  --brand-nta: #a855f7;
+  /* Hours overtime scale — same fixed value as light mode, see :root note. */
+  --overtime-blue: #C62828;
+  --overtime-blue-foreground: #FEFEFE;
+  /* Status colors */
+  --status-active: oklch(0.78 0.16 160);
+  --status-oos: oklch(0.60 0.22 300);
+  --status-discontinued: oklch(0.68 0.18 25);
+  --status-closed: oklch(0.70 0.01 290);
+  --status-inactive: oklch(0.82 0.16 85);
+  --status-incomplete: oklch(0.76 0.16 55);
+  --section-title: oklch(0.62 0.012 290);
+  --field-bg: #faf9f7;
+  --field-text: #2C2B35;
+  --field-border: oklch(0.78 0.01 290);
+  --pdp-bg: #ffffff;
+  --pdp-text: #0F1111;
+  --pdp-border: #e3e6e6;
+  --pdp-link: #007185;
+  --pdp-secondary-text: #565959;
+  --pdp-price: #B12704;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* ── Background texture — dynamic radial gold wash ──────────────── */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opactity='0.05'/%3E%3C/svg%3E");
+  opacity: 0.04;
+  mix-blend-mode: overlay;
+}
+
+.ambient-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background:
+    radial-gradient(circle at 15% 10%, rgba(247, 191, 29, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 85% 90%, rgba(247, 191, 29, 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(255, 255, 255, 0.4) 0%, transparent 80%);
+  transition: background 0.5s ease;
+}
+
+.dark .ambient-bg {
+  background:
+    radial-gradient(circle at 15% 10%, rgba(247, 191, 29, 0.06) 0%, transparent 45%),
+    radial-gradient(circle at 85% 90%, rgba(247, 191, 29, 0.04) 0%, transparent 55%),
+    radial-gradient(ellipse at 50% 50%, rgba(0, 0, 0, 0.4) 0%, transparent 80%);
+}
+
+/* ── Glassmorphism Utilities ───────────────────────────────────── */
+.glass-panel {
+  background: #F4F4F2;
+}
+
+.dark .glass-panel {
+  background: #2C2B35;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.5),
+    0 4px 16px -4px rgba(0, 0, 0, 0.04),
+    0 1px 3px 0 rgba(0, 0, 0, 0.06);
+}
+
+.dark .glass-card {
+  background: rgba(30, 30, 30, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.05),
+    0 4px 16px -4px rgba(0, 0, 0, 0.2);
+}
+
+/* ── Liquid-glass opal nav (screenshot replica) ────────────────── */
+.opal-nav {
+  --opal-bead: var(--brand);
+  --opal-ink: #fefefe;
+  --opal-muted: color-mix(in oklab, var(--foreground) 62%, transparent);
+  --opal-bead-glow: color-mix(in oklab, var(--brand) 50%, transparent);
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  max-width: 100%;
+  padding: 5px;
+  overflow: visible;
+  border-radius: 999px;
+  background: rgba(254, 254, 254, 0.58);
+  backdrop-filter: blur(20px) saturate(1.45);
+  -webkit-backdrop-filter: blur(20px) saturate(1.45);
+  border: 1px solid rgba(254, 254, 254, 0.72);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.18),
+    0 12px 32px -14px rgba(42, 80, 89, 0.32),
+    0 2px 8px -2px rgba(42, 80, 89, 0.12);
+}
+.dark .opal-nav {
+  --opal-muted: color-mix(in oklab, var(--foreground) 72%, transparent);
+  background: rgba(254, 254, 254, 0.1);
+  border-color: rgba(255, 255, 255, 0.14);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 14px 36px -14px rgba(0, 0, 0, 0.5);
+}
+.opal-nav--portal {
+  --opal-bead: var(--portal-accent);
+  --opal-ink: #fefefe;
+  --opal-bead-glow: color-mix(in oklab, var(--portal-accent) 50%, transparent);
+}
+.opal-nav__bead {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0) 40%),
+    var(--opal-bead);
+  clip-path: inset(5px 80% 5px 5px round 999px);
+  box-shadow: 0 0 22px var(--opal-bead-glow);
+  will-change: clip-path;
+  opacity: 0;
+}
+.opal-nav [data-slot="navigation-menu"] {
+  flex: none;
+  position: relative;
+  z-index: 1;
+  overflow: visible;
+}
+.opal-nav [data-slot="navigation-menu-list"],
+.opal-nav [data-slot="navigation-menu-item"] {
+  overflow: visible;
+}
+.opal-nav [data-slot="navigation-menu-content"] {
+  z-index: 80;
+}
+.opal-nav [data-slot="navigation-menu-list"] {
+  gap: 0;
+}
+.opal-nav [data-slot="navigation-menu-trigger"],
+.opal-nav a[data-slot="navigation-menu-link"],
+.opal-item {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  padding: 0 12px;
+  margin: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--opal-muted);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  box-shadow: none;
+  cursor: pointer;
+  pointer-events: auto;
+}
+.opal-nav [data-slot="navigation-menu-trigger"]:hover,
+.opal-nav [data-slot="navigation-menu-trigger"]:focus,
+.opal-nav [data-slot="navigation-menu-trigger"][data-state="open"],
+.opal-nav a[data-slot="navigation-menu-link"]:hover,
+.opal-nav a[data-slot="navigation-menu-link"]:focus,
+.opal-nav a[data-slot="navigation-menu-link"][data-active="true"] {
+  background: transparent;
+  color: var(--opal-muted);
+  box-shadow: none;
+}
+.opal-nav [data-slot="navigation-menu-trigger"] > svg {
+  display: none;
+}
+.opal-item__face {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.opal-item__face--on {
+  position: absolute;
+  inset: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: inherit;
+  color: var(--opal-ink);
+  clip-path: inset(0 100% 0 0);
+  pointer-events: none;
+  z-index: 2;
+}
+.opal-item__face--start {
+  justify-content: flex-start;
+  width: 100%;
+}
+.opal-nav [data-slot="navigation-menu-content"]:has(.opal-menu) {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.opal-menu {
+  --opal-bead: var(--brand);
+  --opal-ink: #fefefe;
+  --opal-muted: color-mix(in oklab, var(--foreground) 72%, transparent);
+  --opal-bead-glow: color-mix(in oklab, var(--brand) 50%, transparent);
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  width: 320px;
+  max-width: min(320px, calc(100vw - 24px));
+  padding: 6px;
+  overflow: visible;
+  border-radius: 22px;
+  background: var(--popover);
+  color: var(--popover-foreground);
+  border: 1px solid color-mix(in oklab, var(--foreground) 12%, transparent);
+  box-shadow:
+    0 18px 40px -16px rgba(36, 34, 34, 0.45),
+    0 2px 8px -2px rgba(36, 34, 34, 0.16);
+}
+.dark .opal-menu {
+  --opal-muted: color-mix(in oklab, var(--foreground) 78%, transparent);
+  border-color: color-mix(in oklab, #fefefe 12%, transparent);
+  box-shadow:
+    0 18px 44px -14px rgba(0, 0, 0, 0.72),
+    0 2px 8px -2px rgba(0, 0, 0, 0.4);
+}
+.opal-menu .opal-nav__bead {
+  clip-path: inset(6px 6px 80% 6px round 999px);
+}
+.opal-menu [data-opal-option] {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 40px;
+  padding: 0 14px;
+  margin: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--opal-muted);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+  box-shadow: none;
+  cursor: pointer;
+}
+.opal-menu [data-opal-option]:hover,
+.opal-menu [data-opal-option]:focus {
+  background: transparent;
+  color: var(--opal-muted);
+  box-shadow: none;
+  outline: none;
+}
+.opal-menu .opal-item__face--on {
+  justify-content: flex-start;
+}
+.opal-nav__sep {
+  width: 1px;
+  height: 16px;
+  margin: 0 6px 0 4px;
+  flex: none;
+  background: color-mix(in oklab, var(--foreground) 18%, transparent);
+}
+.opal-nav__theme {
+  position: relative;
+  z-index: 1;
+  flex: none;
+}
+.opal-nav__theme [data-slot="button"] {
+  height: 36px;
+  width: 36px;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--opal-muted);
+  box-shadow: none;
+}
+.opal-nav__theme [data-slot="button"]:hover {
+  background: transparent;
+  color: var(--foreground);
+}
+
+@media (max-width: 1399px) {
+  .opal-nav [data-slot="navigation-menu-trigger"],
+  .opal-nav a[data-slot="navigation-menu-link"],
+  .opal-item {
+    padding: 0 9px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .opal-nav__bead {
+    transition: none;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .opal-nav {
+    background: #fefefe;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  .dark .opal-nav {
+    background: #2C2B35;
+  }
+  .glass-card {
+    background: #fefefe;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  .dark .glass-card {
+    background: oklch(0.18 0.012 250);
+  }
+}
+
+/* ── Custom scrollbar ──────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: oklch(0.75 0.005 80);
+  border-radius: 3px;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: oklch(0.3 0.01 250);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--brand);
+}
+
+/* ── Staggered card entrance animation ─────────────────────────── */
+@keyframes card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-card-enter {
+  animation: card-enter 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* ── Ring fill animation for completeness ──────────────────────── */
+@keyframes ring-fill {
+  from {
+    stroke-dasharray: 0 88;
+  }
+}
+.animate-ring-fill {
+  animation: ring-fill 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* ── Score counter animation ───────────────────────────────────── */
+@keyframes fade-up-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-up {
+  animation: fade-up-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* ── Progress bar fill ─────────────────────────────────────────── */
+@keyframes bar-fill {
+  from {
+    width: 0%;
+  }
+}
+.animate-bar-fill {
+  animation: bar-fill 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* ── Pulse glow for dirty badge ────────────────────────────────── */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 8px 2px rgba(249, 115, 22, 0.3);
+  }
+}
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* ── Indeterminate progress bar (slides left→right) ────────────── */
+@keyframes progress-shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(400%); }
+}
+.animate-progress-shimmer {
+  animation: progress-shimmer 1.4s ease-in-out infinite;
+}
+
+/* ── Architecture data flow animation ──────────────────────────── */
+@keyframes flow-down {
+  0% {
+    top: 0;
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+
+/* ── Gold accent line ──────────────────────────────────────────── */
+.gold-line {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--brand) 20%, var(--brand) 80%, transparent);
+  opacity: 0.3;
+}
+
+/* ── Card hover glow & Magnetic tilt placeholder ─────────────────── */
+.card-glow {
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.card-glow:hover {
+  transform: translateY(-4px) scale(1.01);
+  border-color: rgba(247, 191, 29, 0.35);
+}
+:root .card-glow:hover {
+  box-shadow: 
+    0 0 32px -4px rgba(247, 191, 29, 0.15), 
+    0 12px 24px -8px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.8);
+}
+.dark .card-glow:hover {
+  border-color: rgba(247, 191, 29, 0.3);
+  box-shadow:
+    0 0 32px -4px rgba(247, 191, 29, 0.15),
+    0 12px 24px -8px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+}
+
+/* ── Hover state conventions ──────────────────────────────────
+   Cards:   transform + glow  (.card-glow)
+   Buttons: color on hover; scale 0.97 on press (100ms ease-out)
+   Links:   color change only  (transition-colors)
+   ──────────────────────────────────────────────────────────── */
+
+/* ── Border-radius scale ─────────────────────────────────────
+   --radius-sm:  inputs, badges, small elements
+   --radius-md:  buttons, dropdowns, popovers
+   --radius-lg:  cards, dialogs (base --radius: 0.75rem)
+   --radius-xl:  hero cards, modals
+   --radius-2xl: large feature cards
+   --radius-3xl: pills, floating panels
+   --radius-4xl: full-round elements
+   Usage: prefer Tailwind rounded-{sm|md|lg|xl|2xl} over arbitrary values
+   ──────────────────────────────────────────────────────────── */
+
+/* ── Report page PDF export (body.mf-print-report via Export PDF) ── */
+#mf-print-report-banner {
+  display: none;
+}
+@media print {
+  body.mf-print-report header,
+  body.mf-print-report nav,
+  body.mf-print-report aside,
+  body.mf-print-report [data-slot="dialog-overlay"],
+  body.mf-print-report [cmdk-root],
+  body.mf-print-report .ambient-bg {
+    display: none !important;
+  }
+
+  body.mf-print-report {
+    background: white !important;
+    color: black !important;
+  }
+
+  body.mf-print-report main {
+    overflow: visible !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    min-height: 0 !important;
+    height: auto !important;
+  }
+
+  body.mf-print-report #mf-print-report-banner {
+    display: block !important;
+    font-family: var(--font-outfit), system-ui, sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    margin: 0 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #d6d3d1;
+    color: #2C2B35;
+  }
+
+  body.mf-print-report * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  @page {
+    size: landscape;
+    margin: 12mm;
+  }
+}
+
+/* ── Reduced motion — respect user preference ────────────────── */
+@keyframes mf-reduced-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes mf-reduced-fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-card-enter {
+    animation: none;
+    opacity: 1;
+  }
+  .animate-ring-fill {
+    animation: none;
+  }
+  .animate-fade-up {
+    animation: none;
+    opacity: 1;
+  }
+  .animate-bar-fill {
+    animation: none;
+  }
+  .animate-pulse-glow {
+    animation: none;
+  }
+  .card-glow {
+    transition: none;
+  }
+  .card-glow:hover {
+    transform: none;
+  }
+  .animate-in {
+    animation-name: mf-reduced-fade-in !important;
+    animation-duration: 200ms !important;
+    animation-timing-function: ease !important;
+    transform: none !important;
+  }
+  .animate-out {
+    animation-name: mf-reduced-fade-out !important;
+    animation-duration: 200ms !important;
+    animation-timing-function: ease !important;
+    transform: none !important;
+  }
+}
+
+/* ── 1o8: brand-coloured TEXT on light surfaces ──────────────────────
+   1o8 Yellow (#F7BF1D) is ~1.7:1 on white, so the deck never uses it as
+   text on light backgrounds (docs/brand/1O8-BRAND.md). MF code applies
+   `text-brand` in ~200 places; in light mode it renders as deep gold
+   (#8A6700, ~5.2:1 on white). Fills, borders, rings and icons on dark
+   surfaces keep the real yellow. */
+:root {
+  --brand-text: #8A6700;
+}
+:root:not(.dark) .text-brand,
+:root:not(.dark) .hover\:text-brand:hover,
+:root:not(.dark) .group:hover .group-hover\:text-brand,
+:root:not(.dark) .text-brand-500,
+:root:not(.dark) .text-mf-orange {
+  color: var(--brand-text);
+}
+/* Text sitting ON a yellow fill is always Ink, never white. */
+.bg-brand.text-white,
+.bg-brand .text-white {
+  color: var(--brand-foreground);
+}

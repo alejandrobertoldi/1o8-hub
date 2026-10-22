@@ -1,0 +1,1 @@
+ALTER TABLE attributes ADD COLUMN IF NOT EXISTS hub_label VARCHAR(255);

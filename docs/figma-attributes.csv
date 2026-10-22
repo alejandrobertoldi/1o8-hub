@@ -1,0 +1,1008 @@
+card_name,subcard_name,attribute
+Main Attributes,(no subcard),Status
+Main Attributes,(no subcard),UUID
+Main Attributes,(no subcard),ASIN
+Main Attributes,(no subcard),SKU
+Main Attributes,(no subcard),IntentwiseID
+Main Attributes,(no subcard),IntentwiseIDAMC
+Main Attributes,(no subcard),ClientIDCode
+Main Attributes,(no subcard),Marketplace
+Main Attributes,(no subcard),Country
+Main Attributes,(no subcard),AmazonPDPURL
+Main Attributes,(no subcard),SummarizedTitle
+Main Attributes,(no subcard),WebsiteProductURL
+Main Attributes,(no subcard),ProductIdType
+Main Attributes,(no subcard),ProductId
+Main Attributes,(no subcard),ProductType
+Main Attributes,(no subcard),ItemTypeKeyword
+Main Attributes,(no subcard),ProductCategory
+Main Attributes,(no subcard),ProductSubcategory
+Main Attributes,(no subcard),BrandName
+Variation,(no subcard),VariationID
+Variation,(no subcard),VariationName
+Variation,(no subcard),ParentageLevel
+Variation,(no subcard),ChildRelationshipType
+Variation,(no subcard),ParentSKU
+Variation,(no subcard),ParentASIN
+Variation,(no subcard),VariationThemeName
+Variation,(no subcard),Flavor
+Variation,(no subcard),Style
+Variation,(no subcard),Color
+Variation,(no subcard),Size
+Variety Pack,(no subcard),IsVP
+Variety Pack,(no subcard),VarietyProduct1Attribute1
+Variety Pack,(no subcard),VarietyProduct1Attribute2
+Variety Pack,(no subcard),VarietyProduct1Attribute3
+Variety Pack,(no subcard),VarietyProduct1Units
+Variety Pack,(no subcard),VarietyProduct2Attribute1
+Variety Pack,(no subcard),VarietyProduct2Attribute2
+Variety Pack,(no subcard),VarietyProduct2Attribute3
+Variety Pack,(no subcard),VarietyProduct2Units
+Variety Pack,(no subcard),VarietyProduct3Attribute1
+Variety Pack,(no subcard),VarietyProduct3Attribute2
+Variety Pack,(no subcard),VarietyProduct3Attribute3
+Variety Pack,(no subcard),VarietyProduct3Units
+Variety Pack,(no subcard),VarietyProduct4Attribute1
+Variety Pack,(no subcard),VarietyProduct4Attribute2
+Variety Pack,(no subcard),VarietyProduct4Attribute3
+Variety Pack,(no subcard),VarietyProduct4Units
+Variety Pack,(no subcard),VarietyProduct5Attribute1
+Variety Pack,(no subcard),VarietyProduct5Attribute2
+Variety Pack,(no subcard),VarietyProduct5Attribute3
+Variety Pack,(no subcard),VarietyProduct5Units
+SEO,(no subcard),SEOVersionNumber
+SEO,(no subcard),ItemName
+SEO,(no subcard),DetailedBulletPoint1
+SEO,(no subcard),DetailedBulletPoint2
+SEO,(no subcard),DetailedBulletPoint3
+SEO,(no subcard),DetailedBulletPoint4
+SEO,(no subcard),DetailedBulletPoint5
+SEO,(no subcard),ProductDescription
+SEO,(no subcard),GenericKeyword1
+SEO,(no subcard),GenericKeyword2
+SEO,(no subcard),GenericKeyword3
+SEO,(no subcard),GenericKeyword4
+SEO,(no subcard),GenericKeyword5
+SEO,(no subcard),ConciseBulletPoint1
+SEO,(no subcard),ConciseBulletPoint2
+SEO,(no subcard),ConciseBulletPoint3
+SEO,(no subcard),ConciseBulletPoint4
+SEO,(no subcard),ConciseBulletPoint5
+SEO,(no subcard),ContentBulletPoint1
+SEO,(no subcard),ContentBulletPoint2
+SEO,(no subcard),ContentBulletPoint3
+SEO,(no subcard),ContentBulletPoint4
+SEO,(no subcard),ContentBulletPoint5
+SEO,(no subcard),KeyFeature1
+SEO,(no subcard),KeyFeature2
+SEO,(no subcard),KeyFeature3
+SEO,(no subcard),KeyFeature4
+SEO,(no subcard),KeyFeature5
+Offer,(no subcard),ItemCondition
+Offer,(no subcard),FulfillmentChannelCodeUS
+Offer,(no subcard),QuantityUS
+Offer,(no subcard),InventoryAlwaysAvailableUS
+Offer,(no subcard),SkipOffer
+Offer,(no subcard),ProductTaxCode
+Offer,(no subcard),ImportDesignation
+Offer,(no subcard),MerchantShippingGroup
+Offer,(no subcard),ListPrice
+Offer,(no subcard),CostPrice
+Images,(no subcard),MainImageURL
+Images,(no subcard),OtherImageURL1
+Images,(no subcard),OtherImageURL2
+Images,(no subcard),OtherImageURL3
+Images,(no subcard),OtherImageURL4
+Images,(no subcard),OtherImageURL5
+Images,(no subcard),OtherImageURL6
+Images,(no subcard),OtherImageURL7
+Images,(no subcard),OtherImageURL8
+Images,(no subcard),SwatchImageURL
+Logistic,(no subcard),VolumeCapacity
+Logistic,(no subcard),VolumeCapacityUnit
+Logistic,(no subcard),NetContentVolume1
+Logistic,(no subcard),NetContentVolume2
+Logistic,(no subcard),NetContentVolumeUnit1
+Logistic,(no subcard),NetContentVolumeUnit2
+Logistic,(no subcard),NetContentWeight1
+Logistic,(no subcard),NetContentWeight2
+Logistic,(no subcard),NetContentWeightUnit1
+Logistic,(no subcard),NetContentWeightUnit2
+Logistic,(no subcard),ItemWeight
+Logistic,(no subcard),ItemWeightUnit
+Logistic,(no subcard),LiquidVolume
+Logistic,(no subcard),LiquidVolumeUnit
+Logistic,(no subcard),ItemLength
+Logistic,(no subcard),ItemLengthUnit
+Logistic,(no subcard),ItemWidth
+Logistic,(no subcard),ItemWidthUnit
+Logistic,(no subcard),ItemHeight
+Logistic,(no subcard),ItemHeightUnit
+Logistic,(no subcard),ItemPackageLength
+Logistic,(no subcard),PackageLengthUnit
+Logistic,(no subcard),ItemPackageWidth
+Logistic,(no subcard),PackageWidthUnit
+Logistic,(no subcard),ItemPackageHeight
+Logistic,(no subcard),PackageHeightUnit
+Logistic,(no subcard),PackageWeight
+Logistic,(no subcard),PackageWeightUnit
+Logistic,(no subcard),ItemDisplayWeight
+Logistic,(no subcard),ItemDisplayWeightUnit
+Logistic,(no subcard),ItemVolume
+Logistic,(no subcard),ItemVolumeUnit
+Logistic,(no subcard),ItemsperInnerPack
+Logistic,(no subcard),InnerPacksPerMasterPack
+Logistic,(no subcard),MasterPackProductIdentificationType
+Logistic,(no subcard),MasterPackProductIdentificationValue
+Logistic,(no subcard),NumberOfBoxes
+Logistic,(no subcard),ItemDisplayWidth
+Logistic,(no subcard),ItemDisplayWidthUnit
+Logistic,(no subcard),InseamLength
+Logistic,(no subcard),InseamLengthUnit
+Logistic,(no subcard),ItemLengthDescription
+Logistic,(no subcard),ItemDiameterDecimalValue
+Logistic,(no subcard),ItemDiameterUnit
+Logistic,(no subcard),PackageType
+Logistic,(no subcard),PackageLevel
+Logistic,(no subcard),PackageContainsSKUQuantity
+Logistic,(no subcard),PackageContainsSKUIdentifier
+Logistic,(no subcard),IsPackageLevelOrderable
+Logistic,(no subcard),MasterPackLayersperPalletQuantity
+Logistic,(no subcard),MasterPacksPerLayerQuantity
+Logistic,(no subcard),ContainerType
+Logistic,(no subcard),CustomerPackageType
+Logistic,(no subcard),PackageTypeName
+Logistic,(no subcard),PackagingFeature1
+Logistic,(no subcard),PackagingFeature2
+Logistic,(no subcard),PackagingFeature3
+Logistic,(no subcard),PackagingFeature4
+Logistic,(no subcard),PackagingFeature5
+Logistic,(no subcard),ItemShape
+Logistic,(no subcard),NumberofItems
+Logistic,(no subcard),NumberOfItems
+Logistic,(no subcard),ItemPackageQuantity
+Logistic,(no subcard),NumberOfPieces
+Logistic,(no subcard),NumberofPieces
+Logistic,(no subcard),TotalEaches
+Logistic,(no subcard),NumberofCompartments
+Logistic,(no subcard),NumberOfCompartments
+Product Details,Age Restriction,IsAdultProduct
+Product Details,Age Restriction,ManufacturerMinimumAgeMONTHS
+Product Details,Age Restriction,MinimumReadingAge
+Product Details,Age Restriction,MinimumReadingAgeUnit
+Product Details,Age Restriction,MaximumReadingAge
+Product Details,Age Restriction,MaximumReadingAgeUnit
+Product Details,Allergen,AllergenInformation1
+Product Details,Allergen,AllergenInformation2
+Product Details,Allergen,AllergenInformation3
+Product Details,Allergen,AllergenInformation4
+Product Details,Allergen,AllergenInformation5
+Product Details,Beauty,HairType
+Product Details,Beauty,SkinTone
+Product Details,Beauty,SkinType1
+Product Details,Beauty,SkinType2
+Product Details,Beauty,SkinType3
+Product Details,Beauty,SkinType4
+Product Details,Beauty,SkinType5
+Product Details,Beauty,SunProtection
+Product Details,Beauty,SunProtectionUnit
+Product Details,Beauty,TargetUseBodyPart1
+Product Details,Beauty,TargetUseBodyPart2
+Product Details,Beauty,TargetUseBodyPart3
+Product Details,Beauty,TargetUseBodyPart4
+Product Details,Beauty,TargetUseBodyPart5
+Product Details,Beauty,SkinCleaningAgentUse
+Product Details,Beauty,HairConditionerType
+Product Details,Benefits,ProductBenefits1
+Product Details,Benefits,ProductBenefits2
+Product Details,Benefits,ProductBenefits3
+Product Details,Benefits,ProductBenefits4
+Product Details,Benefits,ProductBenefits5
+Product Details,Caffeine,CaffeineContentDescription
+Product Details,Caffeine,CaffeineContentPerServing
+Product Details,Caffeine,CaffeineContentPerServingUnit
+Product Details,Capacity,Capacity
+Product Details,Capacity,CapacityUnit
+Product Details,Carbohydrates,OtherCarbohydrate
+Product Details,Carbohydrates,TotalCarbohydrate
+Product Details,Carbohydrates,TotalCarbohydrateString
+Product Details,Carbohydrates,CarbohydrateUnit
+Product Details,Clothing,ClosureType1
+Product Details,Clothing,ClosureType2
+Product Details,Clothing,ClosureType3
+Product Details,Clothing,ClosureType4
+Product Details,Clothing,ClosureType5
+Product Details,Clothing,BodyType
+Product Details,Clothing,HeightType
+Product Details,Clothing,FabricType
+Product Details,Clothing,LiningDescription
+Product Details,Clothing,StrapType1
+Product Details,Clothing,StrapType2
+Product Details,Clothing,StrapType3
+Product Details,Clothing,SubjectCharacter
+Product Details,Clothing,FitType
+Product Details,Clothing,CareInstructions
+Product Details,Clothing,RiseStyle
+Product Details,Clothing,Athlete
+Product Details,Clothing,BackStyle1
+Product Details,Clothing,BackStyle2
+Product Details,Clothing,BackStyle3
+Product Details,Clothing,BackStyle4
+Product Details,Clothing,BackStyle5
+Product Details,Clothing,EmbellishmentFeature1
+Product Details,Clothing,EmbellishmentFeature2
+Product Details,Clothing,EmbellishmentFeature3
+Product Details,Clothing,EmbellishmentFeature4
+Product Details,Clothing,EmbellishmentFeature5
+Product Details,Clothing,NeckStyle1
+Product Details,Clothing,NeckStyle2
+Product Details,Clothing,NeckStyle3
+Product Details,Clothing,NeckStyle4
+Product Details,Clothing,NeckStyle5
+Product Details,Clothing,SwimwearFormType
+Product Details,Clothing,SleeveType1
+Product Details,Clothing,SleeveType2
+Product Details,Clothing,SwimwearTopForm
+Product Details,Clothing,SwimwearBottomForm
+Product Details,Clothing,UltravioletProtectionFactor
+Product Details,Clothing,PocketDescription1
+Product Details,Clothing,PocketDescription2
+Product Details,Clothing,PocketDescription3
+Product Details,Clothing,PocketDescription4
+Product Details,Clothing,PocketDescription5
+Product Details,Clothing,MagnificationStrength
+Product Details,Clothing,MagnificationStrengthUnit
+Product Details,Clothing,HandOrientation
+Product Details,Clothing,LengthRange1
+Product Details,Clothing,LengthRange2
+Product Details,Clothing,LengthRange3
+Product Details,Clothing,LengthRange4
+Product Details,Clothing,LengthRange5
+Product Details,Clothing,WidthRange1
+Product Details,Clothing,WidthRange2
+Product Details,Clothing,WidthRange3
+Product Details,Clothing,WidthRange4
+Product Details,Clothing,WidthRange5
+Product Details,Clothing,WaistStyle
+Product Details,Clothing,Seasons1
+Product Details,Clothing,Seasons2
+Product Details,Clothing,Seasons3
+Product Details,Clothing,Seasons4
+Product Details,Clothing,Seasons5
+Product Details,Clothing,ApparelSilhouette
+Product Details,Clothing,HemlineForm1
+Product Details,Clothing,HemlineForm2
+Product Details,Clothing,HemlineForm3
+Product Details,Clothing,HemlineForm4
+Product Details,Clothing,HemlineForm5
+Product Details,Clothing,WeaveMethod
+Product Details,Clothing,SleeveLengthValue
+Product Details,Clothing,SleeveLengthToValue
+Product Details,Clothing,ShirtBodyType
+Product Details,Clothing,ShirtHeightType
+Product Details,Clothing,TopStyle1
+Product Details,Clothing,TopStyle2
+Product Details,Clothing,TopStyle3
+Product Details,Clothing,TopStyle4
+Product Details,Clothing,TopStyle5
+Product Details,Clothing,NumberOfPockets
+Product Details,Clothing,NumberofPockets
+Product Details,Clothing,FabricStretchability
+Product Details,Clothing,ShirtFormType
+Product Details,Clothing,SleeveCuffStyle1
+Product Details,Clothing,SleeveCuffStyle2
+Product Details,Clothing,AnimalTheme
+Product Details,Clothing,FashionDecade
+Product Details,Clothing,CollectionName
+Product Details,Clothing,FabricType1
+Product Details,Clothing,FabricType2
+Product Details,Clothing,FabricType3
+Product Details,Clothing,FabricType4
+Product Details,Clothing,FabricType5
+Product Details,Clothing,WeaveType
+Product Details,Clothing,CareInstructions1
+Product Details,Clothing,CareInstructions2
+Product Details,Clothing,CareInstructions3
+Product Details,Clothing,CareInstructions4
+Product Details,Clothing,CareInstructions5
+Product Details,Clothing,SweaterForm
+Product Details,Clothing,GarmentClosureLengthDescription
+Product Details,Clothing,CoatSilhouetteType
+Product Details,Clothing,FabricDistressing1
+Product Details,Clothing,FabricDistressing2
+Product Details,Clothing,FabricDistressing3
+Product Details,Clothing,StrapLength
+Product Details,Clothing,StrapLengthUnit
+Product Details,Clothing,ToeStyle1
+Product Details,Clothing,ToeStyle2
+Product Details,Clothing,ToeStyle3
+Product Details,Clothing,SocksForm
+Product Details,Clothing,HatFormType
+Product Details,Clothing,CollarStyle1
+Product Details,Clothing,CollarStyle2
+Product Details,Clothing,BottomStyle1
+Product Details,Clothing,BottomStyle2
+Product Details,Coffee,CoffeeRoastLevel
+Product Details,Coffee,CoffeeType
+Product Details,Coffee,GrindType
+Product Details,Coffee,CoffeeBlendName
+Product Details,Color,ColorMap
+Product Details,Color,InkColor
+Product Details,Color,LensColor
+Product Details,Color,SuitableHairColor
+Product Details,Color,BandColor
+Product Details,Color,DialColor
+Product Details,Color,InteriorColor
+Product Details,Color,MatteStyle1
+Product Details,Color,MatteStyle2
+Product Details,Color,MatteStyle3
+Product Details,Color,MatteStyle4
+Product Details,Color,MatteStyle5
+Product Details,Components,IncludedComponents1
+Product Details,Components,IncludedComponents2
+Product Details,Components,IncludedComponents3
+Product Details,Components,IncludedComponents4
+Product Details,Components,IncludedComponents5
+Product Details,Components,InsertType1
+Product Details,Components,InsertType2
+Product Details,Components,InsertType3
+Product Details,Components,InsertType4
+Product Details,Components,InsertType5
+Product Details,Configuration,Configuration
+Product Details,Configuration,PrePrintedText
+Product Details,Configuration,Variety
+Product Details,Configuration,VersionforCountry1
+Product Details,Configuration,VersionforCountry2
+Product Details,Configuration,VersionforCountry3
+Product Details,Configuration,VersionforCountry4
+Product Details,Configuration,VersionforCountry5
+Product Details,Cuisine,Cuisine
+Product Details,Dates,ReleaseDate
+Product Details,Dates,ProductSiteLaunchDate
+Product Details,Denomination,Denomination
+Product Details,Design,DesignName
+Product Details,Design,Theme
+Product Details,Design,Theme1
+Product Details,Design,Theme2
+Product Details,Design,Theme3
+Product Details,Design,Theme4
+Product Details,Design,Theme5
+Product Details,Design,Inscription
+Product Details,Design,SubBrand
+Product Details,Design,SetName
+Product Details,Diet,DietType1
+Product Details,Diet,DietType2
+Product Details,Diet,DietType3
+Product Details,Diet,DietType4
+Product Details,Diet,DietType5
+Product Details,Diet,CertificateType1
+Product Details,Diet,CertificateType2
+Product Details,Diet,CertificateType3
+Product Details,Edition,Edition
+Product Details,Edition,NumberofPagesUnit
+Product Details,Edition,NumberOfPagesUnit
+Product Details,Edition,NumberofPages
+Product Details,Edition,NumberOfPages
+Product Details,Edition,PublicationDate
+Product Details,Edition,SeriesTitle
+Product Details,Edition,Seriestitle
+Product Details,Edition,SeriesNumber
+Product Details,Edition,Volume
+Product Details,Edition,Binding
+Product Details,Edition,NumberOfWords
+Product Details,Edition,NumberofWords
+Product Details,Edition,ReprintDate
+Product Details,Edition,Author1
+Product Details,Edition,Author2
+Product Details,Edition,Author3
+Product Details,Edition,Author4
+Product Details,Edition,Author5
+Product Details,Education,SubjectKeyword1
+Product Details,Education,SubjectKeyword2
+Product Details,Education,SubjectKeyword3
+Product Details,Education,SubjectKeyword4
+Product Details,Education,SubjectKeyword5
+Product Details,Education,Genre1
+Product Details,Education,Genre2
+Product Details,Education,Genre3
+Product Details,Education,Genre4
+Product Details,Education,Genre5
+Product Details,Education,MinimumRecommendedGradeLevel
+Product Details,Education,MinimumRecommendedGradeLevelUnit
+Product Details,Education,MaximumRecommendedGradeLevel
+Product Details,Education,MaximumRecommendedGradeLevelUnit
+Product Details,Education,SchoolType1
+Product Details,Education,SchoolType2
+Product Details,Education,SchoolType3
+Product Details,Education,SchoolType4
+Product Details,Education,SchoolType5
+Product Details,Education,TextbookType
+Product Details,Education,LexileCode
+Product Details,Education,SubjectCode1
+Product Details,Education,SubjectCodeType1
+Product Details,Education,SubjectCode2
+Product Details,Education,SubjectCodeType2
+Product Details,Education,SubjectCode3
+Product Details,Education,SubjectCodeType3
+Product Details,Education,SubjectCode4
+Product Details,Education,SubjectCodeType4
+Product Details,Education,SubjectCode5
+Product Details,Education,SubjectCodeType5
+Product Details,Education,Subject1
+Product Details,Education,SubjectType1
+Product Details,Education,Subject2
+Product Details,Education,SubjectType2
+Product Details,Education,Subject3
+Product Details,Education,SubjectType3
+Product Details,Education,Subject4
+Product Details,Education,SubjectType4
+Product Details,Education,Subject5
+Product Details,Education,SubjectType5
+Product Details,Education,EditionNumber
+Product Details,Electric,Wattage
+Product Details,Electric,WattageUnit
+Product Details,Electric,Voltage
+Product Details,Electric,VoltageUnit
+Product Details,Energy,EnergyContent
+Product Details,Energy,EnergyContentfromFat
+Product Details,Energy,EnergyContentString
+Product Details,Energy,EnergyUnit
+Product Details,Energy,EnergyContentFromSaturatedFat
+Product Details,Energy,EnergyContentFromTransFat
+Product Details,Expiration,IsProductExpirable
+Product Details,Expiration,ProductExpirationType
+Product Details,Fat,MonounsaturatedFat
+Product Details,Fat,MonounsaturatedFatString
+Product Details,Fat,PolyunsaturatedFat
+Product Details,Fat,PolyunsaturatedFatString
+Product Details,Fat,SaturatedFat
+Product Details,Fat,SaturatedFatString
+Product Details,Fat,TotalFat
+Product Details,Fat,TotalFatString
+Product Details,Fat,TransFat
+Product Details,Fat,FatUnit
+Product Details,Features,SpecialFeatures1
+Product Details,Features,SpecialFeatures2
+Product Details,Features,SpecialFeatures3
+Product Details,Features,SpecialFeatures4
+Product Details,Features,SpecialFeatures5
+Product Details,Features,IsCustomizable
+Product Details,Features,WaterResistanceLevel
+Product Details,Features,ThermalPerformanceDescription
+Product Details,Features,Reusability
+Product Details,Features,HasHandle
+Product Details,Features,AccessMethod
+Product Details,Features,IsTheItemDishwasherSafe
+Product Details,Features,Istheitemdishwashersafe
+Product Details,Features,IsTheItemMicrowaveable
+Product Details,Features,Istheitemmicrowaveable
+Product Details,Features,IsFragile
+Product Details,Features,IncludedFeatures
+Product Details,Features,IsWaterproof1
+Product Details,Features,IsWaterproof2
+Product Details,Features,IsWaterproof3
+Product Details,Features,IsWaterproof4
+Product Details,Features,IsWaterproof5
+Product Details,Fiber,DietaryFiber
+Product Details,Fiber,DietaryFiberString
+Product Details,Fiber,InsolubleFiber
+Product Details,Fiber,InsolubleFiberString
+Product Details,Fiber,SolubleFiber
+Product Details,Fiber,SolubleFiberString
+Product Details,Flavor,FlavoredDrinkType
+Product Details,Food,NutorSeedType1
+Product Details,Food,NutOrSeedType1
+Product Details,Food,NutorSeedType2
+Product Details,Food,NutOrSeedType2
+Product Details,Food,NutOrSeedType3
+Product Details,Food,NutorSeedType3
+Product Details,Food,NutOrSeedType4
+Product Details,Food,NutorSeedType4
+Product Details,Food,NutOrSeedType5
+Product Details,Food,NutorSeedType5
+Product Details,Food,ManufacturerFoodProcessingMethod1
+Product Details,Food,ManufacturerFoodProcessingMethod2
+Product Details,Food,CultivationMethodClaim1
+Product Details,Food,CultivationMethodClaim2
+Product Details,Food,CultivationMethodClaim3
+Product Details,Food,CultivationMethodClaim4
+Product Details,Food,ProductGrade
+Product Details,Food,PasteurizationType
+Product Details,Food,HoneyType
+Product Details,Food,CerealGrainForm
+Product Details,Food,BreakfastCerealType
+Product Details,Food,ProduceSoldAsFormat
+Product Details,Food,ProducePart
+Product Details,Food,ProduceType
+Product Details,Food,ProduceVariety
+Product Details,Form,FormFactor
+Product Details,Form,ItemForm1
+Product Details,Form,ItemForm2
+Product Details,Form,ItemForm3
+Product Details,Form,ItemForm4
+Product Details,Form,BlanketForm
+Product Details,Form,GenericType1
+Product Details,Form,GenericType2
+Product Details,Form,GenericType3
+Product Details,Form,GenericType4
+Product Details,Form,GenericType5
+Product Details,Form,DrinkingCupFormType
+Product Details,Form,DrinkingCupFormSubType
+Product Details,Form,DrinkingCupFormSub_type
+Product Details,Form,Format1
+Product Details,Form,Format2
+Product Details,Form,Format3
+Product Details,Form,Format4
+Product Details,Form,Format5
+Product Details,Gender,AgeGenderCategory
+Product Details,ID Numbers,PartNumber
+Product Details,ID Numbers,ManufactureYear
+Product Details,ID Numbers,UNSPSCCode
+Product Details,ID Numbers,NationalStockNumber
+Product Details,Ingredients,Ingredients1
+Product Details,Ingredients,Ingredients2
+Product Details,Ingredients,Ingredients3
+Product Details,Ingredients,Ingredients4
+Product Details,Ingredients,Ingredients5
+Product Details,Ingredients,SpecialIngredients1
+Product Details,Ingredients,SpecialIngredients2
+Product Details,Ingredients,SpecialIngredients3
+Product Details,Ingredients,SpecialIngredients4
+Product Details,Ingredients,SpecialIngredients5
+Product Details,Ingredients,ActiveIngredients1
+Product Details,Ingredients,ActiveIngredients2
+Product Details,Ingredients,ActiveIngredients3
+Product Details,Ingredients,ActiveIngredientStrengthID1
+Product Details,Ingredients,ActiveIngredientName1
+Product Details,Ingredients,ActiveIngredientStrengthValue1
+Product Details,Ingredients,ActiveIngredientStrengthUnit1
+Product Details,Ingredients,ActiveIngredientStrengthID2
+Product Details,Ingredients,ActiveIngredientName2
+Product Details,Ingredients,ActiveIngredientStrengthValue2
+Product Details,Ingredients,ActiveIngredientStrengthUnit2
+Product Details,Ingredients,ActiveIngredientStrengthID3
+Product Details,Ingredients,ActiveIngredientName3
+Product Details,Ingredients,ActiveIngredientStrengthValue3
+Product Details,Ingredients,ActiveIngredientStrengthUnit3
+Product Details,Ingredients,ActiveIngredientStrengthID4
+Product Details,Ingredients,ActiveIngredientName4
+Product Details,Ingredients,ActiveIngredientStrengthValue4
+Product Details,Ingredients,ActiveIngredientStrengthUnit4
+Product Details,Ingredients,ActiveIngredientStrengthID5
+Product Details,Ingredients,ActiveIngredientName5
+Product Details,Ingredients,ActiveIngredientStrengthValue5
+Product Details,Ingredients,ActiveIngredientStrengthUnit5
+Product Details,Label,LabelerName
+Product Details,Language,LanguageType1
+Product Details,Language,Language1
+Product Details,Language,LanguageType2
+Product Details,Language,Language2
+Product Details,Language,LanguageType3
+Product Details,Language,Language3
+Product Details,Language,LanguageType4
+Product Details,Language,Language4
+Product Details,Language,LanguageType5
+Product Details,Language,Language5
+Product Details,League Name,LeagueName1
+Product Details,League Name,LeagueName2
+Product Details,League Name,LeagueName3
+Product Details,League Name,LeagueName4
+Product Details,League Name,LeagueName5
+Product Details,Main Attributes,Manufacturer
+Product Details,Main Attributes,PlantorAnimalProductType
+Product Details,Material,Material1
+Product Details,Material,Material2
+Product Details,Material,Material3
+Product Details,Material,Material4
+Product Details,Material,Material5
+Product Details,Material,MaterialFeatures1
+Product Details,Material,MaterialFeatures2
+Product Details,Material,MaterialFeatures3
+Product Details,Material,MaterialFeatures4
+Product Details,Material,MaterialFeatures5
+Product Details,Material,MaterialTypeFree1
+Product Details,Material,MaterialTypeFree2
+Product Details,Material,MaterialTypeFree3
+Product Details,Material,MaterialTypeFree4
+Product Details,Material,MaterialTypeFree5
+Product Details,Material,HandleMaterial1
+Product Details,Material,HandleMaterial2
+Product Details,Material,BristleMaterial
+Product Details,Material,MetalType1
+Product Details,Material,MetalType2
+Product Details,Material,MetalType3
+Product Details,Material,MetalType4
+Product Details,Material,MetalType5
+Product Details,Material,GemType1
+Product Details,Material,GemType2
+Product Details,Material,GemType3
+Product Details,Material,GemType4
+Product Details,Material,GemType5
+Product Details,Material,ShaftMaterial
+Product Details,Material,FillMaterial1
+Product Details,Material,FillMaterial2
+Product Details,Material,FillMaterial3
+Product Details,Material,FillMaterial4
+Product Details,Material,FillMaterial5
+Product Details,Material,ContainerMaterial
+Product Details,Material,FinishType
+Product Details,Material,BowlMaterial
+Product Details,Model,ModelYear
+Product Details,Model,ModelNumber
+Product Details,Model,ModelName
+Product Details,Nutrient,Nutrient1
+Product Details,Nutrient,Nutrient2
+Product Details,Nutrient,Nutrient3
+Product Details,Nutrient,Nutrient4
+Product Details,Nutrient,Nutrient5
+Product Details,Occasion,Occasion1
+Product Details,Occasion,Occasion2
+Product Details,Occasion,Occasion3
+Product Details,Occasion,Occasion4
+Product Details,Occasion,Occasion5
+Product Details,Occasion,OccasionType1
+Product Details,Occasion,OccasionType2
+Product Details,Occasion,OccasionType3
+Product Details,Occasion,OccasionType4
+Product Details,Occasion,OccasionType5
+Product Details,Optics,BaseCurveRadius
+Product Details,Optics,BaseCurveRadiusUnit
+Product Details,Optics,OpticalPower
+Product Details,Pattern,Pattern
+Product Details,Pet,PetType1
+Product Details,Pet,PetType2
+Product Details,Pet,PetType3
+Product Details,Pet,PetType4
+Product Details,Pet,PetType5
+Product Details,Pet,BreedRecommendation1
+Product Details,Pet,BreedRecommendation2
+Product Details,Pet,BreedRecommendation3
+Product Details,Pet,PetToyType
+Product Details,Protein,ProteinStringValue
+Product Details,Protein,ProteinUnit
+Product Details,Protein,Protein
+Product Details,Protein,ProteinSource1
+Product Details,Protein,ProteinSource2
+Product Details,Protein,ProteinSource
+Product Details,Scent,Scent1
+Product Details,Scent,Scent2
+Product Details,Scent,Scent3
+Product Details,Scent,Scent4
+Product Details,Scent,Scent5
+Product Details,SEO,ShortProductDescription
+Product Details,Serving,PillCoating
+Product Details,Serving,ServingRecommendation
+Product Details,Serving,ServingQuantity
+Product Details,Serving,ServingQuantityUnit
+Product Details,Serving,ServingSizeDescription
+Product Details,Serving,DosageForm
+Product Details,Serving,TotalServingsPerContainer
+Product Details,Serving,DoseReleaseMethod
+Product Details,Shelf Life,FulfillmentCenterShelfLife
+Product Details,Shelf Life,FulfillmentCenterShelfLifeUnit
+Product Details,Shelf Life,ProductShelfLife1
+Product Details,Shelf Life,ProductShelfLifeUnit1
+Product Details,Shelf Life,ProductShelfLife2
+Product Details,Shelf Life,ProductShelfLifeUnit2
+Product Details,Shelf Life,ProductShelfLife3
+Product Details,Shelf Life,ProductShelfLifeUnit3
+Product Details,Shelf Life,ProductShelfLife4
+Product Details,Shelf Life,ProductShelfLifeUnit4
+Product Details,Shelf Life,ProductShelfLife5
+Product Details,Shelf Life,ProductShelfLifeUnit5
+Product Details,Size,DogBreedSize1
+Product Details,Size,DogBreedSize2
+Product Details,Size,DogBreedSize3
+Product Details,Size,GaugeDecimalValue
+Product Details,Size,GaugeStringValue
+Product Details,Size,RingSize
+Product Details,Size,SizeSystem
+Product Details,Size,SizeClass
+Product Details,Size,SizeValue
+Product Details,Size,SpecificClothingSize1
+Product Details,Size,SpecificClothingSizeUnit1
+Product Details,Size,SpecificClothingSize2
+Product Details,Size,SpecificClothingSizeUnit2
+Product Details,Size,SpecificClothingSize3
+Product Details,Size,SpecificClothingSizeUnit3
+Product Details,Size,SpecificClothingSize4
+Product Details,Size,SpecificClothingSizeUnit4
+Product Details,Size,SpecificClothingSize5
+Product Details,Size,SpecificClothingSizeUnit5
+Product Details,Size,ShapewearSizeToRange
+Product Details,Size,CupSizeValue
+Product Details,Size,CupSizeToValue
+Product Details,Size,BandSizeValue
+Product Details,Size,BandSizeToValue
+Product Details,Size,SpecialSize
+Product Details,Size,ChestSize
+Product Details,Size,ChestSizeUnit
+Product Details,Size,CupSize
+Product Details,Size,GripSize
+Product Details,Size,WaistSize
+Product Details,Size,WaistSizeUnit
+Product Details,Size,ApparelSizeSystem
+Product Details,Size,ApparelSizeClass
+Product Details,Size,ApparelSizeValue
+Product Details,Size,ApparelSizeToRange
+Product Details,Size,ApparelSizeBodyType
+Product Details,Size,ApparelSizeHeightType
+Product Details,Size,ShirtSizeSystem
+Product Details,Size,ShirtSizeClass
+Product Details,Size,ShirtSizeValue
+Product Details,Size,ShirtSizeToRange
+Product Details,Size,NeckSizeValue
+Product Details,Size,NeckSizeToValue
+Product Details,Size,PaperSize
+Product Details,Size,PaperSizeUnit
+Product Details,Size,HardDiskSize
+Product Details,Size,HardDiskSizeUnit
+Product Details,Size,SizeDisplayName
+Product Details,Size,HeightMap1
+Product Details,Size,HeightMap2
+Product Details,Size,HeightMap3
+Product Details,Size,HeightMap4
+Product Details,Size,HeightMap5
+Product Details,Size,HeadwearSizeSystem
+Product Details,Size,HeadwearSizeClass
+Product Details,Size,HeadwearSizeValue
+Product Details,Size,HeadwearSizeToRange
+Product Details,Size,BrimWidth
+Product Details,Size,BrimWidthUnit
+Product Details,Size,HeadSize
+Product Details,Snack,ManufacturerFoodProcessingMethod
+Product Details,Snack,SnackChipType
+Product Details,Snack,SnackChipVariety
+Product Details,Specialty,Specialty1
+Product Details,Specialty,Specialty2
+Product Details,Specialty,Specialty3
+Product Details,Specialty,Specialty4
+Product Details,Specialty,Specialty5
+Product Details,Sport,GolfClubFlex
+Product Details,Sport,GolfClubLoft
+Product Details,Sport,GolfClubLoftUnit
+Product Details,Sport,SportType1
+Product Details,Sport,SportType2
+Product Details,Sport,SportType3
+Product Details,Sport,SportType4
+Product Details,Sport,SportType5
+Product Details,Sport,GripType
+Product Details,Sport,Athlete1
+Product Details,Sport,Athlete2
+Product Details,Sport,Athlete3
+Product Details,Sport,Athlete4
+Product Details,Sport,Athlete5
+Product Details,Sport,SoftballVariation1
+Product Details,Sport,SoftballVariation2
+Product Details,Starch,Starch
+Product Details,Starch,StarchString
+Product Details,Storage,StorageInstructions
+Product Details,Storage,TemperatureCondition
+Product Details,Sugars,SweetnessDescription
+Product Details,Sugars,SugarAlcohols
+Product Details,Sugars,SugarAlcoholsString
+Product Details,Sugars,Sugars
+Product Details,Sugars,SugarsString
+Product Details,Sugars,AddedSugars
+Product Details,Supplement,PrimarySupplementType1
+Product Details,Supplement,PrimarySupplementType2
+Product Details,Supplement,PrimarySupplementType3
+Product Details,Supplement,PrimarySupplementType4
+Product Details,Supplement,PrimarySupplementType5
+Product Details,Supplement,SupplementFormulation
+Product Details,Target,TargetSpecies
+Product Details,Target,TargetGender
+Product Details,Target,Lifestyle
+Product Details,Target,DepartmentName
+Product Details,Target,TargetAudience1
+Product Details,Target,TargetAudience2
+Product Details,Target,TargetAudience3
+Product Details,Target,TargetAudience4
+Product Details,Target,TargetAudience5
+Product Details,Target,TargetAudienceKeyword1
+Product Details,Target,TargetAudienceKeyword2
+Product Details,Target,TargetAudienceKeyword3
+Product Details,Target,TargetAudienceKeyword4
+Product Details,Target,TargetAudienceKeyword5
+Product Details,Tea,TeaVariety
+Product Details,Team Name,TeamName1
+Product Details,Team Name,TeamName2
+Product Details,Tech,ConnectivityTechnology1
+Product Details,Tech,ConnectivityTechnology2
+Product Details,Tech,ConnectivityTechnology3
+Product Details,Tech,ConnectivityTechnology4
+Product Details,Tech,ConnectivityTechnology5
+Product Details,Tech,DigitalStorageCapacity
+Product Details,Tech,DigitalStorageCapacityUnit
+Product Details,Tech,ProcessorDescription1
+Product Details,Tech,ProcessorDescription2
+Product Details,Tech,ProcessorDescription3
+Product Details,Tech,ProcessorDescription4
+Product Details,Tech,ProcessorDescription5
+Product Details,Temperature,IsTheItemHeatSensitive
+Product Details,Temperature,IstheItemHeatSensitive
+Product Details,Temperature,MeltingTemperaturedegreesCelsius
+Product Details,Temperature,MeltingTemperatureUnit
+Product Details,Temperature,TemperatureRating
+Product Details,Unit Count,UnitCount
+Product Details,Unit Count,UnitCountType
+Product Details,Unit Count,EachUnitCount
+Product Details,Use,RecommendedUsesForProduct1
+Product Details,Use,RecommendedUsesForProduct2
+Product Details,Use,RecommendedUsesForProduct3
+Product Details,Use,RecommendedUsesForProduct4
+Product Details,Use,RecommendedUsesForProduct5
+Product Details,Use,SpecificUsesforProduct1
+Product Details,Use,SpecificUsesforProduct2
+Product Details,Use,SpecificUsesforProduct3
+Product Details,Use,SpecificUsesforProduct4
+Product Details,Use,SpecificUsesforProduct5
+Product Details,Use,PlatformforDisplay
+Product Details,Use,IndoorOutdoorUsage1
+Product Details,Use,IndoorOutdoorUsage2
+Product Details,Vitamins,VitaminandMineralUnit1
+Product Details,Vitamins,VitaminsAndMinerals1
+Product Details,Vitamins,VitaminandMineralUnit2
+Product Details,Vitamins,VitaminsAndMinerals2
+Product Details,Vitamins,VitaminandMineralUnit3
+Product Details,Vitamins,VitaminsAndMinerals3
+Product Details,Vitamins,VitaminandMineralUnit4
+Product Details,Vitamins,VitaminsAndMinerals4
+Product Details,Vitamins,VitaminandMineralUnit5
+Product Details,Vitamins,VitaminsAndMinerals5
+Product Details,Vitamins,VitaminsandMineralsStringValue1
+Product Details,Vitamins,VitaminsandMineralsStringValue2
+Product Details,Vitamins,VitaminsandMineralsStringValue3
+Product Details,Vitamins,VitaminsandMineralsStringValue4
+Product Details,Vitamins,VitaminsandMineralsStringValue5
+Product Details,Warranty,WarrantyType
+Product Details,Warranty,WarrantyDescription1
+Product Details,Warranty,WarrantyDescription2
+Product Details,Warranty,WarrantyDescription3
+Product Details,Warranty,WarrantyDescription4
+Product Details,Warranty,WarrantyDescription5
+Safety & Compliance,Age Restriction,AgeRangeDescription
+Safety & Compliance,Age Restriction,IsThisProductSubjectToBuyerAgeRestrictions
+Safety & Compliance,Batteries,BatteryLifePercentage
+Safety & Compliance,Batteries,AreBatteriesRequired
+Safety & Compliance,Batteries,AreBatteriesIncluded
+Safety & Compliance,Batteries,BatteryCellComposition
+Safety & Compliance,Batteries,BatteryCellCompositionOtherThanListed
+Safety & Compliance,Batteries,BatteryWeight
+Safety & Compliance,Batteries,BatteryWeightUnit
+Safety & Compliance,Batteries,NumberOfBatteries1
+Safety & Compliance,Batteries,BatteryType1
+Safety & Compliance,Batteries,NumberOfBatteries2
+Safety & Compliance,Batteries,BatteryType2
+Safety & Compliance,Batteries,NumberOfBatteries3
+Safety & Compliance,Batteries,BatteryType3
+Safety & Compliance,Batteries,NumberOfBatteries4
+Safety & Compliance,Batteries,BatteryType4
+Safety & Compliance,Batteries,NumberOfBatteries5
+Safety & Compliance,Batteries,BatteryType5
+Safety & Compliance,Batteries,NumberOfLithiumMetalCells
+Safety & Compliance,Batteries,NumberOfLithiumIonCells
+Safety & Compliance,Batteries,LithiumBatteryEnergyContent
+Safety & Compliance,Batteries,LithiumBatteryEnergyContentUnit
+Safety & Compliance,Batteries,LithiumBatteryPackaging
+Safety & Compliance,Batteries,LithiumBatteryWeight
+Safety & Compliance,Batteries,LithiumBatteryWeightUnit
+Safety & Compliance,Batteries,BatteryIECCode
+Safety & Compliance,Batteries,HasMultipleBatteryPoweredComponents
+Safety & Compliance,Batteries,ContainsBatteryorCell
+Safety & Compliance,Batteries,BatteryContainsfreeUnabsorbedLiquid
+Safety & Compliance,Batteries,IsBatteryNonSpillable
+Safety & Compliance,Batteries,NonLithiumBatteryPackaging
+Safety & Compliance,Batteries,HasReplaceableBattery
+Safety & Compliance,Batteries,NonLithiumBatteryEnergyContent
+Safety & Compliance,Batteries,NonLithiumBatteryEnergyContentUnit
+Safety & Compliance,Batteries,HasLessthan30PercentStateofCharge
+Safety & Compliance,Batteries,BatteryInstallationDeviceType
+Safety & Compliance,Color,ComplianceWarpOrFillingColoring
+Safety & Compliance,Compliance,ComplianceRegulationType1
+Safety & Compliance,Compliance,RegulatoryIdentification1
+Safety & Compliance,Compliance,ProductComplianceCertificate
+Safety & Compliance,Compliance,RegulatoryOrganizationName
+Safety & Compliance,Compliance,ComplianceCertificationStatus
+Safety & Compliance,Compliance,ComplianceCertificationValue
+Safety & Compliance,Compliance,IsOEMSourcedProduct
+Safety & Compliance,Compliance,Copyright1
+Safety & Compliance,Compliance,Copyright2
+Safety & Compliance,Compliance,Copyright3
+Safety & Compliance,Compliance,Copyright4
+Safety & Compliance,Compliance,Copyright5
+Safety & Compliance,CP65,CaliforniaProposition65WarningType
+Safety & Compliance,CP65,CaliforniaProposition65ChemicalNames1
+Safety & Compliance,CP65,CaliforniaProposition65ChemicalNames2
+Safety & Compliance,CP65,CaliforniaProposition65ChemicalNames3
+Safety & Compliance,CP65,CaliforniaProposition65ChemicalNames4
+Safety & Compliance,CP65,CaliforniaProposition65ChemicalNames5
+Safety & Compliance,Dangerous Goods Regulations,DangerousGoodsRegulations1
+Safety & Compliance,Dangerous Goods Regulations,DangerousGoodsRegulations2
+Safety & Compliance,Dangerous Goods Regulations,DangerousGoodsRegulations3
+Safety & Compliance,Dangerous Goods Regulations,DangerousGoodsRegulations4
+Safety & Compliance,Dangerous Goods Regulations,DangerousGoodsRegulations5
+Safety & Compliance,Directions,Directions1
+Safety & Compliance,Directions,Directions2
+Safety & Compliance,Directions,Directions3
+Safety & Compliance,Directions,Directions4
+Safety & Compliance,Directions,Directions5
+Safety & Compliance,FCC,RadioFrequencyEmissionAuthorizationStatus
+Safety & Compliance,FCC,FCCID
+Safety & Compliance,FCC,SDoCContactName
+Safety & Compliance,FCC,SDoCContactUSMailingAddress
+Safety & Compliance,FCC,SDoCContactEmailAddress
+Safety & Compliance,FCC,SDOCContactUSPhoneNumber
+Safety & Compliance,GHS,GHSClass1
+Safety & Compliance,GHS,GHSClass2
+Safety & Compliance,GHS,GHSClass3
+Safety & Compliance,GHS,GHSClass4
+Safety & Compliance,GHS,GHSClass5
+Safety & Compliance,GHS,GHSChemicalHCode1
+Safety & Compliance,GHS,GHSChemicalHCode2
+Safety & Compliance,GHS,GHSChemicalHCode3
+Safety & Compliance,GHS,GHSChemicalHCode4
+Safety & Compliance,GHS,GHSChemicalHCode5
+Safety & Compliance,GPSR,GPSRSafetyAttestation
+Safety & Compliance,GPSR,Manufacturer_sEmailorElectronicAddress
+Safety & Compliance,Hazmat,HazmatAspect
+Safety & Compliance,Hazmat,Hazmat
+Safety & Compliance,Liquids,ContainsLiquidContents
+Safety & Compliance,Liquids,LiquidContentsDescription
+Safety & Compliance,Liquids,LiquidPackagingType
+Safety & Compliance,Liquids,IsTheLiquidProductDoubleSealed
+Safety & Compliance,Material,ComplianceDownPlumageWeight
+Safety & Compliance,Material,ComplianceOtherMaterialAdditions
+Safety & Compliance,Material,ComplianceIsFurskinPresent
+Safety & Compliance,Material,OuterMaterial1
+Safety & Compliance,Material,OuterMaterial2
+Safety & Compliance,Material,OuterMaterial3
+Safety & Compliance,Material,OuterMaterial4
+Safety & Compliance,Material,OuterMaterial5
+Safety & Compliance,Material,InnerMaterial
+Safety & Compliance,Material,ComplianceAnimalLeather
+Safety & Compliance,Material,ComplianceConstructionType
+Safety & Compliance,Material,ComplianceHandbagType
+Safety & Compliance,Material,ComplianceOuterSurfaceMaterial
+Safety & Compliance,Origin,RegionofOrigin
+Safety & Compliance,Origin,CountryofOrigin
+Safety & Compliance,Origin,CountryasLabeled
+Safety & Compliance,Pesticide,PesticideMarking1
+Safety & Compliance,Pesticide,PesticideRegistrationStatus1
+Safety & Compliance,Pesticide,PesticideCertificationNumber1
+Safety & Compliance,Pesticide,PesticideMarking2
+Safety & Compliance,Pesticide,PesticideRegistrationStatus2
+Safety & Compliance,Pesticide,PesticideCertificationNumber2
+Safety & Compliance,Pesticide,PesticideMarking3
+Safety & Compliance,Pesticide,PesticideRegistrationStatus3
+Safety & Compliance,Pesticide,PesticideCertificationNumber3
+Safety & Compliance,PFAS,ContainsPFAS
+Safety & Compliance,Responsible,ResponsiblePerson_sEmailorElectronicAddress
+Safety & Compliance,Safety,SafetyDataSheetSDSorMSDSURL
+Safety & Compliance,Safety,SafetyWarning1
+Safety & Compliance,Safety,SafetyWarning2
+Safety & Compliance,Safety,SafetyWarning3
+Safety & Compliance,Safety,SafetyWarning4
+Safety & Compliance,Safety,SafetyWarning5
+Safety & Compliance,Shipping,ShipsGlobally
+Safety & Compliance,Size,ComplianceChestSize
+Safety & Compliance,Textile,ComplianceBraType
+Safety & Compliance,Textile,ComplianceAgeRange
+Safety & Compliance,Textile,ComplianceWeaveType
+Safety & Compliance,Textile,ComplianceIsHandmade
+Safety & Compliance,Textile,CompliancePrintingMethod
+Safety & Compliance,Textile,ComplianceDressType
+Safety & Compliance,Textile,ComplianceTShirtDesign
+Safety & Compliance,Textile,ComplianceShirtType
+Safety & Compliance,Textile,ComplianceCollarType
+Safety & Compliance,Textile,ComplianceFabricType
+Safety & Compliance,Textile,ComplianceFabricWeight
+Safety & Compliance,Textile,ComplianceOperationMode
+Safety & Compliance,Textile,ComplianceFiberType
+Safety & Compliance,Textile,CompliancePajamaType
+Safety & Compliance,Textile,ComplianceBookType
+Safety & Compliance,Textile,CompliancePrintingAndPublicationCountry
+Safety & Compliance,Textile,CompliancePageCount
+Safety & Compliance,Textile,ComplianceJoiningMethod
+Safety & Compliance,Textile,ComplianceCoverType
+Safety & Compliance,Textile,ComplianceEmbellishmentFeature

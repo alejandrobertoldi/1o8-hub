@@ -1,0 +1,398 @@
+/* ── Help doc design system ──
+   Ported from docs/onboarding-process.html (style block, lines 9–295).
+   EVERY selector is namespaced under .help-doc so nothing leaks into the
+   hub shell (standing rule: report/print CSS with global body/* rules bleeds). */
+
+.help-doc {
+  /* custom props (from :root) */
+  --brand: #F7BF1D;
+  --brand-dim: #f5c842;
+  --bg: #f8f7f4;
+  --card: #ffffff;
+  --border: #e5e3dc;
+  --text: #1a1a1a;
+  --muted: #6b6b6b;
+  --badge-active: #dcfce7;
+  --badge-active-text: #166534;
+  --badge-inactive: #fee2e2;
+  --badge-inactive-text: #991b1b;
+  --badge-warn: #fef9c3;
+  --badge-warn-text: #854d0e;
+  --step-done: #22c55e;
+  --step-num: #F7BF1D;
+  /* from body */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.6;
+  /* card framing inside the dark hub shell */
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
+}
+
+.help-doc *,
+.help-doc *::before,
+.help-doc *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── Header ── */
+.help-doc .header {
+  background: #0f0f0f;
+  color: #fff;
+  padding: 32px 48px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.help-doc .header-logo {
+  width: 48px;
+  height: 48px;
+  background: var(--brand);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 22px;
+  color: #0f0f0f;
+  flex-shrink: 0;
+}
+.help-doc .header-title { font-size: 22px; font-weight: 700; }
+.help-doc .header-sub { font-size: 13px; color: #999; margin-top: 2px; }
+.help-doc .header-video {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--brand);
+  text-decoration: none;
+}
+.help-doc .header-video:hover { text-decoration: underline; }
+.help-doc .header-meta { margin-left: auto; text-align: right; font-size: 12px; color: #888; }
+
+/* ── Layout ── */
+.help-doc .container { max-width: 960px; margin: 0 auto; padding: 40px 24px 80px; }
+
+/* ── Section titles ── */
+.help-doc h2.section-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 16px;
+  margin-top: 48px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ── Overview cards ── */
+.help-doc .overview-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 12px;
+}
+.help-doc .ov-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+}
+.help-doc .ov-card .num {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--brand);
+  line-height: 1;
+}
+.help-doc .ov-card .label { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+/* ── Step cards ── */
+.help-doc .steps-list { display: flex; flex-direction: column; gap: 12px; }
+
+.help-doc .step-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.help-doc .step-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 18px 20px;
+  cursor: default;
+}
+.help-doc .step-num {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--brand);
+  color: #0f0f0f;
+  font-size: 13px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.help-doc .step-body { flex: 1; }
+.help-doc .step-title { font-size: 15px; font-weight: 700; }
+.help-doc .step-desc { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+.help-doc .badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 999px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+.help-doc .badge-aia { background: #fef3c7; color: #92400e; border: 1px solid #F7BF1D; }
+.help-doc .badge-nta { background: #f5f3ff; color: #7e22ce; border: 1px solid #a855f7; }
+.help-doc .badge-optional { background: #e0e7ff; color: #3730a3; }
+.help-doc .badge-vc { background: #f0fdf4; color: #166534; }
+.help-doc .type-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.help-doc .type-pill.aia { background: #fef3c7; color: #92400e; border: 1.5px solid #F7BF1D; }
+.help-doc .type-pill.nta { background: #f5f3ff; color: #7e22ce; border: 1.5px solid #a855f7; }
+.help-doc .type-pill.s-active { background: #dcfce7; color: #166534; border: 1.5px solid #22c55e; }
+.help-doc .type-pill.s-prospect { background: #fef3c7; color: #92400e; border: 1.5px solid #F7BF1D; }
+.help-doc .type-pill.s-inactive { background: #fee2e2; color: #991b1b; border: 1.5px solid #ef4444; }
+
+.help-doc .substeps {
+  border-top: 1px solid var(--border);
+  background: #fafaf8;
+  padding: 4px 0 4px 68px;
+}
+.help-doc .substep {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 20px 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.help-doc .substep:last-child { border-bottom: none; }
+.help-doc .substep-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--brand);
+  flex-shrink: 0;
+  margin-top: 6px;
+}
+.help-doc .substep-label { font-size: 13px; font-weight: 600; }
+.help-doc .substep-desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+/* ── Drive folder tree ── */
+.help-doc .folder-tree {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 24px;
+  font-family: "SF Mono", "Fira Mono", monospace;
+  font-size: 12.5px;
+  line-height: 1.8;
+}
+.help-doc .folder-root { font-weight: 700; color: var(--brand); }
+.help-doc .folder-line { color: #aaa; }
+.help-doc .folder-name { color: var(--text); }
+.help-doc .folder-type { color: var(--muted); font-size: 11px; margin-left: 8px; }
+
+/* ── Status change section ── */
+.help-doc .status-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.help-doc .status-card {
+  border-radius: 12px;
+  border: 1.5px solid;
+  padding: 20px 22px;
+}
+.help-doc .status-card.inactive {
+  border-color: #fca5a5;
+  background: #fff5f5;
+}
+.help-doc .status-card.active {
+  border-color: #86efac;
+  background: #f0fdf4;
+}
+.help-doc .status-card-title {
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.help-doc .status-card.inactive .status-card-title { color: #b91c1c; }
+.help-doc .status-card.active .status-card-title { color: #15803d; }
+.help-doc .dot-status {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.help-doc .status-card.inactive .dot-status { background: #ef4444; }
+.help-doc .status-card.active .dot-status { background: #22c55e; }
+
+.help-doc .consequence-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.help-doc .consequence-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
+}
+.help-doc .c-icon {
+  font-size: 14px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.help-doc .flow-arrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin-top: 16px;
+  font-size: 13px;
+}
+.help-doc .flow-pill {
+  padding: 3px 12px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+}
+.help-doc .flow-pill.inactive { background: var(--badge-inactive); color: var(--badge-inactive-text); }
+.help-doc .flow-pill.active { background: var(--badge-active); color: var(--badge-active-text); }
+.help-doc .flow-pill.drive { background: #e0f2fe; color: #0369a1; }
+.help-doc .arrow { color: var(--muted); font-size: 16px; }
+
+.help-doc .confirm-note {
+  margin-top: 16px;
+  background: var(--badge-warn);
+  border: 1px solid #fde68a;
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 13px;
+  color: var(--badge-warn-text);
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+/* ── Print ── */
+@media print {
+  .help-doc { background: #fff; }
+  .help-doc .header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .help-doc .step-card, .help-doc .status-card, .help-doc .ov-card { break-inside: avoid; }
+}
+
+/* ── Extensions for migrated docs + index tiles ── */
+.help-doc .container p { margin: 0 0 12px; }
+.help-doc .container ul, .help-doc .container ol { margin: 0 0 12px 20px; }
+.help-doc .container li { margin-bottom: 4px; }
+.help-doc .container h3 { font-size: 16px; font-weight: 700; margin: 24px 0 8px; }
+.help-doc .container h4 { font-size: 14px; font-weight: 700; margin: 16px 0 6px; }
+.help-doc .container a { color: var(--brand); text-decoration: none; }
+.help-doc .container a:hover { text-decoration: underline; }
+
+.help-doc .toc { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin-bottom: 24px; }
+.help-doc .toc h3 { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin: 0 0 8px; }
+.help-doc .toc ul { list-style: none; display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 0; }
+.help-doc .toc a { font-size: 13px; }
+
+.help-doc code { background: #f1f1f1; padding: 1px 6px; border-radius: 4px; font-size: 12px; font-family: "SF Mono","Fira Mono",monospace; }
+.help-doc pre { background: #1e1e21; color: #e4e4e7; border-radius: 10px; padding: 16px 18px; overflow-x: auto; font-size: 12.5px; line-height: 1.6; margin: 0 0 16px; }
+.help-doc pre code { background: transparent; padding: 0; color: inherit; font-size: inherit; }
+
+.help-doc table { width: 100%; border-collapse: collapse; margin: 0 0 16px; font-size: 13px; }
+.help-doc th, .help-doc td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+.help-doc th { font-weight: 700; color: var(--muted); text-transform: uppercase; font-size: 11px; letter-spacing: 0.05em; }
+
+.help-doc .help-tile { display: block; text-decoration: none; color: var(--text); transition: border-color .15s, box-shadow .15s; }
+.help-doc .help-tile:hover { border-color: var(--brand); box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+.help-doc .help-tile-title { font-size: 15px; font-weight: 700; }
+.help-doc .help-tile-desc { font-size: 13px; color: var(--muted); margin-top: 6px; line-height: 1.5; }
+
+.help-doc .container > section:first-child .section-title { margin-top: 0; }
+
+/* ── Extensions: design-upload guide ── */
+.help-doc .container .lead { font-size: 14px; color: var(--muted); max-width: 720px; margin: 0 0 8px; }
+
+.help-doc .info-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; }
+.help-doc .info-card + .info-card { margin-top: 12px; }
+.help-doc .info-card h3 { font-size: 14px; font-weight: 700; margin: 0 0 6px; }
+.help-doc .info-card p { font-size: 13px; color: var(--muted); margin: 0 0 8px; }
+.help-doc .info-card p:last-child { margin-bottom: 0; }
+.help-doc .concept-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+.help-doc .slot-mock { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.help-doc .slot-chip { border: 1.5px dashed var(--border); border-radius: 8px; width: 72px; height: 72px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: var(--muted); background: #fafaf8; }
+.help-doc .slot-chip.main { border-style: solid; border-color: var(--brand); color: var(--text); }
+
+.help-doc .badge-auto { background: #f0fdf4; color: #166534; }
+
+.help-doc .status-pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; white-space: nowrap; border: 1.5px solid; }
+.help-doc .status-pill .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.help-doc .sp-not    { background: #f5f5f4; color: #57534e; border-color: #d6d3d1; }
+.help-doc .sp-not    .dot { background: #78716c; }
+.help-doc .sp-prog   { background: #fef3c7; color: #92400e; border-color: #f59e0b; }
+.help-doc .sp-prog   .dot { background: #f59e0b; }
+.help-doc .sp-review { background: #dbeafe; color: #1e40af; border-color: #3b82f6; }
+.help-doc .sp-review .dot { background: #3b82f6; }
+.help-doc .sp-appr   { background: #f5f3ff; color: #6d28d9; border-color: #8b5cf6; }
+.help-doc .sp-appr   .dot { background: #8b5cf6; }
+.help-doc .sp-live   { background: #dcfce7; color: #166534; border-color: #22c55e; }
+.help-doc .sp-live   .dot { background: #22c55e; }
+.help-doc .sp-disc   { background: #ffe4e6; color: #9f1239; border-color: #f43f5e; }
+.help-doc .sp-disc   .dot { background: #f43f5e; }
+
+.help-doc .status-table { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin: 0 0 16px; }
+.help-doc .status-table th { text-align: left; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); font-weight: 700; padding: 12px 16px; background: #fafaf8; border-bottom: 1px solid var(--border); }
+.help-doc .status-table td { padding: 14px 16px; border-bottom: 1px solid var(--border); font-size: 13px; vertical-align: top; }
+.help-doc .status-table tr:last-child td { border-bottom: none; }
+.help-doc .status-table td:first-child { white-space: nowrap; width: 1%; }
+
+.help-doc .vpill { background: #eef2ff; color: #3730a3; font-family: "SF Mono", "Fira Mono", monospace; }
+
+/* ── Section-tree explorer (Help index — mirrors the app nav) ── */
+.help-doc .tree-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+.help-doc .tree-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.help-doc .tree-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 18px; border-bottom: 1px solid var(--border); background: #fafaf8; }
+.help-doc .tree-head-title { font-size: 14px; font-weight: 800; display: flex; align-items: center; gap: 10px; }
+.help-doc .tree-head-icon { width: 26px; height: 26px; border-radius: 8px; background: var(--brand); color: #0f0f0f; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 900; flex-shrink: 0; letter-spacing: 0.02em; }
+.help-doc .tree-head-count { font-size: 11px; font-weight: 700; color: var(--muted); }
+.help-doc .tree-node { display: flex; align-items: center; gap: 10px; padding: 11px 18px; border-bottom: 1px solid var(--border); text-decoration: none; color: var(--text); transition: background .15s; }
+.help-doc .tree-node:last-child { border-bottom: none; }
+.help-doc .tree-node:hover { background: #fffaf0; text-decoration: none; }
+.help-doc .tree-node-dot { width: 7px; height: 7px; border-radius: 50%; background: #d6d3d1; flex-shrink: 0; }
+.help-doc .tree-node-label { font-size: 13px; font-weight: 600; flex: 1; color: var(--text); }
+.help-doc .tree-node-path { font-size: 11px; color: var(--muted); font-family: "SF Mono", "Fira Mono", monospace; }
+.help-doc .tree-node.has-sop .tree-node-dot { background: var(--brand); }
+.help-doc .tree-node.muted { opacity: 0.6; }
+.help-doc .tree-node-arrow { color: var(--brand); font-weight: 800; }
+.help-doc .sop-badge { display: inline-flex; align-items: center; font-size: 10px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: #92400e; background: #fef3c7; border: 1px solid var(--brand); padding: 2px 7px; border-radius: 999px; }
+
+@media (max-width: 720px) {
+  .help-doc .concept-grid,
+  .help-doc .status-grid,
+  .help-doc .tree-grid { grid-template-columns: 1fr; }
+}
