@@ -359,3 +359,10 @@ recycle) as a safety net.
 
 Also: the MarketFoundry favicon (`src/app/favicon.ico`) was replaced with the 1o8 mark, plus an apple icon and
 Open Graph tags for link previews. A version label (commit + build time, Chicago) sits bottom right.
+
+## SEO = Blog Writer placeholder (2026-10-23)
+
+The SEO menu only shows **Blog Writer** (`/seo/blog-writer`, "Under construction"). MarketFoundry's SEO Dashboard,
+SEO Manager, Guidelines and SEO Config are hidden from the nav (pages still exist). Plan: bring the local
+seo-writer app (~/Documents/1o8/Ops/SEO/seo-writer) in here — keywords, content ideas and blog posts per client,
+with a client selector; brand voice already lives in Client Settings → Brand Voice.

@@ -30,7 +30,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Download, Handshake, Users, UserCog, Activity, BarChart3, Key, KeyRound, ListChecks, ScrollText, DollarSign, Eye, ChevronRight, GitCompare, GitBranch, LayoutTemplate, CalendarDays, Palette, Shield, RefreshCw, Headset, Sparkles, Search, ArrowRightLeft, TrendingUp, Package, PackageOpen, Layers, ShoppingBag, ClipboardList, Calculator, Boxes, BookOpen, ImageIcon, Store, Target, Clock, Tags, Percent, type LucideIcon } from "lucide-react";
+import { Download, Handshake, PenLine, Users, UserCog, Activity, BarChart3, Key, KeyRound, ListChecks, ScrollText, DollarSign, Eye, ChevronRight, GitCompare, GitBranch, LayoutTemplate, CalendarDays, Palette, Shield, RefreshCw, Headset, Sparkles, Search, ArrowRightLeft, TrendingUp, Package, PackageOpen, Layers, ShoppingBag, ClipboardList, Calculator, Boxes, BookOpen, ImageIcon, Store, Target, Clock, Tags, Percent, type LucideIcon } from "lucide-react";
 import { canAccess, CROSS_DEPARTMENT_LINKS } from "@/lib/permissions";
 
 export function AppSidebar() {
@@ -129,10 +129,8 @@ export function AppSidebar() {
       label: "SEO",
       icon: Search,
       items: [
-        { title: "SEO Dashboard", href: "/seo", icon: BarChart3, visible: checkAccess("seo") },
-        { title: "SEO Manager", href: "/seo/manager", icon: Search, visible: checkAccess("seo") },
-        { title: "Guidelines", href: "/guidelines", icon: ScrollText, visible: checkAccess("seo") || checkAccess("catalog") || isAdmin },
-        { title: "SEO Config", href: "/seo/config", icon: Sparkles, visible: isAdmin },
+        // 1o8 (2026-10-23): only the Blog Writer for now. MarketFoundry's SEO pages are hidden, not removed.
+        { title: "Blog Writer", href: "/seo/blog-writer", icon: PenLine, visible: checkAccess("seo") },
       ],
     },
     {

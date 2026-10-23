@@ -60,7 +60,7 @@ import {
   ShoppingBag, ClipboardList, Calculator, Boxes, BookOpen, ImageIcon,
   Store, Target, Menu, MessageSquareText, UserPlus, ImagePlus, Star,
   HelpCircle, X as XIcon, ChevronRight, Table, Clock, Tags, Contact, Gift, Plane, FileText, KeyRound, Percent, Presentation, LayoutDashboard, Mail, Megaphone, Globe, type LucideIcon,
-  Handshake, LayoutGrid, Gauge,
+  Handshake, LayoutGrid, Gauge, PenLine,
 } from "lucide-react";
 import { toast } from "sonner";
 import { isApprover, canSubmitTimeOff } from "@/lib/time-off/guards";
@@ -243,10 +243,8 @@ export function TopNav() {
     {
       label: "SEO", icon: Search,
       items: [
-        { title: "SEO Dashboard", href: "/seo", icon: BarChart3, visible: checkAccess("seo") },
-        { title: "SEO Manager", href: "/seo/manager", icon: Search, visible: checkAccess("seo") },
-        { title: "Guidelines", href: "/guidelines", icon: ScrollText, visible: checkAccess("seo") || isAdmin },
-        { title: "SEO Config", href: "/seo/config", icon: Sparkles, visible: isAdmin },
+        // 1o8 (2026-10-23): only the Blog Writer for now. MarketFoundry's SEO pages are hidden, not removed.
+        { title: "Blog Writer", href: "/seo/blog-writer", icon: PenLine, visible: checkAccess("seo") },
       ],
     },
     {

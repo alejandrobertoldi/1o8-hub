@@ -71,7 +71,7 @@ const NAV_ITEMS: NavCmd[] = [
   { label: "Team", href: "/team", icon: Users },
   { label: "Team assignments", href: "/team/assignments", icon: Users },
   { label: "Team readiness", href: "/team/readiness", icon: Users },
-  { label: "SEO Manager", href: "/seo", icon: Search },
+  { label: "Blog Writer", href: "/seo/blog-writer", icon: Search },
   { label: "Reports", href: "/reports", icon: BarChart3 },
   { label: "Calendar", href: "/calendar", icon: CalendarDays },
   { label: "Email send dates", href: "/email/send-dates", icon: CalendarDays },
