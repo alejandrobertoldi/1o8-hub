@@ -347,3 +347,15 @@ Production environment variables live in Vercel; `.env.vercel` (gitignored) is t
   Team, Clients, Timeline, SEO, Activity). MarketFoundry's Amazon sections (catalog, Amazon Sync, A+ content,
   PPC/sales, reports cards, finances, import/export) stay defined for the client portal, just not shown; "All"
   on a row only toggles the visible ones and keeps any hidden grants.
+
+## Supabase connection: use the session pooler (port 5432)
+
+`DATABASE_URL` in Vercel must point at Supabase's **session** pooler (`…pooler.supabase.com:5432`), not the
+transaction pooler (6543). Reproduced 2026-10-23: through 6543, postgres.js pipelines a query onto a busy
+connection (several queries in parallel with `max: 3`) and the transaction pooler never answers it — the
+Readiness page hung on "Loading…" and wedged the pool. Through 5432 the same calls run in 0.2–1 s every time.
+`.env.vercel` already has the 5432 URL. Readiness routes are also wrapped in `guarded()` (time budget + pool
+recycle) as a safety net.
+
+Also: the MarketFoundry favicon (`src/app/favicon.ico`) was replaced with the 1o8 mark, plus an apple icon and
+Open Graph tags for link previews. A version label (commit + build time, Chicago) sits bottom right.
