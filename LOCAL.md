@@ -338,3 +338,12 @@ To release ("publish"):
 4. New environment variables go into Vercel (Settings → Environment Variables) and need a Redeploy.
 
 Production environment variables live in Vercel; `.env.vercel` (gitignored) is the local copy used to set them.
+
+## Hidden for now (2026-10-23)
+
+- **Finances** (Finance Reports, Rev Calculator) is hidden from the nav (`visible: false` in top-nav and
+  app-sidebar). Pages still exist at /finances and /tools/rev-calculator.
+- **Admin → Users** only shows the 1o8 section columns (`HUB_SECTION_IDS` in `src/lib/permissions.ts`: Calendar,
+  Team, Clients, Timeline, SEO, Activity). MarketFoundry's Amazon sections (catalog, Amazon Sync, A+ content,
+  PPC/sales, reports cards, finances, import/export) stay defined for the client portal, just not shown; "All"
+  on a row only toggles the visible ones and keeps any hidden grants.

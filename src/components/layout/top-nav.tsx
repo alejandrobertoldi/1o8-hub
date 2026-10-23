@@ -252,8 +252,8 @@ export function TopNav() {
     {
       label: "Finances", icon: DollarSign,
       items: [
-        { title: "Finance Reports", href: "/finances", icon: BarChart3, visible: checkAccess("finances") },
-        { title: "Rev Calculator", href: "/tools/rev-calculator", icon: Calculator, visible: checkAccess("finances") },
+        { title: "Finance Reports", href: "/finances", icon: BarChart3, visible: false }, // Finances hidden for now (2026-10-23); was checkAccess("finances")
+        { title: "Rev Calculator", href: "/tools/rev-calculator", icon: Calculator, visible: false }, // hidden for now; was checkAccess("finances")
       ],
     },
     {

@@ -74,7 +74,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { CONFIGURABLE_SECTIONS } from "@/lib/permissions";
+import { HUB_CONFIGURABLE_SECTIONS as CONFIGURABLE_SECTIONS } from "@/lib/permissions";
 import { INTERNAL_TEAMS } from "@/lib/constants";
 import { PageMetaSlot } from "@/components/layout/page-header-slot";
 import {
@@ -475,7 +475,11 @@ function UsersPageInner() {
                     checked={allChecked}
                     disabled={isUserAdmin || sectionMutation.isPending}
                     onCheckedChange={() => {
-                      const next = allChecked ? [] : [...allIds];
+                      // Only the visible (1o8) sections change; hidden grants are kept as they are.
+                      const current = user.allowedSections ?? [];
+                      const next = allChecked
+                        ? current.filter((id) => !allIds.includes(id))
+                        : [...new Set([...current, ...allIds])];
                       sectionMutation.mutate({ userId: user.id, allowedSections: next });
                     }}
                   />

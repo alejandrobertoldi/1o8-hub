@@ -162,6 +162,17 @@ export const CONFIGURABLE_SECTIONS = [
   { id: "export", label: "Export", type: "admin" as const, dept: null },
 ];
 
+/**
+ * The sections 1o8 actually uses (2026-10-23), shown as columns in Admin → Users.
+ * The rest of CONFIGURABLE_SECTIONS are MarketFoundry's Amazon modules (catalog,
+ * A+ content, PPC, sales…) and stay defined for the client portal, just hidden.
+ * Finances is hidden for now too.
+ */
+export const HUB_SECTION_IDS = ["calendar", "team", "clients", "timeline", "seo", "activity"] as const;
+export const HUB_CONFIGURABLE_SECTIONS = CONFIGURABLE_SECTIONS.filter((s) =>
+  (HUB_SECTION_IDS as readonly string[]).includes(s.id),
+);
+
 /** Design Hub cards/nav children. Granting the parent `design` department
  * without these leaves `/portal/design` empty for client-role users
  * (`canAccess` does not cascade department → subsection).
