@@ -354,7 +354,8 @@ Production environment variables live in Vercel; `.env.vercel` (gitignored) is t
 transaction pooler (6543). Reproduced 2026-10-23: through 6543, postgres.js pipelines a query onto a busy
 connection (several queries in parallel with `max: 3`) and the transaction pooler never answers it — the
 Readiness page hung on "Loading…" and wedged the pool. Through 5432 the same calls run in 0.2–1 s every time.
-`.env.vercel` already has the 5432 URL. Readiness routes are also wrapped in `guarded()` (time budget + pool
+`.env.vercel` already has the 5432 URL, and since 2026-10-23 `src/lib/db/index.ts` (`toSessionPoolerUrl`) switches a
+`…pooler.supabase.com:6543` URL to 5432 on its own, so the fix doesn't depend on the Vercel variable. Readiness routes are also wrapped in `guarded()` (time budget + pool
 recycle) as a safety net.
 
 Also: the MarketFoundry favicon (`src/app/favicon.ico`) was replaced with the 1o8 mark, plus an apple icon and

@@ -2,7 +2,20 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import * as schema from "./schema";
 
-const connectionString = process.env.DATABASE_URL!;
+/**
+ * 1o8 (2026-10-23): always use Supabase's SESSION pooler (port 5432), even if
+ * DATABASE_URL names the transaction pooler (6543). postgres.js pipelines a
+ * query onto a busy connection whenever a handler runs more queries in
+ * parallel than `max`, and the transaction pooler never answers that query
+ * (reproduced against our Supabase: second round of 4–5 parallel selects hangs
+ * every time on 6543, never on 5432). Online that left Readiness and My
+ * Dashboard sections on "Loading…" and wedged the pool.
+ */
+export function toSessionPoolerUrl(url: string): string {
+  return /\.pooler\.supabase\.com:6543\//.test(url) ? url.replace(":6543/", ":5432/") : url;
+}
+
+const connectionString = toSessionPoolerUrl(process.env.DATABASE_URL!);
 
 // Prevent connection pool exhaustion during HMR in development.
 // Each hot-reload re-executes this module, creating a new postgres client.
