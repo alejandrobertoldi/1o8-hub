@@ -317,3 +317,24 @@ compliance), Timesheet (searchable entries, latest 2,000). Scope: period, team, 
 - `next build` passes (fixed five inherited type errors in scripts/tests that newer TypeScript types flagged).
 - The "Local dev login" only exists in development; online sign-in is Google OAuth. Unknown Google accounts
   land as `pending` until an admin approves them.
+
+## Working locally, releasing to production
+
+Online QA: **https://1o8-hub.vercel.app** (Vercel project `1o8-hub`, team 1o8-agency; database on Supabase;
+GitHub `alejandrobertoldi/1o8-hub`). Vercel deploys every push to `main` automatically.
+
+Day to day:
+1. Build and test everything locally (`npm run db:local` + the 1o8Hub preview on :3108). Commits stay on this
+   Mac: **nothing goes online until `git push`.**
+2. Local and online data are separate. Local data is for development; the online database is what the team uses.
+   Only code and schema (table structure) travel on a release, never local data.
+
+To release ("publish"):
+1. Full test run, `npx tsc --noEmit`, and `npx next build` (stop the dev server first; they share `.next`).
+2. If the schema changed: `npm run db:push:prod` (additive changes go straight through; if drizzle-kit asks a
+   question, stop and review). Run it **before** pushing, so the new code never meets an old database.
+   Data seeds that a migration adds (e.g. new rows in a config table) are applied separately and on purpose.
+3. `git push` → Vercel builds and publishes in ~3 minutes. Check https://1o8-hub.vercel.app afterwards.
+4. New environment variables go into Vercel (Settings → Environment Variables) and need a Redeploy.
+
+Production environment variables live in Vercel; `.env.vercel` (gitignored) is the local copy used to set them.

@@ -213,7 +213,7 @@ export function TopNav() {
       label: "Clients", icon: Users,
       items: [
         { title: "Client Onboarding", href: "/onboarding", icon: ClipboardList, visible: isAdmin },
-        { title: "Client Summary", href: "/", icon: Users, visible: true },
+        { title: "Client Summary", href: "/clients", icon: Users, visible: true },
         { title: "Brand Guidelines", href: "/clients/brand-guidelines", icon: BookOpen, visible: true },
         { title: "Client Timelines", href: "/timeline", icon: CalendarDays, visible: isAdmin },
         { title: "Client Reports", href: "/reports", icon: BarChart3, visible: checkAccess("reports"), crossDept: getCrossDeptLabels("reports", "clients") },
@@ -524,7 +524,7 @@ export function TopNav() {
                       </CollapsibleTrigger>
                       <CollapsibleContent>
                         {sec.items.map((item) => {
-                          const isActive = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+                          const isActive = item.href === "/" || item.href === "/clients" ? pathname === item.href : pathname.startsWith(item.href);
                           return (
                             <Link
                               key={item.href}
@@ -609,7 +609,7 @@ export function TopNav() {
                   <NavigationMenuContent className={alignEnd ? "left-auto right-0 origin-top-right" : undefined}>
                     <OpalMenu activeKey={pathname}>
                       {sec.items.map((item) => {
-                        const isActive = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+                        const isActive = item.href === "/" || item.href === "/clients" ? pathname === item.href : pathname.startsWith(item.href);
                         return (
                           <Link
                             key={item.href}

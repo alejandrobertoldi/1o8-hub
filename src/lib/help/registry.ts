@@ -122,7 +122,7 @@ export const HELP_TREE: HelpTreeSection[] = [
     icon: "CL",
     items: [
       { label: "Client Onboarding", href: "/onboarding", slug: "onboarding-process" },
-      { label: "Client Summary", href: "/" },
+      { label: "Client Summary", href: "/clients" },
       { label: "Brand Guidelines", href: "/clients/brand-guidelines" },
       { label: "Client Timelines", href: "/timeline" },
       { label: "Client Reports", href: "/reports" },

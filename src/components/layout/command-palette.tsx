@@ -67,7 +67,7 @@ type SearchResults = {
 type NavCmd = { label: string; href: string; icon: LucideIcon; admin?: boolean; superAdmin?: boolean };
 
 const NAV_ITEMS: NavCmd[] = [
-  { label: "Client Summary", href: "/", icon: Users },
+  { label: "Client Summary", href: "/clients", icon: Users },
   { label: "Team", href: "/team", icon: Users },
   { label: "Team assignments", href: "/team/assignments", icon: Users },
   { label: "Team readiness", href: "/team/readiness", icon: Users },
