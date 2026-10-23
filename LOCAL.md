@@ -311,7 +311,8 @@ compliance), Timesheet (searchable entries, latest 2,000). Scope: period, team, 
 
 - Git repo initialised here (`main`). `.gitignore` also excludes `/.data/` (local Postgres with real data),
   `q.tmp.*` and `docs/master-table.xlsx` (58 MB MarketFoundry Amazon export).
-- `vercel.json` crons trimmed to the two 1o8 uses: Asana sync every 15 min and the daily Readiness snapshot
+- `vercel.json` crons trimmed to the daily Readiness snapshot (07:00 Chicago), which also syncs Asana. The Vercel
+  account is on Hobby, which only allows daily crons; on Pro, add back `/api/cron/asana-tasks-sync` every 15 min
   (MarketFoundry's Amazon/BigQuery/Redshift/reviews crons are in `../mfHub-main/vercel.json` if ever needed).
 - `next build` passes (fixed five inherited type errors in scripts/tests that newer TypeScript types flagged).
 - The "Local dev login" only exists in development; online sign-in is Google OAuth. Unknown Google accounts
