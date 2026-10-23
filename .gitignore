@@ -99,3 +99,8 @@ q.tmp.*
 /docs/master-table.xlsx
 /seo-manager-reference/
 /.cursor/Dockerfile
+/newsletter/
+/.claude/*
+!/.claude/skills/
+/.claude/skills/*
+!/.claude/skills/1o8-seo-manager/
