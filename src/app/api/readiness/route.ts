@@ -5,6 +5,7 @@ import { getAuthSession } from "@/lib/auth-db";
 import { isHubStaff } from "@/lib/roles";
 import { chicagoToday } from "@/lib/readiness/match";
 import { captureSnapshot, computeReadiness, listSnapshotDates, loadSnapshot } from "@/lib/readiness/server";
+import { guarded } from "@/lib/db/guarded-route";
 
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
 const shift = (date: string, days: number) => {
@@ -19,7 +20,7 @@ const shift = (date: string, days: number) => {
  * the requested one). If today has no snapshot yet and it's past 6 am in
  * Chicago, today's is captured on the spot — a fallback for the morning cron.
  */
-export async function GET(req: NextRequest) {
+async function getHandler(req: NextRequest) {
   const session = await getAuthSession();
   if (!session || !isHubStaff(session.user.role)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
@@ -38,3 +39,5 @@ export async function GET(req: NextRequest) {
   const [live, compare] = await Promise.all([computeReadiness(today), compareDate ? loadSnapshot(compareDate) : Promise.resolve(null)]);
   return NextResponse.json({ live, compare, compareDate, snapshotDates: dates });
 }
+
+export const GET = guarded("GET /api/readiness", 20_000, getHandler);

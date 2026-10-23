@@ -8,13 +8,14 @@ import { users } from "@/lib/db/schema";
 import { isHubStaff } from "@/lib/roles";
 import { chicagoToday, readinessDepartmentFor } from "@/lib/readiness/match";
 import { computeReadiness, listSnapshotDates, loadSnapshot, personReadiness } from "@/lib/readiness/server";
+import { guarded } from "@/lib/db/guarded-route";
 
 /**
  * GET /api/readiness/person?user=<id> — one person's live readiness and their
  * department's, plus the latest saved snapshot before today to compare with
  * (for My Dashboard). Defaults to the signed-in user. Staff only, like the board.
  */
-export async function GET(req: NextRequest) {
+async function getHandler(req: NextRequest) {
   const session = await getAuthSession();
   if (!session || !isHubStaff(session.user.role)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const userId = req.nextUrl.searchParams.get("user") || session.user.id;
@@ -29,3 +30,5 @@ export async function GET(req: NextRequest) {
   const before = prev ? personReadiness(prev, userId, now.person?.department ?? fallback) : null;
   return NextResponse.json({ date: today, compareDate, ...now, prevPerson: before?.person ?? null, prevTeam: before?.team ?? null });
 }
+
+export const GET = guarded("GET /api/readiness/person", 15_000, getHandler);

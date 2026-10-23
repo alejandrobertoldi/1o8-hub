@@ -9,6 +9,7 @@ import { asanaAssigneeMap, serviceProviders } from "@/lib/db/schema";
 import { hasAdminPowers } from "@/lib/roles";
 import { READINESS_DEPARTMENTS } from "@/lib/readiness/match";
 import { listAssigneeMap } from "@/lib/readiness/server";
+import { guarded } from "@/lib/db/guarded-route";
 
 async function admin() {
   const session = await getAuthSession();
@@ -16,7 +17,7 @@ async function admin() {
 }
 
 /** GET — every Asana assignee with its mapping (admins). */
-export async function GET() {
+async function getHandler() {
   if (!(await admin())) return NextResponse.json({ error: "Only admins can edit the assignee mapping" }, { status: 403 });
   const [assignees, providers] = await Promise.all([
     listAssigneeMap(),
@@ -49,3 +50,5 @@ export async function PATCH(req: NextRequest) {
     .returning({ key: asanaAssigneeMap.assigneeKey });
   return res.length ? NextResponse.json({ ok: true }) : NextResponse.json({ error: "Not found" }, { status: 404 });
 }
+
+export const GET = guarded("GET /api/readiness/assignees", 15_000, getHandler);
