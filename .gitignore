@@ -97,3 +97,5 @@ docs/*_ALR.txt
 /.data/
 q.tmp.*
 /docs/master-table.xlsx
+/seo-manager-reference/
+/.cursor/Dockerfile
