@@ -268,6 +268,7 @@ export function TopNav() {
         { title: "Sync & Export", href: "/publish", icon: RefreshCw, visible: checkAccess("publish") },
         { title: "Users", href: "/admin/users", icon: UserCog, visible: isAdmin },
         { title: "Service Providers", href: "/admin/service-providers", icon: Handshake, visible: isAdmin },
+        { title: "AAC Sheet Sync", href: "/admin/aac-sync", icon: RefreshCw, visible: isAdmin },
         { title: "Shared Logins", href: "/admin/logins", icon: KeyRound, visible: true },
         { title: "Helium 10", href: "/admin/helium10", icon: Key, visible: isAdmin && helium10Enabled() },
         { title: "Observability", href: "/admin/observability", icon: Activity, visible: isAdmin },

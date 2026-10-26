@@ -4819,3 +4819,23 @@ export const readinessSnapshots = pgTable(
 );
 
 export type ReadinessSnapshot = typeof readinessSnapshots.$inferSelect;
+
+// ─── AAC sheet two-way sync (0141) ───────────────────────────────────
+// Last value the hub and the "AAC 1o8" sheet agreed on, per client and column
+// key, so a sync knows which side changed (see src/lib/aac-sync/merge.ts).
+export const aacSheetBaseline = pgTable("aac_sheet_baseline", {
+  clientIdCode: varchar("client_id_code", { length: 100 }).primaryKey(),
+  values: jsonb("values").$type<Record<string, string>>().notNull().default({}),
+  syncedAt: timestamp("synced_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// One row per sync run (manual, sheet edit hook, hub edit, daily), with what it changed.
+export const aacSyncRuns = pgTable("aac_sync_runs", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  trigger: varchar("trigger", { length: 40 }).notNull(),
+  dryRun: boolean("dry_run").notNull().default(false),
+  startedAt: timestamp("started_at", { withTimezone: true }).notNull().defaultNow(),
+  finishedAt: timestamp("finished_at", { withTimezone: true }),
+  report: jsonb("report").$type<Record<string, unknown>>(),
+  error: text("error"),
+});

@@ -81,6 +81,7 @@ const NAV_ITEMS: NavCmd[] = [
   { label: "Activity", href: "/activity", icon: Activity },
   { label: "Shared Logins", href: "/admin/logins", icon: KeyRound },
   { label: "Service providers", href: "/admin/service-providers", icon: Handshake, admin: true },
+  { label: "AAC sheet sync", href: "/admin/aac-sync", icon: Handshake, admin: true },
   { label: "AI Config", href: "/admin/ai", icon: Sparkles, admin: true },
   { label: "Team Management", href: "/admin/users", icon: Shield, admin: true },
   { label: "Hours insights", href: "/hours/insights", icon: BarChart3, admin: true },

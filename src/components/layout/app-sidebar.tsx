@@ -150,6 +150,7 @@ export function AppSidebar() {
         { title: "Sync & Export", href: "/publish", icon: RefreshCw, visible: checkAccess("publish") },
         { title: "Users", href: "/admin/users", icon: UserCog, visible: isAdmin },
         { title: "Service Providers", href: "/admin/service-providers", icon: Handshake, visible: isAdmin },
+        { title: "AAC Sheet Sync", href: "/admin/aac-sync", icon: RefreshCw, visible: isAdmin },
         { title: "SP-API Credentials", href: "/admin/sp-api", icon: Key, visible: isAdmin },
         { title: "Shared Logins", href: "/admin/logins", icon: KeyRound, visible: true },
         { title: "Helium 10", href: "/admin/helium10", icon: Key, visible: isAdmin && helium10Enabled() },

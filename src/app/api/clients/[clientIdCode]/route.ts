@@ -14,6 +14,7 @@ import { updateAacFieldInBigQuery } from "@/lib/bigquery";
 import { invalidateClientsCache } from "@/lib/clients-cache";
 import { driveClient } from "@/lib/drive-client";
 import { resolveClientFolderParent } from "@/lib/onboarding/client-folder-routing";
+import { queueAacSheetPush } from "@/lib/aac-sync/hooks";
 
 // Shared drive root — client folders live here when active; passed to the
 // status→folder resolver as the default/Active destination.
@@ -311,6 +312,9 @@ export async function PUT(
     detail: { field, oldValue, newValue: value, bqStatus, bqError },
     durationMs,
   }).catch(() => {}); // best-effort logging
+
+  // 1o8: mirror the edit to the AAC Google Sheet (two-way sync, src/lib/aac-sync).
+  queueAacSheetPush(clientIdCode);
 
   // Move the Drive folder to match the new status. Deferred with after(), not
   // fired-and-forgotten: it opens with a db.select() on drive_folders, and an
@@ -646,6 +650,9 @@ export async function PATCH(
       : `Updated client: name="${clientName ?? client.clientName}", status="${clientStatus ?? client.clientStatus}" (DB + BQ)`,
     detail: { clientName, clientStatus, clientType, previousName: client.clientName, previousStatus: client.clientStatus, bqError },
   }).catch(() => {});
+
+  // 1o8: mirror name/status to the AAC Google Sheet.
+  queueAacSheetPush(clientIdCode);
 
   return NextResponse.json({
     success: true,

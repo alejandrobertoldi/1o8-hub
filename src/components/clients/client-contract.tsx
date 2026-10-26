@@ -34,6 +34,7 @@ const fmtDate = (d: string | null) =>
   d ? new Date(`${d}T00:00:00Z`).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" }) : "";
 
 const CONTRACT_FIELDS = [
+  { key: "Main KPI", label: "Main KPIs", long: true },
   { key: "Tier", label: "Tier" },
   { key: "RetainerType", label: "Retainer type" },
   { key: "SOW", label: "SOW" },

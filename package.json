@@ -40,7 +40,8 @@
     "sync:team": "tsx scripts/local/sync-team.ts",
     "seed:org-chart": "tsx scripts/local/seed-org-chart.ts",
     "snapshot:readiness": "tsx scripts/local/snapshot-readiness.ts",
-    "db:push:prod": "tsx scripts/local/push-prod-schema.ts"
+    "db:push:prod": "tsx scripts/local/push-prod-schema.ts",
+    "sync:aac": "tsx scripts/local/sync-aac.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.78.0",

@@ -367,3 +367,31 @@ The SEO menu only shows **Blog Writer** (`/seo/blog-writer`, "Under construction
 SEO Manager, Guidelines and SEO Config are hidden from the nav (pages still exist). Plan: bring the local
 seo-writer app (~/Documents/1o8/Ops/SEO/seo-writer) in here — keywords, content ideas and blog posts per client,
 with a client selector; brand voice already lives in Client Settings → Brand Voice.
+
+## AAC sheet two-way sync (2026-10-26)
+
+The hub's clients (`aac`) and the **AAC 1o8** tab of "All 1o8 Clients (Final)" stay in step both ways while the
+sheet is being retired (the hub is the source of truth; new fields live only in the hub). Code: `src/lib/aac-sync/`.
+
+- **Columns by name, not position** (`columns.ts`): a new sheet column (e.g. "Main KPI") syncs with no code change.
+  Services are namespaced `Service: X` (a repeat in the block is `Service: X (2)`); a few columns mirror onto the
+  MarketFoundry keys the UI edits (`COLUMN_ALIASES`). Hub-only keys (Figma, socials…) are never written to the sheet.
+  The code column is the identity (never rewritten); `MasterAACRow` is sheet bookkeeping (sheet → hub only).
+- **Merge rule** (`merge.ts`): `aac_sheet_baseline` keeps the last value both sides agreed on; whichever side moved
+  wins. Both moved = conflict → the hub wins, except when the sheet's own edit hook triggered the sync (newest wins).
+  First sync (no baseline): the sheet wins unless the hub has a logged edit for that field.
+- **Triggers**: hub edit (client PUT/PATCH → `queueAacSheetPush`, after the response); sheet edit (Apps Script
+  `docs/aac-sync/aac-sheet-hook.gs` → `POST /api/webhooks/aac-sheet`, header `x-aac-sync-secret`); daily full sync
+  (`/api/cron/aac-sync`, 11:00 UTC); Admin → **AAC Sheet Sync** (preview / sync now / history / clients without a code
+  → "Create client" writes the code to the sheet and creates the client). Every change is logged in Activity.
+- **Auth**: Google service account `id-o8-hub-sheets@o8-hub.iam.gserviceaccount.com` (Editor on the sheet). Local key
+  file `google-service-account.json` (gitignored); Vercel `GOOGLE_SERVICE_ACCOUNT_JSON` (base64 of the file).
+- **Local dev never writes the real sheet**: `.env.local` sets `AAC_SYNC_SPREADSHEET_ID` to the test copy
+  "[TEST - do not use] AAC 1o8 sync copy" (1ccxL0cXXHcV6G-OAA06OLyanohRK8APFTb-xFi-lepA). Production has no
+  `AAC_SYNC_SPREADSHEET_ID`, so it uses `AAC_SPREADSHEET_ID` (the real sheet).
+- `npm run sync:aac` = dry run (prints both directions); `-- --apply` writes; `-- --sheet <id>` targets another file.
+- Client page: **Main KPIs** (sheet column "Main KPI") is the first field in Contract & services.
+- Known sheet issues the sync reports: duplicate code AFB (rows "AdelFi Banking" / "Adelfi Banking"), 10 rows with
+  no code (AAF - Reflexology, Koios, and 8 inactive).
+- Test note: `tests/lib/seo/runner.s1-e2e.test.ts` (MarketFoundry) makes a live Claude call and fails without
+  ANTHROPIC_API_KEY whenever the local DB is up — not a regression.

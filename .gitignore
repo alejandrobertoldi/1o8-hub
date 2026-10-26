@@ -104,3 +104,6 @@ q.tmp.*
 !/.claude/skills/
 /.claude/skills/*
 !/.claude/skills/1o8-seo-manager/
+
+# Google service account key for the AAC sheet sync (never commit)
+/google-service-account.json
