@@ -13,6 +13,7 @@ import { TaskCalendar } from "@/components/my-dashboard/task-calendar";
 import { HubTasks } from "@/components/my-dashboard/hub-tasks";
 import { ReviewsBox } from "@/components/my-dashboard/reviews-box";
 import { ReadinessCard } from "@/components/my-dashboard/readiness-card";
+import { GoLiveCard } from "@/components/my-dashboard/go-live-card";
 import { splitBySource } from "@/lib/my-dashboard/group-tasks";
 
 const localToday = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
@@ -70,6 +71,7 @@ function MyDashboardContent() {
       )} />
       <ReviewsBox reviews={data.reviews} asanaUrl={data.reviewsAsanaUrl} />
       <ReadinessCard userId={data.person.id} />
+      <GoLiveCard userId={data.person.id} />
       <TaskCalendar tasks={split ? Object.values(split.asana).flat() : []} today={data.today} selected={filterDate} onSelect={setFilterDate} />
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <section id="my-tasks" className="rounded-lg border bg-card p-4 lg:col-span-2">
