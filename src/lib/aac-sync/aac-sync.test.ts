@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { columnForKey, columnLetter, hubValue, parseSheet } from "./columns";
+import { columnForKey, columnLetter, duplicateCodes, hubValue, parseSheet } from "./columns";
 import { mergeCell } from "./merge";
 
 const svc = Array.from({ length: 30 }, (_, i) => (i === 0 ? "SEO" : i === 6 || i === 12 ? "Strategy" : `S${i}`));
@@ -48,6 +48,15 @@ describe("parseSheet", () => {
   });
   it("letters columns like the sheet", () => {
     expect([columnLetter(0), columnLetter(25), columnLetter(26), columnLetter(76)]).toEqual(["A", "Z", "AA", "BY"]);
+  });
+});
+
+describe("duplicateCodes", () => {
+  it("lists every row of a code used twice (case-insensitive), and nothing else", () => {
+    const g = [...grid.slice(0, 4), ["Active", "37", "Koios", "KOI"], ["Inactive", "79", "KOIOS", "koi "]];
+    const d = duplicateCodes(parseSheet(g).rows);
+    expect([...d.keys()]).toEqual(["KOI"]);
+    expect(d.get("KOI")!.map((r) => r.rowNumber)).toEqual([5, 6]);
   });
 });
 

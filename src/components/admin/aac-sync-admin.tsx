@@ -119,7 +119,7 @@ export function AacSyncAdmin() {
       {latest && latest.duplicates.length > 0 && (
         <p className="flex items-start gap-2 rounded-lg border border-orange-500/40 bg-orange-500/10 px-3 py-2 text-sm text-orange-500">
           <AlertTriangle className="mt-0.5 size-4 shrink-0" />
-          Repeated client codes in the sheet (only the first row syncs): {latest.duplicates.join("; ")}
+          Repeated client codes in the sheet. Those rows don&apos;t sync until each one has its own code: {latest.duplicates.join("; ")}
         </p>
       )}
 

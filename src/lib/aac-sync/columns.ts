@@ -122,3 +122,18 @@ export function hubValue(raw: Record<string, unknown>, col: SheetColumn): string
 export function columnForKey(columns: SheetColumn[], rawKey: string): SheetColumn | undefined {
   return columns.find((c) => c.keys.includes(rawKey));
 }
+
+/**
+ * Codes used by more than one sheet row, with every row that uses them. Those
+ * rows are left out of the sync: picking one silently could overwrite another
+ * client's record in the hub (e.g. a new client given an old client's code).
+ */
+export function duplicateCodes(rows: SheetRow[]): Map<string, SheetRow[]> {
+  const byCode = new Map<string, SheetRow[]>();
+  for (const r of rows) {
+    if (!r.code) continue;
+    const code = r.code.trim().toUpperCase();
+    byCode.set(code, [...(byCode.get(code) ?? []), r]);
+  }
+  return new Map([...byCode].filter(([, rs]) => rs.length > 1));
+}

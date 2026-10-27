@@ -2,7 +2,7 @@ import { and, desc, eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { aac, aacSheetBaseline, aacSyncRuns, adminEventLog } from "@/lib/db/schema";
 import { invalidateClientsCache } from "@/lib/clients-cache";
-import { CODE_HEADER, READ_ONLY_IN_SHEET, columnForKey, hubValue, parseSheet } from "./columns";
+import { CODE_HEADER, READ_ONLY_IN_SHEET, columnForKey, duplicateCodes, hubValue, parseSheet } from "./columns";
 import { appendAacRows, readAacGrid, writeAacCells, type CellWrite } from "./google";
 import { mergeCell } from "./merge";
 
@@ -20,6 +20,7 @@ export type AacSyncReport = {
   appendedToSheet: { code: string; name: string }[];
   /** Sheet rows without a ClientIDCode (the hub can't create them until one is set). */
   needsCode: { rowNumber: number; name: string; status: string }[];
+  /** Codes on more than one sheet row: none of those rows sync until the code is fixed. */
   duplicates: string[];
 };
 
@@ -97,6 +98,10 @@ async function doSync(opts: AacSyncOptions, dryRun: boolean): Promise<AacSyncRep
   const hubInserts: { code: string; raw: Record<string, string> }[] = [];
   const newBaselines: { code: string; values: Record<string, string> }[] = [];
   const seen = new Set<string>();
+  const dupes = duplicateCodes(sheet.rows);
+  for (const [code, rows] of dupes) {
+    report.duplicates.push(`${code}: ${rows.map((r) => `row ${r.rowNumber} ${r.name}`).join(", ")}`);
+  }
 
   for (const row of sheet.rows) {
     if (!row.code) {
@@ -104,12 +109,8 @@ async function doSync(opts: AacSyncOptions, dryRun: boolean): Promise<AacSyncRep
       continue;
     }
     const code = upper(row.code);
-    if (seen.has(code)) {
-      report.duplicates.push(`${row.code} (row ${row.rowNumber}, ${row.name})`);
-      continue;
-    }
     seen.add(code);
-    if (only && !only.has(code)) continue;
+    if (dupes.has(code) || (only && !only.has(code))) continue;
 
     const hub = hubByCode.get(code);
     if (!hub) {
