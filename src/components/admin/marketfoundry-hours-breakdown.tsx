@@ -64,17 +64,17 @@ export function AgencyHoursBreakdown({
 }) {
   const kpis = [
     { label: "1o8 total", value: fmtHM(breakdown.totalHours) },
-    { label: "MF as % of all hours", value: fmtPct(breakdown.pctOfAll), accent: true },
+    { label: "Internal as % of all hours", value: fmtPct(breakdown.pctOfAll), accent: true },
     { label: breakdown.meetingsAdminLabel, value: fmtHM(breakdown.meetingsAdminHours) },
-    { label: "Largest category", value: breakdown.largestLabel, text: true },
-    { label: "MF entries", value: breakdown.entryCount.toLocaleString() },
+    { label: "Largest department", value: breakdown.largestLabel, text: true },
+    { label: "Internal entries", value: breakdown.entryCount.toLocaleString() },
   ];
 
   return (
     <div className="space-y-3">
       <div className="text-sm font-bold text-foreground">1o8 Hours</div>
       <p className="text-xs text-muted-foreground">
-        INTERNAL hours only — by activity, then per person.
+        INTERNAL hours only — by department, then per person.
       </p>
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
@@ -94,7 +94,7 @@ export function AgencyHoursBreakdown({
 
       <div className="grid gap-4 lg:grid-cols-2">
         <div className={CARD}>
-          <div className="mb-2 text-sm font-medium">1o8 by activity</div>
+          <div className="mb-2 text-sm font-medium">1o8 by department</div>
           {breakdown.activities.length === 0 ? (
             <p className="py-6 text-center text-xs text-muted-foreground">No data</p>
           ) : (
@@ -143,7 +143,7 @@ export function AgencyHoursBreakdown({
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-stone-200 text-left text-[10px] font-bold uppercase text-muted-foreground dark:border-zinc-800">
-                  <th className="pb-2 pr-2 font-bold">Category</th>
+                  <th className="pb-2 pr-2 font-bold">Department</th>
                   <th className="pb-2 pr-2 text-right font-bold">Hours</th>
                   <th className="pb-2 text-right font-bold">Share</th>
                 </tr>
@@ -186,7 +186,7 @@ export function AgencyHoursBreakdown({
       </div>
 
       <div className={CARD}>
-        <div className="mb-2 text-sm font-medium">Per person, by activity</div>
+        <div className="mb-2 text-sm font-medium">Per person, by department</div>
         {breakdown.people.length === 0 ? (
           <p className="py-6 text-center text-xs text-muted-foreground">No data</p>
         ) : (

@@ -2,11 +2,11 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { NextRequest } from "next/server";
 
 vi.mock("@/lib/auth-db", () => ({ getAuthSession: vi.fn() }));
-vi.mock("@/lib/hours/queries", () => ({ summaryByDay: vi.fn() }));
+vi.mock("@/lib/hours/analytics-queries", () => ({ summaryByDay: vi.fn() }));
 
 import { GET } from "./route";
 import { getAuthSession } from "@/lib/auth-db";
-import { summaryByDay } from "@/lib/hours/queries";
+import { summaryByDay } from "@/lib/hours/analytics-queries";
 
 const asMock = (fn: unknown) => fn as ReturnType<typeof vi.fn>;
 
@@ -27,17 +27,17 @@ describe("GET /api/hours/summary/daily", () => {
   });
 
   it("403 for non-super-admin", async () => {
-    asMock(getAuthSession).mockResolvedValue({ user: { id: "a1", isSuperAdmin: false } });
+    asMock(getAuthSession).mockResolvedValue({ user: { id: "a1", role: "editor", isSuperAdmin: false } });
     expect((await GET(req(RANGE))).status).toBe(403);
   });
 
   it("400 with missing/invalid range", async () => {
-    asMock(getAuthSession).mockResolvedValue({ user: { id: "a1", isSuperAdmin: true } });
+    asMock(getAuthSession).mockResolvedValue({ user: { id: "a1", role: "admin", isSuperAdmin: false } });
     expect((await GET(req({ from: "2026-07-01" }))).status).toBe(400);
   });
 
   it("defaults dimension to member and returns rows", async () => {
-    asMock(getAuthSession).mockResolvedValue({ user: { id: "a1", isSuperAdmin: true } });
+    asMock(getAuthSession).mockResolvedValue({ user: { id: "a1", role: "admin", isSuperAdmin: false } });
     asMock(summaryByDay).mockResolvedValue([
       { key: "u1", keyName: "Ana", entryDate: "2026-07-01", totalHours: "4.00" },
     ]);
@@ -52,7 +52,7 @@ describe("GET /api/hours/summary/daily", () => {
   });
 
   it("passes dimension=client and category filters through", async () => {
-    asMock(getAuthSession).mockResolvedValue({ user: { id: "a1", isSuperAdmin: true } });
+    asMock(getAuthSession).mockResolvedValue({ user: { id: "a1", role: "admin", isSuperAdmin: false } });
     asMock(summaryByDay).mockResolvedValue([]);
     await GET(req({ ...RANGE, dimension: "client" }));
     expect(summaryByDay).toHaveBeenCalledWith("2026-07-01", "2026-07-31", "client", []);

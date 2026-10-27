@@ -117,8 +117,14 @@ describe("generateHoursXlsx", () => {
 
 describe("admin (team-wide) export", () => {
   const ADMIN_ENTRIES: AdminHoursExportEntry[] = [
-    { ...ENTRIES[0], member: "Ana", email: "ana@marketfoundry.agency" },
-    { ...ENTRIES[1], member: "Ben", email: "ben@marketfoundry.agency" },
+    {
+      member: "Ana", email: "ana@1o8.agency", entryDate: "2026-07-16", clientIdCode: "KSS", department: "SEO",
+      projectNumber: "KSS08132", projectName: "Keyword map", billingType: "Retainer", hours: 2.5, note: null,
+    },
+    {
+      member: "Ben", email: "ben@1o8.agency", entryDate: "2026-07-16", clientIdCode: "INTERNAL", department: "Internal Meetings",
+      projectNumber: "1O800000", projectName: "General internal work", billingType: "Internal (non-billable)", hours: 1, note: "Standup",
+    },
   ];
 
   it("prefixes the filename so it can't collide with a personal timesheet", () => {
@@ -127,17 +133,16 @@ describe("admin (team-wide) export", () => {
     );
   });
 
-  it("adds Member + Email columns ahead of the personal layout and totals hours", () => {
+  it("lists who, when, client, department, project and billing type, and totals hours", () => {
     const rows = buildAdminHoursExportRows(ADMIN_ENTRIES);
     expect(rows[0]).toEqual([...ADMIN_HOURS_EXPORT_HEADERS]);
-    expect(rows[0].slice(0, 2)).toEqual(["Member", "Email"]);
     expect(rows[1]).toEqual([
-      "Ana", "ana@marketfoundry.agency", "2026-07-16", "09:00", "11:30", 2.5, "02:30", "PURA", "SEO", "Keyword map",
+      "Ana", "ana@1o8.agency", "2026-07-16", "KSS", "SEO", "KSS08132", "Keyword map", "Retainer", 2.5, "02:30", "",
     ]);
-    expect(rows[2].slice(0, 2)).toEqual(["Ben", "ben@marketfoundry.agency"]);
+    expect(rows[2][3]).toBe("1o8");
     const total = rows[rows.length - 1];
     expect(total[0]).toBe("Total");
-    expect(total[5]).toBe(3.5);
+    expect(total[8]).toBe(3.5);
     expect(rows).toHaveLength(ADMIN_ENTRIES.length + 2);
   });
 
@@ -146,6 +151,6 @@ describe("admin (team-wide) export", () => {
     expect(wb.SheetNames).toEqual(["Team hours"]);
     const aoa = XLSX.utils.sheet_to_json<(string | number)[]>(wb.Sheets["Team hours"], { header: 1 });
     expect(aoa[1][0]).toBe("Ana");
-    expect(aoa[aoa.length - 1][5]).toBe(3.5);
+    expect(aoa[aoa.length - 1][8]).toBe(3.5);
   });
 });

@@ -112,7 +112,7 @@ export function HeatmapDayDetail({
           entries={entries}
           showMember={showMember}
           showClient
-          editable
+          editable={false}
           fallbackDate={selection.date}
         />
       )}

@@ -85,6 +85,7 @@ const NAV_ITEMS: NavCmd[] = [
   { label: "AI Config", href: "/admin/ai", icon: Sparkles, admin: true },
   { label: "Team Management", href: "/admin/users", icon: Shield, admin: true },
   { label: "Hours insights", href: "/hours/insights", icon: BarChart3, admin: true },
+  { label: "Hours analytics", href: "/hours/analytics", icon: BarChart3, admin: true },
 ];
 
 export function CommandPalette() {

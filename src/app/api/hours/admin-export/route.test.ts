@@ -3,7 +3,7 @@ import { NextRequest } from "next/server";
 import * as XLSX from "xlsx";
 
 vi.mock("@/lib/auth-db", () => ({ getAuthSession: vi.fn() }));
-vi.mock("@/lib/hours/queries", () => ({ adminExportEntries: vi.fn() }));
+vi.mock("@/lib/hours/analytics-queries", () => ({ adminExportEntries: vi.fn() }));
 vi.mock("@/lib/drive-client", () => ({
   sharedDriveId: vi.fn(() => "shared-root"),
   driveClient: {
@@ -15,7 +15,7 @@ vi.mock("@/lib/drive-client", () => ({
 
 import { GET, POST } from "./route";
 import { getAuthSession } from "@/lib/auth-db";
-import { adminExportEntries } from "@/lib/hours/queries";
+import { adminExportEntries } from "@/lib/hours/analytics-queries";
 import { driveClient } from "@/lib/drive-client";
 
 const asMock = (fn: unknown) => fn as ReturnType<typeof vi.fn>;
@@ -24,11 +24,12 @@ const EDITOR = { user: { id: "u2", role: "editor", isSuperAdmin: false } };
 
 const ROW = {
   entryDate: "2026-07-16",
-  startTime: "09:00:00",
-  endTime: "11:30:00",
   hours: "2.50",
   note: "Standup",
-  category: "Meetings",
+  department: "Internal Meetings",
+  projectNumber: "1O800000",
+  projectName: "General internal work",
+  billingType: "Internal (non-billable)",
   clientIdCode: "INTERNAL",
   userName: "Ana",
   userEmail: "ana@marketfoundry.agency",

@@ -411,10 +411,12 @@ export function HoursEntriesTable({
     }
     return items;
   }, [interleaveSubtotals, visibleRows, groups]);
+  // 1o8 time logs carry hours only (no start/end clock), so those columns drop out.
+  const showTimes = rows.some((r) => !!r.startTime);
   const colsBeforeHours =
     (editable ? 1 : 0) +
     (showDate ? 1 : 0) +
-    2 +
+    (showTimes ? 2 : 0) +
     (showMember ? 1 : 0) +
     (showClient ? 1 : 0) +
     2;
@@ -785,7 +787,7 @@ export function HoursEntriesTable({
           />
         )}
         <FacetFilter
-          label="Category"
+          label="Department"
           items={categoryOptions}
           selected={categoryFilter}
           onToggle={toggleCategoryFilter}
@@ -825,8 +827,8 @@ export function HoursEntriesTable({
                 </TableHead>
               )}
               {showDate && <TableHead className="w-36">Date</TableHead>}
-              <TableHead className="w-24">Start</TableHead>
-              <TableHead className="w-24">End</TableHead>
+              {showTimes && <TableHead className="w-24">Start</TableHead>}
+              {showTimes && <TableHead className="w-24">End</TableHead>}
               {showMember && (
                 <SortableHead
                   label="Team member"
@@ -838,7 +840,7 @@ export function HoursEntriesTable({
               )}
               {showClient && <TableHead>Client</TableHead>}
               <SortableHead
-                label="Category"
+                label="Department"
                 col="category"
                 sortCol={sortCol}
                 sortDir={sortDir}
@@ -1077,12 +1079,16 @@ export function HoursEntriesTable({
                       {e.entryDate ? formatDayRowLabel(e.entryDate) : "—"}
                     </TableCell>
                   )}
-                  <TableCell className="tabular-nums text-muted-foreground">
-                    {formatClock(e.startTime)}
-                  </TableCell>
-                  <TableCell className="tabular-nums text-muted-foreground">
-                    {formatClock(e.endTime)}
-                  </TableCell>
+                  {showTimes && (
+                    <TableCell className="tabular-nums text-muted-foreground">
+                      {formatClock(e.startTime)}
+                    </TableCell>
+                  )}
+                  {showTimes && (
+                    <TableCell className="tabular-nums text-muted-foreground">
+                      {formatClock(e.endTime)}
+                    </TableCell>
+                  )}
                   {showMember && (
                     <TableCell className="text-sm">{e.userName ?? e.userEmail}</TableCell>
                   )}
@@ -1156,6 +1162,7 @@ export function RangeScopeDetail({
   onToggle,
   showMember,
   showClient,
+  editable = true,
 }: {
   label: string;
   brand?: boolean;
@@ -1169,6 +1176,7 @@ export function RangeScopeDetail({
   onToggle: () => void;
   showMember?: boolean;
   showClient?: boolean;
+  editable?: boolean;
 }) {
   const { data, isLoading, error } = useQuery<{ entries: HoursEntryRow[] }>({
     queryKey: ["hours-range-entries", from, to, userId, clientIdCode, categories],
@@ -1239,7 +1247,7 @@ export function RangeScopeDetail({
               showDate
               showMember={showMember}
               showClient={showClient ?? true}
-              editable
+              editable={editable}
             />
           )}
         </div>

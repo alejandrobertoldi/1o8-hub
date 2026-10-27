@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthSession } from "@/lib/auth-db";
+import { hasAdminPowers } from "@/lib/roles";
 import { isValidDateString } from "@/lib/hours/validation";
-import { adminExportEntries } from "@/lib/hours/queries";
+import { adminExportEntries } from "@/lib/hours/analytics-queries";
 import {
   adminHoursExportFilename,
   generateAdminHoursXlsx,
@@ -23,13 +24,13 @@ type Filters = {
   categories: string[];
 };
 
-/** Super-admin gate + filter parsing shared by the download and the Sheets save. */
+/** Admin gate + filter parsing shared by the download and the Sheets save. */
 async function authorizeAndParse(req: NextRequest): Promise<Filters | NextResponse> {
   const session = await getAuthSession();
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  if (!session.user.isSuperAdmin) {
+  if (!hasAdminPowers(session.user.role)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 

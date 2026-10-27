@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { NextRequest } from "next/server";
 
 vi.mock("@/lib/auth-db", () => ({ getAuthSession: vi.fn() }));
-vi.mock("@/lib/hours/queries", () => ({
+vi.mock("@/lib/hours/analytics-queries", () => ({
   summaryRows: vi.fn(),
   categoriesInRange: vi.fn().mockResolvedValue([]),
   internalBreakdownRows: vi.fn().mockResolvedValue([]),
@@ -10,7 +10,7 @@ vi.mock("@/lib/hours/queries", () => ({
 
 import { GET } from "./route";
 import { getAuthSession } from "@/lib/auth-db";
-import { summaryRows } from "@/lib/hours/queries";
+import { summaryRows } from "@/lib/hours/analytics-queries";
 
 const asMock = (fn: unknown) => fn as ReturnType<typeof vi.fn>;
 
@@ -25,8 +25,8 @@ const RANGE = { from: "2026-07-01", to: "2026-07-31" };
 describe("GET /api/hours/summary", () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it("403 for admin without super-admin", async () => {
-    asMock(getAuthSession).mockResolvedValue({ user: { id: "a1", role: "admin", isSuperAdmin: false } });
+  it("403 below admin", async () => {
+    asMock(getAuthSession).mockResolvedValue({ user: { id: "a1", role: "editor", isSuperAdmin: false } });
     const res = await GET(req(RANGE));
     expect(res.status).toBe(403);
   });

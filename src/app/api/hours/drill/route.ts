@@ -1,14 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthSession } from "@/lib/auth-db";
+import { hasAdminPowers } from "@/lib/roles";
 import { isValidDateString } from "@/lib/hours/validation";
-import { drillDays } from "@/lib/hours/queries";
+import { drillDays } from "@/lib/hours/analytics-queries";
 
 export async function GET(req: NextRequest) {
   const session = await getAuthSession();
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  if (!session.user.isSuperAdmin) {
+  if (!hasAdminPowers(session.user.role)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 

@@ -273,7 +273,7 @@ export function HoursDashboard() {
               onToggle={(id) => toggleIn(clientFilter, setClientFilter, id)}
             />
             <MultiSelect
-              label="Categories"
+              label="Departments"
               items={data.categories.map((c) => ({ id: c, label: c }))}
               selected={categoryFilter}
               onToggle={(id) => toggleIn(categoryFilter, setCategoryFilter, id)}
@@ -473,6 +473,7 @@ export function HoursDashboard() {
                     onToggle={() => toggle(c.clientIdCode)}
                     showMember
                     showClient={false}
+                    editable={false}
                   />
                 ))
               : filtered.byMember.map((m) => (
@@ -488,6 +489,7 @@ export function HoursDashboard() {
                     onToggle={() => toggle(m.userId)}
                     showMember={false}
                     showClient
+                    editable={false}
                   />
                 ))}
           </div>

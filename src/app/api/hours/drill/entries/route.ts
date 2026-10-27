@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthSession } from "@/lib/auth-db";
+import { hasAdminPowers } from "@/lib/roles";
 import { isValidDateString } from "@/lib/hours/validation";
-import { drillDayEntries, drillRangeEntries } from "@/lib/hours/queries";
+import { drillDayEntries, drillRangeEntries } from "@/lib/hours/analytics-queries";
 
 function mapEntry(r: {
   id: string;
@@ -36,7 +37,7 @@ export async function GET(req: NextRequest) {
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  if (!session.user.isSuperAdmin) {
+  if (!hasAdminPowers(session.user.role)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 

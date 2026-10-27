@@ -206,6 +206,7 @@ export function TopNav() {
       items: [
         { title: "My timesheet", href: "/hours", icon: Clock, visible: isHubStaff(role) },
         { title: "Hours insights", href: "/hours/insights", icon: BarChart3, visible: isAdmin },
+        { title: "Hours analytics", href: "/hours/analytics", icon: BarChart3, visible: isAdmin },
         { title: "Time off requests", href: "/calendar/requests", icon: Plane, visible: !!role && canSubmitTimeOff(role) },
       ],
     },

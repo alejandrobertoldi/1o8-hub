@@ -94,44 +94,87 @@ export function generateHoursXlsx(entries: HoursExportEntry[]): Buffer {
 }
 
 // ── Admin (team-wide) export ────────────────────────────────────────
-// Same columns as the personal timesheet, prefixed with who logged it.
+// Hours Analytics over 1o8's time logs: who, when, client, department,
+// project and billing type (logs carry hours only, no start/end clock).
 
-export type AdminHoursExportEntry = HoursExportEntry & {
+export type AdminHoursExportEntry = {
   member: string;
   email: string;
+  entryDate: string;
+  clientIdCode: string;
+  department: string;
+  projectNumber: string;
+  projectName: string;
+  billingType: string;
+  hours: number;
+  note: string | null;
 };
 
 export const ADMIN_HOURS_EXPORT_HEADERS = [
   "Member",
   "Email",
-  ...HOURS_EXPORT_HEADERS,
+  "Date",
+  "Client",
+  "Department",
+  "Project #",
+  "Project",
+  "Billing type",
+  "Hours",
+  "Duration",
+  "Note",
 ] as const;
 
 export function adminHoursExportFilename(from: string, to: string): string {
   return `team_${hoursExportFilename(from, to)}`;
 }
 
-export function toAdminHoursExportEntry(row: Parameters<typeof toHoursExportEntry>[0] & {
+export function toAdminHoursExportEntry(row: {
+  entryDate: string;
+  hours: string | number;
+  clientIdCode: string;
+  department: string;
+  projectNumber: string;
+  projectName: string;
+  billingType: string;
+  note: string | null;
   userName: string | null;
   userEmail: string;
 }): AdminHoursExportEntry {
   return {
-    ...toHoursExportEntry(row),
     member: row.userName ?? row.userEmail,
     email: row.userEmail,
+    entryDate: row.entryDate,
+    clientIdCode: row.clientIdCode,
+    department: row.department,
+    projectNumber: row.projectNumber,
+    projectName: row.projectName,
+    billingType: row.billingType,
+    hours: Number(row.hours),
+    note: row.note,
   };
 }
 
 export function buildAdminHoursExportRows(
   entries: AdminHoursExportEntry[]
 ): (string | number)[][] {
-  const [, ...personal] = buildHoursExportRows(entries);
-  const total = personal.pop()!;
-  const body = personal.map((row, i) => [entries[i].member, entries[i].email, ...row]);
+  const body = entries.map((e) => [
+    e.member,
+    e.email,
+    e.entryDate,
+    clientLabel(e.clientIdCode),
+    e.department,
+    e.projectNumber,
+    e.projectName,
+    e.billingType,
+    e.hours,
+    formatHoursMinutes(e.hours),
+    e.note ?? "",
+  ]);
+  const total = round2(entries.reduce((sum, e) => sum + e.hours, 0));
   return [
     [...ADMIN_HOURS_EXPORT_HEADERS],
     ...body,
-    ["Total", "", "", ...total.slice(1)],
+    ["Total", "", "", "", "", "", "", "", total, formatHoursMinutes(total), ""],
   ];
 }
 
@@ -142,12 +185,13 @@ export function generateAdminHoursXlsx(entries: AdminHoursExportEntry[]): Buffer
     { wch: 20 },
     { wch: 30 },
     { wch: 12 },
-    { wch: 8 },
-    { wch: 8 },
+    { wch: 18 },
+    { wch: 18 },
+    { wch: 12 },
+    { wch: 36 },
+    { wch: 22 },
     { wch: 8 },
     { wch: 10 },
-    { wch: 16 },
-    { wch: 18 },
     { wch: 40 },
   ];
   XLSX.utils.book_append_sheet(wb, ws, "Team hours");
