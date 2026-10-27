@@ -5,6 +5,7 @@
  *   npm run sync:aac                          # dry run against AAC_SPREADSHEET_ID
  *   npm run sync:aac -- --sheet <id>          # another spreadsheet (e.g. a test copy)
  *   npm run sync:aac -- --apply               # write both sides
+ *   npm run sync:aac -- --sheet <id> --pull   # bring sheet changes into the hub only (never writes the sheet)
  */
 import { config } from "dotenv";
 config({ path: ".env.local" });
@@ -17,11 +18,12 @@ const arg = (name: string) => {
 async function main() {
   const sheet = arg("--sheet");
   if (sheet) process.env.AAC_SYNC_SPREADSHEET_ID = sheet;
-  const apply = process.argv.includes("--apply");
+  const pull = process.argv.includes("--pull");
+  const apply = pull || process.argv.includes("--apply");
   const { syncAac } = await import("../../src/lib/aac-sync/sync");
   const { aacSheetTarget } = await import("../../src/lib/aac-sync/google");
-  console.log(`${apply ? "APPLY" : "DRY RUN"} · spreadsheet ${aacSheetTarget().spreadsheetId} · tab "${aacSheetTarget().tab}"`);
-  const r = await syncAac({ trigger: "script", dryRun: !apply });
+  console.log(`${pull ? "PULL (sheet → hub only)" : apply ? "APPLY" : "DRY RUN"} · spreadsheet ${aacSheetTarget().spreadsheetId} · tab "${aacSheetTarget().tab}"`);
+  const r = await syncAac({ trigger: "script", dryRun: !apply, pullOnly: pull });
   const fmt = (c: { code: string; key: string; from: string; to: string; conflict?: boolean }) =>
     `  ${c.code.padEnd(6)} ${c.key.slice(0, 32).padEnd(32)} ${JSON.stringify(c.from.slice(0, 40))} → ${JSON.stringify(c.to.slice(0, 40))}${c.conflict ? "  [conflict]" : ""}`;
   console.log(`\nSheet → hub: ${r.toHub.length}`);

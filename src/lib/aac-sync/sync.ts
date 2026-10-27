@@ -31,6 +31,12 @@ export type AacSyncOptions = {
   codes?: string[];
   /** Who wins when both sides changed the same cell since the last sync. */
   prefer?: "hub" | "sheet";
+  /**
+   * Bring sheet changes into the hub but never write the sheet (local dev
+   * reading the real sheet). Baselines are left alone, so a later full sync
+   * still sees any hub-only differences.
+   */
+  pullOnly?: boolean;
 };
 
 const upper = (s: string) => s.trim().toUpperCase();
@@ -180,8 +186,10 @@ async function doSync(opts: AacSyncOptions, dryRun: boolean): Promise<AacSyncRep
   if (dryRun) return report;
 
   // Sheet first: if Google fails, the hub and the baseline stay as they were and the next run retries.
-  await writeAacCells(sheetWrites);
-  await appendAacRows(appendRows);
+  if (!opts.pullOnly) {
+    await writeAacCells(sheetWrites);
+    await appendAacRows(appendRows);
+  }
 
   for (const u of hubUpdates) {
     await db.update(aac).set({ rawData: u.raw, ...typedColumns(u.raw), updatedAt: new Date() }).where(eq(aac.clientIdCode, u.code));
@@ -192,7 +200,7 @@ async function doSync(opts: AacSyncOptions, dryRun: boolean): Promise<AacSyncRep
       .values({ clientIdCode: ins.code, rawData: ins.raw, ...typedColumns(ins.raw) })
       .onConflictDoNothing();
   }
-  for (const b of newBaselines) {
+  for (const b of opts.pullOnly ? [] : newBaselines) {
     await db
       .insert(aacSheetBaseline)
       .values({ clientIdCode: b.code, values: b.values, syncedAt: new Date() })
