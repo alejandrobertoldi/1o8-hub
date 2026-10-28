@@ -22,8 +22,8 @@ const META = (
 const when = (iso: string) => new Date(iso).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
 const TRIGGERS: Record<string, string> = { manual: "Manual", script: "Script", "sheet-edit": "Sheet edit", "hub-edit": "Hub edit", daily: "Daily" };
 
-/** Admin → AAC sheet sync: two-way sync status between the hub's clients and the AAC Google Sheet. */
-export function AacSyncAdmin() {
+/** Sync & Export → AAC Sheet tab: two-way sync status between the hub's clients and the AAC Google Sheet. */
+export function AacSyncAdmin({ embedded = false }: { embedded?: boolean }) {
   const qc = useQueryClient();
   const [preview, setPreview] = useState<AacSyncReport | null>(null);
   const { data, isLoading, error } = useQuery<Status>({
@@ -60,8 +60,8 @@ export function AacSyncAdmin() {
   const latest = preview ?? latestFull?.report ?? null;
 
   return (
-    <div className="mx-auto max-w-5xl space-y-5 px-4 py-6">
-      <PageMetaSlot>{META}</PageMetaSlot>
+    <div className={cn("space-y-5", !embedded && "mx-auto max-w-5xl px-4 py-6")}>
+      {!embedded && <PageMetaSlot>{META}</PageMetaSlot>}
       <p className="max-w-2xl text-sm text-muted-foreground">
         Clients stay in step with the <b>AAC 1o8</b> tab of the &ldquo;All 1o8 Clients (Final)&rdquo; sheet in both directions. Hub edits go to the sheet right
         after saving; sheet edits come in through the sheet&apos;s edit hook, and a full sync runs every morning. If the same cell changed on both sides, the hub
