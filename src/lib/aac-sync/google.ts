@@ -1,6 +1,5 @@
-import fs from "node:fs";
-import path from "node:path";
 import { google, type sheets_v4 } from "googleapis";
+import { googleServiceAccount as credentials } from "@/lib/google-service-account";
 import { columnLetter } from "./columns";
 
 /**
@@ -10,23 +9,6 @@ import { columnLetter } from "./columns";
  * Target: AAC_SYNC_SPREADSHEET_ID (e.g. a test copy) or AAC_SPREADSHEET_ID;
  * tab AAC_SHEET_TAB (default "AAC 1o8").
  */
-type ServiceAccount = { client_email: string; private_key: string };
-
-function credentials(): ServiceAccount | null {
-  const env = process.env.GOOGLE_SERVICE_ACCOUNT_JSON?.trim();
-  if (env) {
-    try {
-      const json = env.startsWith("{") ? env : Buffer.from(env, "base64").toString("utf8");
-      return JSON.parse(json) as ServiceAccount;
-    } catch {
-      console.error("[aac-sync] GOOGLE_SERVICE_ACCOUNT_JSON is not valid JSON (raw or base64)");
-      return null;
-    }
-  }
-  const file = path.join(process.cwd(), "google-service-account.json");
-  return fs.existsSync(file) ? (JSON.parse(fs.readFileSync(file, "utf8")) as ServiceAccount) : null;
-}
-
 export function aacSheetConfigured(): boolean {
   return !!credentials() && !!(process.env.AAC_SYNC_SPREADSHEET_ID || process.env.AAC_SPREADSHEET_ID);
 }

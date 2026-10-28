@@ -68,7 +68,7 @@ export function CalendarView({ initialEvents }: CalendarViewProps) {
     queryFn: async () => {
       const res = await fetch("/api/time-off");
       if (!res.ok) throw new Error("Failed to load time-off data");
-      return res.json() as Promise<{ requests: unknown[]; countryCode: string | null }>;
+      return res.json() as Promise<{ requests: unknown[]; countryCode: string | null; timeOffVia?: string }>;
     },
     enabled: canSubmit,
   });
@@ -346,6 +346,7 @@ export function CalendarView({ initialEvents }: CalendarViewProps) {
           </div>
           {canSubmit && (
             <RequestTimeOffDialog
+              via={selfData?.timeOffVia}
               countryCode={countryCode}
               todayKey={todayKey}
               onSubmitted={() => {

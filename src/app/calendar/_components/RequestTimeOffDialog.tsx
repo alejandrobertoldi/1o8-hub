@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Plus } from "lucide-react";
+import { ExternalLink, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { DatePicker } from "@/components/ui/date-picker";
@@ -16,13 +16,32 @@ import {
 const NO_CALENDAR_MESSAGE =
   "Your holiday calendar isn't set. Ask an admin to set it on your profile before booking time off.";
 
+/** Where people on Gusto request time off. */
+export const GUSTO_TIME_OFF_URL = process.env.NEXT_PUBLIC_GUSTO_TIME_OFF_URL || "https://app.gusto.com";
+
 interface RequestTimeOffDialogProps {
   countryCode: string | null;
   todayKey: string;
   onSubmitted: () => void;
+  /** "gusto": this person requests in Gusto, so the button links there. */
+  via?: string;
 }
 
-export function RequestTimeOffDialog({
+export function RequestTimeOffDialog(props: RequestTimeOffDialogProps) {
+  if (props.via === "gusto") {
+    return (
+      <Button size="sm" asChild className="bg-brand-solid text-white hover:bg-brand-solid-hover">
+        <a href={GUSTO_TIME_OFF_URL} target="_blank" rel="noreferrer" title="You request time off in Gusto; it shows up here after the next sync">
+          <ExternalLink className="size-4 mr-1" />
+          Request in Gusto
+        </a>
+      </Button>
+    );
+  }
+  return <HubRequestDialog {...props} />;
+}
+
+function HubRequestDialog({
   countryCode,
   todayKey,
   onSubmitted,

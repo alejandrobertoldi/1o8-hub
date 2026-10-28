@@ -1,6 +1,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 vi.mock("@/lib/auth-db", () => ({ getAuthSession: vi.fn() }));
+vi.mock("@/lib/time-off/team-calendar", () => ({ publishTimeOff: vi.fn() }));
+vi.mock("next/server", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("next/server")>();
+  return { ...actual, after: vi.fn((task: () => unknown) => { void task(); }) };
+});
 vi.mock("@/lib/db", () => ({
   db: { select: vi.fn(), update: vi.fn(), insert: vi.fn() },
 }));

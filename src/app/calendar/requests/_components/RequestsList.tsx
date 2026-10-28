@@ -132,20 +132,30 @@ export function RequestsList({
       ) : (
         <div className="space-y-2">
           {requests.map((r) => {
+            // Gusto's requests are changed in Gusto; the hub only mirrors them.
+            const fromGusto = r.source === "gusto";
             const canModify =
+              !fromGusto &&
               Boolean(currentUserId && today && onCancel && onEdit) &&
               r.userId === currentUserId &&
               canCancel(r.status, r.startDate, today!);
-            const showRevoke = Boolean(onRevoke) && canRevoke(r.status);
+            const showRevoke = !fromGusto && Boolean(onRevoke) && canRevoke(r.status);
             return (
               <div key={r.id} className="rounded-lg border border-border/40 p-3 text-xs">
                 <div className="flex items-center justify-between gap-2">
                   <span className="font-medium">
                     {r.startDate} &rarr; {r.endDate}
                   </span>
-                  <Badge className={STATUS_STYLES[r.status]} variant="outline">
-                    {r.status}
-                  </Badge>
+                  <span className="flex items-center gap-1">
+                    {fromGusto && (
+                      <Badge variant="outline" className="text-muted-foreground">
+                        Gusto
+                      </Badge>
+                    )}
+                    <Badge className={STATUS_STYLES[r.status]} variant="outline">
+                      {r.status}
+                    </Badge>
+                  </span>
                 </div>
                 {showRequester && (
                   <p className="text-muted-foreground mt-1">{r.userName ?? r.userEmail}</p>

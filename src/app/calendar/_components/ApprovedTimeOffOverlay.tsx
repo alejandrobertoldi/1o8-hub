@@ -1,6 +1,6 @@
 "use client";
 
-import { Plane } from "lucide-react";
+import { CalendarClock, Plane } from "lucide-react";
 import type { ApprovedRow } from "@/lib/time-off/queries";
 
 /** Rows whose inclusive [startDate, endDate] range covers `cellKey`. Exported
@@ -32,18 +32,33 @@ export function ApprovedTimeOffOverlay({
 
   return (
     <>
-      {covering.map((r) => (
-        <div
-          key={r.id}
-          className="pointer-events-none flex items-start gap-1.5 px-2 py-1 text-[11px] font-medium border w-full rounded-md bg-sky-500/12 text-sky-400 border-sky-500/25"
-          title={`${r.userName ?? "Team member"} — Time off`}
-        >
-          <Plane className="mt-0.5 size-3 shrink-0" />
-          <span className="min-w-0 flex-1 whitespace-normal break-words leading-snug">
-            {r.userName ?? "Team member"}
-          </span>
-        </div>
-      ))}
+      {covering.map((r) =>
+        r.source === "calendar" ? (
+          // Put straight on the shared Google Calendar (part-day blocks, OOO…).
+          <div
+            key={r.id}
+            className="pointer-events-none flex items-start gap-1.5 px-2 py-1 text-[11px] font-medium border w-full rounded-md bg-slate-500/12 text-slate-300 border-slate-500/25"
+            title={`${r.label ?? "Time off"}${r.time ? ` · ${r.time}` : ""} — from the shared time off calendar`}
+          >
+            <CalendarClock className="mt-0.5 size-3 shrink-0" />
+            <span className="min-w-0 flex-1 whitespace-normal break-words leading-snug">
+              {r.label ?? r.userName ?? "Time off"}
+              {r.time && <span className="block text-[10px] font-normal opacity-80">{r.time}</span>}
+            </span>
+          </div>
+        ) : (
+          <div
+            key={r.id}
+            className="pointer-events-none flex items-start gap-1.5 px-2 py-1 text-[11px] font-medium border w-full rounded-md bg-sky-500/12 text-sky-400 border-sky-500/25"
+            title={`${r.userName ?? "Team member"} — Time off${r.source === "gusto" ? " (Gusto)" : ""}`}
+          >
+            <Plane className="mt-0.5 size-3 shrink-0" />
+            <span className="min-w-0 flex-1 whitespace-normal break-words leading-snug">
+              {r.userName ?? "Team member"}
+            </span>
+          </div>
+        ),
+      )}
     </>
   );
 }

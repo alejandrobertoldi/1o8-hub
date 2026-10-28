@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
 import { and, eq } from "drizzle-orm";
 import { getAuthSession } from "@/lib/auth-db";
 import { db } from "@/lib/db";
@@ -8,17 +8,20 @@ import {
   buildTimeOffDecisionEmail,
   buildTimeOffRequestEmail,
 } from "@/lib/email";
-import { TIME_OFF_APPROVER_EMAILS } from "@/lib/constants";
 import { countWorkingDays, isDateString } from "@/lib/time-off/working-days";
 import {
   canCancel,
   canRevoke,
   canSubmitTimeOff,
+  timeOffApproverEmails,
   findConflict,
   isApprover,
   todayInZone,
 } from "@/lib/time-off/guards";
 import { getHolidayDates, getOwnActiveRequests } from "@/lib/time-off/queries";
+import { publishTimeOff } from "@/lib/time-off/team-calendar";
+
+const FROM_GUSTO = "This time off comes from Gusto. Change it in Gusto and the hub will follow.";
 
 export const dynamic = "force-dynamic";
 
@@ -85,6 +88,9 @@ export async function PATCH(
   if (!existing) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
+  if (existing.source === "gusto") {
+    return NextResponse.json({ error: FROM_GUSTO }, { status: 409 });
+  }
   // pending -> approved/denied is the original decision. approved ->
   // cancelled is an approver revoking already-granted leave (D10 reversed for
   // approvers on 2026-08-10). Everything else is a stale link or a
@@ -135,6 +141,9 @@ export async function PATCH(
       { status: 409 }
     );
   }
+
+  // Mirror onto the shared time off calendar (approved → event, else removed).
+  after(() => publishTimeOff(updated.id));
 
   const [requester] = await db
     .select({ email: users.email })
@@ -234,6 +243,9 @@ export async function PUT(
   if (!existing) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
+  if (existing.source === "gusto") {
+    return NextResponse.json({ error: FROM_GUSTO }, { status: 409 });
+  }
   if (existing.userId !== session.user.id) {
     return NextResponse.json(
       { error: "You can only edit your own requests" },
@@ -331,6 +343,9 @@ export async function PUT(
     );
   }
 
+  // An approved request went back to pending: take it off the shared calendar.
+  if (wasApproved) after(() => publishTimeOff(updated.id));
+
   // Re-notify approvers — especially important when an approved request is
   // pulled back to pending with new dates.
   const email = buildTimeOffRequestEmail({
@@ -341,7 +356,7 @@ export async function PUT(
     reason: reason.trim(),
   });
   const results = await Promise.all(
-    TIME_OFF_APPROVER_EMAILS.map((to) =>
+    timeOffApproverEmails().map((to) =>
       sendEmail({ to, subject: email.subject, html: email.html })
     )
   );
@@ -374,6 +389,9 @@ export async function DELETE(
 
   if (!existing) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+  if (existing.source === "gusto") {
+    return NextResponse.json({ error: FROM_GUSTO }, { status: 409 });
   }
   if (existing.userId !== session.user.id) {
     return NextResponse.json(
@@ -420,5 +438,6 @@ export async function DELETE(
     );
   }
 
+  after(() => publishTimeOff(updated.id));
   return NextResponse.json(updated);
 }

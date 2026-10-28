@@ -23,10 +23,16 @@ export function canSubmitTimeOff(role: string): boolean {
  * admin-level roles so the two agree today, but a future non-admin approver
  * would get the nav badge over an empty queue.
  */
+/** Who decides time off: NEXT_PUBLIC_TIME_OFF_APPROVER_EMAILS (comma separated; the nav reads it too) when set, else the built-in list. */
+export function timeOffApproverEmails(): readonly string[] {
+  const env = process.env.NEXT_PUBLIC_TIME_OFF_APPROVER_EMAILS?.split(",").map((e) => e.trim()).filter(Boolean);
+  return env?.length ? env : TIME_OFF_APPROVER_EMAILS;
+}
+
 export function isApprover(email: string | null | undefined): boolean {
   if (!email) return false;
   const normalised = email.toLowerCase();
-  return TIME_OFF_APPROVER_EMAILS.some((a) => a.toLowerCase() === normalised);
+  return timeOffApproverEmails().some((a) => a.toLowerCase() === normalised);
 }
 
 /**

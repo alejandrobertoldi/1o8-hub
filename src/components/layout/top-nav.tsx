@@ -208,6 +208,7 @@ export function TopNav() {
         { title: "Hours insights", href: "/hours/insights", icon: BarChart3, visible: isAdmin },
         { title: "Hours analytics", href: "/hours/analytics", icon: BarChart3, visible: isAdmin },
         { title: "Time off requests", href: "/calendar/requests", icon: Plane, visible: !!role && canSubmitTimeOff(role) },
+        { title: "Team time off", href: "/calendar/team", icon: Plane, visible: isAdmin },
       ],
     },
     {

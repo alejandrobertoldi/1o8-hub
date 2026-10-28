@@ -168,6 +168,11 @@ export const users = pgTable(
     // any zone the runtime accepts. NULL falls back to UTC, which is a soft
     // failure that self-corrects the moment it is set.
     residenceTimezone: text("residence_timezone"),
+    // Where this person books time off: "hub" (the hub's request + approval
+    // flow) or "gusto" (they request in Gusto; the hub only mirrors it).
+    timeOffVia: varchar("time_off_via", { length: 10 }).notNull().default("hub"),
+    // Their Gusto employee uuid, matched by email on each Gusto sync.
+    gustoEmployeeUuid: text("gusto_employee_uuid"),
     // ── Tier-0 team-directory fields (migration 0090) ──
     // Deliberately the ONLY new person-data on `users`. Everything more
     // sensitive lives in user_profiles / user_pay_periods /
@@ -3810,8 +3815,17 @@ export const timeOffRequests = pgTable(
       .notNull()
       .defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }),
+    // "hub" = requested here; "gusto" = mirrored from Gusto (read-only here).
+    source: varchar("source", { length: 10 }).notNull().default("hub"),
+    // The Gusto time off request uuid when source = "gusto".
+    externalId: text("external_id"),
+    // vacation / sick (Gusto's policy type); null for hub requests.
+    kind: varchar("kind", { length: 20 }),
+    // The event this request was published as on the shared time off calendar.
+    googleEventId: text("google_event_id"),
   },
   (t) => [
+    uniqueIndex("uq_time_off_source_external").on(t.source, t.externalId),
     index("idx_time_off_user_start").on(t.userId, t.startDate),
     index("idx_time_off_status").on(t.status),
     index("idx_time_off_range").on(t.startDate, t.endDate),
@@ -4834,6 +4848,68 @@ export const aacSyncRuns = pgTable("aac_sync_runs", {
   id: uuid("id").defaultRandom().primaryKey(),
   trigger: varchar("trigger", { length: 40 }).notNull(),
   dryRun: boolean("dry_run").notNull().default(false),
+  startedAt: timestamp("started_at", { withTimezone: true }).notNull().defaultNow(),
+  finishedAt: timestamp("finished_at", { withTimezone: true }),
+  report: jsonb("report").$type<Record<string, unknown>>(),
+  error: text("error"),
+});
+
+/** PTO / sick balances per person and policy, as last read from Gusto. */
+export const timeOffBalances = pgTable(
+  "time_off_balances",
+  {
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    policyName: text("policy_name").notNull(),
+    policyType: varchar("policy_type", { length: 20 }),
+    balanceHours: numeric("balance_hours", { precision: 8, scale: 2 }),
+    source: varchar("source", { length: 10 }).notNull().default("gusto"),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [primaryKey({ columns: [t.userId, t.policyName] })],
+);
+
+/**
+ * Events people put straight on the shared "1o8 Time off (PTO/OOO/Sick)"
+ * Google Calendar (not the ones the hub publishes there), cached for the hub
+ * calendar and the who's out view.
+ */
+export const teamCalendarEvents = pgTable(
+  "team_calendar_events",
+  {
+    googleEventId: text("google_event_id").primaryKey(),
+    summary: text("summary").notNull(),
+    allDay: boolean("all_day").notNull(),
+    /** Inclusive local dates the event covers. */
+    startDate: date("start_date").notNull(),
+    endDate: date("end_date").notNull(),
+    /** Exact times for part-day events. */
+    startAt: timestamp("start_at", { withTimezone: true }),
+    endAt: timestamp("end_at", { withTimezone: true }),
+    timeZone: text("time_zone"),
+    creatorEmail: text("creator_email"),
+    userId: uuid("user_id").references(() => users.id, { onDelete: "set null" }),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("idx_team_calendar_range").on(t.startDate, t.endDate)],
+);
+
+/** OAuth tokens for company-level integrations (Gusto), sealed at rest. */
+export const integrationTokens = pgTable("integration_tokens", {
+  provider: varchar("provider", { length: 40 }).primaryKey(),
+  sealed: text("sealed").notNull(),
+  keyVersion: integer("key_version").notNull(),
+  expiresAt: timestamp("expires_at", { withTimezone: true }),
+  meta: jsonb("meta").$type<Record<string, unknown>>(),
+  connectedBy: uuid("connected_by").references(() => users.id, { onDelete: "set null" }),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+/** Time off sync runs (Gusto import, shared calendar push/pull). */
+export const timeOffSyncRuns = pgTable("time_off_sync_runs", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  trigger: varchar("trigger", { length: 40 }).notNull(),
   startedAt: timestamp("started_at", { withTimezone: true }).notNull().defaultNow(),
   finishedAt: timestamp("finished_at", { withTimezone: true }),
   report: jsonb("report").$type<Record<string, unknown>>(),

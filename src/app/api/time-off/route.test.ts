@@ -138,6 +138,7 @@ describe("GET /api/time-off — reshaped response (§4.1)", () => {
     expect(body).toEqual({
       requests: [{ id: "r1" }],
       countryCode: "PK",
+      timeOffVia: "hub",
       today: "2026-08-07",
     });
     expect(getMyRequests).toHaveBeenCalledWith(USER_ID);

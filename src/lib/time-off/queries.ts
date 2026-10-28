@@ -16,15 +16,22 @@ export interface RequestRow {
   decidedAt: string | null;
   decisionNote: string | null;
   createdAt: string;
+  /** "hub" (booked here) or "gusto" (mirrored, read-only here). */
+  source?: string;
 }
 
 /** An approved request as rendered on the shared calendar — NO reason (D8). */
 export interface ApprovedRow {
   id: string;
-  userId: string;
+  userId: string | null;
   userName: string | null;
   startDate: string;
   endDate: string;
+  /** "hub" | "gusto" | "calendar" (put straight on the shared Google Calendar). */
+  source?: string;
+  /** Calendar events: the event title ("JMann Unavailable") and its hours when part-day. */
+  label?: string;
+  time?: string | null;
 }
 
 /**
@@ -68,6 +75,7 @@ const REQUEST_COLUMNS = {
   decidedAt: timeOffRequests.decidedAt,
   decisionNote: timeOffRequests.decisionNote,
   createdAt: timeOffRequests.createdAt,
+  source: timeOffRequests.source,
 } as const;
 
 /**
@@ -99,13 +107,13 @@ export async function getMyRequests(userId: string): Promise<RequestRow[]> {
   return rows.map(toRequestRow);
 }
 
-/** Jake's review queue: pending only, oldest first so nothing rots. */
+/** Jake's review queue: pending only, oldest first so nothing rots. Gusto's are decided in Gusto. */
 export async function getPendingRequests(): Promise<RequestRow[]> {
   const rows = await db
     .select(REQUEST_COLUMNS)
     .from(timeOffRequests)
     .innerJoin(users, eq(users.id, timeOffRequests.userId))
-    .where(eq(timeOffRequests.status, "pending"))
+    .where(and(eq(timeOffRequests.status, "pending"), eq(timeOffRequests.source, "hub")))
     .orderBy(asc(timeOffRequests.createdAt));
   return rows.map(toRequestRow);
 }
@@ -120,7 +128,7 @@ export async function getPendingCount(): Promise<number> {
   const [row] = await db
     .select({ count: count() })
     .from(timeOffRequests)
-    .where(eq(timeOffRequests.status, "pending"));
+    .where(and(eq(timeOffRequests.status, "pending"), eq(timeOffRequests.source, "hub")));
   // Postgres `count(*)` returns `bigint`; drivers sometimes surface that as
   // a string, so coerce explicitly rather than trusting the inferred type.
   return Number(row?.count ?? 0);
@@ -151,6 +159,7 @@ export async function getApprovedInRange(
       userName: users.name,
       startDate: timeOffRequests.startDate,
       endDate: timeOffRequests.endDate,
+      source: timeOffRequests.source,
     })
     .from(timeOffRequests)
     .innerJoin(users, eq(users.id, timeOffRequests.userId))

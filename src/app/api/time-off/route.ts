@@ -4,10 +4,10 @@ import { getAuthSession } from "@/lib/auth-db";
 import { db } from "@/lib/db";
 import { timeOffRequests, users, type TimeOffRequest } from "@/lib/db/schema";
 import { sendEmail, buildTimeOffRequestEmail } from "@/lib/email";
-import { TIME_OFF_APPROVER_EMAILS } from "@/lib/constants";
 import { countWorkingDays, isDateString } from "@/lib/time-off/working-days";
 import {
   canSubmitTimeOff,
+  timeOffApproverEmails,
   findConflict,
   todayInZone,
 } from "@/lib/time-off/guards";
@@ -61,6 +61,7 @@ export async function GET() {
     .select({
       countryCode: users.countryCode,
       residenceTimezone: users.residenceTimezone,
+      timeOffVia: users.timeOffVia,
     })
     .from(users)
     .where(eq(users.id, session.user.id))
@@ -73,6 +74,7 @@ export async function GET() {
   return NextResponse.json({
     requests: rows,
     countryCode: me?.countryCode ?? null,
+    timeOffVia: me?.timeOffVia ?? "hub",
     today,
   });
 }
@@ -150,10 +152,18 @@ export async function POST(req: NextRequest) {
   }
 
   const [me] = await db
-    .select({ name: users.name, countryCode: users.countryCode })
+    .select({ name: users.name, countryCode: users.countryCode, timeOffVia: users.timeOffVia })
     .from(users)
     .where(eq(users.id, session.user.id))
     .limit(1);
+
+  // People on Gusto request there; the hub mirrors it on the next sync.
+  if (me?.timeOffVia === "gusto") {
+    return NextResponse.json(
+      { error: "You request time off in Gusto. It shows up here once Gusto syncs." },
+      { status: 409 }
+    );
+  }
 
   // Design D-C. A missing holiday calendar is NOT a recoverable state: this
   // route freezes `workingDays` as an integer snapshot that is never
@@ -229,7 +239,7 @@ export async function POST(req: NextRequest) {
   // `sendEmail` takes a single address, so this follows the same fan-out the
   // onboarding route uses. `every` so a partial failure still warns.
   const results = await Promise.all(
-    TIME_OFF_APPROVER_EMAILS.map((to) =>
+    timeOffApproverEmails().map((to) =>
       sendEmail({ to, subject: email.subject, html: email.html })
     )
   );
