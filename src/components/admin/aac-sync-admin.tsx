@@ -26,11 +26,11 @@ const TRIGGERS: Record<string, string> = { manual: "Manual", script: "Script", "
 export function AacSyncAdmin() {
   const qc = useQueryClient();
   const [preview, setPreview] = useState<AacSyncReport | null>(null);
-  const { data, isLoading } = useQuery<Status>({
+  const { data, isLoading, error } = useQuery<Status>({
     queryKey: ["aac-sync"],
     queryFn: async () => {
       const res = await fetch("/api/admin/aac-sync");
-      if (!res.ok) throw new Error("Could not load the sync status");
+      if (!res.ok) throw new Error(`Could not load the sync status (HTTP ${res.status})`);
       return res.json();
     },
   });
@@ -54,6 +54,7 @@ export function AacSyncAdmin() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  if (error) return <p className="p-6 text-sm text-red-500">{error.message}</p>;
   if (isLoading || !data) return <p className="p-6 text-sm text-muted-foreground">Loading…</p>;
   const latestFull = data.runs.find((r) => r.report && (r.trigger === "manual" || r.trigger === "daily" || r.trigger === "script") && !r.error);
   const latest = preview ?? latestFull?.report ?? null;

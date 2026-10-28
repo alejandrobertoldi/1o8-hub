@@ -15,8 +15,13 @@ type ServiceAccount = { client_email: string; private_key: string };
 function credentials(): ServiceAccount | null {
   const env = process.env.GOOGLE_SERVICE_ACCOUNT_JSON?.trim();
   if (env) {
-    const json = env.startsWith("{") ? env : Buffer.from(env, "base64").toString("utf8");
-    return JSON.parse(json) as ServiceAccount;
+    try {
+      const json = env.startsWith("{") ? env : Buffer.from(env, "base64").toString("utf8");
+      return JSON.parse(json) as ServiceAccount;
+    } catch {
+      console.error("[aac-sync] GOOGLE_SERVICE_ACCOUNT_JSON is not valid JSON (raw or base64)");
+      return null;
+    }
   }
   const file = path.join(process.cwd(), "google-service-account.json");
   return fs.existsSync(file) ? (JSON.parse(fs.readFileSync(file, "utf8")) as ServiceAccount) : null;
