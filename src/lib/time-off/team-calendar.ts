@@ -18,6 +18,13 @@ import { addDaysIso, eventForTimeOff, teamEventFromGoogle } from "./calendar-eve
 
 export const teamCalendarId = () => process.env.TIME_OFF_CALENDAR_ID?.trim() || "";
 export const teamCalendarConfigured = () => !!teamCalendarId() && !!googleServiceAccount();
+/**
+ * TIME_OFF_CALENDAR_READ_ONLY=true (local dev): read the shared calendar but
+ * never create or delete events on it, so test approvals stay off the team's
+ * real calendar.
+ */
+export const teamCalendarReadOnly = () => process.env.TIME_OFF_CALENDAR_READ_ONLY === "true";
+const teamCalendarWritable = () => teamCalendarConfigured() && !teamCalendarReadOnly();
 const CALENDAR_TZ = () => process.env.TIME_OFF_CALENDAR_TZ || "America/Chicago";
 
 let client: calendar_v3.Calendar | null = null;
@@ -41,7 +48,7 @@ const gone = (err: unknown) => {
  * calendar is a mirror; the daily reconcile retries).
  */
 export async function publishTimeOff(requestId: string): Promise<void> {
-  if (!teamCalendarConfigured()) return;
+  if (!teamCalendarWritable()) return;
   try {
     const [r] = await db
       .select({
@@ -90,7 +97,7 @@ export async function publishTimeOff(requestId: string): Promise<void> {
 
 /** Daily backstop: publish approved time off that isn't on the calendar yet, remove what no longer is. */
 export async function reconcileTimeOffEvents(today: string): Promise<{ published: number; removed: number }> {
-  if (!teamCalendarConfigured()) return { published: 0, removed: 0 };
+  if (!teamCalendarWritable()) return { published: 0, removed: 0 };
   const from = addDaysIso(today, -30);
   const [toPublish, stale] = await Promise.all([
     db

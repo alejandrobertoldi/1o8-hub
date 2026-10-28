@@ -10,7 +10,7 @@ import type { TimeOffSyncReport } from "@/lib/time-off/sync";
 
 type Run = { id: string; trigger: string; startedAt: string; finishedAt: string | null; report: TimeOffSyncReport | null; error: string | null };
 type Status = {
-  calendar: { configured: boolean; calendarId: string; serviceAccount: string | null };
+  calendar: { configured: boolean; readOnly: boolean; calendarId: string; serviceAccount: string | null };
   gusto: { configured: boolean; connected: boolean; companyName: string | null; companyKnown: boolean; updatedAt: string | null };
   runs: Run[];
 };
@@ -89,6 +89,7 @@ export function TimeOffSyncAdmin() {
         <div className="flex flex-wrap items-center gap-3">
           <h2 className="text-sm font-bold">Shared Google Calendar</h2>
           {calendar.configured ? <Pill ok>Connected</Pill> : <Pill warn>Not configured</Pill>}
+          {calendar.configured && calendar.readOnly && <Pill warn>Read only · nothing is written to the calendar</Pill>}
         </div>
         {calendar.configured ? (
           <p className="text-xs text-muted-foreground">Calendar id: {calendar.calendarId}</p>

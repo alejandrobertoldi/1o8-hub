@@ -6,7 +6,7 @@ import { getAuthSession } from "@/lib/auth-db";
 import { hasAdminPowers } from "@/lib/roles";
 import { googleServiceAccount } from "@/lib/google-service-account";
 import { gustoConfigured, gustoConnection } from "@/lib/gusto/client";
-import { teamCalendarConfigured, teamCalendarId } from "@/lib/time-off/team-calendar";
+import { teamCalendarConfigured, teamCalendarId, teamCalendarReadOnly } from "@/lib/time-off/team-calendar";
 import { lastTimeOffRuns, syncTimeOff } from "@/lib/time-off/sync";
 
 async function admin() {
@@ -21,6 +21,7 @@ export async function GET() {
   return NextResponse.json({
     calendar: {
       configured: teamCalendarConfigured(),
+      readOnly: teamCalendarReadOnly(),
       calendarId: teamCalendarId(),
       // The address the calendar has to be shared with.
       serviceAccount: googleServiceAccount()?.client_email ?? null,

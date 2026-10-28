@@ -4,7 +4,7 @@ import { timeOffSyncRuns } from "@/lib/db/schema";
 import { gustoConfigured, gustoConnection } from "@/lib/gusto/client";
 import { importFromGusto, type GustoImportReport } from "@/lib/gusto/sync";
 import { addDaysIso } from "./calendar-events";
-import { pullTeamCalendar, reconcileTimeOffEvents, teamCalendarConfigured } from "./team-calendar";
+import { pullTeamCalendar, reconcileTimeOffEvents, teamCalendarConfigured, teamCalendarReadOnly } from "./team-calendar";
 
 export type TimeOffSyncReport = {
   gusto: GustoImportReport | { skipped: string };
@@ -36,7 +36,12 @@ export async function syncTimeOff(trigger: string): Promise<TimeOffSyncReport> {
 
   const report: TimeOffSyncReport = {
     gusto: await attempt("Gusto", gustoConfigured() && !!(await gustoConnection()), "Gusto isn't connected", importFromGusto),
-    calendarPush: await attempt("Calendar publish", teamCalendarConfigured(), "Shared calendar isn't configured", () => reconcileTimeOffEvents(today)),
+    calendarPush: await attempt(
+      "Calendar publish",
+      teamCalendarConfigured() && !teamCalendarReadOnly(),
+      teamCalendarReadOnly() ? "Read only (TIME_OFF_CALENDAR_READ_ONLY)" : "Shared calendar isn't configured",
+      () => reconcileTimeOffEvents(today),
+    ),
     calendarPull: await attempt("Calendar read", teamCalendarConfigured(), "Shared calendar isn't configured", () =>
       pullTeamCalendar(addDaysIso(today, -60), addDaysIso(today, 365)),
     ),
