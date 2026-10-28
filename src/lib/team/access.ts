@@ -42,6 +42,9 @@ export const FIELD_TIERS: Record<string, FieldTier> = Object.assign(
     // Holiday calendar + residence TZ — edited on /team/[id], not /admin/users
     countryCode: "admin",
     residenceTimezone: "admin",
+    // Time off: books in Gusto or the hub, and who approves the hub requests
+    timeOffVia: "admin",
+    timeOffApproverId: "admin",
     // ── tier 1, columns on `user_profiles` ──
     personalEmail: "self",
     addressLine1: "self",
@@ -76,6 +79,8 @@ export const USERS_PATCH_FIELDS: ReadonlySet<string> = new Set([
   "employmentStatus",
   "countryCode",
   "residenceTimezone",
+  "timeOffVia",
+  "timeOffApproverId",
 ]);
 
 export const PROFILE_PATCH_FIELDS: ReadonlySet<string> = new Set([

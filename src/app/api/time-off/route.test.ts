@@ -11,6 +11,8 @@ vi.mock("@/lib/time-off/queries", () => ({
   getMyRequests: vi.fn(),
   getOwnActiveRequests: vi.fn(),
   getHolidayDates: vi.fn(),
+  getPendingRequests: vi.fn().mockResolvedValue([]),
+  approverEmailsFor: vi.fn().mockResolvedValue(["approver@1o8.agency"]),
 }));
 
 import { GET, POST } from "./route";
@@ -137,6 +139,7 @@ describe("GET /api/time-off — reshaped response (§4.1)", () => {
     expect(res.status).toBe(200);
     expect(body).toEqual({
       requests: [{ id: "r1" }],
+      decidable: [],
       countryCode: "PK",
       timeOffVia: "hub",
       today: "2026-08-07",

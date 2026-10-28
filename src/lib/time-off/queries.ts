@@ -1,6 +1,7 @@
-import { and, asc, count, desc, eq, gte, inArray, lte, sum } from "drizzle-orm";
+import { and, asc, count, desc, eq, gte, inArray, isNull, lte, or, sum, type SQL } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { publicHolidays, timeOffRequests, users } from "@/lib/db/schema";
+import { hasSuperPowers } from "@/lib/roles";
 
 /** A request joined to its requester, for list and queue views. */
 export interface RequestRow {
@@ -107,13 +108,26 @@ export async function getMyRequests(userId: string): Promise<RequestRow[]> {
   return rows.map(toRequestRow);
 }
 
-/** Jake's review queue: pending only, oldest first so nothing rots. Gusto's are decided in Gusto. */
-export async function getPendingRequests(): Promise<RequestRow[]> {
+export type Decider = { id: string; role: string };
+
+/**
+ * Pending hub requests this person may decide: their assignees', plus
+ * everyone without an assigned approver; owners / super admins see all.
+ * Gusto's are decided in Gusto.
+ */
+function decidableBy(decider: Decider): SQL | undefined {
+  const pendingHub = and(eq(timeOffRequests.status, "pending"), eq(timeOffRequests.source, "hub"));
+  if (hasSuperPowers(decider.role)) return pendingHub;
+  return and(pendingHub, or(isNull(users.timeOffApproverId), eq(users.timeOffApproverId, decider.id)));
+}
+
+/** The review queue: pending only, oldest first so nothing rots. */
+export async function getPendingRequests(decider: Decider): Promise<RequestRow[]> {
   const rows = await db
     .select(REQUEST_COLUMNS)
     .from(timeOffRequests)
     .innerJoin(users, eq(users.id, timeOffRequests.userId))
-    .where(and(eq(timeOffRequests.status, "pending"), eq(timeOffRequests.source, "hub")))
+    .where(decidableBy(decider))
     .orderBy(asc(timeOffRequests.createdAt));
   return rows.map(toRequestRow);
 }
@@ -124,11 +138,12 @@ export async function getPendingRequests(): Promise<RequestRow[]> {
  * runs the same join and materialises every pending row, including
  * admin-only `reason` text, just to discard it.
  */
-export async function getPendingCount(): Promise<number> {
+export async function getPendingCount(decider: Decider): Promise<number> {
   const [row] = await db
     .select({ count: count() })
     .from(timeOffRequests)
-    .where(and(eq(timeOffRequests.status, "pending"), eq(timeOffRequests.source, "hub")));
+    .innerJoin(users, eq(users.id, timeOffRequests.userId))
+    .where(decidableBy(decider));
   // Postgres `count(*)` returns `bigint`; drivers sometimes surface that as
   // a string, so coerce explicitly rather than trusting the inferred type.
   return Number(row?.count ?? 0);
@@ -283,4 +298,24 @@ export async function getDaysTakenBreakdown(year: number): Promise<DaysTakenRow[
     userName: r.userName,
     days: Number(r.total ?? 0),
   }));
+}
+
+/**
+ * Who gets the "new request" email for a person: their assigned approver, or
+ * the owners and super admins when nobody is assigned.
+ */
+export async function approverEmailsFor(userId: string): Promise<string[]> {
+  const [person] = await db.select({ approverId: users.timeOffApproverId }).from(users).where(eq(users.id, userId)).limit(1);
+  if (person?.approverId) {
+    const [approver] = await db.select({ email: users.email }).from(users).where(eq(users.id, person.approverId)).limit(1);
+    if (approver?.email) return [approver.email];
+  }
+  const supers = await db.select({ email: users.email }).from(users).where(inArray(users.role, ["owner", "super_admin"]));
+  return supers.map((u) => u.email);
+}
+
+/** The assigned approver of a person (null: any admin). */
+export async function assignedApproverOf(userId: string): Promise<string | null> {
+  const [person] = await db.select({ approverId: users.timeOffApproverId }).from(users).where(eq(users.id, userId)).limit(1);
+  return person?.approverId ?? null;
 }

@@ -54,6 +54,8 @@ const tier0 = {
   slackHandle: users.slackHandle,
   countryCode: users.countryCode,
   residenceTimezone: users.residenceTimezone,
+  timeOffVia: users.timeOffVia,
+  timeOffApproverId: users.timeOffApproverId,
   lastLoginAt: users.lastLoginAt,
   createdAt: users.createdAt,
 };
@@ -129,6 +131,7 @@ export async function GET(
     canEditDirectory: hasAdminPowers(session.user.role),
     restricted: !fullCard,
   };
+
   if (!fullCard) {
     payload.directory = await loadDirectory();
     return NextResponse.json(payload);
@@ -210,7 +213,13 @@ function validateValue(field: string, value: unknown): string | null {
     const result = normalizeJobTitles(value);
     return "error" in result ? result.error : null;
   }
+  if (field === "timeOffVia") {
+    return value === "hub" || value === "gusto" ? null : "timeOffVia must be hub or gusto";
+  }
   if (value === null) return null; // every other field is nullable
+  if (field === "timeOffApproverId") {
+    return typeof value === "string" && /^[0-9a-f-]{36}$/i.test(value) ? null : "timeOffApproverId must be a user id or null";
+  }
   if (field === "startDate" || field === "dateOfBirth") {
     return isDateString(value)
       ? null
@@ -318,6 +327,13 @@ export async function PATCH(
   for (const k of keys) {
     const problem = validateValue(k, patch[k]);
     if (problem) return NextResponse.json({ error: problem }, { status: 400 });
+  }
+  // A time off approver must be someone else with admin powers.
+  if (typeof patch.timeOffApproverId === "string") {
+    const [approver] = await db.select({ role: users.role }).from(users).where(eq(users.id, patch.timeOffApproverId)).limit(1);
+    if (!approver || !hasAdminPowers(approver.role) || patch.timeOffApproverId === userId) {
+      return NextResponse.json({ error: "The approver must be another admin, super admin or owner" }, { status: 400 });
+    }
   }
 
   const userUpdates: Record<string, unknown> = {};

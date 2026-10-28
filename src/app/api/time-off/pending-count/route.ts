@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getAuthSession } from "@/lib/auth-db";
-import { canSubmitTimeOff, isApprover } from "@/lib/time-off/guards";
+import { canApproveTimeOff, canSubmitTimeOff } from "@/lib/time-off/guards";
 import { getPendingCount } from "@/lib/time-off/queries";
 
 export const dynamic = "force-dynamic";
@@ -8,9 +8,8 @@ export const dynamic = "force-dynamic";
 /**
  * GET /api/time-off/pending-count — nav badge source.
  *
- * Jake-only: he is the only person who can act on a pending request
- * (spec D2), so a badge on any other admin's screen would be noise. Other
- * admins still see the full queue read-only at /calendar/requests.
+ * Counts only the requests this person can decide (their assignees', the
+ * unassigned ones; everything for owners / super admins).
  */
 export async function GET() {
   const session = await getAuthSession();
@@ -20,10 +19,10 @@ export async function GET() {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  if (!isApprover(session.user.email)) {
+  if (!canApproveTimeOff(session.user.role)) {
     return NextResponse.json({ count: 0 });
   }
 
-  const pendingCount = await getPendingCount();
+  const pendingCount = await getPendingCount({ id: session.user.id, role: session.user.role });
   return NextResponse.json({ count: pendingCount });
 }

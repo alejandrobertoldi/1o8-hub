@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   canSubmitTimeOff,
-  isApprover,
+  canApproveTimeOff,
+  canDecideTimeOff,
   findConflict,
   canCancel,
   canRevoke,
@@ -19,32 +20,25 @@ describe("canSubmitTimeOff", () => {
   it("rejects an unknown role", () => expect(canSubmitTimeOff("robot")).toBe(false));
 });
 
-// Spec D2 revised 2026-08-07: Manu is a second permanent approver. The
-// previous "rejects another admin" case asserted the opposite for his exact
-// address — it is inverted below, deliberately, not deleted.
-describe("isApprover", () => {
-  it("accepts Jake", () =>
-    expect(isApprover("jake@marketfoundry.agency")).toBe(true));
-
-  // Manu is the SECOND entry in TIME_OFF_APPROVER_EMAILS. Every other case
-  // here still passes against an implementation that only ever compared
-  // against [0]; this one is what proves the membership test iterates.
-  it("accepts Manu", () =>
-    expect(isApprover("manu@marketfoundry.agency")).toBe(true));
-
-  it("is case-insensitive for Jake", () =>
-    expect(isApprover("Jake@MarketFoundry.Agency")).toBe(true));
-
-  // Case-folding has to reach every entry, not just the first one.
-  it("is case-insensitive for Manu", () =>
-    expect(isApprover("MANU@MarketFoundry.Agency")).toBe(true));
-
-  // Same domain as both approvers, so a lazy domain check would pass this.
-  it("rejects a non-approver teammate", () =>
-    expect(isApprover("aqib@marketfoundry.agency")).toBe(false));
-
-  it("rejects null", () => expect(isApprover(null)).toBe(false));
-  it("rejects undefined", () => expect(isApprover(undefined)).toBe(false));
+// 1o8: approvers are admins and above. A person's assigned approver decides
+// their requests (owners / super admins as backup); unassigned: any admin.
+describe("canApproveTimeOff / canDecideTimeOff", () => {
+  const admin = { id: "a1", role: "admin" };
+  it("lets admins and above approve", () => {
+    expect(canApproveTimeOff("owner")).toBe(true);
+    expect(canApproveTimeOff("super_admin")).toBe(true);
+    expect(canApproveTimeOff("admin")).toBe(true);
+    expect(canApproveTimeOff("editor")).toBe(false);
+    expect(canApproveTimeOff(undefined)).toBe(false);
+  });
+  it("any admin decides when nobody is assigned", () => expect(canDecideTimeOff(admin, null)).toBe(true));
+  it("the assigned approver decides", () => expect(canDecideTimeOff(admin, "a1")).toBe(true));
+  it("another admin can't decide someone else's assignee", () => expect(canDecideTimeOff(admin, "a2")).toBe(false));
+  it("owners and super admins are the backup", () => {
+    expect(canDecideTimeOff({ id: "o1", role: "owner" }, "a2")).toBe(true);
+    expect(canDecideTimeOff({ id: "s1", role: "super_admin" }, "a2")).toBe(true);
+  });
+  it("editors never decide, even when assigned", () => expect(canDecideTimeOff({ id: "e1", role: "editor" }, "e1")).toBe(false));
 });
 
 describe("findConflict", () => {

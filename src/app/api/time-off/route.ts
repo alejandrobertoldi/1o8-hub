@@ -7,13 +7,14 @@ import { sendEmail, buildTimeOffRequestEmail } from "@/lib/email";
 import { countWorkingDays, isDateString } from "@/lib/time-off/working-days";
 import {
   canSubmitTimeOff,
-  timeOffApproverEmails,
   findConflict,
   todayInZone,
 } from "@/lib/time-off/guards";
 import {
+  approverEmailsFor,
   getAllRequests,
   getHolidayDates,
+  getPendingRequests,
   getMyRequests,
   getOwnActiveRequests,
 } from "@/lib/time-off/queries";
@@ -71,8 +72,14 @@ export async function GET() {
   // Edit with the same day boundary the DELETE/PUT routes use (ruling P3).
   const today = todayInZone(me?.residenceTimezone ?? null, new Date());
 
+  // Pending requests this admin can decide (their assignees' and the unassigned ones).
+  const decidable = hasAdminPowers(role)
+    ? (await getPendingRequests({ id: session.user.id, role })).map((r) => r.id)
+    : [];
+
   return NextResponse.json({
     requests: rows,
+    decidable,
     countryCode: me?.countryCode ?? null,
     timeOffVia: me?.timeOffVia ?? "hub",
     today,
@@ -239,7 +246,7 @@ export async function POST(req: NextRequest) {
   // `sendEmail` takes a single address, so this follows the same fan-out the
   // onboarding route uses. `every` so a partial failure still warns.
   const results = await Promise.all(
-    timeOffApproverEmails().map((to) =>
+    (await approverEmailsFor(session.user.id)).map((to) =>
       sendEmail({ to, subject: email.subject, html: email.html })
     )
   );

@@ -2,6 +2,11 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 vi.mock("@/lib/auth-db", () => ({ getAuthSession: vi.fn() }));
 vi.mock("@/lib/time-off/team-calendar", () => ({ publishTimeOff: vi.fn() }));
+vi.mock("@/lib/time-off/queries", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/lib/time-off/queries")>()),
+  assignedApproverOf: vi.fn().mockResolvedValue(null),
+  approverEmailsFor: vi.fn().mockResolvedValue([]),
+}));
 vi.mock("next/server", async (importOriginal) => {
   const actual = await importOriginal<typeof import("next/server")>();
   return { ...actual, after: vi.fn((task: () => unknown) => { void task(); }) };
@@ -19,14 +24,14 @@ import { DELETE, PATCH } from "./route";
 import { getAuthSession } from "@/lib/auth-db";
 import { db } from "@/lib/db";
 import { buildTimeOffDecisionEmail, sendEmail } from "@/lib/email";
-import { TIME_OFF_APPROVER_EMAILS } from "@/lib/constants";
+import { assignedApproverOf } from "@/lib/time-off/queries";
 
 const asMock = (fn: unknown) => fn as ReturnType<typeof vi.fn>;
 
 const REQ_ID = "11111111-1111-4111-8111-111111111111";
 const USER_ID = "22222222-2222-4222-8222-222222222222";
 const APPROVER_ID = "44444444-4444-4444-8444-444444444444";
-const APPROVER_EMAIL = TIME_OFF_APPROVER_EMAILS[0];
+const APPROVER_EMAIL = "approver@1o8.agency";
 
 function delReq() {
   return new Request(`http://localhost/api/time-off/${REQ_ID}`, {
@@ -224,12 +229,11 @@ describe("PATCH revoke", () => {
     expect(sendEmail).not.toHaveBeenCalled();
   });
 
-  it("rejects a revoke from a non-approver", async () => {
-    // Role stays valid (admin) so only the approver-email check is under
+  it("rejects a revoke from an admin who isn't the person's assigned approver", async () => {
+    // Role stays valid (admin) so only the assigned-approver check is under
     // test — a 403 for the wrong reason would pass this test for free.
-    asMock(getAuthSession).mockResolvedValue({
-      user: { id: APPROVER_ID, role: "admin", email: "notanapprover@marketfoundry.agency" },
-    });
+    mockSelects([APPROVED_TOMORROW]);
+    asMock(assignedApproverOf).mockResolvedValueOnce("99999999-9999-4999-8999-999999999999");
 
     const res = await PATCH(
       patchReq({ status: "cancelled", decisionNote: "note" }),
@@ -238,6 +242,12 @@ describe("PATCH revoke", () => {
 
     expect(res.status).toBe(403);
     expect(db.update).not.toHaveBeenCalled();
+  });
+
+  it("rejects a decision from an editor", async () => {
+    asMock(getAuthSession).mockResolvedValue({ user: { id: APPROVER_ID, role: "editor", email: APPROVER_EMAIL } });
+    const res = await PATCH(patchReq({ status: "cancelled", decisionNote: "note" }), ctx);
+    expect(res.status).toBe(403);
   });
 
   it("rejects a revoke with no note", async () => {

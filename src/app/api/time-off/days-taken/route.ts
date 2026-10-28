@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthSession } from "@/lib/auth-db";
-import { canSubmitTimeOff, isApprover } from "@/lib/time-off/guards";
+import { canApproveTimeOff, canSubmitTimeOff } from "@/lib/time-off/guards";
 import { getDaysTakenByUser, getDaysTakenBreakdown } from "@/lib/time-off/queries";
 
 export const dynamic = "force-dynamic";
@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
 
   const ownDays = await getDaysTakenByUser(session.user.id, year);
 
-  if (!isApprover(session.user.email)) {
+  if (!canApproveTimeOff(session.user.role)) {
     return NextResponse.json({ year, ownDays });
   }
 

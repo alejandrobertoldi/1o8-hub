@@ -20,6 +20,7 @@ import { EditableField } from "./editable-field";
 import { JobTitlesField } from "./job-titles-field";
 import { ApprovedPtoBlock } from "./approved-pto-block";
 import { HolidayBlock, yearOptions } from "./holiday-block";
+import { TimeOffSettings } from "./time-off-settings";
 import { FinancialBlock } from "./financial-block";
 import { PaymentBlock } from "./payment-block";
 import { DirectoryBlock } from "./directory-block";
@@ -46,6 +47,8 @@ export type TeamUserPayload = {
     slackHandle: string | null;
     countryCode: string | null;
     residenceTimezone: string | null;
+    timeOffVia: string;
+    timeOffApproverId: string | null;
     lastLoginAt: string | null;
     createdAt: string;
   };
@@ -455,8 +458,28 @@ export function UserDetail({ userId }: { userId: string }) {
         />
       </Section>
 
+      {/* Admins set this on anyone, even on the restricted card. */}
+      {data.restricted && can("timeOffVia") && (
+        <Section title="Time off">
+          <TimeOffSettings
+            userId={userId}
+            timeOffVia={user.timeOffVia}
+            timeOffApproverId={user.timeOffApproverId}
+            canWrite
+            onSave={(body) => patch.mutate(body)}
+          />
+        </Section>
+      )}
+
       {!data.restricted && (
       <Section title="Time off & holidays">
+        <TimeOffSettings
+          userId={userId}
+          timeOffVia={user.timeOffVia}
+          timeOffApproverId={user.timeOffApproverId}
+          canWrite={can("timeOffVia")}
+          onSave={(body) => patch.mutate(body)}
+        />
         <div className="mb-4 flex items-center gap-2">
           <label
             htmlFor="time-off-year"

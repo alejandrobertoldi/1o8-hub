@@ -17,6 +17,7 @@ vi.mock("@/lib/email", () => ({
 vi.mock("@/lib/time-off/queries", () => ({
   getHolidayDates: vi.fn().mockResolvedValue(new Set()),
   getOwnActiveRequests: vi.fn().mockResolvedValue([]),
+  approverEmailsFor: vi.fn().mockResolvedValue(["approver@1o8.agency"]),
 }));
 
 import { PUT } from "./route";

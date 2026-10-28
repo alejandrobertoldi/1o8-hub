@@ -173,6 +173,8 @@ export const users = pgTable(
     timeOffVia: varchar("time_off_via", { length: 10 }).notNull().default("hub"),
     // Their Gusto employee uuid, matched by email on each Gusto sync.
     gustoEmployeeUuid: text("gusto_employee_uuid"),
+    // Who decides their hub time off requests (an admin or above). Null: any admin.
+    timeOffApproverId: uuid("time_off_approver_id").references((): AnyPgColumn => users.id, { onDelete: "set null" }),
     // ── Tier-0 team-directory fields (migration 0090) ──
     // Deliberately the ONLY new person-data on `users`. Everything more
     // sensitive lives in user_profiles / user_pay_periods /
@@ -3773,9 +3775,9 @@ export type CalendarEvent = typeof calendarEvents.$inferSelect;
 export type NewCalendarEvent = typeof calendarEvents.$inferInsert;
 
 // ─── Time Off Requests ───────────────────────────────────────────────
-// One row per request. Approval is limited to the emails in
-// TIME_OFF_APPROVER_EMAILS — Jake and Manu as of the 2026-08-07 D2 revision,
-// which added a second approver. `workingDays` is a SNAPSHOT taken at
+// One row per request. Approval: admins and above — the requester's assigned
+// approver (users.time_off_approver_id; owners / super admins as backup), or
+// any admin when nobody is assigned. `workingDays` is a SNAPSHOT taken at
 // submission: correcting a holiday date later must not silently rewrite an
 // already-decided request, and it makes days-taken a cheap SUM. Whole days
 // only — no half days.

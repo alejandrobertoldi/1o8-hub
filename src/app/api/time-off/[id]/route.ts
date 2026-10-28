@@ -12,13 +12,12 @@ import { countWorkingDays, isDateString } from "@/lib/time-off/working-days";
 import {
   canCancel,
   canRevoke,
+  canDecideTimeOff,
   canSubmitTimeOff,
-  timeOffApproverEmails,
   findConflict,
-  isApprover,
   todayInZone,
 } from "@/lib/time-off/guards";
-import { getHolidayDates, getOwnActiveRequests } from "@/lib/time-off/queries";
+import { approverEmailsFor, assignedApproverOf, getHolidayDates, getOwnActiveRequests } from "@/lib/time-off/queries";
 import { publishTimeOff } from "@/lib/time-off/team-calendar";
 
 const FROM_GUSTO = "This time off comes from Gusto. Change it in Gusto and the hub will follow.";
@@ -39,7 +38,8 @@ function isExclusionViolation(err: unknown): boolean {
 // the clock exactly once, at the call site, and passes it in.
 
 // PATCH /api/time-off/[id] — approve, deny, or revoke an already-approved
-// request. Jake and Manu only (spec D2, revised 2026-08-07).
+// request. Admins and above: the person's assigned approver (owners / super
+// admins as backup), or any admin when nobody is assigned.
 export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -47,11 +47,9 @@ export async function PATCH(
   const session = await getAuthSession();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  // Gated on role AND email so a demoted approver fails closed: isApprover
-  // alone only checks the email string, and a role change should win.
-  if (!canSubmitTimeOff(session.user.role) || !isApprover(session.user.email)) {
+  if (!canSubmitTimeOff(session.user.role) || !canDecideTimeOff({ id: session.user.id, role: session.user.role }, null)) {
     return NextResponse.json(
-      { error: "Only the designated approver can decide time-off requests" },
+      { error: "Only admins can decide time-off requests" },
       { status: 403 }
     );
   }
@@ -90,6 +88,12 @@ export async function PATCH(
   }
   if (existing.source === "gusto") {
     return NextResponse.json({ error: FROM_GUSTO }, { status: 409 });
+  }
+  if (!canDecideTimeOff({ id: session.user.id, role: session.user.role }, await assignedApproverOf(existing.userId))) {
+    return NextResponse.json(
+      { error: "Only this person's assigned approver can decide their time off" },
+      { status: 403 }
+    );
   }
   // pending -> approved/denied is the original decision. approved ->
   // cancelled is an approver revoking already-granted leave (D10 reversed for
@@ -356,7 +360,7 @@ export async function PUT(
     reason: reason.trim(),
   });
   const results = await Promise.all(
-    timeOffApproverEmails().map((to) =>
+    (await approverEmailsFor(session.user.id)).map((to) =>
       sendEmail({ to, subject: email.subject, html: email.html })
     )
   );

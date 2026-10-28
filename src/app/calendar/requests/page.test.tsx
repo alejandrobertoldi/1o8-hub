@@ -64,13 +64,14 @@ describe("TimeOffRequestsPage — three-way role rendering", () => {
     expect(screen.queryByText(/pending \(/i)).not.toBeInTheDocument();
   });
 
-  it("shows the approver queue and breakdown for Jake", async () => {
+  it("shows the approver queue and breakdown for an admin who can decide", async () => {
     asMock(useSession).mockReturnValue({
       data: { user: { email: "jake@marketfoundry.agency", role: "admin" } },
     });
     mockFetchSequence(
       {
         requests: [{ ...BASE_ROW, status: "pending" }],
+        decidable: ["r1"],
         countryCode: "US",
         today: "2026-08-07",
       },
@@ -81,22 +82,22 @@ describe("TimeOffRequestsPage — three-way role rendering", () => {
     expect(screen.getByText("Days taken this year")).toBeInTheDocument();
   });
 
-  it("shows all requests read-only for a non-approver admin", async () => {
-    // Manu is an approver — use a different admin email for the read-only path.
+  it("leaves out of the queue pending requests assigned to another approver", async () => {
     asMock(useSession).mockReturnValue({
-      data: { user: { email: "aqib@marketfoundry.agency", role: "admin" } },
+      data: { user: { email: "aqib@1o8.agency", role: "admin" } },
     });
     mockFetchSequence(
       {
-        requests: [{ ...BASE_ROW, status: "approved" }],
+        requests: [{ ...BASE_ROW, status: "pending" }],
+        decidable: [],
         countryCode: "ES",
         today: "2026-08-07",
       },
-      { year: 2026, ownDays: 0 }
+      { year: 2026, ownDays: 0, breakdown: [] }
     );
     renderPage();
-    await waitFor(() => expect(screen.getByText("Jo")).toBeInTheDocument());
-    expect(screen.queryByText(/pending \(/i)).not.toBeInTheDocument();
+    await waitFor(() => expect(screen.getByText("Pending (0)")).toBeInTheDocument());
+    expect(screen.getByText("Jo")).toBeInTheDocument();
   });
 
   it("renders a My requests section, with Revoke on all requests, for an approver", async () => {
@@ -118,47 +119,6 @@ describe("TimeOffRequestsPage — three-way role rendering", () => {
     // onRevoke is wired only onto the approver's "All requests" list, so exactly
     // one Revoke control exists — "My requests" carries the owner actions instead.
     expect(screen.getByRole("button", { name: "Revoke" })).toBeInTheDocument();
-  });
-
-  it("renders a My requests section with the day count, and no Revoke, for a non-approver admin", async () => {
-    asMock(useSession).mockReturnValue({
-      data: { user: { email: "aqib@marketfoundry.agency", role: "admin", id: "u1" } },
-    });
-    mockFetchSequence(
-      {
-        requests: [
-          { ...BASE_ROW, status: "approved" },
-          {
-            ...BASE_ROW,
-            id: "r2",
-            userId: "u2",
-            userName: "Sam",
-            startDate: "2026-09-10",
-            endDate: "2026-09-11",
-            reason: "Wedding",
-            status: "approved",
-          },
-        ],
-        countryCode: "ES",
-        today: "2026-08-07",
-      },
-      { year: 2026, ownDays: 2 }
-    );
-    renderPage();
-    await waitFor(() =>
-      expect(screen.getByText(/my requests/i)).toBeInTheDocument()
-    );
-    expect(screen.getByText(/taken/i)).toBeInTheDocument();
-    // "My requests" is this user's own rows, not every row: u1 owns r1 only. The
-    // requester name cannot tell the two lists apart because My requests hides
-    // it, so key on the reason — "Trip" renders in both lists, "Wedding" only in
-    // All requests.
-    expect(screen.getAllByText("Trip")).toHaveLength(2);
-    expect(screen.getAllByText("Wedding")).toHaveLength(1);
-    // Only approvers revoke — this branch must pass no onRevoke.
-    expect(
-      screen.queryByRole("button", { name: "Revoke" })
-    ).not.toBeInTheDocument();
   });
 
   it("sends a PATCH with the cancelled status and the note when an approver revokes", async () => {
@@ -267,6 +227,7 @@ describe("TimeOffRequestsPage — three-way role rendering", () => {
         ok: true,
         json: async () => ({
           requests: [{ ...BASE_ROW, status: "pending" }],
+          decidable: ["r1"],
           countryCode: "US",
           today: "2026-08-07",
         }),

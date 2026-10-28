@@ -1,4 +1,4 @@
-import { TIME_OFF_APPROVER_EMAILS } from "@/lib/constants";
+import { hasAdminPowers, hasSuperPowers } from "@/lib/roles";
 import { isValidTimeZone } from "@/lib/timezones";
 import { overlaps } from "./working-days";
 
@@ -15,24 +15,21 @@ export function canSubmitTimeOff(role: string): boolean {
 }
 
 /**
- * True for any of the permanent approvers (spec D2, revised 2026-08-07 — two
- * approvers, still no delegation and no timeout escalation).
- *
- * Note this is NOT the gate that fills the approver queue: GET /api/time-off
- * branches on hasAdminPowers(role), not on this. Both current approvers hold
- * admin-level roles so the two agree today, but a future non-admin approver
- * would get the nav badge over an empty queue.
+ * Who may decide hub time off: admins and above. Each person can have an
+ * assigned approver (users.time_off_approver_id, set on their team profile);
+ * then only that approver decides, with owners / super admins as the backup
+ * so a request never gets stuck. Nobody assigned: any admin.
  */
-/** Who decides time off: NEXT_PUBLIC_TIME_OFF_APPROVER_EMAILS (comma separated; the nav reads it too) when set, else the built-in list. */
-export function timeOffApproverEmails(): readonly string[] {
-  const env = process.env.NEXT_PUBLIC_TIME_OFF_APPROVER_EMAILS?.split(",").map((e) => e.trim()).filter(Boolean);
-  return env?.length ? env : TIME_OFF_APPROVER_EMAILS;
+export function canApproveTimeOff(role: string | null | undefined): boolean {
+  return hasAdminPowers(role);
 }
 
-export function isApprover(email: string | null | undefined): boolean {
-  if (!email) return false;
-  const normalised = email.toLowerCase();
-  return timeOffApproverEmails().some((a) => a.toLowerCase() === normalised);
+export function canDecideTimeOff(
+  decider: { id: string; role: string | null | undefined },
+  assignedApproverId: string | null | undefined
+): boolean {
+  if (!canApproveTimeOff(decider.role)) return false;
+  return !assignedApproverId || assignedApproverId === decider.id || hasSuperPowers(decider.role);
 }
 
 /**

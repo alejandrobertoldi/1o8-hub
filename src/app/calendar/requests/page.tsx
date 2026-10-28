@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { PageMetaSlot } from "@/components/layout/page-header-slot";
-import { isApprover } from "@/lib/time-off/guards";
+import { canApproveTimeOff } from "@/lib/time-off/guards";
 import type { DaysTakenRow, RequestRow } from "@/lib/time-off/queries";
 import { RequestsList } from "./_components/RequestsList";
 import { ApproverQueue } from "./_components/ApproverQueue";
@@ -14,6 +14,8 @@ interface TimeOffSelfResponse {
   requests: RequestRow[];
   countryCode: string | null;
   today: string;
+  /** Pending requests the caller can decide. */
+  decidable?: string[];
 }
 interface DaysTakenResponse {
   year: number;
@@ -23,9 +25,8 @@ interface DaysTakenResponse {
 
 export default function TimeOffRequestsPage() {
   const { data: session } = useSession();
-  const email = session?.user?.email;
   const role = session?.user?.role;
-  const approver = isApprover(email);
+  const approver = canApproveTimeOff(role);
   const currentYear = new Date().getFullYear();
   const queryClient = useQueryClient();
 
@@ -132,7 +133,8 @@ export default function TimeOffRequestsPage() {
   }
 
   const requests = selfData.requests;
-  const pending = requests.filter((r) => r.status === "pending");
+  const decidable = new Set(selfData.decidable ?? []);
+  const pending = requests.filter((r) => r.status === "pending" && decidable.has(r.id));
   const mine = requests.filter((r) => r.userId === session?.user?.id);
   const listActions = {
     currentUserId: session?.user?.id,

@@ -63,7 +63,7 @@ import {
   Handshake, LayoutGrid, Gauge, PenLine,
 } from "lucide-react";
 import { toast } from "sonner";
-import { isApprover, canSubmitTimeOff } from "@/lib/time-off/guards";
+import { canApproveTimeOff, canSubmitTimeOff } from "@/lib/time-off/guards";
 import { BetaPill } from "@/components/ui/beta-pill";
 
 /* ---------- types ---------- */
@@ -154,7 +154,7 @@ export function TopNav() {
   });
   const openIssues = issuesData?.count ?? 0;
 
-  const isApproverUser = isApprover(session?.user?.email);
+  const isApproverUser = canApproveTimeOff(role);
   const { data: timeOffPendingData } = useQuery({
     queryKey: ["time-off-pending-count"],
     queryFn: async () => {

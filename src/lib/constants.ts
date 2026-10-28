@@ -204,19 +204,8 @@ export const TEAM_ROLES: Record<string, string> = {
 
 // ── Time off ────────────────────────────────────────────────────────
 
-/**
- * Approvers of team time-off requests (spec D2, revised 2026-08-07 — Manu
- * added as a second permanent approver alongside Jake; still permanent, still
- * no delegation and no timeout escalation). Deliberately the single place
- * these emails appear, so changing the approver set is a one-line edit.
- *
- * Stored lowercase: `isApprover` normalises both sides before comparing, and
- * the request notification fans out to every entry.
- */
-export const TIME_OFF_APPROVER_EMAILS = [
-  "jake@marketfoundry.agency",
-  "manu@marketfoundry.agency",
-] as const;
+// Time off approvers: admins and above, assigned per person on their team
+// profile (users.time_off_approver_id) — see canDecideTimeOff in time-off/guards.
 
 /** Final monthly-report send approver (CEO). After AM sign-off, CEO reviews then sends. */
 export const MONTHLY_REPORT_FINAL_REVIEWER_EMAIL = "jake@marketfoundry.agency";
