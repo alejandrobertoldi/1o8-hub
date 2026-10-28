@@ -26,7 +26,9 @@ export async function syncTimeOff(trigger: string): Promise<TimeOffSyncReport> {
     try {
       return await fn();
     } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
+      // Drizzle wraps the database's own message in `cause`; that's the useful part.
+      const cause = (err as { cause?: { message?: string } })?.cause?.message;
+      const msg = cause ?? (err instanceof Error ? err.message : String(err));
       errors.push(`${label}: ${msg}`);
       return { skipped: msg };
     }

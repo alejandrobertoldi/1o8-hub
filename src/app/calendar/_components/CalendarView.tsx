@@ -384,9 +384,8 @@ export function CalendarView({ initialEvents }: CalendarViewProps) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-[1fr_280px] gap-6">
-        <div className="space-y-4">
-          {/* Month nav + filters */}
+      <div className="space-y-4">
+          {/* Month nav + filters (full width, so the sidebar lines up with the grid) */}
           <div className="flex items-center justify-between gap-4 flex-wrap">
             <div className="flex items-center gap-3">
               <button
@@ -439,6 +438,8 @@ export function CalendarView({ initialEvents }: CalendarViewProps) {
             </div>
           </div>
 
+      <div className="grid grid-cols-1 xl:grid-cols-[1fr_280px] gap-6">
+        <div className="space-y-4">
           <MonthGrid
             year={currentYear}
             month={currentMonth}
@@ -629,6 +630,7 @@ export function CalendarView({ initialEvents }: CalendarViewProps) {
             </p>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );
