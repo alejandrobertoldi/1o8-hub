@@ -458,20 +458,8 @@ export function UserDetail({ userId }: { userId: string }) {
         />
       </Section>
 
-      {/* Admins set this on anyone, even on the restricted card. */}
-      {data.restricted && can("timeOffVia") && (
-        <Section title="Time off">
-          <TimeOffSettings
-            userId={userId}
-            timeOffVia={user.timeOffVia}
-            timeOffApproverId={user.timeOffApproverId}
-            canWrite
-            onSave={(body) => patch.mutate(body)}
-          />
-        </Section>
-      )}
-
-      {!data.restricted && (
+      {/* The person, admins and above: days taken, approver, holiday calendar. */}
+      {(!data.restricted || access.isAdmin) && (
       <Section title="Time off & holidays">
         <TimeOffSettings
           userId={userId}

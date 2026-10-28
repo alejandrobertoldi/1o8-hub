@@ -15,11 +15,9 @@ export const dynamic = "force-dynamic";
 /**
  * GET /api/team/[userId]/time-off?year=2026
  *
- * Approved PTO detail for the team member page. Dates + workingDays are
- * visible to any authenticated staff who can load the profile; reason and
- * decisionNote stay private to self + admin (D8 spirit on the shared
- * calendar — here we still show them when the viewer is the subject or an
- * admin, matching /calendar/requests).
+ * Approved PTO detail and days taken for the team member page: the person
+ * themselves, admins and above only (reason and decisionNote included, as on
+ * /calendar/requests). Everyone else sees who's off on the shared calendar.
  */
 export async function GET(
   req: NextRequest,
@@ -53,7 +51,10 @@ export async function GET(
     userId,
     isSuperAdmin
   );
-  const includePrivate = access.isSelf || access.isAdmin;
+  // Days taken and dates: the person, admins and above only.
+  if (!access.isSelf && !access.isAdmin && !access.isSuperAdmin) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
 
   const [requests, daysTaken] = await Promise.all([
     getApprovedRequestsForUser(userId, year),
@@ -69,9 +70,8 @@ export async function GET(
       endDate: r.endDate,
       workingDays: r.workingDays,
       decidedAt: r.decidedAt,
-      ...(includePrivate
-        ? { reason: r.reason, decisionNote: r.decisionNote }
-        : {}),
+      reason: r.reason,
+      decisionNote: r.decisionNote,
     })),
   });
 }

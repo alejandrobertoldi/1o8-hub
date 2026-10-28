@@ -191,16 +191,17 @@ describe("GET /api/team/[userId]", () => {
     expect(res.status).toBe(404);
   });
 
-  it("omits profile, pay and payment for a viewer who is neither self nor super-admin", async () => {
+  it("gives an admin who isn't super-admin pay, but no profile or payment", async () => {
     // Owner clears the route-level ownership gate; the tier logic under test
-    // here (self/superadmin only) is independent of that gate.
+    // here is independent of that gate. 1o8: admins and above read Financial;
+    // Payment stays super-admin only.
     signIn(ME, "owner", false);
-    queueSelects([TARGET_ROW], []);
+    queueSelects([TARGET_ROW], [], PAY_ROWS);
     const body = await (await GET(getReq(), ctx(THEM))).json();
     // Omitted, NOT rendered locked — a greyed-out box tells an admin there is
     // something to go looking for (spec §5).
     expect(body).not.toHaveProperty("profile");
-    expect(body).not.toHaveProperty("pay");
+    expect(body.pay).toHaveLength(1);
     expect(body).not.toHaveProperty("payment");
     expect(body.user.id).toBe(THEM);
   });
@@ -246,10 +247,10 @@ describe("GET /api/team/[userId]", () => {
       user: { id: ME, role: "owner", email: "me@marketfoundry.agency", isSuperAdmin: true },
     });
     asMock(readIsSuperAdmin).mockResolvedValue(false);
-    queueSelects([TARGET_ROW], []);
+    queueSelects([TARGET_ROW], [], PAY_ROWS);
     const body = await (await GET(getReq(), ctx(THEM))).json();
     expect(readIsSuperAdmin).toHaveBeenCalledWith(ME);
-    expect(body).not.toHaveProperty("pay");
+    expect(body).not.toHaveProperty("payment");
     expect(body.access.isSuperAdmin).toBe(false);
   });
 
@@ -637,7 +638,7 @@ describe("authorization gate: only owner may view/edit ANOTHER member (else self
   // directory view — no user_profiles, pay or payment, and no MF field writes.
   it("GET: a non-owner (e.g. admin) viewing ANOTHER user's detail gets the restricted tier-0 card", async () => {
     signIn(ME, "admin", false);
-    queueSelects([TARGET_ROW], [], [{ userId: THEM, location: "Puebla, MX" }]);
+    queueSelects([TARGET_ROW], [], PAY_ROWS, [{ userId: THEM, location: "Puebla, MX" }]);
     const res = await GET(getReq(), ctx(THEM));
     expect(res.status).toBe(200);
     const body = await res.json();
@@ -647,7 +648,8 @@ describe("authorization gate: only owner may view/edit ANOTHER member (else self
     // admin-tier fields stay writable for an admin; self/superadmin tiers do not
     expect(body.access).toEqual({ isSelf: false, isAdmin: true, isSuperAdmin: false });
     expect(body).not.toHaveProperty("profile");
-    expect(body).not.toHaveProperty("pay");
+    // 1o8: admins read Financial on the restricted card; Payment stays super-admin.
+    expect(body.pay).toHaveLength(1);
     expect(body).not.toHaveProperty("payment");
   });
 

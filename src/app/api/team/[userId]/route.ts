@@ -132,7 +132,29 @@ export async function GET(
     restricted: !fullCard,
   };
 
+  // Financial (pay periods): the person, admins and above may READ (writes
+  // stay on the pay-periods routes, super admin only). Payment (bank/Wise):
+  // super admins and the owner only.
+  const loadPay = () =>
+    db
+      .select()
+      .from(userPayPeriods)
+      .where(eq(userPayPeriods.userId, userId))
+      .orderBy(desc(userPayPeriods.effectiveFrom));
+  const loadPayment = async () => {
+    const [payment] = await db
+      .select()
+      .from(userPaymentDetails)
+      .where(eq(userPaymentDetails.userId, userId))
+      .limit(1);
+    return payment ? maskPayment(payment) : null;
+  };
+
   if (!fullCard) {
+    // Restricted card: no personal profile, but admins still get Financial
+    // (and super admins Payment) — they manage pay and time off.
+    if (access.isAdmin) payload.pay = await loadPay();
+    if (isSuperAdmin) payload.payment = await loadPayment();
     payload.directory = await loadDirectory();
     return NextResponse.json(payload);
   }
@@ -146,24 +168,8 @@ export async function GET(
     payload.profile = profile ?? null;
   }
 
-  // Financial (pay periods): owner + super-admin may READ. Writes stay on the
-  // pay-periods routes, which still require superadmin. Payment (bank/Wise)
-  // remains super-admin only — owners never see their own payment identifiers.
-  if (allowsTier("self", access)) {
-    payload.pay = await db
-      .select()
-      .from(userPayPeriods)
-      .where(eq(userPayPeriods.userId, userId))
-      .orderBy(desc(userPayPeriods.effectiveFrom));
-  }
-  if (allowsTier("superadmin", access)) {
-    const [payment] = await db
-      .select()
-      .from(userPaymentDetails)
-      .where(eq(userPaymentDetails.userId, userId))
-      .limit(1);
-    payload.payment = payment ? maskPayment(payment) : null;
-  }
+  if (access.isSelf || access.isAdmin || access.isSuperAdmin) payload.pay = await loadPay();
+  if (allowsTier("superadmin", access)) payload.payment = await loadPayment();
 
   payload.directory = await loadDirectory();
   return NextResponse.json(payload);

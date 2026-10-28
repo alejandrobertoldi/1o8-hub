@@ -93,23 +93,12 @@ describe("GET /api/team/[userId]/time-off", () => {
     expect(res.status).toBe(404);
   });
 
-  it("strips reason for a peer editor viewing someone else", async () => {
+  it("403s a peer editor viewing someone else's days taken", async () => {
     asMock(getAuthSession).mockResolvedValue({
       user: { id: ME, role: "editor", email: "me@x.com" },
     });
     const res = await GET(req("2026"), ctx(THEM));
-    expect(res.status).toBe(200);
-    const body = await res.json();
-    expect(body.daysTaken).toBe(5);
-    expect(body.requests).toHaveLength(1);
-    expect(body.requests[0]).toMatchObject({
-      id: "r1",
-      startDate: "2026-03-01",
-      endDate: "2026-03-05",
-      workingDays: 5,
-    });
-    expect(body.requests[0].reason).toBeUndefined();
-    expect(body.requests[0].decisionNote).toBeUndefined();
+    expect(res.status).toBe(403);
   });
 
   it("includes reason for self", async () => {
