@@ -406,7 +406,9 @@ export function MonthGrid({
                     +{overflow} more
                   </span>
                 )}
-                <ApprovedTimeOffOverlay rows={approvedTimeOff} cellKey={cell.key} />
+                {activeFilters.has("pto") ? (
+                  <ApprovedTimeOffOverlay rows={approvedTimeOff} cellKey={cell.key} />
+                ) : null}
                 {showPublicHolidays ? (
                   <HolidayOverlay rows={holidays} cellKey={cell.key} />
                 ) : null}

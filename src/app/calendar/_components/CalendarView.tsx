@@ -297,8 +297,12 @@ export function CalendarView({ initialEvents }: CalendarViewProps) {
       pto: 0,
     };
     for (const ev of monthEvents) counts[ev.type] += 1;
+    // Plus approved time off (hub / Gusto) and the shared time off calendar.
+    const monthStart = `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}-01`;
+    const monthEnd = `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}-31`;
+    counts.pto += approvedTimeOff.filter((r) => r.startDate <= monthEnd && r.endDate >= monthStart).length;
     return counts;
-  }, [monthEvents]);
+  }, [monthEvents, approvedTimeOff, currentYear, currentMonth]);
 
   const publicHolidayCount = useMemo(() => {
     return holidays.filter((h) => {
