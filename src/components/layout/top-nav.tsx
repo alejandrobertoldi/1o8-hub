@@ -213,12 +213,12 @@ export function TopNav() {
     {
       label: "Clients", icon: Users,
       items: [
-        { title: "Client Onboarding", href: "/onboarding", icon: ClipboardList, visible: isAdmin },
         { title: "Client Summary", href: "/clients", icon: Users, visible: true },
         { title: "Brand Guidelines", href: "/clients/brand-guidelines", icon: BookOpen, visible: true },
         { title: "Client Timelines", href: "/timeline", icon: CalendarDays, visible: isAdmin },
         { title: "Client Reports", href: "/reports", icon: BarChart3, visible: checkAccess("reports"), crossDept: getCrossDeptLabels("reports", "clients") },
         { title: "Monthly Report", href: "/reports/monthly", icon: FileText, visible: isHubStaff(role) },
+        { title: "Client Onboarding", href: "/onboarding", icon: ClipboardList, visible: isAdmin },
         { title: "Case Studies", href: "/case-studies", icon: Presentation, visible: isHubStaff(role) },
         { title: "Client Portal", href: "/portal", icon: Eye, visible: isAdmin },
       ],

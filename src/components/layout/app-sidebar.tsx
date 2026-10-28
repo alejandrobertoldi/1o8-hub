@@ -76,11 +76,11 @@ export function AppSidebar() {
       label: "Clients",
       icon: Users,
       items: [
-        { title: "Client Onboarding", href: "/onboarding", icon: ClipboardList, visible: isAdmin },
         { title: "Client Summary", href: "/clients", icon: Users, visible: true },
         { title: "Brand Guidelines", href: "/clients/brand-guidelines", icon: BookOpen, visible: true },
         { title: "Client Timelines", href: "/timeline", icon: CalendarDays, visible: isAdmin },
         { title: "Client Reports", href: "/reports", icon: BarChart3, visible: checkAccess("reports"), crossDept: getCrossDeptLabels("reports", "clients") },
+        { title: "Client Onboarding", href: "/onboarding", icon: ClipboardList, visible: isAdmin },
         { title: "Client Portal", href: "/portal", icon: Eye, visible: isAdmin },
       ],
     },
