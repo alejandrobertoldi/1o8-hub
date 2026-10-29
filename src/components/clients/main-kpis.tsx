@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { ArrowDown, ArrowUp, Sparkles, X } from "lucide-react";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
@@ -28,10 +29,12 @@ const GA4_PROPERTY_FIELD = "GA4Property";
 
 /** Where this client's KPI numbers come from: Shopify store and GA4 property (Meta, Klaviyo next). */
 export function KpiDataSources({
+  clientIdCode,
   rawData,
   readOnly,
   onSave,
 }: {
+  clientIdCode: string;
   rawData: Record<string, string>;
   readOnly: boolean;
   onSave: (field: string, value: string) => Promise<void>;
@@ -82,7 +85,122 @@ export function KpiDataSources({
           <EditableCell field="ShopifyStore" value={String(rawData.ShopifyStore ?? "")} readOnly={readOnly} onSave={onSave} type="text" />
         </span>
       </span>
+      <MetaAccountPicker value={String(rawData[META_AD_ACCOUNT_FIELD] ?? "").trim()} readOnly={readOnly} onSave={(v) => onSave(META_AD_ACCOUNT_FIELD, v)} />
+      <KlaviyoKey clientIdCode={clientIdCode} readOnly={readOnly} />
     </div>
+  );
+}
+
+const META_AD_ACCOUNT_FIELD = "MetaAdAccount";
+
+/** The client's Meta ad account, from the ones 1o8's system user can read. */
+function MetaAccountPicker({ value, readOnly, onSave }: { value: string; readOnly: boolean; onSave: (v: string) => void }) {
+  const { data: accounts, error, isLoading } = useQuery<{ id: string; name: string }[]>({
+    queryKey: ["kpi", "meta-accounts"],
+    queryFn: async () => {
+      const res = await fetch("/api/kpi/meta-accounts");
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error ?? "Could not list Meta ad accounts");
+      return json;
+    },
+    enabled: !readOnly,
+    staleTime: 10 * 60_000,
+    retry: false,
+  });
+  const current = accounts?.find((a) => a.id === value);
+  return (
+    <span className="flex items-center gap-1.5">
+      <span className="text-muted-foreground">Meta</span>
+      {readOnly || error || isLoading ? (
+        <span title={error ? (error as Error).message : undefined} className={cn(!value && "text-muted-foreground")}>
+          {value ? current?.name ?? `act_${value}` : error ? "Connect Meta in Sync & Export → KPIs" : "—"}
+        </span>
+      ) : (
+        <Select value={value || "__none__"} onValueChange={(v) => onSave(v === "__none__" ? "" : v)}>
+          <SelectTrigger size="sm" className="h-7 w-52 text-xs">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="__none__">Not connected</SelectItem>
+            {accounts?.map((a) => (
+              <SelectItem key={a.id} value={a.id}>
+                {a.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      )}
+    </span>
+  );
+}
+
+/** The client's read-only Klaviyo key: admins paste it; nobody sees it again. */
+function KlaviyoKey({ clientIdCode, readOnly }: { clientIdCode: string; readOnly: boolean }) {
+  const qc = useQueryClient();
+  const [draft, setDraft] = useState<string | null>(null);
+  const { data } = useQuery<{ connected: boolean; metrics: number | null }>({
+    queryKey: ["kpi", "klaviyo", clientIdCode],
+    queryFn: async () => (await fetch(`/api/clients/${encodeURIComponent(clientIdCode)}/klaviyo-key`)).json(),
+  });
+  const save = useMutation({
+    mutationFn: async (key: string | null) => {
+      const res = await fetch(`/api/clients/${encodeURIComponent(clientIdCode)}/klaviyo-key`, {
+        method: key ? "POST" : "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: key ? JSON.stringify({ key }) : undefined,
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error ?? "Could not save the Klaviyo key");
+    },
+    onSuccess: () => {
+      setDraft(null);
+      qc.invalidateQueries({ queryKey: ["kpi", "klaviyo", clientIdCode] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+  return (
+    <span className="flex items-center gap-1.5">
+      <span className="text-muted-foreground">Klaviyo</span>
+      {draft !== null ? (
+        <>
+          <input
+            autoFocus
+            type="password"
+            autoComplete="off"
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            placeholder="pk_… (read-only key)"
+            className="h-7 w-44 rounded-md border border-input bg-transparent px-2 text-xs outline-none focus:border-brand"
+          />
+          <Button size="xs" variant="brand" disabled={!draft.trim() || save.isPending} onClick={() => save.mutate(draft.trim())}>
+            Save
+          </Button>
+          <Button size="xs" variant="ghost" onClick={() => setDraft(null)}>
+            Cancel
+          </Button>
+        </>
+      ) : data?.connected ? (
+        <span className="flex items-center gap-1">
+          <span className="text-emerald-500">Connected</span>
+          {!readOnly && (
+            <>
+              <button type="button" className="text-muted-foreground hover:text-foreground" onClick={() => setDraft("")}>
+                Replace
+              </button>
+              <button type="button" className="text-muted-foreground hover:text-red-500" onClick={() => save.mutate(null)}>
+                Remove
+              </button>
+            </>
+          )}
+        </span>
+      ) : readOnly ? (
+        <span className="text-muted-foreground">—</span>
+      ) : (
+        <button type="button" className="text-brand hover:underline" onClick={() => setDraft("")}>
+          Add key
+        </button>
+      )}
+    </span>
   );
 }
 

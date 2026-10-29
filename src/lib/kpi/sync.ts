@@ -2,11 +2,15 @@ import { and, desc, eq, gte, lte, max, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { aac, kpiDaily, kpiSyncRuns } from "@/lib/db/schema";
 import { MAIN_KPIS_FIELD, parseClientKpis, type ClientKpi } from "@/lib/clients/kpis";
-import { fetchGa4Daily } from "./ga4";
+import { fetchGa4Daily, type DailyValue } from "./ga4";
+import { fetchMetaDaily } from "./meta";
+import { fetchKlaviyoDaily } from "./klaviyo";
+import { clientsWithKlaviyo } from "./secrets";
 import { kpiValue, parseTarget, targetStatus, type KpiValue, type TargetStatus, type Totals } from "./values";
 
 /** Hub-only raw_data keys naming each client's data sources. */
 export const GA4_PROPERTY_FIELD = "GA4Property";
+export const META_AD_ACCOUNT_FIELD = "MetaAdAccount";
 
 const DAY = 86_400_000;
 const iso = (d: Date) => d.toISOString().slice(0, 10);
@@ -15,17 +19,26 @@ const addDays = (day: string, n: number) => iso(new Date(Date.parse(`${day}T00:0
 const BACKFILL_DAYS = 400;
 /** Re-read the last few days every time: GA4 keeps settling for ~72h. */
 const REFRESH_DAYS = 4;
+const CHUNK_DAYS = 180;
 
-type ClientSources = { code: string; ga4: string | null };
+type ClientSources = { code: string; ga4: string | null; meta: string | null; klaviyo: boolean };
 
 async function clientSources(only?: string): Promise<ClientSources[]> {
-  const rows = await db
-    .select({ code: aac.clientIdCode, raw: aac.rawData })
-    .from(aac)
-    .where(only ? eq(aac.clientIdCode, only) : undefined);
+  const [rows, klaviyo] = await Promise.all([
+    db
+      .select({ code: aac.clientIdCode, raw: aac.rawData })
+      .from(aac)
+      .where(only ? eq(aac.clientIdCode, only) : undefined),
+    clientsWithKlaviyo(),
+  ]);
   return rows.map((r) => {
     const raw = (r.raw ?? {}) as Record<string, string>;
-    return { code: r.code, ga4: raw[GA4_PROPERTY_FIELD]?.trim() || null };
+    return {
+      code: r.code,
+      ga4: raw[GA4_PROPERTY_FIELD]?.trim() || null,
+      meta: raw[META_AD_ACCOUNT_FIELD]?.trim() || null,
+      klaviyo: klaviyo.has(r.code.toUpperCase()),
+    };
   });
 }
 
@@ -57,17 +70,26 @@ export async function syncKpis(trigger: string, only?: string): Promise<KpiSyncR
   const [run] = await db.insert(kpiSyncRuns).values({ trigger }).returning({ id: kpiSyncRuns.id });
   const yesterday = addDays(iso(new Date()), -1);
   const report: KpiSyncReport = { clients: [] };
-  for (const c of await clientSources(only)) {
-    if (!c.ga4) continue;
+  const pull = async (code: string, source: string, fetchRange: (from: string, to: string) => Promise<DailyValue[]>) => {
     try {
-      const last = await lastDay(c.code, "ga4");
+      const last = await lastDay(code, source);
       const from = last ? addDays(last, -REFRESH_DAYS) : addDays(yesterday, -BACKFILL_DAYS);
-      const rows = await fetchGa4Daily(c.ga4, from, yesterday);
-      await store(c.code, "ga4", rows);
-      report.clients.push({ code: c.code, source: "ga4", days: new Set(rows.map((r) => r.day)).size });
+      // Some APIs cap a query at a year (Klaviyo); pull in half-year slices.
+      const rows: DailyValue[] = [];
+      for (let start = from; start <= yesterday; start = addDays(start, CHUNK_DAYS)) {
+        const end = addDays(start, CHUNK_DAYS - 1) < yesterday ? addDays(start, CHUNK_DAYS - 1) : yesterday;
+        rows.push(...(await fetchRange(start, end)));
+      }
+      await store(code, source, rows);
+      report.clients.push({ code, source, days: new Set(rows.map((r) => r.day)).size });
     } catch (err) {
-      report.clients.push({ code: c.code, source: "ga4", days: 0, error: err instanceof Error ? err.message : String(err) });
+      report.clients.push({ code, source, days: 0, error: err instanceof Error ? err.message : String(err) });
     }
+  };
+  for (const c of await clientSources(only)) {
+    if (c.ga4) await pull(c.code, "ga4", (f, t) => fetchGa4Daily(c.ga4!, f, t));
+    if (c.meta) await pull(c.code, "meta", (f, t) => fetchMetaDaily(c.meta!, f, t));
+    if (c.klaviyo) await pull(c.code, "klaviyo", (f, t) => fetchKlaviyoDaily(c.code, f, t));
   }
   const errors = report.clients.filter((c) => c.error).map((c) => `${c.code} ${c.source}: ${c.error}`);
   await db

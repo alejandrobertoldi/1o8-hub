@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ExternalLink, Loader2, RefreshCw, Unplug } from "lucide-react";
@@ -9,15 +9,59 @@ import { cn } from "@/lib/utils";
 import type { KpiSyncReport } from "@/lib/kpi/sync";
 
 type Run = { id: string; trigger: string; startedAt: string; finishedAt: string | null; report: KpiSyncReport | null; error: string | null };
-type Status = { ga4: { oauthConfigured: boolean; connected: boolean; email: string | null; serviceAccount: string | null }; runs: Run[] };
+type Status = {
+  ga4: { oauthConfigured: boolean; connected: boolean; email: string | null; serviceAccount: string | null };
+  meta: { connected: boolean; adAccounts: number | null; updatedAt: string | null };
+  klaviyo: { clients: string[] };
+  runs: Run[];
+};
 
 const when = (iso: string) => new Date(iso).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
 
-const SOURCES = [
-  { name: "Shopify", note: "Waiting for the 1o8 Hub Shopify app (App developer + Distribution roles)." },
-  { name: "Meta", note: "Next: a system user in 1o8's Business Manager with read access to the clients' ad accounts." },
-  { name: "Klaviyo", note: "Next: a read-only private API key per client account." },
-];
+/** Paste-once Meta system user token (never shown back). */
+function MetaToken({ connected, onDone }: { connected: boolean; onDone: () => void }) {
+  const [token, setToken] = useState("");
+  const save = useMutation({
+    mutationFn: async () => {
+      const res = await fetch("/api/integrations/meta", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ token }) });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error ?? "Could not save the token");
+      return json as { adAccounts: number };
+    },
+    onSuccess: (r) => {
+      toast.success(`Meta connected · ${r.adAccounts} ad account(s)`);
+      setToken("");
+      onDone();
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+  const remove = useMutation({
+    mutationFn: async () => {
+      await fetch("/api/integrations/meta", { method: "DELETE" });
+    },
+    onSuccess: onDone,
+  });
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      <input
+        type="password"
+        autoComplete="off"
+        value={token}
+        onChange={(e) => setToken(e.target.value)}
+        placeholder={connected ? "Paste a new token to replace it" : "System user access token"}
+        className="h-8 w-80 rounded-md border border-input bg-transparent px-2 text-xs outline-none focus:border-brand"
+      />
+      <Button size="sm" variant="brand" disabled={!token.trim() || save.isPending} onClick={() => save.mutate()}>
+        {save.isPending ? <Loader2 className="size-3.5 animate-spin" /> : null} Save
+      </Button>
+      {connected && (
+        <Button size="sm" variant="outline" disabled={remove.isPending} onClick={() => remove.mutate()}>
+          <Unplug className="size-3.5" /> Disconnect
+        </Button>
+      )}
+    </div>
+  );
+}
 
 /** Sync & Export → KPIs tab: where each client's Main KPI numbers come from. */
 export function KpiSyncAdmin() {
@@ -105,15 +149,39 @@ export function KpiSyncAdmin() {
         </p>
       </section>
 
+      <section className="space-y-2 rounded-xl border bg-card p-4">
+        <div className="flex flex-wrap items-center gap-3">
+          <h2 className="text-sm font-bold">Meta ads</h2>
+          <span className={cn("rounded-full px-2.5 py-1 text-xs font-semibold", data.meta.connected ? "bg-emerald-500/15 text-emerald-500" : "bg-orange-500/15 text-orange-500")}>
+            {data.meta.connected ? `Connected · ${data.meta.adAccounts ?? 0} ad accounts` : "Not connected"}
+          </span>
+        </div>
+        <MetaToken connected={data.meta.connected} onDone={() => qc.invalidateQueries({ queryKey: ["kpi-sync"] })} />
+        {!data.meta.connected && (
+          <ol className="list-decimal space-y-0.5 pl-5 text-xs text-muted-foreground">
+            <li>developers.facebook.com → My Apps → Create app (type Business), linked to 1o8&apos;s Business Manager; add the Marketing API.</li>
+            <li>Business settings → Users → System users → Add (Employee) → Assign assets: the clients&apos; ad accounts with &ldquo;View performance&rdquo;.</li>
+            <li>Generate token for that app with the ads_read permission (it doesn&apos;t expire) and paste it here.</li>
+          </ol>
+        )}
+      </section>
+
+      <section className="space-y-1 rounded-xl border bg-card p-4">
+        <div className="flex flex-wrap items-center gap-3">
+          <h2 className="text-sm font-bold">Klaviyo</h2>
+          <span className="rounded-full bg-muted px-2.5 py-1 text-xs font-semibold text-muted-foreground">
+            {data.klaviyo.clients.length ? `${data.klaviyo.clients.length} client(s): ${data.klaviyo.clients.join(", ")}` : "No clients yet"}
+          </span>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          One key per client, set on its profile. In the client&apos;s Klaviyo: Settings → Account → API keys → Create private API key → &ldquo;Read-only&rdquo; (or
+          Custom with Metrics: Read).
+        </p>
+      </section>
+
       <section className="rounded-xl border bg-card p-4">
-        <h2 className="mb-2 text-sm font-bold">Coming next</h2>
-        <ul className="space-y-1 text-xs">
-          {SOURCES.map((s) => (
-            <li key={s.name}>
-              <b>{s.name}</b> <span className="text-muted-foreground">— {s.note}</span>
-            </li>
-          ))}
-        </ul>
+        <h2 className="mb-1 text-sm font-bold">Shopify</h2>
+        <p className="text-xs text-muted-foreground">Waiting for the 1o8 Hub Shopify app (needs the App developer + Distribution roles in the 1o8 organization).</p>
       </section>
 
       <section className="rounded-xl border bg-card">

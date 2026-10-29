@@ -38,6 +38,8 @@ export function kpiValue(key: string, t: Totals): KpiValue | null {
       return v(get(t, "shopify:new_customers"), "count", "Shopify");
     case "blended_roas":
       return v(div(shopifyNet, get(t, "meta:spend")), "ratio", "Shopify net sales ÷ Meta spend");
+    case "prospecting_roas":
+      return null;
     case "cac":
       return v(div(get(t, "meta:spend"), get(t, "shopify:new_customers")), "money", "Meta spend ÷ Shopify new customers");
     case "website_roas":
@@ -52,7 +54,7 @@ export function kpiValue(key: string, t: Totals): KpiValue | null {
     case "course_registrations":
       return v(get(t, "ga4:key_events"), "count", "GA4 key events");
     case "email_revenue":
-      return v(get(t, "klaviyo:revenue"), "money", "Klaviyo");
+      return v(get(t, "klaviyo:attributed_revenue"), "money", "Klaviyo (email + SMS attributed)");
     case "email_list_growth":
       return v(get(t, "klaviyo:net_subscribers"), "count", "Klaviyo");
     default:

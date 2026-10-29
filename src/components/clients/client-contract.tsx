@@ -111,7 +111,7 @@ export function ContractSection({ clientIdCode, rawData, readOnly, onSave }: Pro
       <div className="border-b border-border/30 px-5 py-4">
         <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
           <span className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">Main KPIs</span>
-          <KpiDataSources rawData={rawData} readOnly={readOnly} onSave={onSave} />
+          <KpiDataSources clientIdCode={clientIdCode} rawData={rawData} readOnly={readOnly} onSave={onSave} />
         </div>
         <MainKpis clientIdCode={clientIdCode} rawData={rawData} readOnly={readOnly} onSave={onSave} />
       </div>
