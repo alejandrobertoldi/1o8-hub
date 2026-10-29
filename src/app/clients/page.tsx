@@ -23,6 +23,8 @@ import { hasAdminPowers } from "@/lib/roles";
 import { sowStatus } from "@/lib/clients/sow";
 import { SowBadge } from "@/components/clients/client-contract";
 import { MAIN_KPI_SHEET_FIELD, MAIN_KPIS_FIELD, kpiLabel, parseClientKpis, suggestKpisFromText } from "@/lib/clients/kpis";
+import { formatKpi } from "@/lib/kpi/values";
+import type { ClientKpiReadings } from "@/lib/kpi/sync";
 
 // ── Types ─────────────────────────────────────────────────────────────
 
@@ -120,6 +122,14 @@ export default function ClientsPage() {
     staleTime: 5 * 60 * 1000,
   });
   const readinessByCode = new Map(readinessRows.map((r) => [r.clientIdCode.toUpperCase(), r]));
+  const { data: kpiRows = [] } = useQuery<ClientKpiReadings[]>({
+    queryKey: ["kpi-readings", "all"],
+    queryFn: async () => {
+      const res = await fetch("/api/kpi/readings");
+      return res.ok ? res.json() : [];
+    },
+  });
+  const kpisByCode = new Map(kpiRows.map((r) => [r.code.toUpperCase(), r]));
 
   const deleteMutation = useMutation({
     mutationFn: async (clientIdCode: string) => {
@@ -300,7 +310,7 @@ export default function ClientsPage() {
                       </div>
                     </div>
 
-                    <ClientKpiChips rawData={client.rawData ?? {}} />
+                    <ClientKpiChips rawData={client.rawData ?? {}} readings={kpisByCode.get(client.clientIdCode.toUpperCase())} />
 
                     {/* Bottom: Asana readiness */}
                     <ClientReadinessBlock row={readinessByCode.get(client.clientIdCode.toUpperCase())} />
@@ -444,7 +454,7 @@ function ClientReadinessBlock({ row }: { row?: ClientReadinessRow }) {
  * profile) are solid; ones only read from the sheet's free text are dashed
  * until someone confirms them on the profile.
  */
-function ClientKpiChips({ rawData }: { rawData: Record<string, string> }) {
+function ClientKpiChips({ rawData, readings }: { rawData: Record<string, string>; readings?: ClientKpiReadings }) {
   const confirmed = parseClientKpis(rawData[MAIN_KPIS_FIELD]);
   const kpis = confirmed.length ? confirmed : suggestKpisFromText(rawData[MAIN_KPI_SHEET_FIELD]);
   if (!kpis.length) {
@@ -460,7 +470,16 @@ function ClientKpiChips({ rawData }: { rawData: Record<string, string> }) {
           }`}
         >
           {kpiLabel(k)}
-          {k.target && <span className="text-muted-foreground">· {k.target}</span>}
+          {(() => {
+            const r = confirmed.length ? readings?.kpis[i] : undefined;
+            if (!r?.mtd) return k.target ? <span className="text-muted-foreground">· {k.target}</span> : null;
+            const tone = r.status === "on_track" ? "text-emerald-500" : r.status === "behind" ? "text-red-500" : "text-foreground";
+            return (
+              <span className={`font-semibold tabular-nums ${tone}`} title={`Month to date · ${r.mtd.basis}${k.target ? ` · target ${k.target}` : ""}`}>
+                {formatKpi(r.mtd)}
+              </span>
+            );
+          })()}
         </span>
       ))}
     </div>

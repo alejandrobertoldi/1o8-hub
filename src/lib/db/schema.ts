@@ -4917,3 +4917,34 @@ export const timeOffSyncRuns = pgTable("time_off_sync_runs", {
   report: jsonb("report").$type<Record<string, unknown>>(),
   error: text("error"),
 });
+
+/**
+ * Daily KPI inputs per client and source (GA4 now; Shopify, Meta, Klaviyo
+ * next): one row per client × source × metric × day. Main KPIs are computed
+ * from these (src/lib/kpi/values.ts).
+ */
+export const kpiDaily = pgTable(
+  "kpi_daily",
+  {
+    clientIdCode: varchar("client_id_code", { length: 20 }).notNull(),
+    source: varchar("source", { length: 20 }).notNull(),
+    metric: varchar("metric", { length: 60 }).notNull(),
+    day: date("day").notNull(),
+    value: doublePrecision("value").notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    primaryKey({ columns: [t.clientIdCode, t.source, t.metric, t.day] }),
+    index("idx_kpi_daily_client_day").on(t.clientIdCode, t.day),
+  ],
+);
+
+/** KPI data sync runs (per source pulls into kpi_daily). */
+export const kpiSyncRuns = pgTable("kpi_sync_runs", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  trigger: varchar("trigger", { length: 40 }).notNull(),
+  startedAt: timestamp("started_at", { withTimezone: true }).notNull().defaultNow(),
+  finishedAt: timestamp("finished_at", { withTimezone: true }),
+  report: jsonb("report").$type<Record<string, unknown>>(),
+  error: text("error"),
+});

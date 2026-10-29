@@ -854,7 +854,7 @@ export function ClientDetail({ clientIdCode }: { clientIdCode: string }) {
       </div>
 
       {/* Sections */}
-      <ContractSection rawData={rawData} readOnly={readOnly} onSave={handleSave} />
+      <ContractSection clientIdCode={client.clientIdCode} rawData={rawData} readOnly={readOnly} onSave={handleSave} />
       <TeamSection title="Team (1o8 Agency)" keys={teamMFKeys} rawData={rawData} readOnly={readOnly} onSave={handleSave} />
       <ContactsSection rawData={rawData} readOnly={readOnly} onSave={handleSave} />
       <FinancialSection rawData={rawData} readOnly={readOnly} onSave={handleSave} />

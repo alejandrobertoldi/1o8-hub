@@ -7,6 +7,7 @@ import { SyncDashboard } from "@/components/publish/sync-dashboard";
 import { PublishHistory } from "@/components/publish/publish-history";
 import { AacSyncAdmin } from "@/components/admin/aac-sync-admin";
 import { TimeOffSyncAdmin } from "@/components/admin/time-off-sync-admin";
+import { KpiSyncAdmin } from "@/components/admin/kpi-sync-admin";
 import { PageMetaSlot } from "@/components/layout/page-header-slot";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { hasAdminPowers } from "@/lib/roles";
@@ -30,11 +31,12 @@ export default function SyncDashboardPage() {
   );
 }
 
-const ADMIN_TABS = ["aac", "time-off"] as const;
+const ADMIN_TABS = ["aac", "time-off", "kpis"] as const;
 const TAB_COPY: Record<string, string> = {
   bigquery: "Monitor auto-sync to BigQuery, review pending changes, explore and export table data.",
   aac: "Keep the hub's clients in step with the AAC Google Sheet.",
   "time-off": "Time off from Gusto and the hub, mirrored to the shared time off calendar.",
+  kpis: "Data sources behind each client's Main KPIs.",
 };
 
 /** BigQuery sync for everyone with access; the AAC sheet and time off tabs for admins. */
@@ -55,6 +57,7 @@ function SyncTabs() {
             <TabsTrigger value="bigquery">BigQuery</TabsTrigger>
             <TabsTrigger value="aac">AAC Sheet</TabsTrigger>
             <TabsTrigger value="time-off">Time Off</TabsTrigger>
+            <TabsTrigger value="kpis">KPIs</TabsTrigger>
           </TabsList>
         )}
         <p className="text-sm text-muted-foreground">{TAB_COPY[tab]}</p>
@@ -71,6 +74,11 @@ function SyncTabs() {
       {isAdmin && (
         <TabsContent value="time-off">
           <TimeOffSyncAdmin />
+        </TabsContent>
+      )}
+      {isAdmin && (
+        <TabsContent value="kpis">
+          <KpiSyncAdmin />
         </TabsContent>
       )}
     </Tabs>

@@ -5,7 +5,7 @@ import { AlertTriangle, ExternalLink, Figma, LayoutGrid, NotebookPen, Presentati
 import { AAC_SERVICES, SOW_TONE_CLASSES, clientServices, sowStatus, type SowStatus } from "@/lib/clients/sow";
 import { cn } from "@/lib/utils";
 import { EditableCell } from "./editable-cell";
-import { MainKpis } from "./main-kpis";
+import { KpiDataSources, MainKpis } from "./main-kpis";
 
 type Props = {
   rawData: Record<string, string>;
@@ -80,7 +80,7 @@ function LongTextField({ field, value, readOnly, onSave }: { field: string; valu
  * Contract & services (AAC sheet): retainer, SOW, term with an expiry warning,
  * and the services the client pays for.
  */
-export function ContractSection({ rawData, readOnly, onSave }: Props) {
+export function ContractSection({ clientIdCode, rawData, readOnly, onSave }: Props & { clientIdCode: string }) {
   const status = sowStatus(rawData, localToday());
   const services = clientServices(rawData);
   const [editServices, setEditServices] = useState(false);
@@ -111,14 +111,9 @@ export function ContractSection({ rawData, readOnly, onSave }: Props) {
       <div className="border-b border-border/30 px-5 py-4">
         <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
           <span className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">Main KPIs</span>
-          <div className="flex items-center gap-2 text-xs">
-            <span className="text-muted-foreground">Shopify store</span>
-            <div className="w-56">
-              <EditableCell field="ShopifyStore" value={v("ShopifyStore")} readOnly={readOnly} onSave={onSave} type="text" />
-            </div>
-          </div>
+          <KpiDataSources rawData={rawData} readOnly={readOnly} onSave={onSave} />
         </div>
-        <MainKpis rawData={rawData} readOnly={readOnly} onSave={onSave} />
+        <MainKpis clientIdCode={clientIdCode} rawData={rawData} readOnly={readOnly} onSave={onSave} />
       </div>
 
       <div className="grid gap-x-8 px-5 py-4 lg:grid-cols-2">
