@@ -14,6 +14,8 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { KpiSelect } from "./main-kpis";
+import { MAIN_KPI_SHEET_FIELD, MAIN_KPIS_FIELD, kpiLabel, kpisSheetText, serializeClientKpis, type ClientKpi } from "@/lib/clients/kpis";
 import { Button } from "@/components/ui/button";
 import { DatePicker } from "@/components/ui/date-picker";
 import {
@@ -23,7 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2 } from "lucide-react";
+import { Loader2, X } from "lucide-react";
 
 export interface ClientEditData {
   clientIdCode: string;
@@ -69,6 +71,8 @@ export function NewClientDialog({ open, onOpenChange, editData }: NewClientDialo
   const [clientStatus, setClientStatus] = useState("Active");
   const [clientType, setClientType] = useState<"AIA" | "NTA">("AIA");
   const [offboardingDate, setOffboardingDate] = useState("");
+  const [kpis, setKpis] = useState<ClientKpi[]>([]);
+  const [shopifyStore, setShopifyStore] = useState("");
   const [error, setError] = useState("");
 
   // Populate form when editData changes
@@ -115,7 +119,20 @@ export function NewClientDialog({ open, onOpenChange, editData }: NewClientDialo
       if (!res.ok) {
         throw new Error(await errorMessage(res, "Failed to create client"));
       }
-      return res.json();
+      const created = await res.json();
+      // Main KPIs and the Shopify store go through the regular field save, so
+      // the AAC sheet gets the KPI list like any other edit.
+      const fields: [string, string][] = [];
+      if (kpis.length) fields.push([MAIN_KPIS_FIELD, serializeClientKpis(kpis)], [MAIN_KPI_SHEET_FIELD, kpisSheetText(kpis)]);
+      if (shopifyStore.trim()) fields.push(["ShopifyStore", shopifyStore.trim()]);
+      for (const [field, value] of fields) {
+        await fetch(`/api/clients/${encodeURIComponent(created.clientIdCode ?? clientIdCode)}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ field, value }),
+        });
+      }
+      return created;
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["clients"] });
@@ -138,6 +155,8 @@ export function NewClientDialog({ open, onOpenChange, editData }: NewClientDialo
     setClientName("");
     setClientStatus("Active");
     setClientType("AIA");
+    setKpis([]);
+    setShopifyStore("");
     setOffboardingDate("");
     setError("");
   }
@@ -247,6 +266,31 @@ export function NewClientDialog({ open, onOpenChange, editData }: NewClientDialo
                     : "border-amber-500/60 text-amber-500 hover:border-amber-500"
                 }`}
               />
+            </div>
+          )}
+          {!isEditMode && (
+            <div className="space-y-2">
+              <Label>Main KPIs</Label>
+              {kpis.length > 0 && (
+                <div className="flex flex-wrap gap-1.5">
+                  {kpis.map((k, i) => (
+                    <span key={k.key} className="inline-flex items-center gap-1 rounded-full border border-brand/30 bg-brand/10 px-2 py-0.5 text-xs">
+                      {i + 1}. {kpiLabel(k)}
+                      <button type="button" aria-label={`Remove ${kpiLabel(k)}`} onClick={() => setKpis(kpis.filter((_, j) => j !== i))}>
+                        <X className="size-3" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
+              <KpiSelect exclude={kpis.map((k) => k.key)} onPick={(key) => key !== "custom" && setKpis([...kpis, { key }])} />
+              <p className="text-xs text-muted-foreground">Targets and notes can be added on the client&apos;s profile.</p>
+            </div>
+          )}
+          {!isEditMode && (
+            <div className="space-y-2">
+              <Label htmlFor="shopifyStore">Shopify store</Label>
+              <Input id="shopifyStore" value={shopifyStore} onChange={(e) => setShopifyStore(e.target.value)} placeholder="brand.myshopify.com" />
             </div>
           )}
           {error && (

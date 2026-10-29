@@ -22,6 +22,7 @@ import { PageMetaSlot } from "@/components/layout/page-header-slot";
 import { hasAdminPowers } from "@/lib/roles";
 import { sowStatus } from "@/lib/clients/sow";
 import { SowBadge } from "@/components/clients/client-contract";
+import { MAIN_KPI_SHEET_FIELD, MAIN_KPIS_FIELD, kpiLabel, parseClientKpis, suggestKpisFromText } from "@/lib/clients/kpis";
 
 // ── Types ─────────────────────────────────────────────────────────────
 
@@ -299,6 +300,8 @@ export default function ClientsPage() {
                       </div>
                     </div>
 
+                    <ClientKpiChips rawData={client.rawData ?? {}} />
+
                     {/* Bottom: Asana readiness */}
                     <ClientReadinessBlock row={readinessByCode.get(client.clientIdCode.toUpperCase())} />
                   </div>
@@ -432,6 +435,34 @@ function ClientReadinessBlock({ row }: { row?: ClientReadinessRow }) {
         <span><b className={row.dueToday ? "text-orange-500" : "text-foreground"}>{row.dueToday}</b> today</span>
         <span><b className={row.overdue ? "text-red-500" : "text-foreground"}>{row.overdue}</b> late</span>
       </div>
+    </div>
+  );
+}
+
+/**
+ * The client's Main KPIs on its summary card. Confirmed ones (picked on the
+ * profile) are solid; ones only read from the sheet's free text are dashed
+ * until someone confirms them on the profile.
+ */
+function ClientKpiChips({ rawData }: { rawData: Record<string, string> }) {
+  const confirmed = parseClientKpis(rawData[MAIN_KPIS_FIELD]);
+  const kpis = confirmed.length ? confirmed : suggestKpisFromText(rawData[MAIN_KPI_SHEET_FIELD]);
+  if (!kpis.length) {
+    return <p className="text-[11px] text-muted-foreground/70">No main KPI set</p>;
+  }
+  return (
+    <div className="flex flex-wrap gap-1" title={confirmed.length ? "Main KPIs" : "From the AAC sheet — confirm them on the client's profile"}>
+      {kpis.map((k, i) => (
+        <span
+          key={`${k.key}-${i}`}
+          className={`inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-[10px] font-medium ${
+            confirmed.length ? "border-brand/30 bg-brand/10 text-foreground" : "border-dashed border-border text-muted-foreground"
+          }`}
+        >
+          {kpiLabel(k)}
+          {k.target && <span className="text-muted-foreground">· {k.target}</span>}
+        </span>
+      ))}
     </div>
   );
 }

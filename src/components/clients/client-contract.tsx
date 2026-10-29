@@ -5,6 +5,7 @@ import { AlertTriangle, ExternalLink, Figma, LayoutGrid, NotebookPen, Presentati
 import { AAC_SERVICES, SOW_TONE_CLASSES, clientServices, sowStatus, type SowStatus } from "@/lib/clients/sow";
 import { cn } from "@/lib/utils";
 import { EditableCell } from "./editable-cell";
+import { MainKpis } from "./main-kpis";
 
 type Props = {
   rawData: Record<string, string>;
@@ -34,7 +35,6 @@ const fmtDate = (d: string | null) =>
   d ? new Date(`${d}T00:00:00Z`).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" }) : "";
 
 const CONTRACT_FIELDS = [
-  { key: "Main KPI", label: "Main KPIs", long: true },
   { key: "Tier", label: "Tier" },
   { key: "RetainerType", label: "Retainer type" },
   { key: "SOW", label: "SOW" },
@@ -108,6 +108,19 @@ export function ContractSection({ rawData, readOnly, onSave }: Props) {
         </div>
       )}
 
+      <div className="border-b border-border/30 px-5 py-4">
+        <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+          <span className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">Main KPIs</span>
+          <div className="flex items-center gap-2 text-xs">
+            <span className="text-muted-foreground">Shopify store</span>
+            <div className="w-56">
+              <EditableCell field="ShopifyStore" value={v("ShopifyStore")} readOnly={readOnly} onSave={onSave} type="text" />
+            </div>
+          </div>
+        </div>
+        <MainKpis rawData={rawData} readOnly={readOnly} onSave={onSave} />
+      </div>
+
       <div className="grid gap-x-8 px-5 py-4 lg:grid-cols-2">
         <div>
           {CONTRACT_FIELDS.map((f) => (
@@ -169,7 +182,7 @@ const LINKS = [
   { key: "FigmaExternalURL", label: "Figma (external)", icon: Figma, hint: "shared with the client" },
   { key: "AirBoardURL", label: "Air board", icon: LayoutGrid, hint: "assets / approvals" },
   { key: "RunningAgendaURL", label: "Running agenda", icon: NotebookPen, hint: "" },
-  { key: "DashboardURL", label: "Client dashboard", icon: Presentation, hint: "" },
+  { key: "DashboardURL", label: "Client dashboard", icon: Presentation, hint: "Databox (or other) KPI dashboard" },
 ] as const;
 
 /** Design files and working links for the account. */
