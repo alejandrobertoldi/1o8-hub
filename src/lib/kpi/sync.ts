@@ -93,10 +93,13 @@ export async function syncKpis(trigger: string, only?: string): Promise<KpiSyncR
         const end = addDays(start, CHUNK_DAYS - 1) < yesterday ? addDays(start, CHUNK_DAYS - 1) : yesterday;
         rows.push(...(await fetchRange(start, end)));
       }
-      await store(code, source, rows);
-      report.clients.push({ code, source, days: new Set(rows.map((r) => r.day)).size });
+      // A day split across two slices (time zone edges) comes back twice: add it up.
+      const merged = sumByDay(rows);
+      await store(code, source, merged);
+      report.clients.push({ code, source, days: new Set(merged.map((r) => r.day)).size });
     } catch (err) {
-      report.clients.push({ code, source, days: 0, error: err instanceof Error ? err.message : String(err) });
+      const cause = (err as { cause?: { message?: string } })?.cause?.message;
+      report.clients.push({ code, source, days: 0, error: cause ?? (err instanceof Error ? err.message : String(err)) });
     }
   };
   for (const c of await clientSources(only)) {
