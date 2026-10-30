@@ -107,26 +107,42 @@ function MetaAccountPicker({ value, readOnly, onSave }: { value: string; readOnl
     staleTime: 10 * 60_000,
     retry: false,
   });
-  const current = accounts?.find((a) => a.id === value);
+  // Several accounts (US, Canada…) are summed: stored comma separated.
+  const ids = value.split(",").map((s) => s.trim()).filter(Boolean);
+  const nameOf = (id: string) => accounts?.find((a) => a.id === id)?.name ?? `act_${id}`;
+  const save = (next: string[]) => onSave(next.join(","));
   return (
-    <span className="flex items-center gap-1.5">
+    <span className="flex flex-wrap items-center gap-1.5">
       <span className="text-muted-foreground">Meta</span>
-      {readOnly || error || isLoading ? (
-        <span title={error ? (error as Error).message : undefined} className={cn(!value && "text-muted-foreground")}>
-          {value ? current?.name ?? `act_${value}` : error ? "Connect Meta in Sync & Export → KPIs" : "—"}
+      {ids.map((id) => (
+        <span key={id} className="inline-flex items-center gap-1 rounded-full border border-sky-500/30 bg-sky-500/10 px-2 py-px text-sky-400">
+          {nameOf(id)}
+          {!readOnly && (
+            <button type="button" aria-label={`Remove ${nameOf(id)}`} onClick={() => save(ids.filter((x) => x !== id))}>
+              <X className="size-3" />
+            </button>
+          )}
         </span>
+      ))}
+      {readOnly || error || isLoading ? (
+        !ids.length && (
+          <span title={error ? (error as Error).message : undefined} className="text-muted-foreground">
+            {error ? "Connect Meta in Sync & Export → KPIs" : "—"}
+          </span>
+        )
       ) : (
-        <Select value={value || "__none__"} onValueChange={(v) => onSave(v === "__none__" ? "" : v)}>
-          <SelectTrigger size="sm" className="h-7 w-52 text-xs">
-            <SelectValue />
+        <Select value="" onValueChange={(v) => v && save([...ids, v])}>
+          <SelectTrigger size="sm" className="h-7 w-40 text-xs">
+            <SelectValue placeholder={ids.length ? "Add account…" : "Pick ad account…"} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="__none__">Not connected</SelectItem>
-            {accounts?.map((a) => (
-              <SelectItem key={a.id} value={a.id}>
-                {a.name}
-              </SelectItem>
-            ))}
+            {accounts
+              ?.filter((a) => !ids.includes(a.id))
+              .map((a) => (
+                <SelectItem key={a.id} value={a.id}>
+                  {a.name}
+                </SelectItem>
+              ))}
           </SelectContent>
         </Select>
       )}
