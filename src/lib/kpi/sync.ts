@@ -6,6 +6,7 @@ import { fetchGa4Daily, type DailyValue } from "./ga4";
 import { fetchMetaDaily } from "./meta";
 import { fetchKlaviyoDaily } from "./klaviyo";
 import { clientsWithKlaviyo } from "./secrets";
+import { fetchShopifyDaily, normalizeShop, shopifyConnected } from "./shopify";
 import { kpiValue, parseTarget, targetStatus, type KpiValue, type TargetStatus, type Totals } from "./values";
 
 /** Hub-only raw_data keys naming each client's data sources. */
@@ -21,7 +22,7 @@ const BACKFILL_DAYS = 400;
 const REFRESH_DAYS = 4;
 const CHUNK_DAYS = 180;
 
-type ClientSources = { code: string; ga4: string[]; meta: string[]; klaviyo: boolean };
+type ClientSources = { code: string; ga4: string[]; meta: string[]; klaviyo: boolean; shop: string | null };
 
 /** Some clients have several properties / ad accounts (US, Canada…): comma separated, summed. */
 const list = (v: string | undefined) => (v ?? "").split(",").map((s) => s.trim()).filter(Boolean);
@@ -41,6 +42,7 @@ async function clientSources(only?: string): Promise<ClientSources[]> {
       ga4: list(raw[GA4_PROPERTY_FIELD]),
       meta: list(raw[META_AD_ACCOUNT_FIELD]),
       klaviyo: klaviyo.has(r.code.toUpperCase()),
+      shop: normalizeShop(raw.ShopifyStore),
     };
   });
 }
@@ -81,13 +83,14 @@ async function store(code: string, source: string, rows: { day: string; metric: 
 export type KpiSyncReport = { clients: { code: string; source: string; days: number; error?: string }[] };
 
 /** Pulls every connected source for every client (or one) into kpi_daily, through yesterday. */
-export async function syncKpis(trigger: string, only?: string): Promise<KpiSyncReport> {
+export async function syncKpis(trigger: string, only?: string, opts: { full?: boolean } = {}): Promise<KpiSyncReport> {
   const [run] = await db.insert(kpiSyncRuns).values({ trigger }).returning({ id: kpiSyncRuns.id });
   const yesterday = addDays(iso(new Date()), -1);
   const report: KpiSyncReport = { clients: [] };
   const pull = async (code: string, source: string, fetchRange: (from: string, to: string) => Promise<DailyValue[]>) => {
     try {
-      const last = await lastDay(code, source);
+      // full: re-read the whole backfill window (e.g. after adding a metric).
+      const last = opts.full ? null : await lastDay(code, source);
       const from = last ? addDays(last, -REFRESH_DAYS) : addDays(yesterday, -BACKFILL_DAYS);
       // Some APIs cap a query at a year (Klaviyo); pull in half-year slices.
       const rows: DailyValue[] = [];
@@ -108,6 +111,7 @@ export async function syncKpis(trigger: string, only?: string): Promise<KpiSyncR
     if (c.ga4.length) await pull(c.code, "ga4", async (f, t) => sumByDay((await Promise.all(c.ga4.map((id) => fetchGa4Daily(id, f, t)))).flat()));
     if (c.meta.length) await pull(c.code, "meta", async (f, t) => sumByDay((await Promise.all(c.meta.map((id) => fetchMetaDaily(id, f, t)))).flat()));
     if (c.klaviyo) await pull(c.code, "klaviyo", (f, t) => fetchKlaviyoDaily(c.code, f, t));
+    if (c.shop && (await shopifyConnected(c.shop))) await pull(c.code, "shopify", (f, t) => fetchShopifyDaily(c.shop!, f, t));
   }
   const errors = report.clients.filter((c) => c.error).map((c) => `${c.code} ${c.source}: ${c.error}`);
   await db

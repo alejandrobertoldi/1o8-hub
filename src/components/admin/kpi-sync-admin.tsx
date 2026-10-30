@@ -13,6 +13,7 @@ type Status = {
   ga4: { oauthConfigured: boolean; connected: boolean; email: string | null; serviceAccount: string | null };
   meta: { connected: boolean; adAccounts: number | null; updatedAt: string | null };
   klaviyo: { clients: string[] };
+  shopify: { configured: boolean; stores: string[] };
   runs: Run[];
 };
 
@@ -79,6 +80,7 @@ export function KpiSyncAdmin() {
     const result = new URLSearchParams(window.location.search).get("ga");
     if (result === "connected") toast.success("Google Analytics connected");
     if (result === "failed") toast.error("Google Analytics didn't connect. Check the redirect URL in the Google Cloud OAuth client.");
+    if (new URLSearchParams(window.location.search).get("shopify") === "failed") toast.error("Shopify didn't connect. Check the app's redirect URLs and scopes.");
   }, []);
 
   const run = useMutation({
@@ -179,9 +181,18 @@ export function KpiSyncAdmin() {
         </p>
       </section>
 
-      <section className="rounded-xl border bg-card p-4">
-        <h2 className="mb-1 text-sm font-bold">Shopify</h2>
-        <p className="text-xs text-muted-foreground">Waiting for the 1o8 Hub Shopify app (needs the App developer + Distribution roles in the 1o8 organization).</p>
+      <section className="space-y-1 rounded-xl border bg-card p-4">
+        <div className="flex flex-wrap items-center gap-3">
+          <h2 className="text-sm font-bold">Shopify</h2>
+          <span className={cn("rounded-full px-2.5 py-1 text-xs font-semibold", data.shopify.configured ? "bg-emerald-500/15 text-emerald-500" : "bg-orange-500/15 text-orange-500")}>
+            {data.shopify.configured ? `App ready · ${data.shopify.stores.length} store(s) connected` : "App not configured"}
+          </span>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          {data.shopify.configured
+            ? `Install the 1o8 Hub app on a store from its custom distribution link (Dev Dashboard → 1o8 Hub → Distribution), or use Connect on the client's profile. ${data.shopify.stores.join(", ")}`
+            : "Set SHOPIFY_CLIENT_ID and SHOPIFY_CLIENT_SECRET from the 1o8 Hub app (Dev Dashboard → Settings) and restart / redeploy."}
+        </p>
       </section>
 
       <section className="rounded-xl border bg-card">

@@ -12,9 +12,10 @@ import { decryptPii, encryptPii } from "@/lib/crypto/pii";
 export const metaProvider = "meta";
 export const klaviyoProvider = (clientIdCode: string) => `klaviyo:${clientIdCode.toUpperCase()}`;
 
-export async function saveSecret(provider: string, secret: string, userId: string, meta: Record<string, unknown> = {}) {
+/** userId null keeps whoever connected it (token refreshes). */
+export async function saveSecret(provider: string, secret: string, userId: string | null, meta: Record<string, unknown> = {}) {
   const sealed = encryptPii(secret);
-  const values = { sealed: sealed.ciphertext, keyVersion: sealed.keyVersion, expiresAt: null, meta, connectedBy: userId, updatedAt: new Date() };
+  const values = { sealed: sealed.ciphertext, keyVersion: sealed.keyVersion, expiresAt: null, meta, updatedAt: new Date(), ...(userId ? { connectedBy: userId } : {}) };
   await db.insert(integrationTokens).values({ provider, ...values }).onConflictDoUpdate({ target: integrationTokens.provider, set: values });
 }
 

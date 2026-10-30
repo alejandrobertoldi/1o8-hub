@@ -8,6 +8,10 @@ import { googleServiceAccount } from "@/lib/google-service-account";
 import { gaConnection, gaOAuthConfigured } from "@/lib/kpi/ga4";
 import { lastKpiRuns, syncKpis } from "@/lib/kpi/sync";
 import { clientsWithKlaviyo, metaProvider, secretInfo } from "@/lib/kpi/secrets";
+import { shopifyConfigured } from "@/lib/kpi/shopify";
+import { db } from "@/lib/db";
+import { integrationTokens } from "@/lib/db/schema";
+import { like } from "drizzle-orm";
 
 async function admin() {
   const s = await getAuthSession();
@@ -22,6 +26,10 @@ export async function GET() {
     ga4: { oauthConfigured: gaOAuthConfigured(), connected: !!ga, email: ga?.email ?? null, serviceAccount: googleServiceAccount()?.client_email ?? null },
     meta: { connected: !!meta, adAccounts: (meta?.meta.adAccounts as number | undefined) ?? null, updatedAt: meta?.updatedAt ?? null },
     klaviyo: { clients: [...klaviyo].sort() },
+    shopify: {
+      configured: shopifyConfigured(),
+      stores: (await db.select({ p: integrationTokens.provider }).from(integrationTokens).where(like(integrationTokens.provider, "shopify:%"))).map((r) => r.p.slice("shopify:".length)).sort(),
+    },
     runs: await lastKpiRuns(10),
   });
 }

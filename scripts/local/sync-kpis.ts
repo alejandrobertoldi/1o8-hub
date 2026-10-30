@@ -5,6 +5,7 @@
  *   npm run sync:kpis              # all clients, local DB
  *   npm run sync:kpis -- ELK       # one client
  *   npm run sync:kpis -- --prod    # production DB (first backfill: no Vercel time limit)
+ *   npm run sync:kpis -- --full    # re-read the whole ~13 months (after adding a metric)
  */
 
 async function main() {
@@ -17,7 +18,7 @@ async function main() {
   // Imported after DATABASE_URL is settled: the db module connects on import.
   const { syncKpis } = await import("@/lib/kpi/sync");
   const only = args.find((a) => !a.startsWith("--"))?.toUpperCase();
-  const r = await syncKpis("script", only);
+  const r = await syncKpis("script", only, { full: args.includes("--full") });
   for (const c of r.clients) console.log(`${c.code.padEnd(5)} ${c.source.padEnd(8)} ${c.error ? `ERROR ${c.error.slice(0, 160)}` : `${c.days} days`}`);
   process.exit(0);
 }

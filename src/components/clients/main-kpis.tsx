@@ -52,12 +52,7 @@ export function KpiDataSources({
         fallbackName={(id) => `Property ${id}`}
         tone="border-orange-500/30 bg-orange-500/10 text-orange-400"
       />
-      <span className="flex items-center gap-1.5">
-        <span className="text-muted-foreground">Shopify</span>
-        <span className="w-44">
-          <EditableCell field="ShopifyStore" value={String(rawData.ShopifyStore ?? "")} readOnly={readOnly} onSave={onSave} type="text" />
-        </span>
-      </span>
+      <ShopifyStore clientIdCode={clientIdCode} value={String(rawData.ShopifyStore ?? "")} readOnly={readOnly} onSave={onSave} />
       <SourcePicker
         label="Meta"
         value={String(rawData[META_AD_ACCOUNT_FIELD] ?? "")}
@@ -152,6 +147,39 @@ function SourcePicker({
               ))}
           </SelectContent>
         </Select>
+      )}
+    </span>
+  );
+}
+
+/** The client's Shopify store (its *.myshopify.com domain) and whether the 1o8 Hub app can read it. */
+function ShopifyStore({
+  clientIdCode,
+  value,
+  readOnly,
+  onSave,
+}: {
+  clientIdCode: string;
+  value: string;
+  readOnly: boolean;
+  onSave: (field: string, value: string) => Promise<void>;
+}) {
+  const { data } = useQuery<{ configured: boolean; shop: string | null; connected: boolean }>({
+    queryKey: ["kpi", "shopify", clientIdCode, value],
+    queryFn: async () => (await fetch(`/api/clients/${encodeURIComponent(clientIdCode)}/shopify`)).json(),
+  });
+  return (
+    <span className="flex items-center gap-1.5">
+      <span className="text-muted-foreground">Shopify</span>
+      <span className="w-44">
+        <EditableCell field="ShopifyStore" value={value} readOnly={readOnly} onSave={onSave} type="text" />
+      </span>
+      {value.trim() && data && !data.shop && <span className="text-orange-400">Use the brand.myshopify.com domain</span>}
+      {data?.shop && data.connected && <span className="text-emerald-500">Connected</span>}
+      {data?.shop && !data.connected && data.configured && !readOnly && (
+        <a href={`/api/integrations/shopify/install?shop=${encodeURIComponent(data.shop)}`} className="text-brand hover:underline">
+          Connect
+        </a>
       )}
     </span>
   );

@@ -17,6 +17,13 @@ const div = (a: number | undefined, b: number | undefined) => (a === undefined |
 
 /** The value of a catalog KPI over a period, or null when its sources aren't connected yet. */
 export function kpiValue(key: string, t: Totals): KpiValue | null {
+  // Paid media across platforms: Meta + Google Ads (from GA4 when linked).
+  const metaSpend = get(t, "meta:spend");
+  const googleSpend = get(t, "ga4:google_ads_cost");
+  const spend = metaSpend === undefined && googleSpend === undefined ? undefined : (metaSpend ?? 0) + (googleSpend ?? 0);
+  const metaValue = get(t, "meta:purchase_value");
+  const googleValue = get(t, "ga4:google_ads_revenue");
+  const platformValue = metaValue === undefined && googleValue === undefined ? undefined : (metaValue ?? 0) + (googleValue ?? 0);
   const shopifyOrders = get(t, "shopify:orders");
   const shopifyNet = get(t, "shopify:net_sales");
   const sessions = get(t, "ga4:sessions");
@@ -35,17 +42,25 @@ export function kpiValue(key: string, t: Totals): KpiValue | null {
     case "conversion_rate":
       return v(div(shopifyOrders, sessions), "percent", "Shopify orders ÷ GA4 sessions") ?? v(div(get(t, "ga4:purchases"), sessions), "percent", "GA4 purchases ÷ sessions");
     case "new_customers":
-      return v(get(t, "shopify:new_customers"), "count", "Shopify");
+      return v(get(t, "shopify:new_customers"), "count", "Shopify (first-time customers' orders)");
+    case "new_customer_sales":
+      return v(get(t, "shopify:new_customer_sales"), "money", "Shopify (first-time customers)");
+    case "returning_customer_rate": {
+      const nc = get(t, "shopify:new_customers");
+      return v(shopifyOrders && nc !== undefined ? (shopifyOrders - nc) / shopifyOrders : undefined, "percent", "Shopify (returning customers' share of orders)");
+    }
+    case "returns":
+      return v(get(t, "shopify:returns"), "money", "Shopify");
     case "blended_roas":
-      return v(div(shopifyNet, get(t, "meta:spend")), "ratio", "Shopify net sales ÷ Meta spend");
+      return v(div(shopifyNet, spend), "ratio", "Shopify net sales ÷ ad spend (Meta + Google)");
     case "prospecting_roas":
       return null;
     case "cac":
-      return v(div(get(t, "meta:spend"), get(t, "shopify:new_customers")), "money", "Meta spend ÷ Shopify new customers");
+      return v(div(spend, get(t, "shopify:new_customers")), "money", "Ad spend (Meta + Google) ÷ Shopify new customers");
     case "website_roas":
-      return v(div(get(t, "meta:purchase_value"), get(t, "meta:spend")), "ratio", "Meta");
+      return v(div(platformValue, spend), "ratio", "Platform-reported revenue ÷ spend (Meta + Google)");
     case "ad_spend":
-      return v(get(t, "meta:spend"), "money", "Meta");
+      return v(spend, "money", "Meta + Google Ads");
     case "sessions":
       return v(sessions, "count", "GA4");
     case "website_leads":

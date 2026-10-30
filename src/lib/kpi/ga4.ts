@@ -104,9 +104,23 @@ export const GA4_METRICS: Record<string, string> = {
 
 export type DailyValue = { day: string; metric: string; value: number };
 
-/** Pure: GA4 runReport rows (date dimension, GA4_METRICS order) → daily values. */
-export function parseGa4Report(data: analyticsdata_v1beta.Schema$RunReportResponse): DailyValue[] {
-  const names = (data.metricHeaders ?? []).map((h) => GA4_METRICS[h.name ?? ""] ?? h.name ?? "");
+/**
+ * Google Ads, as GA4 sees it when the Ads account is linked to the property:
+ * cost / clicks / impressions, and the revenue of google / cpc sessions.
+ */
+export const GA4_GOOGLE_ADS_COST: Record<string, string> = {
+  advertiserAdCost: "google_ads_cost",
+  advertiserAdClicks: "google_ads_clicks",
+  advertiserAdImpressions: "google_ads_impressions",
+};
+export const GA4_GOOGLE_ADS_SALES: Record<string, string> = {
+  purchaseRevenue: "google_ads_revenue",
+  ecommercePurchases: "google_ads_purchases",
+};
+
+/** Pure: GA4 runReport rows (date dimension) → daily values, metric names mapped through `names`. */
+export function parseGa4Report(data: analyticsdata_v1beta.Schema$RunReportResponse, map: Record<string, string> = GA4_METRICS): DailyValue[] {
+  const names = (data.metricHeaders ?? []).map((h) => map[h.name ?? ""] ?? h.name ?? "");
   const out: DailyValue[] = [];
   for (const row of data.rows ?? []) {
     const raw = row.dimensionValues?.[0]?.value ?? "";
@@ -120,17 +134,42 @@ export function parseGa4Report(data: analyticsdata_v1beta.Schema$RunReportRespon
   return out;
 }
 
+/** Rows for the same day and metric (one per campaign) → one total. */
+function sumDays(rows: DailyValue[]): DailyValue[] {
+  const by = new Map<string, DailyValue>();
+  for (const r of rows) {
+    const k = `${r.day}|${r.metric}`;
+    const t = by.get(k);
+    if (t) t.value += r.value;
+    else by.set(k, { ...r });
+  }
+  return [...by.values()];
+}
+
 /** Daily GA4 totals for one property between two dates (inclusive). */
 export async function fetchGa4Daily(propertyId: string, from: string, to: string): Promise<DailyValue[]> {
   const data = google.analyticsdata({ version: "v1beta", auth: await auth() });
-  const res = await data.properties.runReport({
+  const base = { dateRanges: [{ startDate: from, endDate: to }], dimensions: [{ name: "date" }], limit: "1000" };
+  const metrics = (m: Record<string, string>) => Object.keys(m).map((name) => ({ name }));
+  const res = await data.properties.batchRunReports({
     property: `properties/${propertyId}`,
     requestBody: {
-      dateRanges: [{ startDate: from, endDate: to }],
-      dimensions: [{ name: "date" }],
-      metrics: Object.keys(GA4_METRICS).map((name) => ({ name })),
-      limit: "1000",
+      requests: [
+        { ...base, metrics: metrics(GA4_METRICS) },
+        // GA4 only serves ad cost next to a campaign dimension: one row per day × campaign, summed below.
+        { ...base, dimensions: [{ name: "date" }, { name: "sessionCampaignName" }], metrics: metrics(GA4_GOOGLE_ADS_COST), limit: "100000" },
+        {
+          ...base,
+          metrics: metrics(GA4_GOOGLE_ADS_SALES),
+          dimensionFilter: { filter: { fieldName: "sessionSourceMedium", stringFilter: { matchType: "EXACT", value: "google / cpc" } } },
+        },
+      ],
     },
   });
-  return parseGa4Report(res.data);
+  const [site, adsCost, adsSales] = res.data.reports ?? [];
+  return [
+    ...(site ? parseGa4Report(site, GA4_METRICS) : []),
+    ...(adsCost ? sumDays(parseGa4Report(adsCost, GA4_GOOGLE_ADS_COST)) : []),
+    ...(adsSales ? parseGa4Report(adsSales, GA4_GOOGLE_ADS_SALES) : []),
+  ];
 }
