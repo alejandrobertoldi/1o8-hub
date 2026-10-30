@@ -39,53 +39,36 @@ export function KpiDataSources({
   readOnly: boolean;
   onSave: (field: string, value: string) => Promise<void>;
 }) {
-  const ga4 = String(rawData[GA4_PROPERTY_FIELD] ?? "").trim();
-  const { data: properties, isLoading, error } = useQuery<{ id: string; name: string; account: string }[]>({
-    queryKey: ["kpi", "ga4-properties"],
-    queryFn: async () => {
-      const res = await fetch("/api/kpi/properties");
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error ?? "Could not list GA4 properties");
-      return json;
-    },
-    enabled: !readOnly,
-    staleTime: 10 * 60_000,
-    retry: false,
-  });
-  const current = properties?.find((p) => p.id === ga4);
-
   return (
     <div className="flex flex-wrap items-center gap-3 text-xs">
-      <span className="flex items-center gap-1.5">
-        <span className="text-muted-foreground">GA4</span>
-        {readOnly || error || isLoading ? (
-          <span title={error ? (error as Error).message : undefined} className={cn(!ga4 && "text-muted-foreground")}>
-            {ga4 ? current?.name ?? `Property ${ga4}` : error ? "Connect GA4 in Sync & Export → KPIs" : "—"}
-          </span>
-        ) : (
-          <Select value={ga4 || "__none__"} onValueChange={(v) => onSave(GA4_PROPERTY_FIELD, v === "__none__" ? "" : v)}>
-            <SelectTrigger size="sm" className="h-7 w-56 text-xs">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="__none__">Not connected</SelectItem>
-              {properties?.map((p) => (
-                <SelectItem key={p.id} value={p.id}>
-                  {p.name}
-                  <span className="ml-1 text-muted-foreground">· {p.account}</span>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        )}
-      </span>
+      <SourcePicker
+        label="GA4"
+        value={String(rawData[GA4_PROPERTY_FIELD] ?? "")}
+        readOnly={readOnly}
+        onSave={(v) => onSave(GA4_PROPERTY_FIELD, v)}
+        endpoint="/api/kpi/properties"
+        queryKey="ga4-properties"
+        notConnected="Connect GA4 in Sync & Export → KPIs"
+        fallbackName={(id) => `Property ${id}`}
+        tone="border-orange-500/30 bg-orange-500/10 text-orange-400"
+      />
       <span className="flex items-center gap-1.5">
         <span className="text-muted-foreground">Shopify</span>
         <span className="w-44">
           <EditableCell field="ShopifyStore" value={String(rawData.ShopifyStore ?? "")} readOnly={readOnly} onSave={onSave} type="text" />
         </span>
       </span>
-      <MetaAccountPicker value={String(rawData[META_AD_ACCOUNT_FIELD] ?? "").trim()} readOnly={readOnly} onSave={(v) => onSave(META_AD_ACCOUNT_FIELD, v)} />
+      <SourcePicker
+        label="Meta"
+        value={String(rawData[META_AD_ACCOUNT_FIELD] ?? "")}
+        readOnly={readOnly}
+        onSave={(v) => onSave(META_AD_ACCOUNT_FIELD, v)}
+        endpoint="/api/kpi/meta-accounts"
+        queryKey="meta-accounts"
+        notConnected="Connect Meta in Sync & Export → KPIs"
+        fallbackName={(id) => `act_${id}`}
+        tone="border-sky-500/30 bg-sky-500/10 text-sky-400"
+      />
       <KlaviyoKey clientIdCode={clientIdCode} readOnly={readOnly} />
     </div>
   );
@@ -94,28 +77,51 @@ export function KpiDataSources({
 const META_AD_ACCOUNT_FIELD = "MetaAdAccount";
 
 /** The client's Meta ad account, from the ones 1o8's system user can read. */
-function MetaAccountPicker({ value, readOnly, onSave }: { value: string; readOnly: boolean; onSave: (v: string) => void }) {
-  const { data: accounts, error, isLoading } = useQuery<{ id: string; name: string }[]>({
-    queryKey: ["kpi", "meta-accounts"],
+/**
+ * GA4 properties / Meta ad accounts for a client. Several are allowed (a
+ * brand's US and Canada store, say) and summed; stored comma separated.
+ */
+function SourcePicker({
+  label,
+  value,
+  readOnly,
+  onSave,
+  endpoint,
+  queryKey,
+  notConnected,
+  fallbackName,
+  tone,
+}: {
+  label: string;
+  value: string;
+  readOnly: boolean;
+  onSave: (v: string) => void;
+  endpoint: string;
+  queryKey: string;
+  notConnected: string;
+  fallbackName: (id: string) => string;
+  tone: string;
+}) {
+  const { data: options, error, isLoading } = useQuery<{ id: string; name: string; account?: string }[]>({
+    queryKey: ["kpi", queryKey],
     queryFn: async () => {
-      const res = await fetch("/api/kpi/meta-accounts");
+      const res = await fetch(endpoint);
       const json = await res.json();
-      if (!res.ok) throw new Error(json.error ?? "Could not list Meta ad accounts");
+      if (!res.ok) throw new Error(json.error ?? `Could not list ${label} sources`);
       return json;
     },
     enabled: !readOnly,
     staleTime: 10 * 60_000,
     retry: false,
   });
-  // Several accounts (US, Canada…) are summed: stored comma separated.
   const ids = value.split(",").map((s) => s.trim()).filter(Boolean);
-  const nameOf = (id: string) => accounts?.find((a) => a.id === id)?.name ?? `act_${id}`;
+  const nameOf = (id: string) => options?.find((o) => o.id === id)?.name ?? fallbackName(id);
   const save = (next: string[]) => onSave(next.join(","));
   return (
     <span className="flex flex-wrap items-center gap-1.5">
-      <span className="text-muted-foreground">Meta</span>
+      <span className="text-muted-foreground">{label}</span>
       {ids.map((id) => (
-        <span key={id} className="inline-flex items-center gap-1 rounded-full border border-sky-500/30 bg-sky-500/10 px-2 py-px text-sky-400">
+        <span key={id} className={cn("inline-flex items-center gap-1 rounded-full border px-2 py-px", tone)}>
           {nameOf(id)}
           {!readOnly && (
             <button type="button" aria-label={`Remove ${nameOf(id)}`} onClick={() => save(ids.filter((x) => x !== id))}>
@@ -127,20 +133,21 @@ function MetaAccountPicker({ value, readOnly, onSave }: { value: string; readOnl
       {readOnly || error || isLoading ? (
         !ids.length && (
           <span title={error ? (error as Error).message : undefined} className="text-muted-foreground">
-            {error ? "Connect Meta in Sync & Export → KPIs" : "—"}
+            {error ? notConnected : "—"}
           </span>
         )
       ) : (
         <Select value="" onValueChange={(v) => v && save([...ids, v])}>
           <SelectTrigger size="sm" className="h-7 w-40 text-xs">
-            <SelectValue placeholder={ids.length ? "Add account…" : "Pick ad account…"} />
+            <SelectValue placeholder={ids.length ? "Add another…" : `Pick ${label}…`} />
           </SelectTrigger>
           <SelectContent>
-            {accounts
-              ?.filter((a) => !ids.includes(a.id))
-              .map((a) => (
-                <SelectItem key={a.id} value={a.id}>
-                  {a.name}
+            {options
+              ?.filter((o) => !ids.includes(o.id))
+              .map((o) => (
+                <SelectItem key={o.id} value={o.id}>
+                  {o.name}
+                  {o.account && <span className="ml-1 text-muted-foreground">· {o.account}</span>}
                 </SelectItem>
               ))}
           </SelectContent>

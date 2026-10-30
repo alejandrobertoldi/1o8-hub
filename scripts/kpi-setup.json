@@ -1,0 +1,95 @@
+{
+  "BOU": {
+    "MetaAdAccount": "1450769570226712"
+  },
+  "BRN": {
+    "GA4Property": "264278213"
+  },
+  "CHS": {
+    "GA4Property": "398720393"
+  },
+  "CTF": {
+    "GA4Property": "405958944",
+    "MetaAdAccount": "3403748199667511"
+  },
+  "ELK": {
+    "MainKPIs": "[{\"key\":\"net_sales\"},{\"key\":\"conversion_rate\"},{\"key\":\"blended_roas\"}]",
+    "Main KPI": "1- Net Sales\n2- Conversion Rate\n3- Blended ROAS (MER)",
+    "GA4Property": "528253119",
+    "MetaAdAccount": "1261560249033621,1696625181587423"
+  },
+  "ENV": {
+    "MetaAdAccount": "1897635127480315"
+  },
+  "ETO": {
+    "MetaAdAccount": "306034683"
+  },
+  "KSS": {
+    "GA4Property": "387469041",
+    "MetaAdAccount": "224664370,1464710117198038,481627947843706"
+  },
+  "LBC": {
+    "GA4Property": "525899405",
+    "MetaAdAccount": "2955271238182065"
+  },
+  "LPS": {
+    "MainKPIs": "[{\"key\":\"net_sales\"},{\"key\":\"conversion_rate\"},{\"key\":\"blended_roas\"}]",
+    "Main KPI": "1- Net Sales\n2- Conversion Rate\n3- Blended ROAS (MER)",
+    "GA4Property": "375660959"
+  },
+  "MKI": {
+    "GA4Property": "405252413",
+    "MetaAdAccount": "1349421913705224"
+  },
+  "MSN": {
+    "GA4Property": "362104232",
+    "MetaAdAccount": "595080263503453"
+  },
+  "NND": {
+    "GA4Property": "493979934"
+  },
+  "NNG": {
+    "GA4Property": "392528498",
+    "MetaAdAccount": "1663995488346406"
+  },
+  "NVA": {
+    "GA4Property": "353770820"
+  },
+  "PKI": {
+    "GA4Property": "429804197"
+  },
+  "PLB": {
+    "GA4Property": "326523070",
+    "MetaAdAccount": "4632050727021469"
+  },
+  "PUR": {
+    "GA4Property": "492278476"
+  },
+  "RDD": {
+    "GA4Property": "421083354"
+  },
+  "RFJ": {
+    "GA4Property": "552232020"
+  },
+  "SKM": {
+    "GA4Property": "524123471",
+    "MetaAdAccount": "963184483430123"
+  },
+  "SLP": {
+    "GA4Property": "533918427"
+  },
+  "SPF": {
+    "GA4Property": "355241942,301836784",
+    "MetaAdAccount": "1294247725529338,1250551075553760"
+  },
+  "STS": {
+    "GA4Property": "458201657"
+  },
+  "TRC": {
+    "GA4Property": "321079366",
+    "MetaAdAccount": "340309759852692"
+  },
+  "TRL": {
+    "GA4Property": "368443745"
+  }
+}

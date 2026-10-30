@@ -21,7 +21,10 @@ const BACKFILL_DAYS = 400;
 const REFRESH_DAYS = 4;
 const CHUNK_DAYS = 180;
 
-type ClientSources = { code: string; ga4: string | null; meta: string[]; klaviyo: boolean };
+type ClientSources = { code: string; ga4: string[]; meta: string[]; klaviyo: boolean };
+
+/** Some clients have several properties / ad accounts (US, Canada…): comma separated, summed. */
+const list = (v: string | undefined) => (v ?? "").split(",").map((s) => s.trim()).filter(Boolean);
 
 async function clientSources(only?: string): Promise<ClientSources[]> {
   const [rows, klaviyo] = await Promise.all([
@@ -35,9 +38,8 @@ async function clientSources(only?: string): Promise<ClientSources[]> {
     const raw = (r.raw ?? {}) as Record<string, string>;
     return {
       code: r.code,
-      ga4: raw[GA4_PROPERTY_FIELD]?.trim() || null,
-      // Some clients run several ad accounts (US, Canada…): comma separated, summed.
-      meta: (raw[META_AD_ACCOUNT_FIELD] ?? "").split(",").map((s) => s.trim()).filter(Boolean),
+      ga4: list(raw[GA4_PROPERTY_FIELD]),
+      meta: list(raw[META_AD_ACCOUNT_FIELD]),
       klaviyo: klaviyo.has(r.code.toUpperCase()),
     };
   });
@@ -103,7 +105,7 @@ export async function syncKpis(trigger: string, only?: string): Promise<KpiSyncR
     }
   };
   for (const c of await clientSources(only)) {
-    if (c.ga4) await pull(c.code, "ga4", (f, t) => fetchGa4Daily(c.ga4!, f, t));
+    if (c.ga4.length) await pull(c.code, "ga4", async (f, t) => sumByDay((await Promise.all(c.ga4.map((id) => fetchGa4Daily(id, f, t)))).flat()));
     if (c.meta.length) await pull(c.code, "meta", async (f, t) => sumByDay((await Promise.all(c.meta.map((id) => fetchMetaDaily(id, f, t)))).flat()));
     if (c.klaviyo) await pull(c.code, "klaviyo", (f, t) => fetchKlaviyoDaily(c.code, f, t));
   }

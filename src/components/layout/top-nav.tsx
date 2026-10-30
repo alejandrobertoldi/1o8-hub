@@ -102,14 +102,15 @@ function guessSection(pathname: string): string {
 }
 
 /* ---- v2 report suite tabs — shown in the nav row only on /reports/* ---- */
+// 1o8's reports are built on the KPI data sources (GA4, Meta, Klaviyo, Shopify).
+// MarketFoundry's Amazon pages (overview, advertising audit, inventory, geography,
+// period comparative, share of voice, subscribe & save) stay in the code but off
+// the menu: no 1o8 client sells on Amazon.
 const REPORT_TABS = [
-  { label: "Overview", href: "/reports/overview" },
-  { label: "Advertising Audit", href: "/reports/advertising-audit" },
-  { label: "Inventory", href: "/reports/inventory" },
-  { label: "Geography", href: "/reports/order-geography" },
-  { label: "Period Comparative", href: "/reports/period-comparative" },
-  { label: "Share of Voice", href: "/reports/share-of-voice" },
-  { label: "Subscribe & Save", href: "/reports/subscribe-save" },
+  { label: "KPI Overview", href: "/reports/kpis" },
+  { label: "Paid Media", href: "/reports/paid-media" },
+  { label: "Traffic & Conversion", href: "/reports/traffic" },
+  { label: "Email & SMS", href: "/reports/email" },
 ];
 
 /* ========================================================== */
