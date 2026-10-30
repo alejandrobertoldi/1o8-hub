@@ -28,7 +28,8 @@
     "MainKPIs": "[{\"key\":\"net_sales\"},{\"key\":\"conversion_rate\"},{\"key\":\"blended_roas\"}]",
     "Main KPI": "Revenue and subscriptions",
     "GA4Property": "528253119",
-    "MetaAdAccount": "1261560249033621,1696625181587423"
+    "MetaAdAccount": "1261560249033621,1696625181587423",
+    "ShopifyStore": "y8gfnv-4w.myshopify.com"
   },
   "ENV": {
     "MainKPIs": "[{\"key\":\"instacart_roas\"}]",
