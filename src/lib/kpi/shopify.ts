@@ -13,7 +13,8 @@ import type { DailyValue } from "./ga4";
  */
 
 export const SHOPIFY_STATE_COOKIE = "shopify_oauth_state";
-const SCOPES = "read_orders,read_all_orders,read_reports,read_products,read_customers";
+// Must match the app's configured scopes. Older orders need no read_all_orders: ShopifyQL reads them through read_reports.
+const SCOPES = "read_orders,read_reports,read_products,read_customers";
 const VERSION = () => process.env.SHOPIFY_API_VERSION || "2025-10";
 export const shopifyConfigured = () => !!process.env.SHOPIFY_CLIENT_ID && !!process.env.SHOPIFY_CLIENT_SECRET;
 export const shopifyProvider = (shop: string) => `shopify:${shop}`;
