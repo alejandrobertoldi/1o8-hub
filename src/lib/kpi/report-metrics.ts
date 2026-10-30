@@ -53,6 +53,30 @@ export const GOOGLE_ADS: ReportMetric[] = [
   { key: "ctr", label: "CTR", unit: "percent", compute: (t) => div(g(t, "ga4:google_ads_clicks"), g(t, "ga4:google_ads_impressions")) },
 ];
 
+/** Shopify's own sales figures (net sales = gross − discounts − returns). Discounts and returns come in negative. */
+export const SALES: ReportMetric[] = [
+  { key: "net_sales", label: "Net Sales", unit: "money", compute: (t) => g(t, "shopify:net_sales") },
+  { key: "orders", label: "Orders", unit: "count", compute: (t) => g(t, "shopify:orders") },
+  { key: "aov", label: "Average Order Value", unit: "money", compute: (t) => div(g(t, "shopify:net_sales"), g(t, "shopify:orders")) },
+  { key: "gross_sales", label: "Gross Sales", unit: "money", compute: (t) => g(t, "shopify:gross_sales") },
+  { key: "discounts", label: "Discounts", unit: "money", compute: (t) => g(t, "shopify:discounts") },
+  { key: "returns", label: "Returns", unit: "money", compute: (t) => g(t, "shopify:returns") },
+  { key: "new_customer_sales", label: "New Customer Sales", unit: "money", compute: (t) => g(t, "shopify:new_customer_sales") },
+  { key: "new_customer_orders", label: "New Customer Orders", unit: "count", compute: (t) => g(t, "shopify:new_customers"), hint: "Orders from first-time customers" },
+  {
+    key: "returning_rate",
+    label: "Returning Customer Rate",
+    unit: "percent",
+    compute: (t) => {
+      const orders = g(t, "shopify:orders");
+      const fresh = g(t, "shopify:new_customers");
+      return orders === undefined || fresh === undefined ? undefined : div(orders - fresh, orders);
+    },
+    hint: "Share of orders from returning customers",
+  },
+  { key: "cac", label: "CAC", unit: "money", compute: (t) => div(totalSpend(t), g(t, "shopify:new_customers")), lowerIsBetter: true, hint: "Ad spend (Meta + Google) ÷ new customer orders" },
+];
+
 export const TRAFFIC: ReportMetric[] = [
   { key: "sessions", label: "Sessions", unit: "count", compute: (t) => g(t, "ga4:sessions") },
   { key: "users", label: "Users", unit: "count", compute: (t) => g(t, "ga4:users") },

@@ -108,6 +108,7 @@ function guessSection(pathname: string): string {
 // the menu: no 1o8 client sells on Amazon.
 const REPORT_TABS = [
   { label: "KPI Overview", href: "/reports/kpis" },
+  { label: "Sales", href: "/reports/sales" },
   { label: "Paid Media", href: "/reports/paid-media" },
   { label: "Traffic & Conversion", href: "/reports/traffic" },
   { label: "Email & SMS", href: "/reports/email" },

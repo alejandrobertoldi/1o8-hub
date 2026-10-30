@@ -116,8 +116,12 @@ export function targetStatus(key: string, value: KpiValue, target: number | null
 
 export function formatKpi(v: KpiValue): string {
   switch (v.unit) {
-    case "money":
-      return v.value >= 10_000 ? `$${(v.value / 1000).toFixed(1)}k` : `$${v.value.toLocaleString("en-US", { maximumFractionDigits: 2 })}`;
+    case "money": {
+      // Discounts and returns come in negative: "-$1,368.50", not "$-1,368.5".
+      const sign = v.value < 0 ? "-" : "";
+      const abs = Math.abs(v.value);
+      return abs >= 10_000 ? `${sign}$${(abs / 1000).toFixed(1)}k` : `${sign}$${abs.toLocaleString("en-US", { maximumFractionDigits: 2 })}`;
+    }
     case "percent":
       return `${(v.value * 100).toFixed(2)}%`;
     case "ratio":
