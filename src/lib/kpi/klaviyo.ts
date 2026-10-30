@@ -11,7 +11,7 @@ import type { DailyValue } from "./ga4";
 const REVISION = () => process.env.KLAVIYO_REVISION || "2025-07-15";
 const BASE = "https://a.klaviyo.com/api";
 
-async function call(key: string, path: string, init?: RequestInit): Promise<Record<string, unknown>> {
+async function call(key: string, path: string, init?: RequestInit, attempt = 0): Promise<Record<string, unknown>> {
   const res = await fetch(`${BASE}${path}`, {
     ...init,
     headers: {
@@ -21,6 +21,12 @@ async function call(key: string, path: string, init?: RequestInit): Promise<Reco
       "content-type": "application/vnd.api+json",
     },
   });
+  // Klaviyo rate-limits bursts: wait what it asks (Retry-After) and try again, a few times.
+  if (res.status === 429 && attempt < 4) {
+    const wait = Math.min(Number(res.headers.get("retry-after")) || 2, 30);
+    await new Promise((r) => setTimeout(r, wait * 1000));
+    return call(key, path, init, attempt + 1);
+  }
   const json = (await res.json().catch(() => ({}))) as Record<string, unknown>;
   if (!res.ok) {
     const first = ((json.errors ?? []) as { detail?: string }[])[0];

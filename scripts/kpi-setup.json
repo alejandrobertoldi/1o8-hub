@@ -1,54 +1,88 @@
 {
+  "AAF": {
+    "MainKPIs": "[{\"key\":\"bookings\"}]",
+    "Main KPI": "Bookings (edited in the sheet)"
+  },
   "BOU": {
+    "MainKPIs": "[{\"key\":\"net_sales\"},{\"key\":\"conversion_rate\"},{\"key\":\"blended_roas\"}]",
+    "Main KPI": "1- Net Sales\n2 - Conversion Rate\n3- Blended ROAS (Total Maketing Dolars over Spent) - Website",
     "MetaAdAccount": "1450769570226712"
   },
   "BRN": {
+    "MainKPIs": "[{\"key\":\"email_revenue\",\"note\":\"Klaviyo attributed\"},{\"key\":\"custom\",\"label\":\"Flow vs Campaign revenue\"},{\"key\":\"email_engagement\"}]",
+    "Main KPI": "1 -Kalvyio attributed revenue\n2 -Flow Vs Campaing - Attributed Revenue\n3 - Email Engagement",
     "GA4Property": "264278213"
   },
   "CHS": {
+    "MainKPIs": "[{\"key\":\"memberships_sold\"},{\"key\":\"bookings\",\"note\":\"classes\"}]",
+    "Main KPI": "Memberships Sold (G4A.)  / classes Booked",
     "GA4Property": "398720393"
   },
   "CTF": {
+    "MainKPIs": "[{\"key\":\"memberships_sold\"},{\"key\":\"bookings\",\"note\":\"classes\"}]",
+    "Main KPI": "Memberships Sold (G4A.)  / classes Booked",
     "GA4Property": "405958944",
     "MetaAdAccount": "3403748199667511"
   },
   "ELK": {
     "MainKPIs": "[{\"key\":\"net_sales\"},{\"key\":\"conversion_rate\"},{\"key\":\"blended_roas\"}]",
-    "Main KPI": "1- Net Sales\n2- Conversion Rate\n3- Blended ROAS (MER)",
+    "Main KPI": "Revenue and subscriptions",
     "GA4Property": "528253119",
     "MetaAdAccount": "1261560249033621,1696625181587423"
   },
   "ENV": {
+    "MainKPIs": "[{\"key\":\"instacart_roas\"}]",
+    "Main KPI": "Instacart ROAS",
     "MetaAdAccount": "1897635127480315"
   },
   "ETO": {
     "MetaAdAccount": "306034683"
   },
+  "GER": {
+    "MainKPIs": "[{\"key\":\"website_leads\",\"note\":\"DGO\"}]",
+    "Main KPI": "Lead Gen - DGO"
+  },
   "KSS": {
+    "MainKPIs": "[{\"key\":\"net_sales\"},{\"key\":\"conversion_rate\"},{\"key\":\"blended_roas\"}]",
+    "Main KPI": "1- Net Sales\n2 - Conversion Rate\n3- Blended ROAS (Total Maketing Dolars over Spent)",
     "GA4Property": "387469041",
     "MetaAdAccount": "224664370,1464710117198038,481627947843706"
   },
   "LBC": {
+    "MainKPIs": "[{\"key\":\"net_sales\"},{\"key\":\"conversion_rate\"},{\"key\":\"blended_roas\"}]",
+    "Main KPI": "1- Net Sales\n2 - Conversion Rate\n3- Blended ROAS (Total Maketing Dolars over Spent) - Website",
     "GA4Property": "525899405",
     "MetaAdAccount": "2955271238182065"
   },
   "LPS": {
     "MainKPIs": "[{\"key\":\"net_sales\"},{\"key\":\"conversion_rate\"},{\"key\":\"blended_roas\"}]",
-    "Main KPI": "1- Net Sales\n2- Conversion Rate\n3- Blended ROAS (MER)",
+    "Main KPI": "1- Net Sales\n2 - Conversion Rate\n3- Blended ROAS (Total Maketing Dolars over Spent) - Website",
     "GA4Property": "375660959"
   },
   "MKI": {
+    "MainKPIs": "[{\"key\":\"net_sales\",\"note\":\"from GA4\"},{\"key\":\"bookings\",\"note\":\"birthday parties\"},{\"key\":\"social_followers\",\"target\":\"20,000\",\"note\":\"or IG engagement\"}]",
+    "Main KPI": "1- Net Sales - From Google Analytics\n2 - Birthay paty bookings (from GA) \n3- Followers on all platforms  20.000 ( if not Social Engagement on IG)",
     "GA4Property": "405252413",
     "MetaAdAccount": "1349421913705224"
   },
   "MSN": {
+    "MainKPIs": "[{\"key\":\"net_sales\"},{\"key\":\"conversion_rate\"},{\"key\":\"blended_roas\"}]",
+    "Main KPI": "1- Net Sales\n2 - Conversion Rate\n3- Blended ROAS (Total Maketing Dolars over Spent) - Website",
     "GA4Property": "397645714",
     "MetaAdAccount": "595080263503453"
   },
+  "MSP": {
+    "MainKPIs": "[{\"key\":\"website_leads\",\"note\":\"Unbounce\"},{\"key\":\"website_roas\",\"note\":\"ad spend ROAS\"}]",
+    "Main KPI": "Lead Gen ( Number of leads from unbounced)\nAdspend ROAS"
+  },
   "NND": {
+    "MainKPIs": "[{\"key\":\"instacart_roas\"},{\"key\":\"target_roas\"}]",
+    "Main KPI": "Instacart ROAS \nTarget ROAS",
     "GA4Property": "493979934"
   },
   "NNG": {
+    "MainKPIs": "[{\"key\":\"orders\",\"note\":\"online, from paid media\"},{\"key\":\"email_engagement\",\"note\":\"opens\"},{\"key\":\"social_engagement\",\"note\":\"organic\"}]",
+    "Main KPI": "Online Orders From paid media\nEmail Opens\nOrganic Engagement",
     "GA4Property": "392528498",
     "MetaAdAccount": "1663995488346406"
   },
@@ -56,9 +90,13 @@
     "GA4Property": "353770820"
   },
   "PKI": {
+    "MainKPIs": "[{\"key\":\"course_registrations\"}]",
+    "Main KPI": "* Course Registration - Paulina",
     "GA4Property": "429804197"
   },
   "PLB": {
+    "MainKPIs": "[{\"key\":\"website_roas\"},{\"key\":\"website_leads\"}]",
+    "Main KPI": "Websiste ROAS\nWebsite Lead\n* Paid Media talk with Aubrey",
     "GA4Property": "326523070",
     "MetaAdAccount": "4632050727021469"
   },
@@ -66,9 +104,13 @@
     "GA4Property": "492278476"
   },
   "RDD": {
+    "MainKPIs": "[{\"key\":\"email_deliverability\"},{\"key\":\"email_engagement\"}]",
+    "Main KPI": "Email Deliverabillity - Email Engagement",
     "GA4Property": "421083354"
   },
   "RFJ": {
+    "MainKPIs": "[{\"key\":\"website_leads\",\"note\":\"GA4 lead conversion\"},{\"key\":\"email_list_growth\"}]",
+    "Main KPI": "Website Lead - (google Analitics lead conversion)\nEmail List Growth",
     "GA4Property": "552232020"
   },
   "SKM": {
@@ -79,13 +121,19 @@
     "GA4Property": "533918427"
   },
   "SPF": {
+    "MainKPIs": "[{\"key\":\"cac\",\"note\":\"USA and Canada\"},{\"key\":\"new_customer_sales\"}]",
+    "Main KPI": "1 - CAC USA - CAC Canada\n2 - New Users Sales",
     "GA4Property": "355241942,301836784",
     "MetaAdAccount": "1294247725529338,1250551075553760"
   },
   "STS": {
+    "MainKPIs": "[{\"key\":\"net_sales\"},{\"key\":\"conversion_rate\"},{\"key\":\"blended_roas\"}]",
+    "Main KPI": "1- Net Sales\n2 - Conversion Rate\n3- Blended ROAS (Total Maketing Dolars over Spent) - Website",
     "GA4Property": "458201657"
   },
   "TRC": {
+    "MainKPIs": "[{\"key\":\"blended_roas\",\"note\":\"DTC\"},{\"key\":\"prospecting_roas\",\"note\":\"non-sale\"}]",
+    "Main KPI": "Blended DTC ROAS\nNon-Sale Prospecting ROAS",
     "GA4Property": "321079366",
     "MetaAdAccount": "340309759852692"
   },
