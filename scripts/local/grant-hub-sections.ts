@@ -1,7 +1,7 @@
 /**
  * One-off access cleanup (2026-11-02 roles audit):
  *  - every editor with no sections gets the hub's standard ones
- *    (calendar, team, clients, timeline, seo), like the editors set by hand;
+ *    (calendar, team, clients, seo), like the editors set by hand;
  *  - Manu Lancharro's stray client link ("Lancharro", not a client) is cleared.
  * Dry run by default; --apply writes. --prod targets production. Signed-in
  * people pick the change up within the hub's short auth-cache window.
@@ -10,7 +10,7 @@
  */
 import { and, eq, sql } from "drizzle-orm";
 
-const STANDARD = ["calendar", "team", "clients", "timeline", "seo"];
+const STANDARD = ["calendar", "team", "clients", "seo"];
 const STRAY_CLIENT_LINKS = [{ email: "manuel.lancharro@1o8.agency", client: "Lancharro" }];
 
 async function main() {

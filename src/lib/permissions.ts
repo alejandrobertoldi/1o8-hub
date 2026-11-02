@@ -168,7 +168,7 @@ export const CONFIGURABLE_SECTIONS = [
  * A+ content, PPC, sales…) and stay defined for the client portal, just hidden.
  * Finances is hidden for now too.
  */
-export const HUB_SECTION_IDS = ["calendar", "team", "clients", "timeline", "seo", "activity"] as const;
+export const HUB_SECTION_IDS = ["calendar", "team", "clients", "seo", "activity"] as const;
 export const HUB_CONFIGURABLE_SECTIONS = CONFIGURABLE_SECTIONS.filter((s) =>
   (HUB_SECTION_IDS as readonly string[]).includes(s.id),
 );
