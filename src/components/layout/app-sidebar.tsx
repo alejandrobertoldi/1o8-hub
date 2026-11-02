@@ -78,7 +78,6 @@ export function AppSidebar() {
       items: [
         { title: "Client Summary", href: "/clients", icon: Users, visible: true },
         { title: "Brand Guidelines", href: "/clients/brand-guidelines", icon: BookOpen, visible: true },
-        { title: "Client Timelines", href: "/timeline", icon: CalendarDays, visible: isAdmin },
         { title: "Client Reports", href: "/reports", icon: BarChart3, visible: checkAccess("reports"), crossDept: getCrossDeptLabels("reports", "clients") },
         { title: "Client Onboarding", href: "/onboarding", icon: ClipboardList, visible: isAdmin },
         { title: "Client Portal", href: "/portal", icon: Eye, visible: isAdmin },
@@ -120,7 +119,6 @@ export function AppSidebar() {
         ]},
         { title: "Forecast", href: "/sales-summary/forecast", icon: TrendingUp, visible: checkAccess("sales"), children: [
           { title: "Forecast Tool", href: "/sales-summary/forecast-tool", icon: Sparkles, visible: checkAccess("sales") },
-          { title: "Inventory", href: "/inventory", icon: Boxes, visible: checkAccess("sales") },
           { title: "Sales Forecast", href: "/sales-summary/forecast", icon: TrendingUp, visible: checkAccess("sales") },
         ]},
       ],
@@ -131,14 +129,6 @@ export function AppSidebar() {
       items: [
         // 1o8 (2026-10-23): only the Blog Writer for now. MarketFoundry's SEO pages are hidden, not removed.
         { title: "Blog Writer", href: "/seo/blog-writer", icon: PenLine, visible: checkAccess("seo") },
-      ],
-    },
-    {
-      label: "Finances",
-      icon: DollarSign,
-      items: [
-        { title: "Finance Reports", href: "/finances", icon: BarChart3, visible: false }, // Finances hidden for now (2026-10-23); was checkAccess("finances")
-        { title: "Rev Calculator", href: "/tools/rev-calculator", icon: Calculator, visible: false }, // hidden for now; was checkAccess("finances")
       ],
     },
     {

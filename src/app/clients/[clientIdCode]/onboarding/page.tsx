@@ -2392,8 +2392,6 @@ function CombinedSetupCard({
           return sdStep ? <StartingDayInline step={sdStep} clientIdCode={clientIdCode} /> : null;
         })()}
 
-        {/* Subtask 5: Initialize Timeline (after Asana setup) */}
-        {asanaStep.status === "completed" && <InitTimelineInline clientIdCode={clientIdCode} />}
       </div>
     </div>
   );
@@ -2408,10 +2406,10 @@ function StartingDayInline({ step, clientIdCode }: { step: OnboardingStep; clien
 
   const saveMutation = useMutation({
     mutationFn: async (date: string) => {
-      const res = await fetch(`/api/clients/${clientIdCode}/gantt`, {
-        method: "PATCH",
+      const res = await fetch(`/api/clients/${clientIdCode}`, {
+        method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ onboardingDate: date || null }),
+        body: JSON.stringify({ field: "OnboardingDate", value: date || "" }),
       });
       if (!res.ok) throw new Error("Failed");
     },
@@ -2438,85 +2436,6 @@ function StartingDayInline({ step, clientIdCode }: { step: OnboardingStep; clien
           onChange={(v) => saveMutation.mutate(v)}
           className="h-7"
         />
-      </div>
-    </>
-  );
-}
-
-function InitTimelineInline({ clientIdCode }: { clientIdCode: string }) {
-  const qc = useQueryClient();
-  const { data: ganttData } = useQuery<{ tasks?: unknown[]; initialized?: boolean }>({
-    queryKey: ["gantt-check", clientIdCode],
-    queryFn: () => fetch(`/api/clients/${clientIdCode}/gantt`).then((r) => r.json()),
-    staleTime: 30_000,
-  });
-  const hasTimeline = ganttData?.tasks && Array.isArray(ganttData.tasks) && ganttData.tasks.length > 0;
-
-  const [templateType, setTemplateType] = useState<"NTA" | "AIA">("NTA");
-  const initMutation = useMutation({
-    mutationFn: async () => {
-      const res = await fetch(`/api/clients/${clientIdCode}/gantt`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ templateType }),
-      });
-      if (!res.ok) throw new Error("Failed to initialize timeline");
-      return res.json();
-    },
-    onSuccess: (data) => {
-      qc.invalidateQueries({ queryKey: ["gantt-check", clientIdCode] });
-      toast.success(`Timeline initialized — ${data.tasks?.length ?? 0} tasks created`);
-    },
-    onError: (err) => toast.error(err.message),
-  });
-
-  if (hasTimeline) {
-    return (
-      <>
-        <div className="border-t border-dashed" />
-        <div className="flex items-center gap-3">
-          <div className="mt-0.5 text-[var(--brand-green)]">
-            <CheckCircle2 className="size-5" />
-          </div>
-          <div className="flex-1">
-            <h3 className="text-sm font-semibold">Timeline Initialized</h3>
-            <p className="text-xs text-muted-foreground">{(ganttData?.tasks as unknown[])?.length} tasks in timeline</p>
-          </div>
-          <Button size="sm" variant="outline" asChild className="gap-1.5 text-muted-foreground">
-            <Link href={`/clients/${clientIdCode}/timeline`}>View Timeline</Link>
-          </Button>
-          <Button size="sm" variant="outline" onClick={() => initMutation.mutate()} disabled={initMutation.isPending} className="gap-1.5 text-muted-foreground">
-            {initMutation.isPending ? <Loader2 className="size-3.5 animate-spin" /> : <><Pencil className="size-3" /> Edit</>}
-          </Button>
-        </div>
-      </>
-    );
-  }
-
-  return (
-    <>
-      <div className="border-t border-dashed" />
-      <div className="flex items-center gap-3">
-        <div className="mt-0.5 text-muted-foreground">
-          <Circle className="size-5" />
-        </div>
-        <div className="flex-1">
-          <h3 className="text-sm font-semibold">Initialize Timeline</h3>
-          <p className="text-xs text-muted-foreground">Create Gantt timeline from template</p>
-        </div>
-        <Select value={templateType} onValueChange={(v) => setTemplateType(v as "NTA" | "AIA")}>
-          <SelectTrigger className="h-7 w-20 text-xs">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="NTA">NTA</SelectItem>
-            <SelectItem value="AIA">AIA</SelectItem>
-          </SelectContent>
-        </Select>
-        <Button size="sm" onClick={() => initMutation.mutate()} disabled={initMutation.isPending} className="gap-1.5">
-          {initMutation.isPending ? <Loader2 className="size-3.5 animate-spin" /> : <Play className="size-3.5" />}
-          Initialize
-        </Button>
       </div>
     </>
   );

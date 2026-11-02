@@ -103,9 +103,9 @@ function guessSection(pathname: string): string {
 
 /* ---- v2 report suite tabs — shown in the nav row only on /reports/* ---- */
 // 1o8's reports are built on the KPI data sources (GA4, Meta, Klaviyo, Shopify).
-// MarketFoundry's Amazon pages (overview, advertising audit, inventory, geography,
-// period comparative, share of voice, subscribe & save) stay in the code but off
-// the menu: no 1o8 client sells on Amazon.
+// MarketFoundry's Amazon report pages (overview, advertising audit, inventory,
+// geography, period comparative, share of voice, subscribe & save, monthly report)
+// are archived in _archive/marketfoundry-amazon/: no 1o8 client sells on Amazon.
 const REPORT_TABS = [
   { label: "KPI Overview", href: "/reports/kpis" },
   { label: "Sales", href: "/reports/sales" },
@@ -218,9 +218,7 @@ export function TopNav() {
       items: [
         { title: "Client Summary", href: "/clients", icon: Users, visible: true },
         { title: "Brand Guidelines", href: "/clients/brand-guidelines", icon: BookOpen, visible: true },
-        { title: "Client Timelines", href: "/timeline", icon: CalendarDays, visible: isAdmin },
         { title: "Client Reports", href: "/reports", icon: BarChart3, visible: checkAccess("reports"), crossDept: getCrossDeptLabels("reports", "clients") },
-        { title: "Monthly Report", href: "/reports/monthly", icon: FileText, visible: isHubStaff(role) },
         { title: "Client Onboarding", href: "/onboarding", icon: ClipboardList, visible: isAdmin },
         { title: "Case Studies", href: "/case-studies", icon: Presentation, visible: isHubStaff(role) },
         { title: "Client Portal", href: "/portal", icon: Eye, visible: isAdmin },
@@ -249,13 +247,6 @@ export function TopNav() {
       items: [
         // 1o8 (2026-10-23): only the Blog Writer for now. MarketFoundry's SEO pages are hidden, not removed.
         { title: "Blog Writer", href: "/seo/blog-writer", icon: PenLine, visible: checkAccess("seo") },
-      ],
-    },
-    {
-      label: "Finances", icon: DollarSign,
-      items: [
-        { title: "Finance Reports", href: "/finances", icon: BarChart3, visible: false }, // Finances hidden for now (2026-10-23); was checkAccess("finances")
-        { title: "Rev Calculator", href: "/tools/rev-calculator", icon: Calculator, visible: false }, // hidden for now; was checkAccess("finances")
       ],
     },
     {
@@ -650,13 +641,12 @@ export function TopNav() {
             </div>
           )}
 
-          {/* Row 4: page-owned subnav (monthly TOC) wins over the v2 report tabs.
-              /reports/monthly is not a v2 report, so those tabs stay hidden there. */}
+          {/* Row 4: page-owned subnav wins over the report tabs. */}
           {pageSubnav ? (
             <div className="border-t border-sidebar-border/40">
               {pageSubnav}
             </div>
-          ) : pathname.startsWith("/reports") && !pathname.startsWith("/reports/monthly") ? (
+          ) : pathname.startsWith("/reports") ? (
             <nav className="hidden lg:flex items-center justify-center pl-2 pr-4 lg:pl-3 lg:pr-6 border-t border-sidebar-border/40 overflow-x-auto">
               {REPORT_TABS.map((t) => {
                 const isActive = pathname === t.href;

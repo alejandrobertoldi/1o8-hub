@@ -13,7 +13,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { ArrowLeft, ExternalLink, Loader2, Check, Package, Search, ChevronDown, ChevronRight, CalendarDays } from "lucide-react";
+import { ArrowLeft, ExternalLink, Loader2, Check, Package, Search, ChevronDown, ChevronRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -838,13 +838,6 @@ export function ClientDetail({ clientIdCode }: { clientIdCode: string }) {
                     className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
                   >
                     Onboarding
-                  </Link>
-                  <Link
-                    href={`/clients/${client.clientIdCode}/timeline`}
-                    className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    <CalendarDays className="size-3.5" />
-                    Timeline
                   </Link>
                 </>
               )}
