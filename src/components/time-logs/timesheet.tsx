@@ -160,7 +160,8 @@ export function Timesheet() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  const select = "h-9 w-full rounded-md border border-input bg-transparent px-2 text-sm dark:bg-input/30";
+  // Same field look as <Input> (light fields in both themes), so the form reads as one row.
+  const select = "h-9 w-full rounded-md border border-field-border bg-field-bg px-2 text-sm text-field-text shadow-xs";
 
   return (
     <div className="space-y-5">
@@ -301,7 +302,7 @@ export function Timesheet() {
             </select>
           </Field>
         </div>
-        <div className="mt-3 grid gap-3 md:grid-cols-[1fr_1fr_auto]">
+        <div className="mt-3 grid items-start gap-3 md:grid-cols-[1fr_1fr_auto]">
           <Field
             label="Project / task"
             hint={
@@ -333,21 +334,25 @@ export function Timesheet() {
           <Field label="Notes (optional)">
             <Input value={form.note} onChange={(e) => set("note", e.target.value)} />
           </Field>
-          <div className="flex items-end gap-2">
-            {editingId && (
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setEditingId(null);
-                  setForm(emptyForm);
-                }}
-              >
-                Cancel
+          {/* An empty label keeps the buttons level with the fields, not with the project hint below them. */}
+          <div className="grid gap-1">
+            <span aria-hidden className="text-[10px] font-bold uppercase tracking-wider">&nbsp;</span>
+            <div className="flex gap-2">
+              {editingId && (
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setEditingId(null);
+                    setForm(emptyForm);
+                  }}
+                >
+                  Cancel
+                </Button>
+              )}
+              <Button variant="brand" disabled={!canSave || save.isPending} onClick={() => save.mutate()}>
+                {save.isPending ? "Saving…" : editingId ? "Save" : "Add"}
               </Button>
-            )}
-            <Button variant="brand" disabled={!canSave || save.isPending} onClick={() => save.mutate()}>
-              {save.isPending ? "Saving…" : editingId ? "Save" : "Add"}
-            </Button>
+            </div>
           </div>
         </div>
       </section>

@@ -135,7 +135,7 @@ export function ServiceProviders() {
 
   const list = (providers ?? []).filter((p) => showInactive || p.status === "active");
   const inactiveCount = (providers ?? []).filter((p) => p.status !== "active").length;
-  const select = "h-9 w-full rounded-md border border-input bg-transparent px-2 text-sm dark:bg-input/30";
+  const select = "h-9 w-full rounded-md border border-field-border bg-field-bg px-2 text-sm text-field-text shadow-xs";
 
   return (
     <div className="space-y-6">

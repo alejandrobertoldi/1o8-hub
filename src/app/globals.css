@@ -689,8 +689,15 @@ body::before {
   background: oklch(0.75 0.005 80);
   border-radius: 3px;
 }
-.dark option,
-.dark optgroup {
+/* Form fields keep their light "field" surface in dark mode (see --field-bg): give them light native
+   chrome (date-picker icon, select arrow and list) so nothing turns light-on-light. */
+.dark [data-slot="input"],
+.dark select.bg-field-bg {
+  color-scheme: light;
+}
+
+.dark select:not(.bg-field-bg) option,
+.dark select:not(.bg-field-bg) optgroup {
   background-color: var(--popover);
   color: var(--popover-foreground);
 }
