@@ -16,6 +16,20 @@ import {
   type UserRole,
 } from "@/lib/roles";
 
+/**
+ * Nobody may change or remove someone who outranks them: the target's CURRENT
+ * role must be one the actor could assign (an admin can't touch an owner or a
+ * super admin). Returns a 403/404 response when blocked, null when allowed.
+ */
+async function guardTarget(actorRole: string, userId: string): Promise<NextResponse | null> {
+  const [target] = await db.select({ role: users.role }).from(users).where(eq(users.id, userId)).limit(1);
+  if (!target) return NextResponse.json({ error: "User not found" }, { status: 404 });
+  if (!canAssignRole(actorRole, target.role)) {
+    return NextResponse.json({ error: `You cannot change a user with the ${target.role} role` }, { status: 403 });
+  }
+  return null;
+}
+
 export async function GET() {
   const session = await getAuthSession();
   if (!session || !hasAdminPowers(session.user.role)) {
@@ -134,6 +148,10 @@ export async function PUT(req: NextRequest) {
       { error: "Cannot change your own role" },
       { status: 400 }
     );
+  }
+  if (userId !== session.user.id) {
+    const blocked = await guardTarget(session.user.role, userId);
+    if (blocked) return blocked;
   }
 
   const updates: Partial<{
@@ -282,6 +300,8 @@ export async function DELETE(req: NextRequest) {
       { status: 400 }
     );
   }
+  const blocked = await guardTarget(session.user.role, userId);
+  if (blocked) return blocked;
 
   await db.delete(users).where(eq(users.id, userId));
 

@@ -51,7 +51,7 @@ vi.stubGlobal("fetch", mockFetch);
 
 import { POST } from "./route";
 
-const mockSession = { user: { email: "test@marketfoundry.agency", name: "Test" } };
+const mockSession = { user: { email: "test@marketfoundry.agency", name: "Test", role: "editor" } };
 const aiConfig = { enabled: true, model: "claude-haiku-4-5-20251001", maxTokens: 8192 };
 
 // Titles ≤75 chars so the auto-fix retry does NOT fire (no over-length trim needed).

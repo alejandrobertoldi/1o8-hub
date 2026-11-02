@@ -15,6 +15,7 @@ import { buildDocxBuffer, type DocxRow } from "@/lib/seo-docx-builder";
 import { driveClient } from "@/lib/drive-client";
 import { resolveSeoExportLocation } from "@/lib/seo/drive-export-location";
 import { getAuthSession } from "@/lib/auth-db";
+import { isEditorOrAbove } from "@/lib/roles";
 
 export const maxDuration = 60;
 
@@ -25,6 +26,7 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+  if (!isEditorOrAbove(session.user.role)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   try {
     const rootFolderId = process.env.GOOGLE_DRIVE_FOLDER_ID?.trim();

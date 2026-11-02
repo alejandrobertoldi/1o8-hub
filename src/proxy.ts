@@ -1,6 +1,17 @@
 import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
 
+/** Constant-time check of "Bearer <CRON_SECRET>" (the proxy runs on the edge: no node:crypto). */
+function hasCronSecret(authorization: string | null): boolean {
+  const secret = process.env.CRON_SECRET;
+  if (!secret || !authorization) return false;
+  const expected = `Bearer ${secret}`;
+  if (authorization.length !== expected.length) return false;
+  let diff = 0;
+  for (let i = 0; i < expected.length; i++) diff |= authorization.charCodeAt(i) ^ expected.charCodeAt(i);
+  return diff === 0;
+}
+
 export default auth((req) => {
   const { pathname } = req.nextUrl;
 
@@ -22,8 +33,9 @@ export default auth((req) => {
     return NextResponse.next();
   }
 
-  // Allow cron-to-API internal calls (authenticated via CRON_SECRET in route handlers)
-  if (req.headers.get("x-cron-refresh") === "true" && pathname.startsWith("/api/")) {
+  // Cron-to-API internal calls skip the session check, but only with the CRON_SECRET bearer:
+  // the header alone used to open every /api route that relied on this proxy for auth.
+  if (req.headers.get("x-cron-refresh") === "true" && pathname.startsWith("/api/") && hasCronSecret(req.headers.get("authorization"))) {
     return NextResponse.next();
   }
 

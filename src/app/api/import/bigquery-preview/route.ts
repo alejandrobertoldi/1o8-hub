@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthSession, canAccessSection } from "@/lib/auth-db";
+import { hasAdminPowers } from "@/lib/roles";
 import { BigQuery } from "@google-cloud/bigquery";
 import { db } from "@/lib/db";
 import { attributes } from "@/lib/db/schema";
@@ -29,7 +30,7 @@ function getBigQueryClient(): BigQuery {
 
 export async function GET(req: NextRequest) {
   const session = await getAuthSession();
-  if (!session || !canAccessSection(session, "import")) {
+  if (!session || !hasAdminPowers(session.user.role) || !canAccessSection(session, "import")) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 

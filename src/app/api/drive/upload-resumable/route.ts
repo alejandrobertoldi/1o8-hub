@@ -15,6 +15,27 @@ import { getAuthSession } from "@/lib/auth-db";
 
 export const maxDuration = 120;
 
+/**
+ * Only Google Drive resumable session URIs may be targeted — the server PUTs
+ * the request body to this URL, so anything else would be an SSRF vector.
+ */
+function isGoogleDriveSessionUri(value: string): boolean {
+  let url: URL;
+  try {
+    url = new URL(value);
+  } catch {
+    return false;
+  }
+  return (
+    url.protocol === "https:" &&
+    url.hostname === "www.googleapis.com" &&
+    url.port === "" &&
+    url.username === "" &&
+    url.password === "" &&
+    url.pathname.startsWith("/upload/drive/")
+  );
+}
+
 export async function POST(req: NextRequest) {
   try {
     const session = await getAuthSession();
@@ -37,6 +58,9 @@ export async function POST(req: NextRequest) {
 
     if (!sessionUri) {
       return NextResponse.json({ error: "Missing x-session-uri header" }, { status: 400 });
+    }
+    if (!isGoogleDriveSessionUri(sessionUri)) {
+      return NextResponse.json({ error: "Invalid x-session-uri header" }, { status: 400 });
     }
 
     if (!req.body) {
@@ -62,7 +86,7 @@ export async function POST(req: NextRequest) {
       const text = await putRes.text().catch(() => "");
       console.error("[upload-resumable] Drive PUT failed:", putRes.status, text);
       return NextResponse.json(
-        { error: `Drive upload failed (${putRes.status}): ${text.slice(0, 200)}` },
+        { error: `Drive upload failed (${putRes.status})` },
         { status: 500 }
       );
     }

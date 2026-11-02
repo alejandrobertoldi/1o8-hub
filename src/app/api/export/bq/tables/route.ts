@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getAuthSession, canAccessSection } from "@/lib/auth-db";
+import { isHubStaff } from "@/lib/roles";
 import { BigQuery } from "@google-cloud/bigquery";
 
 export const maxDuration = 60;
@@ -27,7 +28,7 @@ function getBigQueryClient(): BigQuery {
 
 export async function GET() {
   const session = await getAuthSession();
-  if (!session || !canAccessSection(session, "export")) {
+  if (!session || !isHubStaff(session.user.role) || !canAccessSection(session, "export")) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 

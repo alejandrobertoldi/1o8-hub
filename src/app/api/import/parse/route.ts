@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthSession, canAccessSection } from "@/lib/auth-db";
+import { hasAdminPowers } from "@/lib/roles";
 import { db } from "@/lib/db";
 import { attributes } from "@/lib/db/schema";
 import { parse } from "csv-parse/sync";
@@ -10,7 +11,7 @@ export const maxDuration = 30;
 
 export async function POST(req: NextRequest) {
   const session = await getAuthSession();
-  if (!session || !canAccessSection(session, "import")) {
+  if (!session || !hasAdminPowers(session.user.role) || !canAccessSection(session, "import")) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 

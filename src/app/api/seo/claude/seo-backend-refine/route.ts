@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthSession } from "@/lib/auth-db";
+import { isEditorOrAbove } from "@/lib/roles";
 import { getAiFeatureConfig } from "@/lib/ai-config.server";
 
 export const maxDuration = 60;
@@ -13,6 +14,7 @@ const STOP_WORDS = new Set([
 export async function POST(req: NextRequest) {
   const session = await getAuthSession();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!isEditorOrAbove(session.user.role)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return NextResponse.json({ error: "Missing ANTHROPIC_API_KEY" }, { status: 500 });

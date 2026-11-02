@@ -1,6 +1,7 @@
 /* eslint-disable react-doctor/async-await-in-loop */
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthSession, canAccessSection } from "@/lib/auth-db";
+import { hasAdminPowers, isHubStaff } from "@/lib/roles";
 import { publishToBigQuery, publishDirtyToBigQuery, getPublishInfo } from "@/lib/bigquery";
 import { db } from "@/lib/db";
 import { publishHistory, master } from "@/lib/db/schema";
@@ -13,6 +14,7 @@ export async function GET() {
   const session = await getAuthSession();
   if (!session) return unauthorized();
   if (!canAccessSection(session, "publish")) return forbidden("Forbidden: admin only");
+  if (!isHubStaff(session.user.role)) return forbidden();
 
   const info = await getPublishInfo();
   return NextResponse.json(info);
@@ -22,6 +24,7 @@ export async function POST(req: NextRequest) {
   const session = await getAuthSession();
   if (!session) return unauthorized();
   if (!canAccessSection(session, "publish")) return forbidden("Forbidden: admin only");
+  if (!hasAdminPowers(session.user.role)) return forbidden("Forbidden: admin only");
 
   try {
     // Parse optional mode from request body (default: incremental)

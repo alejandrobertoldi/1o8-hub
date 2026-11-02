@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { getAuthSession, canAccessSection } from "@/lib/auth-db";
+import { isEditorOrAbove } from "@/lib/roles";
 import { getAccessToken } from "@/lib/gcp-auth";
 import { getAiFeatureConfig } from "@/lib/ai-config.server";
 import { checkRateLimit } from "@/lib/rate-limit";
@@ -65,6 +66,9 @@ export async function POST(req: NextRequest) {
   const session = await getAuthSession();
   if (!session?.user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  if (!isEditorOrAbove(session.user.role)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
   if (!canAccessSection(session, "design")) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });

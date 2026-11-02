@@ -1,6 +1,7 @@
 /* eslint-disable react-doctor/server-sequential-independent-await */
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthSession } from "@/lib/auth-db";
+import { isEditorOrAbove } from "@/lib/roles";
 import { db } from "@/lib/db";
 import { variationGroups } from "@/lib/db/schema";
 import { eq, sql } from "drizzle-orm";
@@ -12,6 +13,8 @@ export async function POST(req: NextRequest, { params }: Params) {
   const session = await getAuthSession();
   if (!session)
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+  if (!isEditorOrAbove(session.user.role))
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const { id } = await params;
   const body = await req.json();

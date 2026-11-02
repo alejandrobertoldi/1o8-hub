@@ -12,6 +12,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { eq, asc, max, inArray } from "drizzle-orm";
 
 import { getAuthSession } from "@/lib/auth-db";
+import { isEditorOrAbove } from "@/lib/roles";
 import { db } from "@/lib/db";
 import { storefrontPages, storefrontModules, storefrontModuleTiles } from "@/lib/db/schema";
 import {
@@ -194,6 +195,7 @@ export async function POST(
 ) {
   const session = await getAuthSession();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!isEditorOrAbove(session.user.role)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const { clientIdCode } = await params;
   const body = await req.json().catch(() => null);

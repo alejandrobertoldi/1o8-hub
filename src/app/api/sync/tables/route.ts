@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getAuthSession } from "@/lib/auth-db";
+import { isHubStaff } from "@/lib/roles";
 import { BigQuery } from "@google-cloud/bigquery";
 
 export const maxDuration = 60;
@@ -32,6 +33,9 @@ export async function GET() {
   const session = await getAuthSession();
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  if (!isHubStaff(session.user.role)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   try {

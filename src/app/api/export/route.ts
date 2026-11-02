@@ -1,6 +1,7 @@
 /* eslint-disable react-doctor/js-combine-iterations */
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthSession, canAccessSection } from "@/lib/auth-db";
+import { hasAdminPowers } from "@/lib/roles";
 import { db } from "@/lib/db";
 import { attributes, master } from "@/lib/db/schema";
 import { eq, asc } from "drizzle-orm";
@@ -10,7 +11,7 @@ import type { Product } from "@/lib/db/schema";
 
 export async function GET(req: NextRequest) {
   const session = await getAuthSession();
-  if (!session || !canAccessSection(session, "export")) {
+  if (!session || !hasAdminPowers(session.user.role) || !canAccessSection(session, "export")) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 

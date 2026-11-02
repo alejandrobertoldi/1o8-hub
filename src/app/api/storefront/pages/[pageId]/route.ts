@@ -11,6 +11,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
 
 import { getAuthSession } from "@/lib/auth-db";
+import { isEditorOrAbove } from "@/lib/roles";
 import { db } from "@/lib/db";
 import { storefrontPages, storefrontModules } from "@/lib/db/schema";
 import { driveClient } from "@/lib/drive-client";
@@ -51,6 +52,7 @@ export async function PATCH(
 ) {
   const session = await getAuthSession();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!isEditorOrAbove(session.user.role)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const { pageId } = await params;
 
@@ -105,6 +107,7 @@ export async function DELETE(
 ) {
   const session = await getAuthSession();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!isEditorOrAbove(session.user.role)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const { pageId } = await params;
 

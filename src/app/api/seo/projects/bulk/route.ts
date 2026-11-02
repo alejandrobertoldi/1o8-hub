@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { seoProjects, seoAsins, seoExports, seoKeywords } from "@/lib/db/schema";
 import { getAuthSession } from "@/lib/auth-db";
+import { isEditorOrAbove } from "@/lib/roles";
 import { eq, inArray } from "drizzle-orm";
 import { buildDocxBuffer, type DocxRow } from "@/lib/seo-docx-builder";
 import { driveClient } from "@/lib/drive-client";
@@ -18,6 +19,7 @@ export const maxDuration = 120;
 export async function PATCH(req: NextRequest) {
   const session = await getAuthSession();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!isEditorOrAbove(session.user.role)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   try {
     const { action, projectIds, assignTo } = await req.json();

@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { and, eq } from "drizzle-orm";
 
 import { getAuthSession } from "@/lib/auth-db";
+import { isEditorOrAbove } from "@/lib/roles";
 import { db } from "@/lib/db";
 import { storefrontModuleTiles } from "@/lib/db/schema";
 
@@ -16,6 +17,7 @@ export async function PATCH(
 ) {
   const session = await getAuthSession();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!isEditorOrAbove(session.user.role)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const { moduleId, tileId } = await params;
 

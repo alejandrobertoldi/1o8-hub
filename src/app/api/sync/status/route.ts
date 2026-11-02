@@ -2,6 +2,7 @@
 /* eslint-disable react-doctor/server-sequential-independent-await */
 import { NextResponse } from "next/server";
 import { getAuthSession } from "@/lib/auth-db";
+import { isHubStaff } from "@/lib/roles";
 import { db } from "@/lib/db";
 import { master, publishHistory } from "@/lib/db/schema";
 import { eq, desc, count, sql } from "drizzle-orm";
@@ -10,6 +11,9 @@ export async function GET() {
   const session = await getAuthSession();
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  if (!isHubStaff(session.user.role)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   // Pending changes count

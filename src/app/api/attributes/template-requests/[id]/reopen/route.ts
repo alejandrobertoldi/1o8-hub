@@ -1,6 +1,7 @@
 /* eslint-disable react-doctor/server-fetch-without-revalidate */
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthSession } from "@/lib/auth-db";
+import { isEditorOrAbove } from "@/lib/roles";
 import { db } from "@/lib/db";
 import { attributeTemplateRequests } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
@@ -16,6 +17,7 @@ export async function PATCH(
 ) {
   const session = await getAuthSession();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!isEditorOrAbove(session.user.role)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const { id } = await params;
   const [record] = await db

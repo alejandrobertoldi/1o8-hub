@@ -3,7 +3,7 @@ import { getAuthSession } from "@/lib/auth-db";
 import { db } from "@/lib/db";
 import { supportTickets, users } from "@/lib/db/schema";
 import { desc, eq, and, notInArray, sql, count as dbCount, ilike, or } from "drizzle-orm";
-import { hasAdminPowers } from "@/lib/roles";
+import { hasAdminPowers, isHubStaff } from "@/lib/roles";
 
 export const maxDuration = 60;
 
@@ -29,6 +29,10 @@ export async function GET(req: NextRequest) {
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+  if (!isHubStaff(session.user.role)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+  const canSeeInternalNotes = hasAdminPowers(session.user.role);
 
   const params = req.nextUrl.searchParams;
 
@@ -84,11 +88,16 @@ export async function GET(req: NextRequest) {
     .where(conditions.length > 0 ? and(...conditions) : undefined)
     .orderBy(desc(supportTickets.createdAt));
 
-  const flat = tickets.map((row) => ({
-    ...row.ticket,
-    assignedToName: row.assigneeName,
-    assigneeImage: row.assigneeImage,
-  }));
+  // Internal notes are admin-only (see support/notes); strip them for everyone else.
+  const flat = tickets.map((row) => {
+    const { internalNotes, ...ticket } = row.ticket;
+    return {
+      ...ticket,
+      ...(canSeeInternalNotes ? { internalNotes } : {}),
+      assignedToName: row.assigneeName,
+      assigneeImage: row.assigneeImage,
+    };
+  });
 
   return NextResponse.json(flat);
 }

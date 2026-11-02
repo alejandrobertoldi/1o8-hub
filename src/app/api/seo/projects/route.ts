@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db, recycleDbPool } from "@/lib/db";
 import { seoProjects, seoAsins, users, master, aac, variations, seoRevisions, seoRevisionPushes } from "@/lib/db/schema";
 import { getAuthSession } from "@/lib/auth-db";
+import { isEditorOrAbove } from "@/lib/roles";
 import { eq, desc, sql, inArray, and } from "drizzle-orm";
 import { unauthorized, serverError, getErrorMessage } from "@/lib/api-utils";
 import { withDbTimeout, DbTimeoutError } from "@/lib/db/with-timeout";
@@ -193,6 +194,7 @@ export async function POST(req: NextRequest) {
   try {
     const session = await getAuthSession();
     if (!session) return unauthorized();
+    if (!isEditorOrAbove(session.user.role)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
     const body = await req.json();
     const targeting = body.targeting as {

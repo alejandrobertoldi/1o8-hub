@@ -3,6 +3,7 @@
 /* eslint-disable react-doctor/async-await-in-loop */
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthSession } from "@/lib/auth-db";
+import { isEditorOrAbove } from "@/lib/roles";
 import { db } from "@/lib/db";
 import {
   attributeTemplateRequests,
@@ -27,6 +28,9 @@ export async function POST(req: NextRequest) {
   const session = await getAuthSession();
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  if (!isEditorOrAbove(session.user.role)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   const { clientIdCode, productType, scope, levels } = await req.json();
@@ -142,6 +146,9 @@ export async function DELETE(req: NextRequest) {
   const session = await getAuthSession();
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  if (!isEditorOrAbove(session.user.role)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   const { ids } = await req.json().catch(() => ({ ids: null }));

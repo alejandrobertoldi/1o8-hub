@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { productTextLines } from "@/lib/seo/aplus-qa-context";
 import { getAuthSession } from "@/lib/auth-db";
+import { isEditorOrAbove } from "@/lib/roles";
 import { getAiFeatureConfig } from "@/lib/ai-config.server";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { db } from "@/lib/db";
@@ -109,6 +110,8 @@ function buildContext(
 
 export async function POST(req: NextRequest) {
   const session = await getAuthSession();
+  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!isEditorOrAbove(session.user.role)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   const rlKey = session?.user?.email || req.headers.get("x-forwarded-for") || "anonymous";
   const rl = checkRateLimit(rlKey, 10, 60_000);
   if (!rl.success) {

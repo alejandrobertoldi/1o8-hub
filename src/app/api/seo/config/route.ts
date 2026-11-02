@@ -3,10 +3,12 @@ import { db } from "@/lib/db";
 import { seoSettings } from "@/lib/db/schema";
 import { getAuthSession } from "@/lib/auth-db";
 import { eq } from "drizzle-orm";
-import { hasAdminPowers } from "@/lib/roles";
+import { hasAdminPowers, isHubStaff } from "@/lib/roles";
 
 export async function GET(req: NextRequest) {
   try {
+    const session = await getAuthSession();
+    if (!session || !isHubStaff(session.user.role)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     const settingsKey = req.nextUrl.searchParams.get("key") || "config_doc";
     const rows = await db.select().from(seoSettings).where(eq(seoSettings.key, settingsKey)).limit(1);
     const value = rows[0]?.value ?? "";

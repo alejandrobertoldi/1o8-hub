@@ -68,7 +68,29 @@ export async function POST(
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
+  // Prospects may view but never post comments.
+  if (session.user.role === "prospect") {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
   const { productId } = await params;
+
+  // Client users may only comment on their own client's products.
+  if (session.user.role === "client") {
+    const ownClientIdCode = (session.user as { clientIdCode?: string | null }).clientIdCode ?? null;
+    if (!ownClientIdCode) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+    const [product] = await db
+      .select({ clientIdCode: master.clientIdCode })
+      .from(master)
+      .where(eq(master.id, productId))
+      .limit(1);
+    if (!product || product.clientIdCode !== ownClientIdCode) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+  }
+
   const body = await req.json();
 
   const { moduleId, parentCommentId, body: commentBody, pinX, pinY, audience: requestAudience } = body;

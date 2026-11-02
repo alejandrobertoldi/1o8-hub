@@ -44,7 +44,8 @@
     "sync:aac": "tsx scripts/local/sync-aac.ts",
     "sync:kpis": "tsx --env-file=.env.local scripts/local/sync-kpis.ts",
     "kpi:setup": "tsx --env-file=.env.local scripts/local/kpi-setup.ts",
-    "audit:roles": "tsx --env-file=.env.local scripts/local/audit-roles.ts"
+    "audit:roles": "tsx --env-file=.env.local scripts/local/audit-roles.ts",
+    "access:cleanup": "tsx --env-file=.env.local scripts/local/grant-hub-sections.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.78.0",

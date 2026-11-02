@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthSession } from "@/lib/auth-db";
+import { isEditorOrAbove } from "@/lib/roles";
 import { db } from "@/lib/db";
 import { variations } from "@/lib/db/schema";
 import { eq, sql } from "drizzle-orm";
@@ -59,6 +60,8 @@ export async function POST(req: NextRequest) {
   const session = await getAuthSession();
   if (!session)
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+  if (!isEditorOrAbove(session.user.role))
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const body = await req.json();
   const { clientId, name, code, amazonVariationId, themeAttributes, primaryDimension, description } = body;

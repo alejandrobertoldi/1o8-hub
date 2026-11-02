@@ -3,6 +3,7 @@
 /* eslint-disable react-doctor/async-await-in-loop */
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthSession } from "@/lib/auth-db";
+import { isEditorOrAbove } from "@/lib/roles";
 import { db } from "@/lib/db";
 import { master, variations, variationGroups, variationTagAssignments, variationGroupAssignments } from "@/lib/db/schema";
 import { eq, and, inArray, sql } from "drizzle-orm";
@@ -15,6 +16,8 @@ export async function PATCH(req: NextRequest, { params }: Params) {
   const session = await getAuthSession();
   if (!session)
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+  if (!isEditorOrAbove(session.user.role))
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const { id } = await params;
   const body = await req.json();

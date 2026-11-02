@@ -4,6 +4,7 @@
 /* eslint-disable react-doctor/nextjs-no-side-effect-in-get-handler */
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthSession } from "@/lib/auth-db";
+import { isEditorOrAbove } from "@/lib/roles";
 import { db } from "@/lib/db";
 import {
   variations,
@@ -218,6 +219,8 @@ export async function PATCH(req: NextRequest, { params }: Params) {
   const session = await getAuthSession();
   if (!session)
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+  if (!isEditorOrAbove(session.user.role))
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const { id } = await params;
   const body = await req.json();
@@ -320,6 +323,8 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
   const session = await getAuthSession();
   if (!session)
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+  if (!isEditorOrAbove(session.user.role))
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const { id } = await params;
 

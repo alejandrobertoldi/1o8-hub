@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthSession, canAccessSection } from "@/lib/auth-db";
+import { hasAdminPowers } from "@/lib/roles";
 import { BigQuery } from "@google-cloud/bigquery";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
@@ -32,7 +33,7 @@ function getBigQueryClient(): BigQuery {
 // Body: { dataset, table, clients?, format: "preview"|"xlsx"|"pdf", limit? }
 export async function POST(req: NextRequest) {
   const session = await getAuthSession();
-  if (!session || !canAccessSection(session, "export")) {
+  if (!session || !hasAdminPowers(session.user.role) || !canAccessSection(session, "export")) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 

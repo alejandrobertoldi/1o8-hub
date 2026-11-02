@@ -9,6 +9,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { getAiFeatureConfig } from "@/lib/ai-config.server";
 import { getAuthSession } from "@/lib/auth-db";
+import { isEditorOrAbove } from "@/lib/roles";
 
 function getAnthropicClient() {
   const apiKey = process.env.ANTHROPIC_API_KEY;
@@ -24,6 +25,7 @@ export async function POST(req: NextRequest) {
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+  if (!isEditorOrAbove(session.user.role)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   try {
     const formData = await req.formData();

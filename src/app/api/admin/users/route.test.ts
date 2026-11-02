@@ -10,7 +10,7 @@ vi.mock("next/server", async (importOriginal) => {
   return { ...actual, after: vi.fn((task: unknown) => { void task; }) };
 });
 
-import { PUT } from "./route";
+import { DELETE, PUT } from "./route";
 import { getAuthSession } from "@/lib/auth-db";
 import { db } from "@/lib/db";
 import { logEventAsync } from "@/lib/event-logger";
@@ -35,6 +35,55 @@ function mockUpdateOk(email = "jake@marketfoundry.agency") {
   asMock(db.update).mockReturnValue(chain);
   return chain;
 }
+
+/** The user being changed: their current role (the route refuses targets who outrank the actor). */
+function mockTarget(role: string | null) {
+  const chain = {
+    from: vi.fn().mockReturnThis(),
+    where: vi.fn().mockReturnThis(),
+    limit: vi.fn().mockResolvedValue(role ? [{ role }] : []),
+  };
+  asMock(db.select).mockReturnValue(chain);
+}
+
+beforeEach(() => mockTarget("viewer"));
+
+describe("PUT/DELETE /api/admin/users — targets who outrank the actor", () => {
+  it("403 when an admin tries to demote an owner", async () => {
+    asMock(getAuthSession).mockResolvedValue({ user: { id: "a1", role: "admin", isSuperAdmin: false } });
+    mockTarget("owner");
+    const res = await PUT(putReq({ userId: "u2", role: "viewer" }));
+    expect(res.status).toBe(403);
+    expect(db.update).not.toHaveBeenCalled();
+  });
+
+  it("403 when an admin tries to edit a super admin's sections", async () => {
+    asMock(getAuthSession).mockResolvedValue({ user: { id: "a1", role: "admin", isSuperAdmin: false } });
+    mockTarget("super_admin");
+    const res = await PUT(putReq({ userId: "u2", allowedSections: [] }));
+    expect(res.status).toBe(403);
+  });
+
+  it("403 when an admin tries to delete an owner", async () => {
+    asMock(getAuthSession).mockResolvedValue({ user: { id: "a1", role: "admin", isSuperAdmin: false } });
+    mockTarget("owner");
+    const req = new Request("http://localhost/api/admin/users", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId: "u2" }),
+    }) as unknown as import("next/server").NextRequest;
+    const res = await DELETE(req);
+    expect(res.status).toBe(403);
+    expect(db.delete).not.toHaveBeenCalled();
+  });
+
+  it("404 when the user doesn't exist", async () => {
+    asMock(getAuthSession).mockResolvedValue({ user: { id: "a1", role: "owner", isSuperAdmin: true } });
+    mockTarget(null);
+    const res = await PUT(putReq({ userId: "u2", role: "viewer" }));
+    expect(res.status).toBe(404);
+  });
+});
 
 describe("PUT /api/admin/users — role hierarchy", () => {
   beforeEach(() => vi.clearAllMocks());

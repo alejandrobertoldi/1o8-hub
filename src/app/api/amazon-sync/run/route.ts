@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { master, amazonSyncRuns } from "@/lib/db/schema";
 import { eq, and, isNotNull, ne, sql } from "drizzle-orm";
 import { getAuthSession } from "@/lib/auth-db";
+import { isEditorOrAbove } from "@/lib/roles";
 
 export const maxDuration = 60;
 
@@ -12,6 +13,9 @@ export async function POST(req: NextRequest) {
   const session = await getAuthSession();
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  if (!isEditorOrAbove(session.user.role)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   const body = await req.json();

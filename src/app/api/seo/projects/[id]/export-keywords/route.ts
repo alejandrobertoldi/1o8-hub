@@ -3,6 +3,8 @@ import { db } from "@/lib/db";
 import { seoProjects, seoKeywords } from "@/lib/db/schema";
 import { eq, desc } from "drizzle-orm";
 import * as XLSX from "xlsx";
+import { getAuthSession } from "@/lib/auth-db";
+import { isHubStaff } from "@/lib/roles";
 
 export const maxDuration = 60;
 
@@ -81,6 +83,8 @@ function applyDataStyle(ws: XLSX.WorkSheet, cellRef: string, bgColor: string, bo
 }
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const session = await getAuthSession();
+  if (!session || !isHubStaff(session.user.role)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { id } = await params;
 
   const [project] = await db.select().from(seoProjects).where(eq(seoProjects.id, id)).limit(1);

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { seoQualityScores } from "@/lib/db/schema";
 import { getAuthSession } from "@/lib/auth-db";
+import { isEditorOrAbove } from "@/lib/roles";
 import { eq, desc } from "drizzle-orm";
 import { unauthorized, serverError } from "@/lib/api-utils";
 
@@ -30,6 +31,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const session = await getAuthSession();
   if (!session) return unauthorized();
+  if (!isEditorOrAbove(session.user.role)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   try {
     const body = await req.json();

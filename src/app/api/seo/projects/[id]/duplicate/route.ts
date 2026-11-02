@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { seoProjects, seoAsins } from "@/lib/db/schema";
 import { getAuthSession } from "@/lib/auth-db";
+import { isEditorOrAbove } from "@/lib/roles";
 import { eq, sql } from "drizzle-orm";
 import { serverError } from "@/lib/api-utils";
 import { applyParentVariationFill } from "@/lib/seo/parent-variation-fill";
@@ -17,6 +18,7 @@ export async function POST(
     if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+    if (!isEditorOrAbove(session.user.role)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
     const { id } = await params;
 

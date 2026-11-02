@@ -11,6 +11,7 @@ import {
 } from "@/lib/db/schema";
 import { eq, inArray } from "drizzle-orm";
 import { getAuthSession } from "@/lib/auth-db";
+import { isEditorOrAbove } from "@/lib/roles";
 import { computeDiscrepancies } from "@/lib/amazon-sync-field-map";
 import { scrapeAmazonProduct } from "@/lib/firecrawl";
 import type { RainforestProduct } from "@/types/rainforest";
@@ -61,6 +62,9 @@ export async function POST(req: NextRequest) {
   const session = await getAuthSession();
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  if (!isEditorOrAbove(session.user.role)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   const body = await req.json();

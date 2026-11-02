@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { seoProjects, seoAsins, seoKeywords, seoReviews, seoRufus, seoCosmopMaps, seoComplianceReports, seoQa } from "@/lib/db/schema";
 import { and, desc, eq } from "drizzle-orm";
 import { getAuthSession } from "@/lib/auth-db";
+import { isEditorOrAbove } from "@/lib/roles";
 import { applyParentVariationFill } from "@/lib/seo/parent-variation-fill";
 import { aplusQAToSubset } from "@/lib/aplus2/qa-from-seo";
 
@@ -12,6 +13,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+  if (!isEditorOrAbove(session.user.role)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   try {
     const { id } = await params;

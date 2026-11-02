@@ -1,4 +1,4 @@
-import { hasAdminPowers } from "@/lib/roles";
+import { hasAdminPowers, isEditorOrAbove } from "@/lib/roles";
 /* eslint-disable react-doctor/async-parallel */
 /* eslint-disable react-doctor/server-sequential-independent-await */
 /* eslint-disable react-doctor/async-await-in-loop */
@@ -10,7 +10,7 @@ import { sql, eq, and, ne, isNull } from "drizzle-orm";
 import { ONBOARDING_STEPS } from "@/lib/onboarding/steps";
 import { STEP_TO_ASANA_TASK, findAsanaTaskInProject, updateAsanaTaskAssignee, createAsanaOrgProbe } from "@/lib/onboarding/create-asana-project";
 import { resolveAssigneeForProject } from "@/lib/onboarding/resolve-assignee";
-import { updateAacFieldInBigQuery } from "@/lib/bigquery";
+import { updateAacFieldInBigQuery, isValidAacColumnName, InvalidAacColumnError } from "@/lib/bigquery";
 import { invalidateClientsCache } from "@/lib/clients-cache";
 import { driveClient } from "@/lib/drive-client";
 import { resolveClientFolderParent } from "@/lib/onboarding/client-folder-routing";
@@ -205,7 +205,7 @@ export async function PUT(
   }
 
   const role = (session.user as { role?: string })?.role;
-  if (role === "viewer") {
+  if (!isEditorOrAbove(role)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
@@ -217,6 +217,9 @@ export async function PUT(
 
   if (typeof field !== "string" || typeof value !== "string") {
     return NextResponse.json({ error: "Invalid body" }, { status: 400 });
+  }
+  if (!isValidAacColumnName(field)) {
+    return NextResponse.json({ error: "Invalid field name" }, { status: 400 });
   }
 
   // Fetch current row
@@ -289,6 +292,9 @@ export async function PUT(
       await updateAacFieldInBigQuery(clientIdCode, f.field, f.value);
     }
   } catch (err) {
+    if (err instanceof InvalidAacColumnError) {
+      return NextResponse.json({ error: "Invalid field name" }, { status: 400 });
+    }
     bqStatus = "error";
     bqError = err instanceof Error ? err.message : String(err);
     console.error(`[AAC] BQ sync FAILED: ${clientIdCode}.${field}:`, err);

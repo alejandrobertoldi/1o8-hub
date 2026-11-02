@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthSession } from "@/lib/auth-db";
+import { isEditorOrAbove } from "@/lib/roles";
 import { db } from "@/lib/db";
 import { master, varietyPackItems } from "@/lib/db/schema";
 import { eq, inArray } from "drizzle-orm";
@@ -9,6 +10,8 @@ export async function POST(req: NextRequest) {
   const session = await getAuthSession();
   if (!session)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!isEditorOrAbove(session.user.role))
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const { asins } = (await req.json()) as { asins: string[] };
   if (!Array.isArray(asins) || asins.length === 0)

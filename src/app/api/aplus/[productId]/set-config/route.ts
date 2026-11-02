@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { aplusSets } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { getAuthSession, canAccessSection } from "@/lib/auth-db";
+import { isEditorOrAbove } from "@/lib/roles";
 
 export const maxDuration = 60;
 
@@ -17,8 +18,8 @@ export async function PATCH(
   if (!canAccessSection(session, "aplus")) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
-  if (session.user.role === "viewer") {
-    return NextResponse.json({ error: "Viewers cannot edit" }, { status: 403 });
+  if (!isEditorOrAbove(session.user.role)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   const { productId } = await params;

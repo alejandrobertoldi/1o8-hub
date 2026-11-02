@@ -3,6 +3,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getConfigDocBlock } from "@/lib/seo-config-doc";
 import { getAuthSession } from "@/lib/auth-db";
+import { isEditorOrAbove } from "@/lib/roles";
 import { logEvent } from "@/lib/event-logger";
 import { getAiFeatureConfig } from "@/lib/ai-config.server";
 
@@ -86,6 +87,8 @@ async function callClaude(
 
 export async function POST(req: NextRequest) {
   const session = await getAuthSession();
+  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!isEditorOrAbove(session.user.role)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   const startTime = Date.now();
 
   const body = await req.json();

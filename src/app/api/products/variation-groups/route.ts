@@ -4,7 +4,8 @@ import { db } from "@/lib/db";
 import { master } from "@/lib/db/schema";
 import { inArray } from "drizzle-orm";
 import { getAuthSession } from "@/lib/auth-db";
-import { unauthorized, serverError } from "@/lib/api-utils";
+import { isEditorOrAbove } from "@/lib/roles";
+import { unauthorized, forbidden, serverError } from "@/lib/api-utils";
 
 /**
  * PATCH /api/products/variation-groups
@@ -15,6 +16,7 @@ export async function PATCH(request: NextRequest) {
   try {
     const session = await getAuthSession();
     if (!session) return unauthorized();
+    if (!isEditorOrAbove(session.user.role)) return forbidden();
 
     const body = await request.json();
     const { product_ids, variation_group } = body as {

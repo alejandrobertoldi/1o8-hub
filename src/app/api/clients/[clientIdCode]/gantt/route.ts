@@ -3,6 +3,7 @@
 /* eslint-disable react-doctor/nextjs-no-side-effect-in-get-handler */
 import { NextRequest, NextResponse, after } from "next/server";
 import { getAuthSession } from "@/lib/auth-db";
+import { isEditorOrAbove } from "@/lib/roles";
 import { db } from "@/lib/db";
 import { clientGanttTasks, clientOnboardingSteps, ganttTemplates, aac, users } from "@/lib/db/schema";
 import { eq, and } from "drizzle-orm";
@@ -76,6 +77,7 @@ export async function GET(_req: NextRequest, { params }: RouteCtx) {
 export async function POST(req: NextRequest, { params }: RouteCtx) {
   const session = await getAuthSession();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!isEditorOrAbove(session.user.role)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const { clientIdCode } = await params;
   const body = await req.json();
@@ -145,6 +147,7 @@ export async function POST(req: NextRequest, { params }: RouteCtx) {
 export async function PUT(req: NextRequest, { params }: RouteCtx) {
   const session = await getAuthSession();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!isEditorOrAbove(session.user.role)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const { clientIdCode } = await params;
   const body = await req.json();
@@ -201,6 +204,7 @@ export async function PUT(req: NextRequest, { params }: RouteCtx) {
 export async function PATCH(req: NextRequest, { params }: RouteCtx) {
   const session = await getAuthSession();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!isEditorOrAbove(session.user.role)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const { clientIdCode } = await params;
   const body = await req.json();

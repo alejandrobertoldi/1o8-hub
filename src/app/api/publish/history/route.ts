@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthSession, canAccessSection } from "@/lib/auth-db";
+import { isHubStaff } from "@/lib/roles";
 import { db } from "@/lib/db";
 import { publishHistory } from "@/lib/db/schema";
 import { desc } from "drizzle-orm";
@@ -9,6 +10,7 @@ export async function GET(req: NextRequest) {
   const session = await getAuthSession();
   if (!session) return unauthorized();
   if (!canAccessSection(session, "publish")) return forbidden("Forbidden: admin only");
+  if (!isHubStaff(session.user.role)) return forbidden();
 
   const limitParam = req.nextUrl.searchParams.get("limit");
   const limit = Math.min(Math.max(parseInt(limitParam || "50", 10) || 50, 1), 100);

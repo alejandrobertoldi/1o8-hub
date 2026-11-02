@@ -1,9 +1,10 @@
 /* eslint-disable react-doctor/server-sequential-independent-await */
 import { NextRequest, NextResponse, after } from "next/server";
 import { getAuthSession } from "@/lib/auth-db";
+import { isEditorOrAbove } from "@/lib/roles";
 import { db } from "@/lib/db";
 import { clientGanttTasks } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { pushTaskToAsana, markAsanaTaskOnDelete } from "@/lib/asana-sync";
 
 type RouteCtx = { params: Promise<{ clientIdCode: string; taskId: string }> };
@@ -12,6 +13,7 @@ type RouteCtx = { params: Promise<{ clientIdCode: string; taskId: string }> };
 export async function PATCH(req: NextRequest, { params }: RouteCtx) {
   const session = await getAuthSession();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!isEditorOrAbove(session.user.role)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const { clientIdCode, taskId } = await params;
   const body = await req.json();
@@ -59,7 +61,12 @@ export async function PATCH(req: NextRequest, { params }: RouteCtx) {
   const [updated] = await db
     .update(clientGanttTasks)
     .set(allowed)
-    .where(eq(clientGanttTasks.id, Number(taskId)))
+    .where(
+      and(
+        eq(clientGanttTasks.id, Number(taskId)),
+        eq(clientGanttTasks.clientIdCode, clientIdCode),
+      ),
+    )
     .returning();
 
   if (!updated) {
@@ -88,12 +95,18 @@ export async function PATCH(req: NextRequest, { params }: RouteCtx) {
 export async function DELETE(_req: NextRequest, { params }: RouteCtx) {
   const session = await getAuthSession();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!isEditorOrAbove(session.user.role)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-  const { taskId } = await params;
+  const { clientIdCode, taskId } = await params;
 
   const [deleted] = await db
     .delete(clientGanttTasks)
-    .where(eq(clientGanttTasks.id, Number(taskId)))
+    .where(
+      and(
+        eq(clientGanttTasks.id, Number(taskId)),
+        eq(clientGanttTasks.clientIdCode, clientIdCode),
+      ),
+    )
     .returning();
 
   if (!deleted) {

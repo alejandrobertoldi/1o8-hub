@@ -3,6 +3,7 @@ import sharp from "sharp";
 import Anthropic from "@anthropic-ai/sdk";
 import { eq } from "drizzle-orm";
 import { getAuthSession } from "@/lib/auth-db";
+import { isEditorOrAbove } from "@/lib/roles";
 import { getAccessToken } from "@/lib/gcp-auth";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { db } from "@/lib/db";
@@ -52,6 +53,7 @@ async function fetchDriveImage(gid: string): Promise<{ base64: string; mediaType
 export async function POST(req: NextRequest) {
   const session = await getAuthSession();
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!isEditorOrAbove(session.user.role)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const rl = checkRateLimit(session.user.email, 10, 60_000);
   if (!rl.success) {

@@ -8,6 +8,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { eq, max } from "drizzle-orm";
 
 import { getAuthSession } from "@/lib/auth-db";
+import { isEditorOrAbove } from "@/lib/roles";
 import { db } from "@/lib/db";
 import { storefrontModules, storefrontPages, storefrontModuleTiles } from "@/lib/db/schema";
 import { ADDABLE_MODULE_TYPES, DEFAULT_SPLIT_LAYOUT, splitTileCount } from "@/lib/storefront/module-specs";
@@ -18,6 +19,7 @@ export async function POST(
 ) {
   const session = await getAuthSession();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!isEditorOrAbove(session.user.role)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const { pageId } = await params;
 

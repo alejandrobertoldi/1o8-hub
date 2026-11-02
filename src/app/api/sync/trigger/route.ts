@@ -1,6 +1,7 @@
 /* eslint-disable react-doctor/async-await-in-loop */
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthSession, canAccessSection } from "@/lib/auth-db";
+import { hasAdminPowers } from "@/lib/roles";
 import { publishDirtyToBigQuery, publishToBigQuery } from "@/lib/bigquery";
 import { db } from "@/lib/db";
 import { master, publishHistory } from "@/lib/db/schema";
@@ -14,6 +15,7 @@ export async function POST(req: NextRequest) {
   if (!session) return unauthorized();
 
   if (!canAccessSection(session, "publish")) return forbidden();
+  if (!hasAdminPowers(session.user.role)) return forbidden("Forbidden: admin only");
 
   let mode: "incremental" | "full" = "incremental";
   try {
