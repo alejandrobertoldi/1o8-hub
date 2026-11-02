@@ -275,6 +275,9 @@
    ═══════════════════════════════════════════════════════════════════ */
 
 .dark {
+  /* Native controls (select dropdown lists, date pickers, scrollbars) follow the theme — on Windows the
+     open <select> list is otherwise white with the dark theme's light text. */
+  color-scheme: dark;
   --background: #2C2B35;
   --foreground: oklch(0.93 0.005 290);
   --card: oklch(0.18 0.012 290);
@@ -686,6 +689,12 @@ body::before {
   background: oklch(0.75 0.005 80);
   border-radius: 3px;
 }
+.dark option,
+.dark optgroup {
+  background-color: var(--popover);
+  color: var(--popover-foreground);
+}
+
 .dark ::-webkit-scrollbar-thumb {
   background: oklch(0.3 0.01 250);
 }

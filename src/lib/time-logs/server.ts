@@ -15,7 +15,7 @@ import {
   workTypeTag,
 } from "./catalog";
 
-export type LoggableClient = { code: string; name: string; estimatedHours: number | null };
+export type LoggableClient = { code: string; name: string; estimatedHours: number | null; active: boolean };
 export type LoggableProject = {
   projectNumber: string;
   name: string;
@@ -25,18 +25,18 @@ export type LoggableProject = {
   url: string | null;
 };
 
-/** 1O8 (internal) first, then every ACTIVE AAC client. */
+/** 1O8 (internal) first, then the ACTIVE AAC clients, then the inactive (past) ones — hours can still go to those. */
 export async function listLoggableClients(): Promise<LoggableClient[]> {
   const rows = await db.select({ code: aac.clientIdCode, name: aac.clientName, status: aac.clientStatus, raw: aac.rawData }).from(aac);
-  const active = rows
-    .filter((r) => (r.status ?? "").toLowerCase() === "active" && r.code.toUpperCase() !== INTERNAL_CLIENT_CODE)
+  const clients = rows
+    .filter((r) => r.code.toUpperCase() !== INTERNAL_CLIENT_CODE)
     .map((r) => {
       const raw = (r.raw ?? {}) as Record<string, string>;
       const est = Number(String(raw["Estimated Hours TOTAL"] ?? "").replace(/[^\d.]/g, ""));
-      return { code: r.code, name: r.name ?? r.code, estimatedHours: Number.isFinite(est) && est > 0 ? est : null };
+      return { code: r.code, name: r.name ?? r.code, estimatedHours: Number.isFinite(est) && est > 0 ? est : null, active: (r.status ?? "").toLowerCase() === "active" };
     })
-    .sort((a, b) => a.code.localeCompare(b.code));
-  return [{ code: INTERNAL_CLIENT_CODE, name: INTERNAL_CLIENT_NAME, estimatedHours: null }, ...active];
+    .sort((a, b) => Number(b.active) - Number(a.active) || a.code.localeCompare(b.code));
+  return [{ code: INTERNAL_CLIENT_CODE, name: INTERNAL_CLIENT_NAME, estimatedHours: null, active: true }, ...clients];
 }
 
 /**
@@ -123,7 +123,7 @@ export async function resolveTimeLog(
 ): Promise<{ ok: true; values: Omit<TimeLogInput, "clientIdCode"> & { clientIdCode: string; projectName: string; asanaTaskGid: string | null; billingType: string } } | { ok: false; error: string }> {
   const clients = await listLoggableClients();
   const client = clients.find((c) => c.code.toUpperCase() === input.clientIdCode.toUpperCase());
-  if (!client) return { ok: false, error: `${input.clientIdCode} is not an active client` };
+  if (!client) return { ok: false, error: `${input.clientIdCode} is not a client` };
   const projectNumber = input.projectNumber.toUpperCase();
 
   let projectName: string;

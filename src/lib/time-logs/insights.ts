@@ -156,7 +156,8 @@ export async function buildInsights(from: string, to: string, today = new Date()
   const calendarDays = (Date.parse(`${to}T00:00:00Z`) - Date.parse(`${from}T00:00:00Z`)) / 86_400_000 + 1;
   const months = calendarDays / DAYS_PER_MONTH;
   const clientVsEstimate = clients
-    .filter((c) => c.code !== "1O8")
+    // Past clients only show up when someone logged hours to them in the range.
+    .filter((c) => c.code !== "1O8" && (c.active || (clientHours[c.code] ?? 0) > 0))
     .map((c) => {
       const hours = clientHours[c.code] ?? 0;
       const estimate = c.estimatedHours != null ? round2(c.estimatedHours * months) : null;

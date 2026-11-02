@@ -261,11 +261,24 @@ export function Timesheet() {
           <Field label="Client">
             <select value={form.clientIdCode} onChange={(e) => set("clientIdCode", e.target.value)} className={select}>
               <option value="">Pick a client…</option>
-              {options?.clients.map((c) => (
-                <option key={c.code} value={c.code}>
-                  {c.code} | {c.name}
-                </option>
-              ))}
+              {options?.clients
+                .filter((c) => c.active)
+                .map((c) => (
+                  <option key={c.code} value={c.code}>
+                    {c.code} | {c.name}
+                  </option>
+                ))}
+              {options?.clients.some((c) => !c.active) && (
+                <optgroup label="Past clients">
+                  {options.clients
+                    .filter((c) => !c.active)
+                    .map((c) => (
+                      <option key={c.code} value={c.code}>
+                        {c.code} | {c.name}
+                      </option>
+                    ))}
+                </optgroup>
+              )}
             </select>
           </Field>
           <Field label="Department / type of work">
