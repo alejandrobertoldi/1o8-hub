@@ -43,7 +43,8 @@
     "db:push:prod": "tsx scripts/local/push-prod-schema.ts",
     "sync:aac": "tsx scripts/local/sync-aac.ts",
     "sync:kpis": "tsx --env-file=.env.local scripts/local/sync-kpis.ts",
-    "kpi:setup": "tsx --env-file=.env.local scripts/local/kpi-setup.ts"
+    "kpi:setup": "tsx --env-file=.env.local scripts/local/kpi-setup.ts",
+    "audit:roles": "tsx --env-file=.env.local scripts/local/audit-roles.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.78.0",
