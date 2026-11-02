@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import type { TimeLog } from "@/lib/db/schema";
 import type { LoggableClient, LoggableProject } from "@/lib/time-logs/server";
+import { TimerControl } from "./timer-control";
 
 type Options = {
   me: string;
@@ -238,9 +239,19 @@ export function Timesheet() {
       <section className="rounded-xl border bg-card p-4">
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-sm font-bold">{editingId ? "Edit entry" : "Log time"}</h2>
-          <span className="text-xs text-muted-foreground">
-            Fill in Date, Hours, Client, Department and Project. Billing type is set automatically.
-          </span>
+          <div className="flex items-center gap-3">
+            <span className="hidden text-xs text-muted-foreground lg:inline">
+              Fill in Date, Hours, Client, Department and Project. Billing type is set automatically.
+            </span>
+            {/* The timer is personal: hidden while viewing someone else's hours or editing an entry. */}
+            {!personId && !editingId && (
+              <TimerControl
+                today={today}
+                step={options?.settings.hourStep ?? 0.25}
+                onStop={(hours, entryDate) => setForm((f) => ({ ...f, hours: String(hours), entryDate }))}
+              />
+            )}
+          </div>
         </div>
         <div className="grid gap-3 md:grid-cols-[9rem_6rem_1fr_12rem]">
           <Field label="Date">

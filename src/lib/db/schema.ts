@@ -4750,6 +4750,24 @@ export const timeLogs = pgTable(
 
 export type TimeLog = typeof timeLogs.$inferSelect;
 
+/**
+ * Optional running timer, one per person (Harvest-style "record as you go").
+ * Running when startedAt is set; paused time is banked in elapsedSeconds.
+ * Stopping it fills the Log time form's hours; it never writes a time_log by itself.
+ */
+export const timeLogTimers = pgTable("time_log_timers", {
+  userId: uuid("user_id")
+    .primaryKey()
+    .references(() => users.id, { onDelete: "cascade" }),
+  startedAt: timestamp("started_at", { withTimezone: true }),
+  elapsedSeconds: integer("elapsed_seconds").notNull().default(0),
+  // Local calendar day the timer was started on (the entry's date when it's stopped).
+  entryDate: date("entry_date", { mode: "string" }).notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export type TimeLogTimer = typeof timeLogTimers.$inferSelect;
+
 // ─── Holiday Calendar Settings (0138) ────────────────────────────────
 // Per-country switch admins flip in the Content Calendar: a hidden calendar's
 // holidays disappear from the general calendar for everyone. Visibility only —
