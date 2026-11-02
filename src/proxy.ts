@@ -21,9 +21,7 @@ export default auth((req) => {
     pathname.startsWith("/api/cron") ||
     pathname.startsWith("/api/webhooks") ||
     pathname.startsWith("/auth") ||
-    pathname.startsWith("/calculator") ||
     pathname.startsWith("/status") ||
-    pathname.startsWith("/reports/monthly/print") || // token-authenticated; no session needed
     pathname.startsWith("/_next") ||
     pathname === "/favicon.ico" ||
     pathname === "/robots.txt" ||
@@ -68,24 +66,14 @@ export default auth((req) => {
     if (
       pathname.startsWith("/api/auth") ||
       pathname.startsWith("/api/portal") ||
-      pathname.startsWith("/api/sales-summary") ||
-      pathname.startsWith("/api/impact") ||
-      pathname.startsWith("/api/aplus") ||
-      pathname.startsWith("/api/drive/file") ||
-      (pathname.startsWith("/api/reports/") && req.method === "GET") ||
-      pathname === "/api/ppc/sales-monitor" ||
-      pathname === "/api/ppc/forecast"
+      pathname.startsWith("/api/drive/file")
     ) {
       return NextResponse.next();
     }
     if (pathname.startsWith("/api")) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
-    if (
-      !pathname.startsWith("/portal") &&
-      !pathname.startsWith("/aplus2") &&
-      !pathname.startsWith("/design/aplus2")
-    ) {
+    if (!pathname.startsWith("/portal")) {
       return NextResponse.redirect(new URL("/portal", req.url));
     }
   }
@@ -95,13 +83,7 @@ export default auth((req) => {
     if (
       pathname.startsWith("/api/auth") ||
       (pathname.startsWith("/api/portal") && req.method === "GET") ||
-      pathname.startsWith("/api/sales-summary") ||
-      pathname.startsWith("/api/impact") ||
-      pathname.startsWith("/api/aplus") ||
-      pathname.startsWith("/api/drive/file") ||
-      (pathname.startsWith("/api/reports/") && req.method === "GET") ||
-      (pathname === "/api/ppc/sales-monitor" && req.method === "GET") ||
-      (pathname === "/api/ppc/forecast" && req.method === "GET")
+      pathname.startsWith("/api/drive/file")
     ) {
       return NextResponse.next();
     }

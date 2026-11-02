@@ -57,66 +57,28 @@ import {
   CollapsibleTrigger,
   CollapsibleContent,
 } from "@/components/ui/collapsible";
-import { LogOut, LayoutDashboard, DollarSign, BarChart3, Search, ArrowLeft, Sparkles, Wallet, Package, Calculator, Clock, Palette, ChevronRight, BookOpen, ImageIcon, Store, Boxes, TrendingUp, ClipboardList, Menu, MessageSquareText, ImagePlus, Star, X as XIcon } from "lucide-react";
+import { LogOut, LayoutDashboard, Search, ArrowLeft, ChevronRight, Menu, MessageSquareText, ImagePlus, X as XIcon } from "lucide-react";
 import { toast } from "sonner";
 import { ThemeToggle } from "./theme-toggle";
 import { OpalItemInner, OpalMenu, OpalNavFrame } from "./opal-nav-frame";
 import { CLIENT_NAMES } from "@/lib/constants";
-import {
-  filterPortalNav,
-  filterPortalReportTabs,
-  PORTAL_REPORT_TABS,
-  type PortalNavItem,
-} from "./portal-nav";
+import { filterPortalNav, type PortalNavItem } from "./portal-nav";
 import { usePortalVisibleClients, usePortalClientParam, portalClientQuery } from "@/components/portal/portal-visible-clients";
 import { formatPortalClientBadge } from "@/lib/client-codes";
 
-const SECTION_OPTIONS = [
-  "Dashboard", "Timeline", "Sales", "Products", "Attributes",
-  "Reports", "SEO", "Design", "Finance", "Other",
-];
+const SECTION_OPTIONS = ["Dashboard", "SEO", "Other"];
 
 function guessPortalSection(pathname: string): string {
-  if (pathname.startsWith("/portal/timeline")) return "Timeline";
-  if (pathname.startsWith("/portal/sales")) return "Sales";
-  if (pathname.startsWith("/portal/products")) return "Products";
-  if (pathname.startsWith("/portal/attributes")) return "Attributes";
   if (pathname.startsWith("/portal/seo")) return "SEO";
-  if (pathname.startsWith("/portal/design") || pathname.startsWith("/portal/aplus")) return "Design";
-  if (pathname.startsWith("/portal/reports")) return "Reports";
-  if (pathname.startsWith("/portal/finance") || pathname.startsWith("/portal/tools")) return "Finance";
   if (pathname === "/portal") return "Dashboard";
   return "Other";
 }
 
+// MarketFoundry's Amazon portal sections (Timeline, Sales, Products, Reviews,
+// Attributes, Reports, Finance) are archived in _archive/marketfoundry-amazon/.
 const PORTAL_NAV: PortalNavItem[] = [
   { id: "dashboard", title: "Dashboard", href: "/portal", icon: LayoutDashboard, permission: null },
-  // Same permission id as ClientDashboard SECTION_CARDS — must stay in sync.
-  { id: "timeline", title: "Timeline", href: "/portal/timeline", icon: Clock, permission: "timeline" },
-  {
-    id: "sales", title: "Sales", href: "/portal/sales", icon: DollarSign, permission: "sales",
-    // Child permissions match PortalSalesLanding SALES_CARDS ids 1:1.
-    children: [
-      { id: "sales-overview", title: "Sales Summary", href: "/portal/sales/overview", icon: DollarSign, permission: "sales-overview" },
-      { id: "sales-inventory", title: "Inventory", href: "/portal/sales/inventory", icon: Boxes, permission: "sales-inventory" },
-      { id: "sales-forecast", title: "Forecast", href: "/portal/sales/forecast", icon: TrendingUp, permission: "sales-forecast" },
-      { id: "sales-monitor", title: "Sales Monitor", href: "/portal/sales-monitor", icon: BarChart3, permission: "sales-monitor" },
-    ],
-  },
-  { id: "products", title: "Products", href: "/portal/products", icon: Package, permission: "products" },
-  { id: "reviews", title: "Reviews", href: "/portal/reviews", icon: Star, permission: "reviews" },
-  // Not on ClientDashboard SECTION_CARDS and not in DEFAULT_CLIENT_SECTIONS —
-  // keep ungated so existing clients don't lose the link.
-  { id: "attributes", title: "Attributes", href: "/portal/attributes", icon: ClipboardList, permission: null },
-  { id: "reports", title: "Reports", href: "/portal/reports", icon: BarChart3, permission: "reports" },
   { id: "seo", title: "SEO", href: "/portal/seo", icon: Search, permission: "seo" },
-  {
-    id: "finance", title: "Finance", href: "/portal/finance", icon: Wallet, permission: "finances",
-    children: [
-      { id: "finance-reports", title: "Finance Reports", href: "/portal/finance/reports", icon: Wallet, permission: "finances" },
-      { id: "rev-calculator", title: "Rev Calculator", href: "/portal/tools/rev-calculator", icon: Calculator, permission: "finances" },
-    ],
-  },
 ];
 
 export function PortalShell({ children }: { children: React.ReactNode }) {
@@ -206,12 +168,6 @@ export function PortalShell({ children }: { children: React.ReactNode }) {
 
   const visibleNav = filterPortalNav(
     PORTAL_NAV,
-    effectiveAllowedSections,
-    adminBypass,
-  );
-  const showReportTabs = pathname.startsWith("/portal/reports");
-  const visibleReportTabs = filterPortalReportTabs(
-    PORTAL_REPORT_TABS,
     effectiveAllowedSections,
     adminBypass,
   );
@@ -514,27 +470,6 @@ export function PortalShell({ children }: { children: React.ReactNode }) {
               </div>
             )}
 
-            {/* Row 4: report sub-nav — mirrors hub TopNav REPORT_TABS on /portal/reports/* */}
-            {showReportTabs && visibleReportTabs.length > 0 && (
-              <nav className="hidden lg:flex items-center justify-center pl-2 pr-4 lg:pl-3 lg:pr-6 border-t border-sidebar-border/40 overflow-x-auto">
-                {visibleReportTabs.map((t) => {
-                  const isActive = pathname === t.href;
-                  return (
-                    <Link
-                      key={t.href}
-                      href={`${t.href}${clientParam}`}
-                      className={`inline-flex h-9 items-center px-4 text-sm font-medium whitespace-nowrap transition-colors
-                        ${isActive
-                          ? "text-portal-accent border-b-2 border-portal-accent"
-                          : "text-sidebar-foreground/70 hover:text-sidebar-foreground"
-                        }`}
-                    >
-                      {t.label}
-                    </Link>
-                  );
-                })}
-              </nav>
-            )}
           </div>
         </div>
       </header>

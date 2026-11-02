@@ -26,16 +26,13 @@ export default function ClientLayout({
   const pathname = usePathname();
   const base = `/clients/${clientIdCode}`;
 
-  // Timeline pins its controls + Gantt header and scrolls only the task rows,
-  // so it needs the full-height chain from <main> to stay unbroken here.
-  const isTimeline = pathname.startsWith(`${base}/timeline`);
   // Hide tabs on pages that have their own navigation
-  const hideTabs = pathname.startsWith(`${base}/onboarding`) || isTimeline;
+  const hideTabs = pathname.startsWith(`${base}/onboarding`);
   const inSettings =
     pathname.startsWith(`${base}/settings`) || SETTINGS_TABS.some((t) => pathname.startsWith(`${base}${t.href}`));
 
   return (
-    <div className={`flex flex-col gap-0 ${isTimeline ? "h-full min-h-0" : ""}`}>
+    <div className="flex flex-col gap-0">
       {!hideTabs && <nav className="border-b flex gap-1 px-4">
         {TABS.map((tab) => {
           const href = `${base}${tab.href}`;

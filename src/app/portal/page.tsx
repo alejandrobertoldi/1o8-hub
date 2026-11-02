@@ -16,8 +16,6 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { hasAdminPowers } from "@/lib/roles";
 import {
-  DollarSign,
-  BarChart3,
   Search,
   ArrowRight,
   Users,
@@ -26,13 +24,9 @@ import {
   Settings2,
   ChevronDown,
   ChevronRight,
-  Wallet,
   Activity,
-  Package,
-  Clock,
-  Palette,
   X,
-  Trash2, Star } from "lucide-react";
+  Trash2 } from "lucide-react";
 import { ActivityFeed } from "@/components/portal/activity-feed";
 import { ClientSectionsSheet } from "@/components/portal/client-sections-sheet";
 import { PortalClientPicker } from "@/components/portal/portal-client-picker";
@@ -60,47 +54,9 @@ import { toast } from "sonner";
 
 // ── Portal section cards (what clients see) ─────────────────────
 
+// MarketFoundry's Amazon cards (Timeline, Sales, Product Catalog, Reviews, Design,
+// Reports, Finance) are archived in _archive/marketfoundry-amazon/.
 const SECTION_CARDS = [
-  {
-    id: "timeline",
-    title: "Timeline",
-    description: "Track project milestones, deliverables, and progress updates.",
-    icon: Clock,
-    href: "/portal/timeline",
-    color: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400",
-    borderColor: "hover:border-indigo-500/30",
-    permission: "timeline",
-  },
-  {
-    id: "sales",
-    title: "Sales",
-    description: "Sales performance, inventory, forecasts, and monitoring.",
-    icon: DollarSign,
-    href: "/portal/sales",
-    color: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
-    borderColor: "hover:border-emerald-500/30",
-    permission: "sales",
-  },
-  {
-    id: "products",
-    title: "Product Catalog",
-    description: "Browse your product catalog — ASINs, SKUs, status, and details.",
-    icon: Package,
-    href: "/portal/products",
-    color: "bg-orange-500/10 text-orange-600 dark:text-orange-400",
-    borderColor: "hover:border-orange-500/30",
-    permission: "products",
-  },
-  {
-    id: "reviews",
-    title: "Customer Reviews",
-    description: "What Amazon shoppers say — ratings, themes, and recent reviews per product.",
-    icon: Star,
-    href: "/portal/reviews",
-    color: "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400",
-    borderColor: "hover:border-yellow-500/30",
-    permission: "reviews",
-  },
   {
     id: "seo",
     title: "SEO Projects",
@@ -111,49 +67,12 @@ const SECTION_CARDS = [
     borderColor: "hover:border-blue-500/30",
     permission: "seo",
   },
-  {
-    id: "design",
-    title: "Design",
-    description: "Brand story, A+ content, listing images, and storefront design.",
-    icon: Palette,
-    href: "/portal/design",
-    color: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
-    borderColor: "hover:border-amber-500/30",
-    permission: "design",
-  },
-  {
-    id: "reports",
-    title: "Reports",
-    description: "Access your performance reports and analytics.",
-    icon: BarChart3,
-    href: "/portal/reports",
-    color: "bg-violet-500/10 text-violet-600 dark:text-violet-400",
-    borderColor: "hover:border-violet-500/30",
-    permission: "reports",
-  },
-  {
-    id: "finances",
-    title: "Finance",
-    description: "Track revenue, fees, ad spend pacing, and net proceeds.",
-    icon: Wallet,
-    href: "/portal/finance",
-    color: "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400",
-    borderColor: "hover:border-cyan-500/30",
-    permission: "finances",
-  },
 ] as const;
 
 // For prospects, each card links straight to its showcase screen (skipping
 // allowed_sections-gated sub-landings). Keys match SECTION_CARDS ids.
 const PROSPECT_SHOWCASE_HREF: Record<string, string> = {
-  timeline: "/portal/timeline",
-  sales: "/portal/sales/overview",
-  products: "/portal/products",
-  reviews: "/portal/reviews",
   seo: "/portal/seo",
-  design: "/portal/design",
-  reports: "/portal/reports",
-  finances: "/portal/finance/reports",
 };
 
 // ── Types ───────────────────────────────────────────────────────
