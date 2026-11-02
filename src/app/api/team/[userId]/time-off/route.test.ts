@@ -111,9 +111,9 @@ describe("GET /api/team/[userId]/time-off", () => {
     expect(body.requests[0].decisionNote).toBe("ok");
   });
 
-  it("includes reason for an admin viewer", async () => {
+  it("includes reason for a super admin viewer", async () => {
     asMock(getAuthSession).mockResolvedValue({
-      user: { id: ME, role: "admin", email: "admin@x.com" },
+      user: { id: ME, role: "super_admin", email: "admin@x.com" },
     });
     const res = await GET(req("2026"), ctx(THEM));
     const body = await res.json();

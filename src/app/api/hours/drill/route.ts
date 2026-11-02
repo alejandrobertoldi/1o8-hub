@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthSession } from "@/lib/auth-db";
-import { hasAdminPowers } from "@/lib/roles";
+import { hasPeopleAccess } from "@/lib/roles";
 import { isValidDateString } from "@/lib/hours/validation";
 import { drillDays } from "@/lib/hours/analytics-queries";
 
@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  if (!hasAdminPowers(session.user.role)) {
+  if (!hasPeopleAccess(session.user.role)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 

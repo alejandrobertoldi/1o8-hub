@@ -10,6 +10,7 @@ import {
 } from "@/lib/email";
 import { countWorkingDays, isDateString } from "@/lib/time-off/working-days";
 import {
+  canApproveTimeOff,
   canCancel,
   canRevoke,
   canDecideTimeOff,
@@ -38,8 +39,8 @@ function isExclusionViolation(err: unknown): boolean {
 // the clock exactly once, at the call site, and passes it in.
 
 // PATCH /api/time-off/[id] — approve, deny, or revoke an already-approved
-// request. Admins and above: the person's assigned approver (owners / super
-// admins as backup), or any admin when nobody is assigned.
+// request. Admins and above: the person's assigned approver, with owners /
+// super admins as backup (and the only deciders when nobody is assigned).
 export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -47,7 +48,8 @@ export async function PATCH(
   const session = await getAuthSession();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  if (!canSubmitTimeOff(session.user.role) || !canDecideTimeOff({ id: session.user.id, role: session.user.role }, null)) {
+  // Role pre-check only; whether THIS request is theirs to decide is checked below.
+  if (!canSubmitTimeOff(session.user.role) || !canApproveTimeOff(session.user.role)) {
     return NextResponse.json(
       { error: "Only admins can decide time-off requests" },
       { status: 403 }

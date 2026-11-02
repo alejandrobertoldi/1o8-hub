@@ -74,7 +74,7 @@ describe("GET /api/time-off/days-taken", () => {
 
   it("includes breakdown for Jake", async () => {
     asMock(getAuthSession).mockResolvedValue({
-      user: { id: "jake-id", role: "admin", email: "jake@marketfoundry.agency" },
+      user: { id: "jake-id", role: "owner", email: "jake@marketfoundry.agency" },
     });
     const res = await GET(getReq("?year=2026"));
     const body = await res.json();

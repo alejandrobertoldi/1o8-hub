@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthSession } from "@/lib/auth-db";
-import { canApproveTimeOff, canSubmitTimeOff } from "@/lib/time-off/guards";
+import { canSubmitTimeOff } from "@/lib/time-off/guards";
+import { hasPeopleAccess } from "@/lib/roles";
 import { getDaysTakenByUser, getDaysTakenBreakdown } from "@/lib/time-off/queries";
 
 export const dynamic = "force-dynamic";
@@ -23,7 +24,8 @@ export async function GET(req: NextRequest) {
 
   const ownDays = await getDaysTakenByUser(session.user.id, year);
 
-  if (!canApproveTimeOff(session.user.role)) {
+  // Everyone's days taken is people data: owners / super admins only.
+  if (!hasPeopleAccess(session.user.role)) {
     return NextResponse.json({ year, ownDays });
   }
 

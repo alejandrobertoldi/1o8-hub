@@ -31,7 +31,10 @@ describe("canApproveTimeOff / canDecideTimeOff", () => {
     expect(canApproveTimeOff("editor")).toBe(false);
     expect(canApproveTimeOff(undefined)).toBe(false);
   });
-  it("any admin decides when nobody is assigned", () => expect(canDecideTimeOff(admin, null)).toBe(true));
+  it("nobody assigned: only owners / super admins decide", () => {
+    expect(canDecideTimeOff(admin, null)).toBe(false);
+    expect(canDecideTimeOff({ id: "s1", role: "super_admin" }, null)).toBe(true);
+  });
   it("the assigned approver decides", () => expect(canDecideTimeOff(admin, "a1")).toBe(true));
   it("another admin can't decide someone else's assignee", () => expect(canDecideTimeOff(admin, "a2")).toBe(false));
   it("owners and super admins are the backup", () => {

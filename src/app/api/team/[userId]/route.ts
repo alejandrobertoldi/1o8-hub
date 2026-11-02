@@ -12,7 +12,7 @@ import {
   teamDirectoryProfiles,
 } from "@/lib/db/schema";
 import { readIsSuperAdmin } from "@/lib/team/access-db";
-import { hasAdminPowers, isHubStaff } from "@/lib/roles";
+import { hasAdminPowers, hasPeopleAccess, isHubStaff } from "@/lib/roles";
 import {
   allowsTier,
   canWriteField,
@@ -70,13 +70,12 @@ export async function GET(
   }
   const { userId } = await params;
 
-  // 1o8: every internal user may open anyone's card, but only an Owner (or the
-  // person themselves) gets the full card. Everyone else receives the tier-0
-  // directory view: no user_profiles, pay or payment, and no MF field writes
-  // (PATCH below keeps the owner-or-self gate). Directory fields are edited by
-  // admins through /api/team/directory/[userId].
-  const isOwner = session.user.role === "owner";
-  const fullCard = isOwner || session.user.id === userId;
+  // 1o8: every internal user may open anyone's card, but only an Owner / Super
+  // Admin (hasPeopleAccess) or the person themselves gets the full card.
+  // Everyone else — admins included — receives the tier-0 directory view: no
+  // user_profiles, pay or payment, and no field writes. Directory fields are
+  // edited by owners / super admins through /api/team/directory/[userId].
+  const fullCard = hasPeopleAccess(session.user.role) || session.user.id === userId;
   if (!fullCard && !isHubStaff(session.user.role)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
@@ -102,12 +101,10 @@ export async function GET(
   // payment blocks, so it is a tier-2/tier-3 read and gets the same treatment
   // as the write routes.
   const isSuperAdmin = await readIsSuperAdmin(session.user.id);
-  // Restricted viewers who are admins keep isAdmin so admin-tier fields (title,
-  // departments, leads, start date, status, calendar) stay editable; self-tier
-  // and superadmin-tier fields stay read-only/hidden for them.
+  // Restricted viewers can't edit anything on someone else's card.
   const access = fullCard
     ? resolveAccess({ id: session.user.id, role: session.user.role }, userId, isSuperAdmin)
-    : { isSelf: false, isAdmin: hasAdminPowers(session.user.role), isSuperAdmin: false };
+    : { isSelf: false, isAdmin: false, isSuperAdmin: false };
 
   // Queried last (after profile/pay/payment) so the established read order is unchanged.
   const loadDirectory = async () => {
@@ -127,14 +124,14 @@ export async function GET(
     },
     access,
     directory: null,
-    // Directory (tier 0) edits are an admin action, independent of the owner gate.
-    canEditDirectory: hasAdminPowers(session.user.role),
+    // Directory (tier 0) edits are people data: owners / super admins.
+    canEditDirectory: hasPeopleAccess(session.user.role),
     restricted: !fullCard,
   };
 
-  // Financial (pay periods): the person, admins and above may READ (writes
-  // stay on the pay-periods routes, super admin only). Payment (bank/Wise):
-  // super admins and the owner only.
+  // Financial (pay periods): the person and owners / super admins may READ
+  // (writes stay on the pay-periods routes, super admin only). Payment
+  // (bank/Wise): super admins and the owner only.
   const loadPay = () =>
     db
       .select()
@@ -151,10 +148,7 @@ export async function GET(
   };
 
   if (!fullCard) {
-    // Restricted card: no personal profile, but admins still get Financial
-    // (and super admins Payment) — they manage pay and time off.
-    if (access.isAdmin) payload.pay = await loadPay();
-    if (isSuperAdmin) payload.payment = await loadPayment();
+    // Restricted card: work directory info only — no profile, pay or payment.
     payload.directory = await loadDirectory();
     return NextResponse.json(payload);
   }
@@ -261,15 +255,11 @@ export async function PATCH(
   }
   const { userId } = await params;
 
-  // An Owner may edit ANOTHER member's detail. 1o8: admins may too, but only
-  // admin-tier fields (title, departments, leads, start date, status,
-  // calendar) — never someone else's self-tier personal data. Everyone else
-  // may only edit their own. Checked before any DB lookup so this can't be
-  // used to enumerate user ids.
-  const isOwner = session.user.role === "owner";
+  // Only Owners / Super Admins (hasPeopleAccess) may edit ANOTHER member's
+  // detail; everyone else, admins included, only their own. Checked before
+  // any DB lookup so this can't be used to enumerate user ids.
   const isOther = session.user.id !== userId;
-  const adminOnOther = isOther && !isOwner && hasAdminPowers(session.user.role);
-  if (isOther && !isOwner && !adminOnOther) {
+  if (isOther && !hasPeopleAccess(session.user.role)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
@@ -281,15 +271,6 @@ export async function PATCH(
   const keys = Object.keys(patch);
   if (keys.length === 0) {
     return NextResponse.json({ error: "Nothing to update" }, { status: 400 });
-  }
-  if (adminOnOther) {
-    const notAdminTier = keys.filter((k) => !isKnownField(k) || FIELD_TIERS[k] !== "admin");
-    if (notAdminTier.length > 0) {
-      return NextResponse.json(
-        { error: `Admins can only edit admin fields on another person: ${notAdminTier.join(", ")}` },
-        { status: 403 }
-      );
-    }
   }
 
   const [target] = await db

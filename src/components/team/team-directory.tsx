@@ -7,7 +7,7 @@ import { CompanyScaleChart } from "./company-scale-chart";
 import { TeamDirectoryTable } from "./team-directory-table";
 import { TeamOrgChart } from "./team-org-chart";
 import { useRouter, useSearchParams } from "next/navigation";
-import { hasAdminPowers } from "@/lib/roles";
+import { hasPeopleAccess } from "@/lib/roles";
 import { cn } from "@/lib/utils";
 import type { OrgMember } from "@/lib/team/departments";
 
@@ -25,8 +25,8 @@ export function TeamDirectory() {
   // link here means a non-owner never sees a card that 403s on click).
   const isOwner = session?.user?.role === "owner";
   const viewerId = session?.user?.id ?? null;
-  // Everyone sees the directory; only admins add, edit or remove people.
-  const isAdmin = hasAdminPowers(session?.user?.role);
+  // Everyone sees the directory; only owners / super admins add, edit or remove people.
+  const isAdmin = hasPeopleAccess(session?.user?.role);
   // ?view=org keeps the Org chart tab linkable. Assignments and Readiness have their own pages
   // (/team/assignments, /team/readiness); old ?view= links are forwarded there.
   const searchParams = useSearchParams();

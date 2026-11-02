@@ -636,20 +636,20 @@ describe("authorization gate: only owner may view/edit ANOTHER member (else self
 
   // 1o8: any internal user may open ANOTHER member's card, but only the tier-0
   // directory view — no user_profiles, pay or payment, and no MF field writes.
-  it("GET: a non-owner (e.g. admin) viewing ANOTHER user's detail gets the restricted tier-0 card", async () => {
+  it("GET: an admin viewing ANOTHER user's detail gets the restricted tier-0 card, with nothing editable", async () => {
     signIn(ME, "admin", false);
-    queueSelects([TARGET_ROW], [], PAY_ROWS, [{ userId: THEM, location: "Puebla, MX" }]);
+    queueSelects([TARGET_ROW], [], [{ userId: THEM, location: "Puebla, MX" }]);
     const res = await GET(getReq(), ctx(THEM));
     expect(res.status).toBe(200);
     const body = await res.json();
     expect(body.restricted).toBe(true);
-    expect(body.canEditDirectory).toBe(true);
+    expect(body.canEditDirectory).toBe(false);
     expect(body.directory).toMatchObject({ location: "Puebla, MX" });
-    // admin-tier fields stay writable for an admin; self/superadmin tiers do not
-    expect(body.access).toEqual({ isSelf: false, isAdmin: true, isSuperAdmin: false });
+    // 1o8 (2026-11-02): people data is owners / super admins only — no admin-tier writes,
+    // no profile, no Financial, no Payment for an admin on someone else's card.
+    expect(body.access).toEqual({ isSelf: false, isAdmin: false, isSuperAdmin: false });
     expect(body).not.toHaveProperty("profile");
-    // 1o8: admins read Financial on the restricted card; Payment stays super-admin.
-    expect(body.pay).toHaveLength(1);
+    expect(body).not.toHaveProperty("pay");
     expect(body).not.toHaveProperty("payment");
   });
 
@@ -662,7 +662,7 @@ describe("authorization gate: only owner may view/edit ANOTHER member (else self
     expect(db.select).not.toHaveBeenCalled();
   });
 
-  // 1o8: admins may edit ANOTHER member's admin-tier fields, never their self-tier data.
+  // 1o8: only owners / super admins edit ANOTHER member; admins included are limited to themselves.
   it("PATCH: an admin patching ANOTHER user's self-tier field is 403, before any DB lookup", async () => {
     signIn(ME, "admin", false);
     const res = await PATCH(patchReq({ phone: "+1 555 0000" }), ctx(THEM));
@@ -671,8 +671,15 @@ describe("authorization gate: only owner may view/edit ANOTHER member (else self
     expect(db.transaction).not.toHaveBeenCalled();
   });
 
-  it("PATCH: an admin may edit ANOTHER user's admin-tier field (job title)", async () => {
+  it("PATCH: an admin editing ANOTHER user's admin-tier field (job title) is 403, before any DB lookup", async () => {
     signIn(ME, "admin", false);
+    const res = await PATCH(patchReq({ jobTitle: "New Title" }), ctx(THEM));
+    expect(res.status).toBe(403);
+    expect(db.select).not.toHaveBeenCalled();
+  });
+
+  it("PATCH: a super admin may edit ANOTHER user's admin-tier field (job title)", async () => {
+    signIn(ME, "super_admin", true);
     queueSelects([TARGET_ROW]);
     const res = await PATCH(patchReq({ jobTitle: "New Title" }), ctx(THEM));
     expect(res.status).toBe(200);

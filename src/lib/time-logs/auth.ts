@@ -1,9 +1,13 @@
 import { getAuthSession } from "@/lib/auth-db";
-import { hasAdminPowers, isHubStaff } from "@/lib/roles";
+import { hasPeopleAccess, isHubStaff } from "@/lib/roles";
 
-/** Internal staff only. Everyone manages their own time; admins can manage anyone's. */
+/**
+ * Internal staff only. Everyone manages their own time; only owners / super
+ * admins (hasPeopleAccess) see or manage anyone else's. `isAdmin` keeps its
+ * name for the callers but means exactly that.
+ */
 export async function timeLogSession() {
   const session = await getAuthSession();
   if (!session || !session.user.id || !isHubStaff(session.user.role)) return null;
-  return { userId: session.user.id, isAdmin: hasAdminPowers(session.user.role) };
+  return { userId: session.user.id, isAdmin: hasPeopleAccess(session.user.role) };
 }

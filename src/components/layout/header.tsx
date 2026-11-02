@@ -20,7 +20,7 @@ import { toast } from "sonner";
 import { UserMenu } from "./user-menu";
 import { ThemeToggle } from "./theme-toggle";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { hasAdminPowers } from "@/lib/roles";
+import { hasAdminPowers, hasPeopleAccess } from "@/lib/roles";
 import {
   Dialog,
   DialogContent,
@@ -82,7 +82,7 @@ export function Header() {
       const res = await fetch("/api/admin/pending-users");
       return res.json() as Promise<{ count: number }>;
     },
-    enabled: isAdmin,
+    enabled: hasPeopleAccess(session?.user?.role),
     refetchInterval: 30_000,
   });
 
@@ -165,7 +165,7 @@ export function Header() {
             <span>{openIssues} open</span>
           </Link>
         )}
-        {isAdmin && pendingCount > 0 && (
+        {hasPeopleAccess(session?.user?.role) && pendingCount > 0 && (
           <Link
             href="/admin/users"
             className="relative flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-amber-500 bg-amber-500/10 hover:bg-amber-500/20 transition-colors text-xs font-medium"

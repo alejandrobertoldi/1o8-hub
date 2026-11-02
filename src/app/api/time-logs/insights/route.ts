@@ -6,11 +6,11 @@ import { buildInsights } from "@/lib/time-logs/insights";
 
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
 
-/** GET /api/time-logs/insights?from&to[&today][&team][&user][&workType][&client] — team-wide hours insights (admins). */
+/** GET /api/time-logs/insights?from&to[&today][&team][&user][&workType][&client] — team-wide hours insights (owners / super admins). */
 export async function GET(req: NextRequest) {
   const me = await timeLogSession();
   if (!me) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  if (!me.isAdmin) return NextResponse.json({ error: "Only admins can see team-wide insights" }, { status: 403 });
+  if (!me.isAdmin) return NextResponse.json({ error: "Only owners and super admins can see team-wide insights" }, { status: 403 });
   const sp = req.nextUrl.searchParams;
   const from = sp.get("from") ?? "";
   const to = sp.get("to") ?? "";

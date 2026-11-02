@@ -111,14 +111,25 @@ export async function getMyRequests(userId: string): Promise<RequestRow[]> {
 export type Decider = { id: string; role: string };
 
 /**
- * Pending hub requests this person may decide: their assignees', plus
- * everyone without an assigned approver; owners / super admins see all.
+ * Pending hub requests this person may decide: only their assignees';
+ * owners / super admins see all (they cover anyone without an approver).
  * Gusto's are decided in Gusto.
  */
 function decidableBy(decider: Decider): SQL | undefined {
   const pendingHub = and(eq(timeOffRequests.status, "pending"), eq(timeOffRequests.source, "hub"));
   if (hasSuperPowers(decider.role)) return pendingHub;
-  return and(pendingHub, or(isNull(users.timeOffApproverId), eq(users.timeOffApproverId, decider.id)));
+  return and(pendingHub, eq(users.timeOffApproverId, decider.id));
+}
+
+/** Every request (all statuses) of the people this approver is assigned to, newest first. */
+export async function getAssigneesRequests(approverId: string): Promise<RequestRow[]> {
+  const rows = await db
+    .select(REQUEST_COLUMNS)
+    .from(timeOffRequests)
+    .innerJoin(users, eq(users.id, timeOffRequests.userId))
+    .where(eq(users.timeOffApproverId, approverId))
+    .orderBy(desc(timeOffRequests.startDate));
+  return rows.map(toRequestRow);
 }
 
 /** The review queue: pending only, oldest first so nothing rots. */
@@ -149,7 +160,7 @@ export async function getPendingCount(decider: Decider): Promise<number> {
   return Number(row?.count ?? 0);
 }
 
-/** Every request, newest first. Admin-only — includes reason text (D8). */
+/** Every request, newest first. Owners / super admins only — includes reason text (D8). */
 export async function getAllRequests(): Promise<RequestRow[]> {
   const rows = await db
     .select(REQUEST_COLUMNS)

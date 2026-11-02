@@ -25,8 +25,9 @@ describe("resolveAccess", () => {
     expect(resolveAccess({ id: ME, role: "editor" }, THEM, false).isSelf).toBe(false);
   });
 
-  it("sets isAdmin only for the admin role", () => {
-    expect(resolveAccess({ id: ME, role: "admin" }, THEM, false).isAdmin).toBe(true);
+  it("admin-tier fields are people data: the admin role doesn't get them, owner / super admin do", () => {
+    expect(resolveAccess({ id: ME, role: "admin" }, THEM, false).isAdmin).toBe(false);
+    expect(resolveAccess({ id: ME, role: "super_admin" }, THEM, true).isAdmin).toBe(true);
   });
 
   it("clears isAdmin for editor and viewer", () => {
@@ -45,7 +46,7 @@ describe("resolveAccess", () => {
 
   it("lets all three flags be true at once", () => {
     // The whole reason this is a set of capabilities and not an ordered enum.
-    expect(resolveAccess({ id: ME, role: "admin" }, ME, true)).toEqual({
+    expect(resolveAccess({ id: ME, role: "super_admin" }, ME, true)).toEqual({
       isSelf: true,
       isAdmin: true,
       isSuperAdmin: true,

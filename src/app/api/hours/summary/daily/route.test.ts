@@ -32,12 +32,12 @@ describe("GET /api/hours/summary/daily", () => {
   });
 
   it("400 with missing/invalid range", async () => {
-    asMock(getAuthSession).mockResolvedValue({ user: { id: "a1", role: "admin", isSuperAdmin: false } });
+    asMock(getAuthSession).mockResolvedValue({ user: { id: "a1", role: "super_admin", isSuperAdmin: true } });
     expect((await GET(req({ from: "2026-07-01" }))).status).toBe(400);
   });
 
   it("defaults dimension to member and returns rows", async () => {
-    asMock(getAuthSession).mockResolvedValue({ user: { id: "a1", role: "admin", isSuperAdmin: false } });
+    asMock(getAuthSession).mockResolvedValue({ user: { id: "a1", role: "super_admin", isSuperAdmin: true } });
     asMock(summaryByDay).mockResolvedValue([
       { key: "u1", keyName: "Ana", entryDate: "2026-07-01", totalHours: "4.00" },
     ]);
@@ -52,7 +52,7 @@ describe("GET /api/hours/summary/daily", () => {
   });
 
   it("passes dimension=client and category filters through", async () => {
-    asMock(getAuthSession).mockResolvedValue({ user: { id: "a1", role: "admin", isSuperAdmin: false } });
+    asMock(getAuthSession).mockResolvedValue({ user: { id: "a1", role: "super_admin", isSuperAdmin: true } });
     asMock(summaryByDay).mockResolvedValue([]);
     await GET(req({ ...RANGE, dimension: "client" }));
     expect(summaryByDay).toHaveBeenCalledWith("2026-07-01", "2026-07-31", "client", []);

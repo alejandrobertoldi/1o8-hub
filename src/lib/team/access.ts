@@ -6,7 +6,7 @@
  * each route re-implementing the rules slightly differently.
  */
 
-import { hasAdminPowers } from "@/lib/roles";
+import { hasPeopleAccess } from "@/lib/roles";
 
 export type Access = {
   isSelf: boolean;
@@ -113,8 +113,9 @@ export function resolveAccess(
 ): Access {
   return {
     isSelf: viewer.id === targetUserId,
-    // Owner and Super Admin inherit every admin-tier field write.
-    isAdmin: hasAdminPowers(viewer.role),
+    // Admin-tier fields (title, departments, start date, status, approver…) are
+    // people data: Owner and Super Admin only — the "admin" role doesn't get them.
+    isAdmin: hasPeopleAccess(viewer.role),
     isSuperAdmin,
   };
 }

@@ -10,7 +10,7 @@ import { isValidTimeZone } from "@/lib/timezones";
 import { logEventAsync } from "@/lib/event-logger";
 import {
   canAssignRole,
-  hasAdminPowers,
+  hasPeopleAccess,
   hasSuperPowers,
   isUserRole,
   type UserRole,
@@ -32,7 +32,7 @@ async function guardTarget(actorRole: string, userId: string): Promise<NextRespo
 
 export async function GET() {
   const session = await getAuthSession();
-  if (!session || !hasAdminPowers(session.user.role)) {
+  if (!session || !hasPeopleAccess(session.user.role)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
@@ -62,7 +62,7 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   const session = await getAuthSession();
-  if (!session || !hasAdminPowers(session.user.role)) {
+  if (!session || !hasPeopleAccess(session.user.role)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
@@ -119,7 +119,7 @@ export async function POST(req: NextRequest) {
 
 export async function PUT(req: NextRequest) {
   const session = await getAuthSession();
-  if (!session || !hasAdminPowers(session.user.role)) {
+  if (!session || !hasPeopleAccess(session.user.role)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
@@ -284,7 +284,7 @@ export async function PUT(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
   const session = await getAuthSession();
-  if (!session || !hasAdminPowers(session.user.role)) {
+  if (!session || !hasPeopleAccess(session.user.role)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 

@@ -8,7 +8,7 @@ import { BrandLogo } from "@/components/brand/brand-logo";
 import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { hasAdminPowers, isHubStaff } from "@/lib/roles";
+import { hasAdminPowers, hasPeopleAccess, isHubStaff } from "@/lib/roles";
 import {
   Sidebar,
   SidebarContent,
@@ -148,7 +148,7 @@ export function AppSidebar() {
         { title: "Activity", href: "/activity", icon: Activity, visible: checkAccess("activity") },
         { title: "Import", href: "/import", icon: Download, visible: checkAccess("import") },
         { title: "Sync & Export", href: "/publish", icon: RefreshCw, visible: checkAccess("publish") },
-        { title: "Users", href: "/admin/users", icon: UserCog, visible: isAdmin },
+        { title: "Users", href: "/admin/users", icon: UserCog, visible: hasPeopleAccess(role) },
         { title: "Service Providers", href: "/admin/service-providers", icon: Handshake, visible: isAdmin },
         { title: "SP-API Credentials", href: "/admin/sp-api", icon: Key, visible: isAdmin },
         { title: "Shared Logins", href: "/admin/logins", icon: KeyRound, visible: true },

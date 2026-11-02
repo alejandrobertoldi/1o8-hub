@@ -53,10 +53,13 @@ describe("canAssignRole", () => {
     expect(canAssignRole("admin", "super_admin")).toBe(false);
   });
 
-  it("admin+ may assign admin and portal roles", () => {
-    expect(canAssignRole("admin", "admin")).toBe(true);
-    expect(canAssignRole("admin", "editor")).toBe(true);
-    expect(canAssignRole("admin", "client")).toBe(true);
+  it("only owners / super admins manage roles (people data); admins don't", () => {
+    expect(canAssignRole("super_admin", "admin")).toBe(true);
+    expect(canAssignRole("super_admin", "client")).toBe(true);
+    expect(canAssignRole("owner", "editor")).toBe(true);
+    expect(canAssignRole("admin", "admin")).toBe(false);
+    expect(canAssignRole("admin", "editor")).toBe(false);
+    expect(canAssignRole("admin", "client")).toBe(false);
     expect(canAssignRole("editor", "viewer")).toBe(false);
   });
 });

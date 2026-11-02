@@ -19,7 +19,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { hasAdminPowers, isHubStaff } from "@/lib/roles";
+import { hasAdminPowers, hasPeopleAccess, isHubStaff } from "@/lib/roles";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -122,6 +122,8 @@ export function TopNav() {
   const pageSubnav = useSyncExternalStore(subscribePageSubnav, getPageSubnav, () => null);
   const role = session?.user?.role;
   const isAdmin = hasAdminPowers(role);
+  // Everyone else's hours, time off and user management: owners / super admins only.
+  const peopleAccess = hasPeopleAccess(role);
   const isSuperAdmin = session?.user?.isSuperAdmin ?? false;
   const allowedSections = session?.user?.allowedSections ?? [];
   const checkAccess = (section: string) => canAccess(section, allowedSections, isAdmin);
@@ -145,7 +147,7 @@ export function TopNav() {
   const { data: pendingData } = useQuery({
     queryKey: ["pending-users-count"],
     queryFn: async () => { const r = await fetch("/api/admin/pending-users"); return r.json() as Promise<{ count: number }>; },
-    enabled: isAdmin, refetchInterval: 30_000,
+    enabled: peopleAccess, refetchInterval: 30_000,
   });
   const pendingCount = pendingData?.count ?? 0;
 
@@ -207,10 +209,10 @@ export function TopNav() {
       label: "Hours", icon: Clock, linkWhenSingle: true,
       items: [
         { title: "My timesheet", href: "/hours", icon: Clock, visible: isHubStaff(role) },
-        { title: "Hours insights", href: "/hours/insights", icon: BarChart3, visible: isAdmin },
-        { title: "Hours analytics", href: "/hours/analytics", icon: BarChart3, visible: isAdmin },
+        { title: "Hours insights", href: "/hours/insights", icon: BarChart3, visible: peopleAccess },
+        { title: "Hours analytics", href: "/hours/analytics", icon: BarChart3, visible: peopleAccess },
         { title: "Time off requests", href: "/calendar/requests", icon: Plane, visible: !!role && canSubmitTimeOff(role) },
-        { title: "Team time off", href: "/calendar/team", icon: Plane, visible: isAdmin },
+        { title: "Team time off", href: "/calendar/team", icon: Plane, visible: peopleAccess },
       ],
     },
     {
@@ -270,7 +272,7 @@ export function TopNav() {
         { title: "Activity", href: "/activity", icon: Activity, visible: checkAccess("activity") },
         { title: "Import", href: "/import", icon: Download, visible: checkAccess("import") },
         { title: "Sync & Export", href: "/publish", icon: RefreshCw, visible: checkAccess("publish") },
-        { title: "Users", href: "/admin/users", icon: UserCog, visible: isAdmin },
+        { title: "Users", href: "/admin/users", icon: UserCog, visible: peopleAccess },
         { title: "Service Providers", href: "/admin/service-providers", icon: Handshake, visible: isAdmin },
         { title: "Shared Logins", href: "/admin/logins", icon: KeyRound, visible: true },
         { title: "Helium 10", href: "/admin/helium10", icon: Key, visible: isAdmin && helium10Enabled() },
@@ -346,7 +348,7 @@ export function TopNav() {
           )}
 
           {/* Pending users alert */}
-          {isAdmin && pendingCount > 0 && (
+          {peopleAccess && pendingCount > 0 && (
             <Link
               href="/admin/users"
               className="relative flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-amber-800 bg-amber-100 hover:bg-amber-200 dark:text-amber-400 dark:bg-amber-500/20 dark:hover:bg-amber-500/30 transition-colors text-xs font-medium"

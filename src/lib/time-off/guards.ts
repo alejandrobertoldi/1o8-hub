@@ -18,7 +18,8 @@ export function canSubmitTimeOff(role: string): boolean {
  * Who may decide hub time off: admins and above. Each person can have an
  * assigned approver (users.time_off_approver_id, set on their team profile);
  * then only that approver decides, with owners / super admins as the backup
- * so a request never gets stuck. Nobody assigned: any admin.
+ * so a request never gets stuck. Nobody assigned: owners / super admins only
+ * (an admin only sees the requests of the people they approve).
  */
 export function canApproveTimeOff(role: string | null | undefined): boolean {
   return hasAdminPowers(role);
@@ -29,7 +30,7 @@ export function canDecideTimeOff(
   assignedApproverId: string | null | undefined
 ): boolean {
   if (!canApproveTimeOff(decider.role)) return false;
-  return !assignedApproverId || assignedApproverId === decider.id || hasSuperPowers(decider.role);
+  return assignedApproverId === decider.id || hasSuperPowers(decider.role);
 }
 
 /**

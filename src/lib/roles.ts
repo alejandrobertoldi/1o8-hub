@@ -65,7 +65,7 @@ export function isUserRole(value: unknown): value is UserRole {
   );
 }
 
-/** Admin section bypass, user management, portal preview — Owner / Super Admin / Admin. */
+/** Admin section bypass, settings, integrations, sync & export, portal preview — Owner / Super Admin / Admin. */
 export function hasAdminPowers(role: string | null | undefined): boolean {
   return role === "owner" || role === "super_admin" || role === "admin";
 }
@@ -73,6 +73,17 @@ export function hasAdminPowers(role: string | null | undefined): boolean {
 /** Pay, payment, hours-admin — Owner / Super Admin. */
 export function hasSuperPowers(role: string | null | undefined): boolean {
   return role === "owner" || role === "super_admin";
+}
+
+/**
+ * People data — Owner / Super Admin only (1o8 access policy, 2026-11-02):
+ * everyone else's personal profile, pay, hours, time-off balances, employment
+ * fields (title, departments, org chart, approver), and user & role
+ * management. Admins and below see only their own; the directory's work info
+ * (name, title, team, work email, Slack, timezone) stays visible to all staff.
+ */
+export function hasPeopleAccess(role: string | null | undefined): boolean {
+  return hasSuperPowers(role);
 }
 
 /** Internal hub staff (not client / prospect / pending). */
@@ -90,13 +101,13 @@ export function isHubStaff(role: string | null | undefined): boolean {
  * Whether `actorRole` may assign `targetRole` to someone else.
  * - Owner only → Owner
  * - Owner / Super Admin → Super Admin
- * - Owner / Super Admin / Admin → Admin and below (incl. portal roles)
+ * - Owner / Super Admin → Super Admin, Admin and below (incl. portal roles)
+ * User & role management is people data (hasPeopleAccess): admins don't manage users.
  */
 export function canAssignRole(actorRole: string, targetRole: string): boolean {
   if (!isUserRole(targetRole)) return false;
   if (targetRole === "owner") return actorRole === "owner";
-  if (targetRole === "super_admin") return hasSuperPowers(actorRole);
-  return hasAdminPowers(actorRole);
+  return hasPeopleAccess(actorRole);
 }
 
 export function roleLabel(role: string): string {

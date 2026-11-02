@@ -6,6 +6,7 @@ import { timeOffRequests, users, type TimeOffRequest } from "@/lib/db/schema";
 import { sendEmail, buildTimeOffRequestEmail } from "@/lib/email";
 import { countWorkingDays, isDateString } from "@/lib/time-off/working-days";
 import {
+  canApproveTimeOff,
   canSubmitTimeOff,
   findConflict,
   todayInZone,
@@ -13,12 +14,13 @@ import {
 import {
   approverEmailsFor,
   getAllRequests,
+  getAssigneesRequests,
   getHolidayDates,
   getPendingRequests,
   getMyRequests,
   getOwnActiveRequests,
 } from "@/lib/time-off/queries";
-import { hasAdminPowers } from "@/lib/roles";
+import { hasPeopleAccess } from "@/lib/roles";
 
 export const dynamic = "force-dynamic";
 
@@ -40,7 +42,8 @@ function isExclusionViolation(err: unknown): boolean {
   );
 }
 
-// GET /api/time-off — own requests; admins get all (including reason).
+// GET /api/time-off — own requests; an approver also gets the requests of the
+// people assigned to them; owners / super admins get all (including reason).
 // Reshaped to include the caller's live countryCode (never from session/JWT,
 // which doesn't refresh until re-login) — /calendar uses it to gate the
 // "Request time off" button and choose which country's holidays to overlay.
@@ -53,10 +56,13 @@ export async function GET() {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  const rows =
-    hasAdminPowers(role)
-      ? await getAllRequests()
-      : await getMyRequests(session.user.id);
+  let rows;
+  if (hasPeopleAccess(role)) rows = await getAllRequests();
+  else if (canApproveTimeOff(role)) {
+    const [mine, assignees] = await Promise.all([getMyRequests(session.user.id), getAssigneesRequests(session.user.id)]);
+    const seen = new Set(mine.map((r) => r.id));
+    rows = [...mine, ...assignees.filter((r) => !seen.has(r.id))].sort((a, b) => (a.startDate < b.startDate ? 1 : -1));
+  } else rows = await getMyRequests(session.user.id);
 
   const [me] = await db
     .select({
@@ -72,8 +78,8 @@ export async function GET() {
   // Edit with the same day boundary the DELETE/PUT routes use (ruling P3).
   const today = todayInZone(me?.residenceTimezone ?? null, new Date());
 
-  // Pending requests this admin can decide (their assignees' and the unassigned ones).
-  const decidable = hasAdminPowers(role)
+  // Pending requests this approver can decide (their assignees'; owners / super admins: all).
+  const decidable = canApproveTimeOff(role)
     ? (await getPendingRequests({ id: session.user.id, role })).map((r) => r.id)
     : [];
 

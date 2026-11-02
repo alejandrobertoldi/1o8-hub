@@ -25,10 +25,11 @@ const RANGE = { from: "2026-07-01", to: "2026-07-31" };
 describe("GET /api/hours/summary", () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it("403 below admin", async () => {
+  it("403 below owner / super admin (an admin can't see everyone's hours)", async () => {
     asMock(getAuthSession).mockResolvedValue({ user: { id: "a1", role: "editor", isSuperAdmin: false } });
-    const res = await GET(req(RANGE));
-    expect(res.status).toBe(403);
+    expect((await GET(req(RANGE))).status).toBe(403);
+    asMock(getAuthSession).mockResolvedValue({ user: { id: "a1", role: "admin", isSuperAdmin: false } });
+    expect((await GET(req(RANGE))).status).toBe(403);
   });
 
   it("401 unauthenticated", async () => {
@@ -38,13 +39,13 @@ describe("GET /api/hours/summary", () => {
   });
 
   it("400 with missing/invalid range", async () => {
-    asMock(getAuthSession).mockResolvedValue({ user: { id: "a1", role: "admin", isSuperAdmin: true } });
+    asMock(getAuthSession).mockResolvedValue({ user: { id: "a1", role: "super_admin", isSuperAdmin: true } });
     const res = await GET(req({ from: "2026-07-01" }));
     expect(res.status).toBe(400);
   });
 
   it("pivots rows into byMember and byClient, sorted by hours desc", async () => {
-    asMock(getAuthSession).mockResolvedValue({ user: { id: "a1", role: "admin", isSuperAdmin: true } });
+    asMock(getAuthSession).mockResolvedValue({ user: { id: "a1", role: "super_admin", isSuperAdmin: true } });
     asMock(summaryRows).mockResolvedValue([
       { userId: "u1", userName: "Ana", userEmail: "ana@mf.io", clientIdCode: "PURA", totalHours: "10.50" },
       { userId: "u1", userName: "Ana", userEmail: "ana@mf.io", clientIdCode: "INTERNAL", totalHours: "2.00" },

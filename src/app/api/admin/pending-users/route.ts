@@ -3,11 +3,11 @@ import { getAuthSession } from "@/lib/auth-db";
 import { db } from "@/lib/db";
 import { users } from "@/lib/db/schema";
 import { eq, sql } from "drizzle-orm";
-import { hasAdminPowers } from "@/lib/roles";
+import { hasPeopleAccess } from "@/lib/roles";
 
 export async function GET() {
   const session = await getAuthSession();
-  if (!session || !hasAdminPowers(session.user.role)) {
+  if (!session || !hasPeopleAccess(session.user.role)) {
     return NextResponse.json({ count: 0 });
   }
 

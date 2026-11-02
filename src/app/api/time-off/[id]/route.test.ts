@@ -4,7 +4,8 @@ vi.mock("@/lib/auth-db", () => ({ getAuthSession: vi.fn() }));
 vi.mock("@/lib/time-off/team-calendar", () => ({ publishTimeOff: vi.fn() }));
 vi.mock("@/lib/time-off/queries", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/lib/time-off/queries")>()),
-  assignedApproverOf: vi.fn().mockResolvedValue(null),
+  // The acting admin is the person's assigned approver (nobody assigned = owners / super admins only).
+  assignedApproverOf: vi.fn().mockResolvedValue("44444444-4444-4444-8444-444444444444"),
   approverEmailsFor: vi.fn().mockResolvedValue([]),
 }));
 vi.mock("next/server", async (importOriginal) => {

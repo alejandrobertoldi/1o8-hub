@@ -280,9 +280,15 @@ describe("GET /api/admin/users projection", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     asMock2(getAuthSession).mockResolvedValue({
-      user: { id: "a1", role: "admin", email: "admin@marketfoundry.agency" },
+      user: { id: "a1", role: "super_admin", email: "admin@marketfoundry.agency" },
     });
     asMock2(db.select).mockReturnValue({ from: vi.fn().mockResolvedValue([]) });
+  });
+
+  it("403 for an admin: user management is owners / super admins only", async () => {
+    asMock2(getAuthSession).mockResolvedValue({ user: { id: "a1", role: "admin" } });
+    const res = await GET_USERS();
+    expect(res.status).toBe(403);
   });
 
   it("projects exactly the 13 fields the page consumes and nothing more", async () => {

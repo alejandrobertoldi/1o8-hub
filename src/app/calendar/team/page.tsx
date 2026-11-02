@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { CalendarClock, Plane } from "lucide-react";
 import { PageMetaSlot } from "@/components/layout/page-header-slot";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { hasAdminPowers } from "@/lib/roles";
+import { hasPeopleAccess } from "@/lib/roles";
 import { cn } from "@/lib/utils";
 import type { OutEntry, TeamMemberTimeOff } from "@/lib/time-off/team";
 
@@ -20,7 +20,7 @@ const SOURCE_LABEL: Record<OutEntry["source"], string> = { hub: "Hub", gusto: "G
 /** Admins: who's out in the next two weeks, and everyone's balances and days taken. */
 export default function TeamTimeOffPage() {
   const { data: session } = useSession();
-  const isAdmin = hasAdminPowers(session?.user?.role);
+  const isAdmin = hasPeopleAccess(session?.user?.role);
   const qc = useQueryClient();
   const [filter, setFilter] = useState("");
   const { data, isLoading, error } = useQuery<Payload>({

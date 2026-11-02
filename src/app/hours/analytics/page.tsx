@@ -3,14 +3,14 @@
 import { useSession } from "next-auth/react";
 import { PageMetaSlot } from "@/components/layout/page-header-slot";
 import { HoursDashboard } from "@/components/admin/hours-dashboard";
-import { hasAdminPowers } from "@/lib/roles";
+import { hasPeopleAccess } from "@/lib/roles";
 
 /** Team-wide time analytics with export (from MarketFoundry's Admin Hours). Admin and up. */
 export default function HoursAnalyticsPage() {
   const { data: session, status } = useSession();
 
   if (status === "loading") return null;
-  if (!hasAdminPowers(session?.user?.role)) {
+  if (!hasPeopleAccess(session?.user?.role)) {
     return <div className="p-8 text-sm text-muted-foreground">You don&apos;t have access to hours analytics.</div>;
   }
 

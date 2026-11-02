@@ -526,8 +526,9 @@ export async function PATCH(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  // Client info is edited by editors and above (viewers, portal and pending roles read only).
   const role = (session.user as { role?: string })?.role;
-  if (role === "viewer") {
+  if (!isEditorOrAbove(role)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 

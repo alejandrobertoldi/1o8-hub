@@ -12,13 +12,14 @@ vi.mock("@/lib/time-off/queries", () => ({
   getOwnActiveRequests: vi.fn(),
   getHolidayDates: vi.fn(),
   getPendingRequests: vi.fn().mockResolvedValue([]),
+  getAssigneesRequests: vi.fn(),
   approverEmailsFor: vi.fn().mockResolvedValue(["approver@1o8.agency"]),
 }));
 
 import { GET, POST } from "./route";
 import { getAuthSession } from "@/lib/auth-db";
 import { db } from "@/lib/db";
-import { getAllRequests, getHolidayDates, getMyRequests, getOwnActiveRequests } from "@/lib/time-off/queries";
+import { getAllRequests, getAssigneesRequests, getHolidayDates, getMyRequests, getOwnActiveRequests } from "@/lib/time-off/queries";
 
 const asMock = (fn: unknown) => fn as ReturnType<typeof vi.fn>;
 const USER_ID = "22222222-2222-4222-8222-222222222222";
@@ -148,8 +149,19 @@ describe("GET /api/time-off — reshaped response (§4.1)", () => {
     expect(getAllRequests).not.toHaveBeenCalled();
   });
 
-  it("wraps getAllRequests for an admin", async () => {
+  it("an admin (approver) gets their own requests plus their assignees', not everyone's", async () => {
     asMock(getAuthSession).mockResolvedValue({ user: { id: USER_ID, role: "admin" } });
+    asMock(getMyRequests).mockResolvedValue([{ id: "mine", startDate: "2026-09-01" }]);
+    asMock(getAssigneesRequests).mockResolvedValue([{ id: "theirs", startDate: "2026-10-01" }, { id: "mine", startDate: "2026-09-01" }]);
+    mockMe([{ countryCode: "US", residenceTimezone: "UTC" }]);
+    const res = await GET();
+    const body = await res.json();
+    expect(body.requests.map((r: { id: string }) => r.id)).toEqual(["theirs", "mine"]);
+    expect(getAllRequests).not.toHaveBeenCalled();
+  });
+
+  it("wraps getAllRequests for a super admin", async () => {
+    asMock(getAuthSession).mockResolvedValue({ user: { id: USER_ID, role: "super_admin" } });
     asMock(getAllRequests).mockResolvedValue([{ id: "r1" }, { id: "r2" }]);
     mockMe([{ countryCode: "US", residenceTimezone: "UTC" }]);
     const res = await GET();
