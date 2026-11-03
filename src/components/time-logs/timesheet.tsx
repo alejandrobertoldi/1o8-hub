@@ -16,7 +16,7 @@ type Options = {
   isAdmin: boolean;
   clients: LoggableClient[];
   workTypes: string[];
-  settings: { dailyMinimumHours: number; hourStep: number };
+  settings: { dailyMinimumHours: number; hourStep: number; trackingStartDate: string };
   people: { id: string; name: string | null }[];
 };
 
@@ -58,7 +58,9 @@ export function Timesheet() {
   });
   const userId = personId || options?.me || "";
   const weekEnd = addDays(weekStart, 6);
-  const windowStart = addDays(today, -13); // last 14 days, for the under-minimum count
+  // Last 14 days for the under-minimum count, never before hour logging went live.
+  const trackingStart = options?.settings.trackingStartDate ?? "";
+  const windowStart = addDays(today, -13) < trackingStart ? trackingStart : addDays(today, -13);
 
   const logsKey = ["time-logs", userId, weekStart] as const;
   const { data: logs = [], isLoading } = useQuery<TimeLog[]>({

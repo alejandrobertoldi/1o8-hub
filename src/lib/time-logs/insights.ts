@@ -76,7 +76,9 @@ export async function buildInsights(from: string, to: string, today = new Date()
   const name = new Map(fullTeam.map((t) => [t.id, t.name ?? "—"]));
   const expectedTo = to < today ? to : today;
   const workdays = workdaysBetween(from, to);
-  const workdaysSoFar = expectedTo >= from ? workdaysBetween(from, expectedTo) : 0;
+  // Expected hours start when hour logging went live, not before.
+  const expectedFrom = from < TIME_SETTINGS.trackingStartDate ? TIME_SETTINGS.trackingStartDate : from;
+  const workdaysSoFar = expectedTo >= expectedFrom ? workdaysBetween(expectedFrom, expectedTo) : 0;
 
   // ── 1. Compliance ──
   const perUserDay = new Map<string, Map<string, number>>();
@@ -93,7 +95,7 @@ export async function buildInsights(from: string, to: string, today = new Date()
     const days = perUserDay.get(t.id) ?? new Map<string, number>();
     const logged = [...days.values()].reduce((a, b) => a + b, 0);
     const expected = workdaysSoFar * TIME_SETTINGS.dailyMinimumHours;
-    const weekdayEntries = [...days.entries()].filter(([d]) => isWeekday(d) && d <= expectedTo);
+    const weekdayEntries = [...days.entries()].filter(([d]) => isWeekday(d) && d >= expectedFrom && d <= expectedTo);
     return {
       userId: t.id,
       name: t.name ?? "—",
@@ -183,7 +185,7 @@ export async function buildInsights(from: string, to: string, today = new Date()
   const clientCodes = [...clientStats.keys()].filter((c) => c.toUpperCase() !== "1O8");
   const topClient = clientCodes.sort((a, b) => clientStats.get(b)!.hours - clientStats.get(a)!.hours)[0] ?? null;
   const people = filters.userId ? 1 : team.length;
-  const clipFrom = (w: string) => (w < from ? from : w);
+  const clipFrom = (w: string) => (w < expectedFrom ? expectedFrom : w);
   const weekEnd = (w: string) => {
     const d = new Date(`${w}T00:00:00Z`);
     d.setUTCDate(d.getUTCDate() + 6);

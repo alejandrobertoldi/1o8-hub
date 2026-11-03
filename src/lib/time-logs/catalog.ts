@@ -18,6 +18,8 @@ export const TIME_SETTINGS = {
   /** Hours must be a multiple of this (0.25 = 15 min). */
   hourStep: 0.25,
   maxHoursPerEntry: 24,
+  /** Hour logging went live this day: workdays before it never count as under the minimum or toward expected hours. */
+  trackingStartDate: "2026-11-02",
 } as const;
 
 /**
