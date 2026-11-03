@@ -293,11 +293,11 @@ export function PipelineBoard() {
           >
             <div className="space-y-1">
               <Label htmlFor="nb-name">Prospect</Label>
-              <Input id="nb-name" required value={form.prospectName} onChange={set("prospectName")} placeholder="Indeck Energy" />
+              <Input id="nb-name" required value={form.prospectName} onChange={set("prospectName")} placeholder="Brand name" />
             </div>
             <div className="space-y-1">
               <Label htmlFor="nb-web">Website</Label>
-              <Input id="nb-web" value={form.website} onChange={set("website")} placeholder="indeckenergy.com" />
+              <Input id="nb-web" value={form.website} onChange={set("website")} placeholder="brand.com" />
             </div>
             <div className="space-y-1">
               <Label htmlFor="nb-stage">Stage</Label>

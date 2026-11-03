@@ -32,8 +32,8 @@ describe("canUseNewBusiness", () => {
 
 describe("opportunitySchema", () => {
   it("normalises empty optional fields to null", () => {
-    const r = opportunitySchema.parse({ prospectName: " Indeck Energy ", website: "", contactEmail: "", ownerId: "", source: "", value: null });
-    expect(r).toMatchObject({ prospectName: "Indeck Energy", website: null, contactEmail: null, ownerId: null, source: null, value: null, stage: "contact", dealType: "retainer" });
+    const r = opportunitySchema.parse({ prospectName: " Griller's Gold ", website: "", contactEmail: "", ownerId: "", source: "", value: null });
+    expect(r).toMatchObject({ prospectName: "Griller's Gold", website: null, contactEmail: null, ownerId: null, source: null, value: null, stage: "contact", dealType: "retainer" });
   });
   it("rejects an unknown stage", () => {
     expect(opportunitySchema.safeParse({ prospectName: "X", stage: "signed" }).success).toBe(false);
