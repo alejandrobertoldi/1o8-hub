@@ -14,6 +14,7 @@ async function main() {
     const url = process.env.SUPABASE_DATABASE_URL;
     if (!url) throw new Error("SUPABASE_DATABASE_URL is missing from .env.local");
     process.env.DATABASE_URL = url;
+    process.env.DB_POOLER = "transaction";
   }
   const { db } = await import("@/lib/db");
   const { adminEventLog, timeLogTimers, timeLogs, users } = await import("@/lib/db/schema");

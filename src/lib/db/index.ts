@@ -12,6 +12,10 @@ import * as schema from "./schema";
  * Dashboard sections on "Loading…" and wedged the pool.
  */
 export function toSessionPoolerUrl(url: string): string {
+  // One-off scripts that run queries one at a time can use the transaction
+  // pooler, which isn't capped at the session pool's 15 clients (so they still
+  // get in when the app has the session pool full).
+  if (process.env.DB_POOLER === "transaction") return url;
   return /\.pooler\.supabase\.com:6543\//.test(url) ? url.replace(":6543/", ":5432/") : url;
 }
 
