@@ -255,10 +255,10 @@ export function Timesheet() {
           </div>
         </div>
         <div className="grid gap-3 md:grid-cols-[9rem_6rem_1fr_12rem]">
-          <Field label="Date">
+          <Field label="Date" required>
             <Input type="date" value={form.entryDate} onChange={(e) => set("entryDate", e.target.value)} />
           </Field>
-          <Field label="Hours">
+          <Field label="Hours" required>
             <Input
               type="number"
               min={0.25}
@@ -270,7 +270,7 @@ export function Timesheet() {
               className="tabular-nums"
             />
           </Field>
-          <Field label="Client">
+          <Field label="Client" required>
             <select value={form.clientIdCode} onChange={(e) => set("clientIdCode", e.target.value)} className={select}>
               <option value="">Pick a client…</option>
               {options?.clients
@@ -293,7 +293,7 @@ export function Timesheet() {
               )}
             </select>
           </Field>
-          <Field label="Department / type of work">
+          <Field label="Department / type of work" required>
             <select value={form.department} onChange={(e) => set("department", e.target.value)} className={select}>
               <option value="">Pick one…</option>
               {options?.workTypes.map((w) => (
@@ -305,6 +305,7 @@ export function Timesheet() {
         <div className="mt-3 grid items-start gap-3 md:grid-cols-[1fr_1fr_auto]">
           <Field
             label="Project / task"
+            required
             hint={
               form.clientIdCode && projectData
                 ? projectData.narrowed
@@ -436,10 +437,16 @@ export function Timesheet() {
   );
 }
 
-function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
+function Field({ label, hint, required, children }: { label: string; hint?: string; required?: boolean; children: React.ReactNode }) {
   return (
     <label className="grid gap-1">
-      <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{label}</span>
+      <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{label}
+        {required && (
+          <span aria-hidden className="ml-0.5 text-destructive">
+            *
+          </span>
+        )}
+      </span>
       {children}
       {hint && <span className="text-[11px] text-muted-foreground">{hint}</span>}
     </label>
