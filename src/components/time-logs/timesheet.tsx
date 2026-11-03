@@ -47,6 +47,7 @@ export function Timesheet() {
   const [weekStart, setWeekStart] = useState(() => mondayOf(today));
   const [personId, setPersonId] = useState<string>("");
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [showWholeWeek, setShowWholeWeek] = useState(false);
   const emptyForm: Form = { entryDate: today, hours: "", clientIdCode: "", department: "", projectNumber: "", note: "" };
   const [form, setForm] = useState<Form>(emptyForm);
   const set = (k: keyof Form, v: string) => setForm((f) => ({ ...f, [k]: v }));
@@ -145,6 +146,17 @@ export function Timesheet() {
     return t;
   }, [logs]);
   const weekTotal = Object.values(totals).reduce((a, b) => a + b, 0);
+  // The table follows the day picked above (today by default); the whole week
+  // only on request, or when the picked day isn't in the week shown.
+  const dayOnly = !showWholeWeek && days.includes(form.entryDate);
+  const shownLogs = useMemo(
+    () =>
+      logs
+        .filter((l) => !dayOnly || l.entryDate === form.entryDate)
+        // Newest first: latest day on top, and within a day the last one logged.
+        .sort((a, b) => b.entryDate.localeCompare(a.entryDate) || String(b.createdAt).localeCompare(String(a.createdAt))),
+    [logs, dayOnly, form.entryDate],
+  );
   const min = options?.settings.dailyMinimumHours ?? 8;
   const underMinimum = useMemo(() => {
     const t: Record<string, number> = {};
@@ -232,7 +244,10 @@ export function Timesheet() {
             <button
               key={d}
               type="button"
-              onClick={() => set("entryDate", d)}
+              onClick={() => {
+                set("entryDate", d);
+                setShowWholeWeek(false);
+              }}
               className={cn(
                 "rounded-xl border px-3 py-2 text-left transition-colors hover:border-brand",
                 form.entryDate === d && "border-brand",
@@ -370,6 +385,18 @@ export function Timesheet() {
 
       {/* Entries */}
       <section className="overflow-x-auto rounded-xl border bg-card">
+        <div className="flex items-center justify-between gap-3 border-b px-4 py-2.5 text-xs">
+          <span className="font-semibold">
+            {dayOnly
+              ? `${fmtDay(form.entryDate, { weekday: "long", month: "short", day: "numeric" })} · ${fmtHours(totals[form.entryDate] ?? 0)} h`
+              : `Whole week · ${fmtHours(weekTotal)} h`}
+          </span>
+          {days.includes(form.entryDate) && (
+            <button type="button" className="font-semibold text-muted-foreground underline hover:text-foreground" onClick={() => setShowWholeWeek((v) => !v)}>
+              {dayOnly ? "Show whole week" : "Show selected day only"}
+            </button>
+          )}
+        </div>
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b text-left text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
@@ -384,7 +411,7 @@ export function Timesheet() {
             </tr>
           </thead>
           <tbody>
-            {logs.map((l) => (
+            {shownLogs.map((l) => (
               <tr key={l.id} className={cn("border-b border-border/50 last:border-0", editingId === l.id && "bg-muted/40")}>
                 <td className="px-4 py-2 whitespace-nowrap">{fmtDay(l.entryDate, { weekday: "short", month: "short", day: "numeric" })}</td>
                 <td className="px-3 py-2 text-right font-semibold tabular-nums">{fmtHours(Number(l.hours))}</td>
@@ -433,13 +460,13 @@ export function Timesheet() {
                 </td>
               </tr>
             ))}
-            {!logs.length && (
+            {!shownLogs.length && (
               <tr>
                 <td colSpan={8} className="px-4 py-10 text-center text-sm text-muted-foreground">
                   {optionsFailed || logsFailed ? (
                     // A failed read must not look like an empty week, or people log their hours twice.
                     <span className="text-red-500">
-                      Couldn't load your hours right now. Hours you already saved are kept, so don't log them again.{" "}
+                      Couldn&apos;t load your hours right now. Hours you already saved are kept, so don&apos;t log them again.{" "}
                       <button type="button" className="font-semibold underline" onClick={() => (logsFailed ? refetchLogs() : window.location.reload())}>
                         Try again
                       </button>
@@ -447,7 +474,7 @@ export function Timesheet() {
                   ) : isLoading || !options ? (
                     "Loading…"
                   ) : (
-                    "Nothing logged this week yet."
+                    dayOnly ? "Nothing logged this day yet." : "Nothing logged this week yet."
                   )}
                 </td>
               </tr>
