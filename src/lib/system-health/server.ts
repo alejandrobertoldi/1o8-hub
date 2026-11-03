@@ -1,4 +1,4 @@
-import { and, desc, eq, gte, ilike, max, sql } from "drizzle-orm";
+import { and, desc, eq, gte, ilike, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { aacSyncRuns, adminEventLog, asanaSyncState, kpiSyncRuns, readinessSnapshots, timeOffSyncRuns } from "@/lib/db/schema";
 import { MODEL_RATES, computeCostUsd } from "@/lib/seo/pricing";
@@ -9,7 +9,18 @@ import { SUPABASE_PLAN, parseJsonl, summarizeVercelCharges, usageLevel } from ".
 const STALE_MS = 26 * 3_600_000;
 
 async function timed<T>(fn: () => Promise<T>, fallback: T, ms = 10_000): Promise<T> {
-  return Promise.race([fn().catch(() => fallback), new Promise<T>((r) => setTimeout(() => r(fallback), ms))]);
+  return (await attempt(fn, fallback, ms)).value;
+}
+
+/** Like timed, but keeps why it failed so the page can say so instead of "Never". */
+async function attempt<T>(fn: () => Promise<T>, fallback: T, ms = 10_000): Promise<{ value: T; error: string | null }> {
+  return Promise.race([
+    fn().then(
+      (value) => ({ value, error: null }),
+      (e) => ({ value: fallback, error: e instanceof Error ? e.message : String(e) }),
+    ),
+    new Promise<{ value: T; error: string }>((r) => setTimeout(() => r({ value: fallback, error: `No answer in -es` }), ms)),
+  ]);
 }
 
 // ── Database (Supabase) ──────────────────────────────────────────────
@@ -43,6 +54,25 @@ export async function databaseHealth() {
 // ── Vercel (Hobby) ───────────────────────────────────────────────────
 
 /**
+ * The team whose usage to read: VERCEL_TEAM_ID when set, else the team the
+ * token belongs to (a token scoped to one team, like "1o8-hub", lists only
+ * that one). Without a team, Vercel looks at the personal account and answers
+ * 404 "Plan not found".
+ */
+async function vercelTeamId(token: string): Promise<string | null> {
+  if (process.env.VERCEL_TEAM_ID) return process.env.VERCEL_TEAM_ID;
+  const res = await fetch("https://api.vercel.com/v2/teams?limit=20", {
+    headers: { Authorization: `Bearer ${token}` },
+    cache: "no-store",
+    signal: AbortSignal.timeout(10_000),
+  });
+  if (!res.ok) return null;
+  const { teams } = (await res.json()) as { teams?: { id: string; slug: string }[] };
+  if (!teams?.length) return null;
+  return (teams.find((t) => t.slug === (process.env.VERCEL_TEAM_SLUG ?? "1o8-hub")) ?? teams[0]).id;
+}
+
+/**
  * This month's usage from Vercel's billing API (GET /v1/billing/charges, FOCUS
  * JSONL). Needs VERCEL_API_TOKEN; VERCEL_TEAM_ID only if the project sits in a team.
  */
@@ -55,8 +85,9 @@ export async function vercelUsage() {
   if (!token) return { configured: false as const, plan: "Vercel Hobby", period };
 
   const params = new URLSearchParams({ from: from.toISOString(), to: to.toISOString() });
-  if (process.env.VERCEL_TEAM_ID) params.set("teamId", process.env.VERCEL_TEAM_ID);
   try {
+    const teamId = await vercelTeamId(token);
+    if (teamId) params.set("teamId", teamId);
     const res = await fetch(`https://api.vercel.com/v1/billing/charges?${params}`, {
       headers: { Authorization: `Bearer ${token}` },
       cache: "no-store",
@@ -76,19 +107,30 @@ export async function vercelUsage() {
 
 type Job = { key: string; label: string; schedule: string; lastSuccess: string | null; lastError: string | null; detail: string | null; status: "ok" | "stale" | "error" | "never" };
 
-function job(key: string, label: string, schedule: string, lastSuccess: Date | null, lastError: string | null, detail: string | null = null): Job {
+function job(key: string, label: string, schedule: string, lastSuccessIn: Date | string | null, lastError: string | null, detail: string | null = null): Job {
+  // Aggregates (max()) can come back as text depending on the driver.
+  const lastSuccess = lastSuccessIn == null ? null : new Date(lastSuccessIn);
   const status = lastError ? "error" : !lastSuccess ? "never" : Date.now() - lastSuccess.getTime() > STALE_MS ? "stale" : "ok";
   return { key, label, schedule, lastSuccess: lastSuccess?.toISOString() ?? null, lastError, detail, status };
 }
 
 export async function dailyJobs() {
-  const [asana, readiness, aacRun, timeOffRun, kpiRun] = await Promise.all([
-    timed(() => db.select().from(asanaSyncState).where(eq(asanaSyncState.id, 1)).limit(1).then((r) => r[0] ?? null), null),
-    timed(() => db.select({ at: max(readinessSnapshots.capturedAt) }).from(readinessSnapshots).then((r) => r[0]?.at ?? null), null),
-    timed(() => db.select().from(aacSyncRuns).where(eq(aacSyncRuns.dryRun, false)).orderBy(desc(aacSyncRuns.startedAt)).limit(1).then((r) => r[0] ?? null), null),
-    timed(() => db.select().from(timeOffSyncRuns).orderBy(desc(timeOffSyncRuns.startedAt)).limit(1).then((r) => r[0] ?? null), null),
-    timed(() => db.select().from(kpiSyncRuns).orderBy(desc(kpiSyncRuns.startedAt)).limit(1).then((r) => r[0] ?? null), null),
+  const [asanaQ, readinessQ, aacQ, timeOffQ, kpiQ] = await Promise.all([
+    attempt(() => db.select().from(asanaSyncState).where(eq(asanaSyncState.id, 1)).limit(1).then((r) => r[0] ?? null), null),
+    attempt(
+      () =>
+        db
+          .select({ at: sql<string | null>`max(${readinessSnapshots.capturedAt})::text` })
+          .from(readinessSnapshots)
+          .then((r) => r[0]?.at ?? null),
+      null,
+    ),
+    attempt(() => db.select().from(aacSyncRuns).where(eq(aacSyncRuns.dryRun, false)).orderBy(desc(aacSyncRuns.startedAt)).limit(1).then((r) => r[0] ?? null), null),
+    attempt(() => db.select().from(timeOffSyncRuns).orderBy(desc(timeOffSyncRuns.startedAt)).limit(1).then((r) => r[0] ?? null), null),
+    attempt(() => db.select().from(kpiSyncRuns).orderBy(desc(kpiSyncRuns.startedAt)).limit(1).then((r) => r[0] ?? null), null),
   ]);
+  const [asana, readiness, aacRun, timeOffRun, kpiRun] = [asanaQ.value, readinessQ.value, aacQ.value, timeOffQ.value, kpiQ.value];
+  const checkFailed = (q: { error: string | null }) => (q.error ? `Could not check: ${q.error}` : null);
 
   const runOk = (r: { finishedAt: Date | null; error: string | null } | null) => (r && r.finishedAt && !r.error ? r.finishedAt : null);
   const runError = (r: { finishedAt: Date | null; error: string | null } | null) =>
@@ -108,14 +150,14 @@ export async function dailyJobs() {
     .sort((a, b) => a.source.localeCompare(b.source));
 
   const jobs: Job[] = [
-    job("kpi", "KPI data (GA4, Meta, Klaviyo, Shopify)", "Daily 10:00 UTC", kpiRun?.finishedAt ?? null, kpiRun && !kpiRun.finishedAt ? "Started but never finished (timed out?)" : null,
+    job("kpi", "KPI data (GA4, Meta, Klaviyo, Shopify)", "Daily 10:00 UTC", kpiRun?.finishedAt ?? null, checkFailed(kpiQ) ?? (kpiRun && !kpiRun.finishedAt ? "Started but never finished (timed out?)" : null),
       kpiSources.length ? `${kpiSources.reduce((a, s) => a + s.clientsOk, 0)} client sources pulled, ${kpiSources.reduce((a, s) => a + s.failed.length, 0)} failed` : null),
-    job("aac", "Clients from the AAC sheet", "Daily 11:00 UTC", runOk(aacRun), runError(aacRun)),
-    job("timeOff", "Time off (Google Calendar)", "Daily 11:30 UTC", runOk(timeOffRun), runError(timeOffRun)),
+    job("aac", "Clients from the AAC sheet", "Daily 11:00 UTC", runOk(aacRun), checkFailed(aacQ) ?? runError(aacRun)),
+    job("timeOff", "Time off (Google Calendar)", "Daily 11:30 UTC", runOk(timeOffRun), checkFailed(timeOffQ) ?? runError(timeOffRun)),
     job("asana", "Asana tasks", "Daily 12:00 UTC (with Readiness)", asana?.lastSuccessAt ?? null,
-      asana?.lastError && (!asana.lastSuccessAt || (asana.lastAttemptAt && asana.lastAttemptAt > asana.lastSuccessAt)) ? asana.lastError : null,
+      checkFailed(asanaQ) ?? (asana?.lastError && (!asana.lastSuccessAt || (asana.lastAttemptAt && asana.lastAttemptAt > asana.lastSuccessAt)) ? asana.lastError : null),
       asana?.openCount != null ? `${asana.openCount} open tasks` : null),
-    job("readiness", "Readiness snapshot", "Daily 12:00 UTC", readiness, null),
+    job("readiness", "Readiness snapshot", "Daily 12:00 UTC", readiness, checkFailed(readinessQ)),
   ];
   return { jobs, kpiSources };
 }
