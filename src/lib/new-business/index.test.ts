@@ -15,11 +15,12 @@ describe("pitch project numbers", () => {
 });
 
 describe("canUseNewBusiness", () => {
-  it("lets owners and super admins in without the section", () => {
+  it("lets owners in without the section", () => {
     expect(canUseNewBusiness("owner", [])).toBe(true);
-    expect(canUseNewBusiness("super_admin", [])).toBe(true);
   });
-  it("needs the section for admins and editors", () => {
+  it("needs the section for super admins, admins and editors", () => {
+    expect(canUseNewBusiness("super_admin", [])).toBe(false);
+    expect(canUseNewBusiness("super_admin", ["new-business"])).toBe(true);
     expect(canUseNewBusiness("admin", [])).toBe(false);
     expect(canUseNewBusiness("editor", ["calendar"])).toBe(false);
     expect(canUseNewBusiness("editor", ["new-business"])).toBe(true);

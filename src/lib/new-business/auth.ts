@@ -7,4 +7,4 @@ export async function newBusinessSession() {
   return session && canUseNewBusiness(session.user.role, session.user.allowedSections) ? session : null;
 }
 
-export const NEW_BUSINESS_FORBIDDEN = { error: "New Business is limited to owners, super admins and people with the section" };
+export const NEW_BUSINESS_FORBIDDEN = { error: "New Business is limited to owners and people with the section" };

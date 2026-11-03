@@ -34,6 +34,7 @@ import Link from "next/link";
 import {
   DollarSign,
   Activity,
+  Target,
   ArrowRight,
   BarChart3,
   Download,
@@ -82,7 +83,6 @@ import {
   ROLE_LABELS,
   ROLE_SORT_ORDER,
   canAssignRole,
-  hasAdminPowers,
   type UserRole,
 } from "@/lib/roles";
 
@@ -110,6 +110,7 @@ const SECTION_ICONS: Record<string, LucideIcon> = {
   team: Contact,
   calendar: CalendarDays,
   activity: Activity,
+  "new-business": Target,
   import: Download,
   publish: Upload,
   export: FileSpreadsheet,
@@ -338,7 +339,8 @@ function UsersPageInner() {
       .toUpperCase()
       .slice(0, 2);
     const isSelf = user.id === session?.user?.id;
-    const isUserAdmin = hasAdminPowers(user.role);
+    // Owners see every section; everyone else (super admins and admins too) follows these checkboxes.
+    const sectionsLocked = user.role === "owner";
 
     return (
       <TableRow key={user.id} className={selectedIds.has(user.id) ? "bg-brand/5" : ""}>
@@ -469,11 +471,11 @@ function UsersPageInner() {
             <TableCell className="text-center">
               {(() => {
                 const allIds = CONFIGURABLE_SECTIONS.map((s) => s.id);
-                const allChecked = isUserAdmin || allIds.every((id) => (user.allowedSections ?? []).includes(id));
+                const allChecked = sectionsLocked || allIds.every((id) => (user.allowedSections ?? []).includes(id));
                 return (
                   <Checkbox
                     checked={allChecked}
-                    disabled={isUserAdmin || sectionMutation.isPending}
+                    disabled={sectionsLocked || sectionMutation.isPending}
                     onCheckedChange={() => {
                       // Only the visible (1o8) sections change; hidden grants are kept as they are.
                       const current = user.allowedSections ?? [];
@@ -489,8 +491,8 @@ function UsersPageInner() {
             {CONFIGURABLE_SECTIONS.map((section) => (
               <TableCell key={section.id} className="text-center">
                 <Checkbox
-                  checked={isUserAdmin || (user.allowedSections ?? []).includes(section.id)}
-                  disabled={isUserAdmin || sectionMutation.isPending}
+                  checked={sectionsLocked || (user.allowedSections ?? []).includes(section.id)}
+                  disabled={sectionsLocked || sectionMutation.isPending}
                   onCheckedChange={() => toggleSection(user, section.id)}
                 />
               </TableCell>

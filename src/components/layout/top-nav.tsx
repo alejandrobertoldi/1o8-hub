@@ -51,7 +51,7 @@ import { Button } from "@/components/ui/button";
 import { UserMenu } from "./user-menu";
 import { ThemeToggle } from "./theme-toggle";
 import { OpalItemInner, OpalMenu, OpalNavFrame } from "./opal-nav-frame";
-import { canAccess, CROSS_DEPARTMENT_LINKS } from "@/lib/permissions";
+import { canAccessAs, CROSS_DEPARTMENT_LINKS } from "@/lib/permissions";
 import {
   Download, Users, UserCog, Activity, BarChart3, Key, ListChecks, FolderTree,
   ScrollText, DollarSign, Eye, GitCompare, GitBranch, LayoutTemplate,
@@ -127,7 +127,7 @@ export function TopNav() {
   const peopleAccess = hasPeopleAccess(role);
   const isSuperAdmin = session?.user?.isSuperAdmin ?? false;
   const allowedSections = session?.user?.allowedSections ?? [];
-  const checkAccess = (section: string) => canAccess(section, allowedSections, isAdmin);
+  const checkAccess = (section: string) => canAccessAs(role, allowedSections, section);
 
   /* ---- feedback dialog state ---- */
   const [reportOpen, setReportOpen] = useState(false);

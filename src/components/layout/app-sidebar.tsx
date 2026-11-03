@@ -31,7 +31,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Download, Handshake, PenLine, Users, UserCog, Activity, BarChart3, Key, KeyRound, ListChecks, ScrollText, DollarSign, Eye, ChevronRight, GitCompare, GitBranch, LayoutTemplate, CalendarDays, Palette, Shield, RefreshCw, Headset, Sparkles, Search, ArrowRightLeft, TrendingUp, Package, PackageOpen, Layers, ShoppingBag, ClipboardList, Calculator, Boxes, BookOpen, ImageIcon, Store, Target, Clock, Tags, Percent, type LucideIcon } from "lucide-react";
-import { canAccess, CROSS_DEPARTMENT_LINKS } from "@/lib/permissions";
+import { canAccessAs, CROSS_DEPARTMENT_LINKS } from "@/lib/permissions";
 
 export function AppSidebar() {
   const { data: session } = useSession();
@@ -40,7 +40,7 @@ export function AppSidebar() {
 
   const allowedSections = session?.user?.allowedSections ?? [];
   const isAdmin = hasAdminPowers(role);
-  const checkAccess = (section: string) => canAccess(section, allowedSections, isAdmin);
+  const checkAccess = (section: string) => canAccessAs(role, allowedSections, section);
 
   type NavItem = {
     title: string;

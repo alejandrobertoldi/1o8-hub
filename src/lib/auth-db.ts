@@ -3,7 +3,7 @@ import { db } from "@/lib/db";
 import { users, aac } from "@/lib/db/schema";
 import { eq, inArray } from "drizzle-orm";
 import { auth } from "@/lib/auth";
-import { canAccess } from "@/lib/permissions";
+import { canAccessAs } from "@/lib/permissions";
 import { resolveClientAllowedSections } from "@/lib/auth-helpers";
 import { hasAdminPowers, hasSuperPowers } from "@/lib/roles";
 import {
@@ -159,9 +159,5 @@ export function canAccessSection(
   session: { user: { role: string; allowedSections?: string[] } },
   section: string
 ): boolean {
-  return canAccess(
-    section,
-    session.user.allowedSections ?? [],
-    hasAdminPowers(session.user.role),
-  );
+  return canAccessAs(session.user.role, session.user.allowedSections, section);
 }

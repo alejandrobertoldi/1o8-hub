@@ -261,3 +261,21 @@ export const CROSS_DEPARTMENT_LINKS: Record<string, { dept: DepartmentId; label:
     { dept: "finances", label: "Finances" },
   ],
 };
+
+/**
+ * Whether `role` sees `section` without it being granted. Owners see
+ * everything. Super admins and admins skip the grant for the hidden /
+ * admin-tool sections, but the 1o8 hub sections (HUB_SECTION_IDS: the
+ * Admin → Users columns) follow their checkboxes like anyone else's
+ * (2026-11-03: owners decide, per admin, who sees New Business, Activity…).
+ */
+export function sectionBypass(role: string | null | undefined, section: string): boolean {
+  if (role === "owner") return true;
+  if (role !== "super_admin" && role !== "admin") return false;
+  return !(HUB_SECTION_IDS as readonly string[]).includes(section);
+}
+
+/** canAccess for a staff user: the role's bypass (sectionBypass), else the grants. */
+export function canAccessAs(role: string | null | undefined, allowedSections: readonly string[] | null | undefined, section: string): boolean {
+  return sectionBypass(role, section) || canAccess(section, [...(allowedSections ?? [])], false);
+}

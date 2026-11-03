@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAuthSession } from "@/lib/auth-db";
+import { canAccessSection, getAuthSession } from "@/lib/auth-db";
 import { db } from "@/lib/db";
 import { activityLog } from "@/lib/db/schema";
 import { desc, eq, and, gte, lte, or, ilike, sql, not } from "drizzle-orm";
@@ -20,6 +20,9 @@ export async function GET(req: NextRequest) {
   const session = await getAuthSession();
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  if (!canAccessSection(session, "activity")) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   const params = req.nextUrl.searchParams;

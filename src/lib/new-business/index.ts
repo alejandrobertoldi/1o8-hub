@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { hasSuperPowers, isEditorOrAbove } from "@/lib/roles";
+import { isEditorOrAbove } from "@/lib/roles";
 
 /**
  * New Business pipeline (beta). Pure: shared by the API, the board and Hours.
@@ -57,12 +57,12 @@ export const pitchProjectNumber = (seq: number) => `${PITCH_NUMBER_PREFIX}${Stri
 export const isPitchProjectNumber = (projectNumber: string) => /^1O87\d{4}$/.test(projectNumber.toUpperCase());
 
 /**
- * Who sees and edits the pipeline: owners / super admins always; other staff
- * (editor or above) only with the "new-business" section granted in Admin → Users.
+ * Who sees and edits the pipeline: owners always; super admins, admins and
+ * editors only with the "new-business" section checked in Admin → Users.
  * Logging hours to a pitch needs none of this (any staff member can).
  */
 export function canUseNewBusiness(role: string | null | undefined, allowedSections: readonly string[] | null | undefined): boolean {
-  if (hasSuperPowers(role)) return true;
+  if (role === "owner") return true;
   return isEditorOrAbove(role) && (allowedSections ?? []).includes(NEW_BUSINESS_SECTION);
 }
 

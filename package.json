@@ -46,7 +46,8 @@
     "kpi:setup": "tsx --env-file=.env.local scripts/local/kpi-setup.ts",
     "audit:roles": "tsx --env-file=.env.local scripts/local/audit-roles.ts",
     "access:cleanup": "tsx --env-file=.env.local scripts/local/grant-hub-sections.ts",
-    "hours:clear-tests": "tsx --env-file=.env.local scripts/local/clear-test-hours.ts"
+    "hours:clear-tests": "tsx --env-file=.env.local scripts/local/clear-test-hours.ts",
+    "access:admin-sections": "tsx --env-file=.env.local scripts/local/grant-admin-sections.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.78.0",

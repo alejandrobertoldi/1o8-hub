@@ -1,10 +1,12 @@
-"use client";
-
 import { Suspense } from "react";
+import { redirect } from "next/navigation";
+import { canAccessSection, getAuthSession } from "@/lib/auth-db";
 import { ActivityFeed } from "@/components/activity/activity-feed";
 import { PageMetaSlot } from "@/components/layout/page-header-slot";
 
-export default function ActivityPage() {
+export default async function ActivityPage() {
+  const session = await getAuthSession();
+  if (!session || !canAccessSection(session, "activity")) redirect("/");
   return (
     <div>
       <PageMetaSlot>
