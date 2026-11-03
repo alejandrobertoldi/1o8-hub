@@ -51,9 +51,13 @@ export function Timesheet() {
   const [form, setForm] = useState<Form>(emptyForm);
   const set = (k: keyof Form, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
-  const { data: options } = useQuery<Options>({
+  const { data: options, isError: optionsFailed } = useQuery<Options>({
     queryKey: ["time-log-options"],
-    queryFn: async () => (await fetch("/api/time-logs/options")).json(),
+    queryFn: async () => {
+      const res = await fetch("/api/time-logs/options");
+      if (!res.ok) throw new Error("Could not load the timesheet");
+      return res.json();
+    },
     staleTime: 5 * 60_000,
   });
   const userId = personId || options?.me || "";
@@ -63,7 +67,7 @@ export function Timesheet() {
   const windowStart = addDays(today, -13) < trackingStart ? trackingStart : addDays(today, -13);
 
   const logsKey = ["time-logs", userId, weekStart] as const;
-  const { data: logs = [], isLoading } = useQuery<TimeLog[]>({
+  const { data: logs = [], isLoading, isError: logsFailed, refetch: refetchLogs } = useQuery<TimeLog[]>({
     queryKey: logsKey,
     enabled: !!userId,
     queryFn: async () => {
@@ -75,7 +79,11 @@ export function Timesheet() {
   const { data: recent = [] } = useQuery<TimeLog[]>({
     queryKey: ["time-logs-recent", userId, today],
     enabled: !!userId,
-    queryFn: async () => (await fetch(`/api/time-logs?from=${windowStart}&to=${today}&userId=${userId}`)).json(),
+    queryFn: async () => {
+      const res = await fetch(`/api/time-logs?from=${windowStart}&to=${today}&userId=${userId}`);
+      if (!res.ok) throw new Error("Could not load recent hours");
+      return res.json();
+    },
   });
 
   const { data: projectData, isFetching: loadingProjects } = useQuery<{ projects: LoggableProject[]; narrowed: boolean }>({
@@ -428,7 +436,19 @@ export function Timesheet() {
             {!logs.length && (
               <tr>
                 <td colSpan={8} className="px-4 py-10 text-center text-sm text-muted-foreground">
-                  {isLoading ? "Loading…" : "Nothing logged this week yet."}
+                  {optionsFailed || logsFailed ? (
+                    // A failed read must not look like an empty week, or people log their hours twice.
+                    <span className="text-red-500">
+                      Couldn't load your hours right now. Hours you already saved are kept, so don't log them again.{" "}
+                      <button type="button" className="font-semibold underline" onClick={() => (logsFailed ? refetchLogs() : window.location.reload())}>
+                        Try again
+                      </button>
+                    </span>
+                  ) : isLoading || !options ? (
+                    "Loading…"
+                  ) : (
+                    "Nothing logged this week yet."
+                  )}
                 </td>
               </tr>
             )}

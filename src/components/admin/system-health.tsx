@@ -18,6 +18,7 @@ type Health = {
     plan: string;
     period: { from: string; to: string };
     error?: string;
+    unavailable?: boolean;
     metrics?: VercelMetric[];
     other?: { name: string; quantity: number; unit: string | null }[];
     billedUsd?: number;
@@ -135,6 +136,17 @@ export function SystemHealth() {
                     <li>Add it to the project as the environment variable <code className="font-mono text-xs">VERCEL_API_TOKEN</code> (Production).</li>
                     <li>Redeploy. If the project lives in a team, also add <code className="font-mono text-xs">VERCEL_TEAM_ID</code>.</li>
                   </ol>
+                </div>
+              ) : data.vercel.unavailable ? (
+                <div className="space-y-2 text-sm text-muted-foreground">
+                  <p>
+                    Vercel only gives usage through its API on paid plans: on Hobby it answers &ldquo;Plan not found&rdquo;. The token is fine, and
+                    the numbers show up here on their own if the team moves to Pro.
+                  </p>
+                  <p>
+                    Until then, check them in the Vercel dashboard (link above). Hobby monthly limits: 100 GB data transfer, 10 GB origin transfer,
+                    1M function invocations, 4 h active CPU, 360 GB-h memory. When one runs out, Vercel pauses the site until the next cycle.
+                  </p>
                 </div>
               ) : data.vercel.error ? (
                 <p className="text-sm text-red-500">{data.vercel.error}</p>

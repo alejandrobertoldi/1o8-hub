@@ -95,6 +95,10 @@ export async function vercelUsage() {
     });
     if (!res.ok) {
       const body = await res.text().catch(() => "");
+      // Hobby has no billing plan behind the team, so the billing API answers
+      // 404 "Plan not found" (seen 2026-11-03 with a valid team token). Not an
+      // error to fix: usage is only in the dashboard until the team moves to Pro.
+      if (res.status === 404 && /plan not found/i.test(body)) return { configured: true as const, plan: "Vercel Hobby", period, unavailable: true as const };
       return { configured: true as const, plan: "Vercel Hobby", period, error: `Vercel answered ${res.status}${body ? `: ${body.slice(0, 200)}` : ""}` };
     }
     return { configured: true as const, plan: "Vercel Hobby", period, ...summarizeVercelCharges(parseJsonl(await res.text())) };

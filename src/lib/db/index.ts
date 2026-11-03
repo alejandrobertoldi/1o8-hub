@@ -44,10 +44,9 @@ function createPgClient() {
     // at the 60s platform limit. That is the "endless loading" symptom.
     //
     // 3 keeps one wedged connection from starving the instance and lets
-    // independent queries in a handler actually overlap. We connect through
-    // Supavisor on port 6543 (transaction mode, verified against production), so
-    // client connections are multiplexed and cheap — the session-mode concern in
-    // the original comment does not apply on this port.
+    // independent queries in a handler actually overlap. Since 2026-10-23 we go
+    // through the SESSION pooler (see toSessionPoolerUrl), where each of these
+    // holds a pool slot while open: keep it small, and see idle_timeout.
     max: process.env.VERCEL ? 3 : 10,
     // Development holds idle connections far longer than production does.
     //
@@ -60,11 +59,15 @@ function createPgClient() {
     // not: the pool just keeps getting thrown away. max_lifetime still recycles
     // every 5 min, so connections cannot go stale against the pooler.
     //
-    // Production stays at 20s deliberately. Vercel instances are short-lived
-    // and numerous, and holding idle Supavisor slots across all of them is the
-    // worse trade there. Guarded on NODE_ENV rather than VERCEL so any
+    // Production: 5s. We go through the SESSION pooler (toSessionPoolerUrl),
+    // where every open client holds one of the pool's slots (15 on Supabase
+    // Free) until it closes. With 20s, a handful of warm Vercel instances x 3
+    // idle connections filled the pool (2026-11-03: "max clients reached in
+    // session mode", Hours looked empty for everyone until it drained). 5s
+    // gives slots back between bursts; a cold connection costs ~1–2s, which a
+    // burst pays once. Guarded on NODE_ENV rather than VERCEL so any
     // production build keeps the conservative value.
-    idle_timeout: process.env.NODE_ENV === "production" ? 20 : 300,
+    idle_timeout: process.env.NODE_ENV === "production" ? 5 : 300,
     // 8s, not 30. A hung TLS handshake to the pooler used to eat the whole
     // request budget before a query even started.
     connect_timeout: 8,
