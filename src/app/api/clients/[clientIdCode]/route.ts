@@ -313,7 +313,7 @@ export async function PUT(
     resourceId: clientIdCode,
     resourceLabel: `${clientIdCode} → ${field}`,
     message: bqStatus === "success"
-      ? `Updated ${field}: "${oldValue}" → "${value}" (DB + BQ)`
+      ? `Updated ${field}: "${oldValue}" → "${value}" (saved)`
       : `Updated ${field}: "${oldValue}" → "${value}" (DB ok, BQ failed: ${bqError})`,
     detail: { field, oldValue, newValue: value, bqStatus, bqError },
     durationMs,
@@ -654,7 +654,7 @@ export async function PATCH(
     resourceLabel: clientIdCode,
     message: bqError
       ? `Updated client: name="${clientName ?? client.clientName}", status="${clientStatus ?? client.clientStatus}" (DB ok, BQ failed: ${bqError})`
-      : `Updated client: name="${clientName ?? client.clientName}", status="${clientStatus ?? client.clientStatus}" (DB + BQ)`,
+      : `Updated client: name="${clientName ?? client.clientName}", status="${clientStatus ?? client.clientStatus}" (saved)`,
     detail: { clientName, clientStatus, clientType, previousName: client.clientName, previousStatus: client.clientStatus, bqError },
   }).catch(() => {});
 

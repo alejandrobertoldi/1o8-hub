@@ -406,6 +406,10 @@ export async function updateAacFieldInBigQuery(
   value: string
 ): Promise<void> {
   if (!isValidAacColumnName(field)) throw new InvalidAacColumnError(field);
+  // 1o8 keeps clients in Postgres + the AAC Google Sheet, not BigQuery (the
+  // default GCP project is MarketFoundry's). The mirror is off unless
+  // AAC_BIGQUERY_MIRROR=true, so client edits stop logging "BQ failed".
+  if (process.env.AAC_BIGQUERY_MIRROR !== "true") return;
 
   const bigquery = getBigQueryClient();
 

@@ -88,6 +88,13 @@ import {
 
 const ALL_ROLES = ASSIGNABLE_ROLES;
 
+/**
+ * The Client column (client codes for portal users, internal team for staff) and
+ * the bulk "Set Team" button stay hidden until the client dashboard / portal is
+ * built (2026-11-03). Flip to true to bring them back; stored values are kept.
+ */
+const SHOW_CLIENT_COLUMN = false;
+
 const ROLE_COLORS: Record<string, string> = {
   owner: "bg-rose-500/15 text-rose-500 border-rose-500/25",
   super_admin: "bg-brand/15 text-brand border-brand/25",
@@ -388,6 +395,7 @@ function UsersPageInner() {
             </TableCell>
           );
         })}
+        {SHOW_CLIENT_COLUMN && (
         <TableCell>
           {(user.role === "client" || user.role === "prospect") ? (() => {
             const codes = parseClientCodes(user.clientIdCode);
@@ -459,6 +467,7 @@ function UsersPageInner() {
             </select>
           )}
         </TableCell>
+        )}
         {user.role === "client" || user.role === "prospect" ? (
           <TableCell colSpan={1 + CONFIGURABLE_SECTIONS.length} className="text-center text-xs text-muted-foreground py-3">
             <Link href="/portal" className="text-portal-accent hover:underline inline-flex items-center gap-1">
@@ -876,7 +885,8 @@ function UsersPageInner() {
             )}
           </div>
 
-          {/* Bulk Team */}
+          {/* Bulk Team (hidden with the Client column) */}
+          {SHOW_CLIENT_COLUMN && (
           <div className="relative">
             <Button size="sm" variant="outline" className="text-xs h-7 gap-1" onClick={() => { setBulkTeamOpen(!bulkTeamOpen); setBulkRoleOpen(false); setBulkSectionsOpen(false); }}>
               Set Team <ChevronDown className="size-3" />
@@ -893,6 +903,7 @@ function UsersPageInner() {
               </>
             )}
           </div>
+          )}
 
           {/* Bulk Sections */}
           <div className="relative">
@@ -959,9 +970,11 @@ function UsersPageInner() {
                     </Badge>
                   </th>
                 ))}
+                {SHOW_CLIENT_COLUMN && (
                 <th className="text-foreground/80 h-10 px-2 text-left align-middle font-medium whitespace-nowrap w-44">
                   <div className="flex items-center gap-1.5"><Building2 className="size-3.5 text-muted-foreground" /><span>Client</span></div>
                 </th>
+                )}
                 <th className="text-foreground/80 h-10 px-2 text-center align-middle font-medium whitespace-nowrap w-16">All</th>
                 {CONFIGURABLE_SECTIONS.map((s) => {
                   const Icon = SECTION_ICONS[s.id];
@@ -1003,7 +1016,7 @@ function UsersPageInner() {
                 // Track group headers
                 let lastRole = "";
                 const rows: React.ReactNode[] = [];
-                const totalCols = 7 + ALL_ROLES.length + 1 + 1 + CONFIGURABLE_SECTIONS.length + 2 + 1;
+                const totalCols = 7 + ALL_ROLES.length + (SHOW_CLIENT_COLUMN ? 1 : 0) + 1 + CONFIGURABLE_SECTIONS.length + 2 + 1;
 
                 for (const user of sorted) {
                   // Role group header

@@ -3,7 +3,7 @@
  * by role and follow their Admin → Users checkboxes instead (sectionBypass in
  * src/lib/permissions.ts). Run this BEFORE deploying that change: it checks
  * the sections they see today, so nothing changes until an owner unticks one.
- *   - admins:       calendar, team, clients, seo, activity
+ *   - admins:       calendar, team, clients, seo
  *   - super admins: the same + new-business (they had it by role)
  * Dry run by default; --apply writes. --prod targets production.
  *
@@ -11,7 +11,7 @@
  */
 import { eq, inArray } from "drizzle-orm";
 
-const ADMIN_SECTIONS = ["calendar", "team", "clients", "seo", "activity"];
+const ADMIN_SECTIONS = ["calendar", "team", "clients", "seo"];
 const SUPER_ADMIN_SECTIONS = [...ADMIN_SECTIONS, "new-business"];
 
 async function main() {

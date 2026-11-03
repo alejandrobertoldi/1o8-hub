@@ -30,7 +30,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Download, Handshake, PenLine, Users, UserCog, Activity, BarChart3, Key, KeyRound, ListChecks, ScrollText, DollarSign, Eye, ChevronRight, GitCompare, GitBranch, LayoutTemplate, CalendarDays, Palette, Shield, RefreshCw, Headset, Sparkles, Search, ArrowRightLeft, TrendingUp, Package, PackageOpen, Layers, ShoppingBag, ClipboardList, Calculator, Boxes, BookOpen, ImageIcon, Store, Target, Clock, Tags, Percent, type LucideIcon } from "lucide-react";
+import { Download, Handshake, PenLine, Users, UserCog, HeartPulse, BarChart3, Key, KeyRound, ListChecks, ScrollText, DollarSign, Eye, ChevronRight, GitCompare, GitBranch, LayoutTemplate, CalendarDays, Palette, Shield, RefreshCw, Headset, Sparkles, Search, ArrowRightLeft, TrendingUp, Package, PackageOpen, Layers, ShoppingBag, ClipboardList, Calculator, Boxes, BookOpen, ImageIcon, Store, Target, Clock, Tags, Percent, type LucideIcon } from "lucide-react";
 import { canAccessAs, CROSS_DEPARTMENT_LINKS } from "@/lib/permissions";
 
 export function AppSidebar() {
@@ -135,7 +135,6 @@ export function AppSidebar() {
       label: "Admin",
       icon: Shield,
       items: [
-        { title: "Activity", href: "/activity", icon: Activity, visible: checkAccess("activity") },
         { title: "Import", href: "/import", icon: Download, visible: checkAccess("import") },
         { title: "Sync & Export", href: "/publish", icon: RefreshCw, visible: checkAccess("publish") },
         { title: "Users", href: "/admin/users", icon: UserCog, visible: hasPeopleAccess(role) },
@@ -143,7 +142,7 @@ export function AppSidebar() {
         { title: "SP-API Credentials", href: "/admin/sp-api", icon: Key, visible: isAdmin },
         { title: "Shared Logins", href: "/admin/logins", icon: KeyRound, visible: true },
         { title: "Helium 10", href: "/admin/helium10", icon: Key, visible: isAdmin && helium10Enabled() },
-        { title: "Observability", href: "/admin/observability", icon: Activity, visible: isAdmin },
+        { title: "System Health", href: "/admin/system-health", icon: HeartPulse, visible: isAdmin },
         { title: "Event Logs", href: "/admin/logs", icon: ScrollText, visible: isAdmin },
         { title: "Support", href: "/admin/support", icon: Headset, visible: true },
         { title: "App Repo", href: "/admin/repo", icon: GitBranch, visible: isAdmin },

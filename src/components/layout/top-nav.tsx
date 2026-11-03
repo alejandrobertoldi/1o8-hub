@@ -53,7 +53,7 @@ import { ThemeToggle } from "./theme-toggle";
 import { OpalItemInner, OpalMenu, OpalNavFrame } from "./opal-nav-frame";
 import { canAccessAs, CROSS_DEPARTMENT_LINKS } from "@/lib/permissions";
 import {
-  Download, Users, UserCog, Activity, BarChart3, Key, ListChecks, FolderTree,
+  Download, Users, UserCog, HeartPulse, BarChart3, Key, ListChecks, FolderTree,
   ScrollText, DollarSign, Eye, GitCompare, GitBranch, LayoutTemplate,
   CalendarDays, Palette, Shield, RefreshCw, Headset, Sparkles,
   Search, ArrowRightLeft, TrendingUp, Package, PackageOpen, Layers,
@@ -267,14 +267,13 @@ export function TopNav() {
     {
       label: "Admin", icon: Shield,
       items: [
-        { title: "Activity", href: "/activity", icon: Activity, visible: checkAccess("activity") },
         { title: "Import", href: "/import", icon: Download, visible: checkAccess("import") },
         { title: "Sync & Export", href: "/publish", icon: RefreshCw, visible: checkAccess("publish") },
         { title: "Users", href: "/admin/users", icon: UserCog, visible: peopleAccess },
         { title: "Service Providers", href: "/admin/service-providers", icon: Handshake, visible: isAdmin },
         { title: "Shared Logins", href: "/admin/logins", icon: KeyRound, visible: true },
         { title: "Helium 10", href: "/admin/helium10", icon: Key, visible: isAdmin && helium10Enabled() },
-        { title: "Observability", href: "/admin/observability", icon: Activity, visible: isAdmin },
+        { title: "System Health", href: "/admin/system-health", icon: HeartPulse, visible: isAdmin },
         { title: "Event Logs", href: "/admin/logs", icon: ScrollText, visible: isAdmin },
         { title: "Holidays", href: "/admin/holidays", icon: Gift, visible: isAdmin },
         { title: "Support", href: "/admin/support", icon: Headset, visible: true },

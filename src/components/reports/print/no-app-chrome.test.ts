@@ -31,6 +31,7 @@ function componentsRenderedBy(file: string): string[] {
 const CHROME_FILES: Record<string, string> = {
   AdminPreviewToggle: root("src/components/portal/admin-preview-toggle.tsx"),
   ProspectSampleBadge: root("src/components/portal/prospect-sample-badge.tsx"),
+  PortalUnderConstruction: root("src/components/portal/under-construction.tsx"),
 };
 
 describe("portal print documents carry no app chrome", () => {
