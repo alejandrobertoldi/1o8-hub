@@ -66,6 +66,7 @@ export const INTERNAL_PROJECTS = [
   { projectNumber: "1O890004", name: "Internal meetings", billingType: BILLING_TYPES.internal },
   { projectNumber: "1O890005", name: "Training & learning", billingType: BILLING_TYPES.internal },
   { projectNumber: "1O890006", name: "Agency ops & admin", billingType: BILLING_TYPES.internal },
+  { projectNumber: "1O890007", name: "1o8 Hub (build & maintenance)", billingType: BILLING_TYPES.internal },
 ] as const;
 
 export const GENERAL_SUFFIX = "00000";
