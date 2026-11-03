@@ -3,7 +3,7 @@ export const runtime = "nodejs";
 import { NextRequest, NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { timeLogs } from "@/lib/db/schema";
+import { adminEventLog, timeLogs } from "@/lib/db/schema";
 import { timeLogSession } from "@/lib/time-logs/auth";
 import { resolveTimeLog, timeLogInputSchema } from "@/lib/time-logs/server";
 
@@ -15,7 +15,7 @@ async function loadOwned(id: string) {
   const [row] = await db.select().from(timeLogs).where(eq(timeLogs.id, id)).limit(1);
   if (!row) return { error: NextResponse.json({ error: "Not found" }, { status: 404 }) };
   if (row.userId !== me.userId && !me.isAdmin) return { error: NextResponse.json({ error: "Forbidden" }, { status: 403 }) };
-  return { row };
+  return { row, me };
 }
 
 /** PATCH — edit an entry (full entry in the body). */
@@ -36,10 +36,29 @@ export async function PATCH(req: NextRequest, { params }: Ctx) {
   return NextResponse.json(updated);
 }
 
+/**
+ * DELETE — removes an entry. The whole row goes to admin_event_log first
+ * (action "time-log:delete", resourceId = whose hours), so a deletion can be
+ * traced and the entry put back (npm run hours:lookup).
+ */
 export async function DELETE(_req: NextRequest, { params }: Ctx) {
   const { id } = await params;
-  const { error } = await loadOwned(id);
+  const { row, me, error } = await loadOwned(id);
   if (error) return error;
   await db.delete(timeLogs).where(eq(timeLogs.id, id));
+  await db
+    .insert(adminEventLog)
+    .values({
+      userEmail: me.email,
+      userName: me.name,
+      section: "hours",
+      action: "time-log:delete",
+      resourceType: "time_log",
+      resourceId: row.userId,
+      resourceLabel: `${row.entryDate} ${row.clientIdCode} ${row.projectNumber}`,
+      message: `Deleted ${row.hours} h on ${row.entryDate} (${row.clientIdCode} ${row.projectNumber}, ${row.department})${row.userId === me.userId ? "" : " for someone else"}`,
+      detail: { entry: row },
+    })
+    .catch(() => {}); // best-effort: the delete already happened
   return NextResponse.json({ ok: true });
 }

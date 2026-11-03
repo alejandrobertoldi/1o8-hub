@@ -9,5 +9,10 @@ import { hasPeopleAccess, isHubStaff } from "@/lib/roles";
 export async function timeLogSession() {
   const session = await getAuthSession();
   if (!session || !session.user.id || !isHubStaff(session.user.role)) return null;
-  return { userId: session.user.id, isAdmin: hasPeopleAccess(session.user.role) };
+  return {
+    userId: session.user.id,
+    email: session.user.email ?? null,
+    name: session.user.name ?? null,
+    isAdmin: hasPeopleAccess(session.user.role),
+  };
 }

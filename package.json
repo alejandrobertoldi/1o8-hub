@@ -47,7 +47,8 @@
     "audit:roles": "tsx --env-file=.env.local scripts/local/audit-roles.ts",
     "access:cleanup": "tsx --env-file=.env.local scripts/local/grant-hub-sections.ts",
     "hours:clear-tests": "tsx --env-file=.env.local scripts/local/clear-test-hours.ts",
-    "access:admin-sections": "tsx --env-file=.env.local scripts/local/grant-admin-sections.ts"
+    "access:admin-sections": "tsx --env-file=.env.local scripts/local/grant-admin-sections.ts",
+    "hours:lookup": "tsx --env-file=.env.local scripts/local/hours-lookup.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.78.0",
