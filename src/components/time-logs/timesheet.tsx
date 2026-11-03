@@ -311,7 +311,7 @@ export function Timesheet() {
             hint={
               form.clientIdCode && projectData
                 ? projectData.narrowed
-                  ? `${projects.length - 1} ${form.department} tasks for ${form.clientIdCode} (open or completed in the last 14 days)`
+                  ? `${projects.length - 1} ${form.clientIdCode} tasks for ${form.department} or with no team (open or completed in the last 14 days)`
                   : `${projects.length} options. Use ${form.clientIdCode === "1O8" ? "an internal code" : `${form.clientIdCode}00000`} if there is no Asana task.`
                 : undefined
             }

@@ -42,8 +42,10 @@ export async function listLoggableClients(): Promise<LoggableClient[]> {
 /**
  * Valid projects for a client: the general CODE00000 (or the 1O8 internal
  * codes), then Asana tasks that are open or were completed in the last 14
- * days. A department with a team tag narrows the tasks to that team; if that
- * leaves none, every task is shown (`narrowed: false`).
+ * days. A department with a team tag narrows the tasks to that team, plus the
+ * tasks with no team at all (kept only in the client project, like "BRN - Email -
+ * Master Task Batch"): those can belong to any department. If no task carries
+ * the tag, every task is shown (`narrowed: false`).
  */
 export async function listProjects(clientCode: string, department?: string | null): Promise<{ projects: LoggableProject[]; narrowed: boolean }> {
   const code = clientCode.toUpperCase();
@@ -85,9 +87,8 @@ export async function listProjects(clientCode: string, department?: string | nul
   }
 
   const tag = department ? workTypeTag(department) : null;
-  const tagged = tag ? taskProjects.filter((p) => p.tags.includes(tag)) : taskProjects;
-  const narrowed = !!tag && tagged.length > 0;
-  const shown = (narrowed ? tagged : taskProjects).map(({ tags: _tags, ...p }) => p);
+  const narrowed = !!tag && taskProjects.some((p) => p.tags.includes(tag));
+  const shown = (narrowed ? taskProjects.filter((p) => p.tags.includes(tag) || p.tags.length === 0) : taskProjects).map(({ tags: _tags, ...p }) => p);
 
   const fixed: LoggableProject[] =
     code === INTERNAL_CLIENT_CODE
