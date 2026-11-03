@@ -65,6 +65,7 @@ import {
 import { toast } from "sonner";
 import { canApproveTimeOff, canSubmitTimeOff } from "@/lib/time-off/guards";
 import { BetaPill } from "@/components/ui/beta-pill";
+import { canUseNewBusiness } from "@/lib/new-business";
 
 /* ---------- types ---------- */
 type NavItem = {
@@ -224,6 +225,12 @@ export function TopNav() {
         { title: "Client Onboarding", href: "/onboarding", icon: ClipboardList, visible: isAdmin },
         { title: "Case Studies", href: "/case-studies", icon: Presentation, visible: isHubStaff(role) },
         { title: "Client Portal", href: "/portal", icon: Eye, visible: isAdmin },
+      ],
+    },
+    {
+      label: "New Business", icon: Target, linkWhenSingle: true,
+      items: [
+        { title: "New Business", href: "/new-business", icon: Target, visible: canUseNewBusiness(role, allowedSections), beta: true },
       ],
     },
     {

@@ -116,6 +116,8 @@ export const CONFIGURABLE_SECTIONS = [
   // Standalone
   { id: "calendar", label: "Calendar", type: "standalone" as const, dept: null },
   { id: "team", label: "Team", type: "standalone" as const, dept: null },
+  // New Business pipeline (beta). Owners / super admins have it anyway; grant it to others (Jason).
+  { id: "new-business", label: "New Business", type: "standalone" as const, dept: null },
   // Clients
   { id: "clients", label: "Clients", type: "department" as const, dept: null },
   { id: "reports", label: "Reports", type: "subsection" as const, dept: "clients" as DepartmentId },
@@ -168,7 +170,7 @@ export const CONFIGURABLE_SECTIONS = [
  * A+ content, PPC, sales…) and stay defined for the client portal, just hidden.
  * Finances is hidden for now too.
  */
-export const HUB_SECTION_IDS = ["calendar", "team", "clients", "seo", "activity"] as const;
+export const HUB_SECTION_IDS = ["calendar", "team", "clients", "new-business", "seo", "activity"] as const;
 export const HUB_CONFIGURABLE_SECTIONS = CONFIGURABLE_SECTIONS.filter((s) =>
   (HUB_SECTION_IDS as readonly string[]).includes(s.id),
 );

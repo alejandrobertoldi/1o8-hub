@@ -4966,3 +4966,57 @@ export const kpiSyncRuns = pgTable("kpi_sync_runs", {
   report: jsonb("report").$type<Record<string, unknown>>(),
   error: text("error"),
 });
+
+/**
+ * New Business pipeline (beta): one row per prospect / pitch. `seq` gives the
+ * pitch its Hours project number (1O87 + 4 digits, under the 1O8 client), so
+ * the time invested in each pitch is tracked. Stage rules: src/lib/new-business.
+ */
+export const newBusinessOpportunities = pgTable(
+  "new_business_opportunities",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    seq: integer("seq").notNull().unique(),
+    prospectName: varchar("prospect_name", { length: 255 }).notNull(),
+    website: text("website"),
+    contactName: varchar("contact_name", { length: 255 }),
+    contactEmail: varchar("contact_email", { length: 255 }),
+    ownerId: uuid("owner_id").references(() => users.id, { onDelete: "set null" }),
+    // referral | inbound | outbound | event | upsell | other
+    source: varchar("source", { length: 20 }),
+    services: text("services").array().notNull().default([]),
+    // "project" (one-off total) | "retainer" (monthly fee)
+    dealType: varchar("deal_type", { length: 20 }).notNull().default("retainer"),
+    value: numeric("value", { precision: 12, scale: 2 }),
+    // contact | first_meeting | building_pitch | pitch_presented | quote_sent | won | lost | on_hold
+    stage: varchar("stage", { length: 20 }).notNull().default("contact"),
+    stageChangedAt: timestamp("stage_changed_at", { withTimezone: true }).notNull().defaultNow(),
+    nextStep: text("next_step"),
+    nextStepDate: date("next_step_date", { mode: "string" }),
+    asanaUrl: text("asana_url"),
+    notes: text("notes"),
+    lostReason: text("lost_reason"),
+    // Set when the stage becomes won / lost; cleared if it is reopened.
+    closedAt: timestamp("closed_at", { withTimezone: true }),
+    createdBy: uuid("created_by").references(() => users.id, { onDelete: "set null" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("idx_new_business_stage").on(t.stage)],
+);
+export type NewBusinessOpportunity = typeof newBusinessOpportunities.$inferSelect;
+
+/** Every stage an opportunity entered, and when: time in stage and conversion come from here. */
+export const newBusinessStageHistory = pgTable(
+  "new_business_stage_history",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    opportunityId: uuid("opportunity_id")
+      .notNull()
+      .references(() => newBusinessOpportunities.id, { onDelete: "cascade" }),
+    stage: varchar("stage", { length: 20 }).notNull(),
+    enteredAt: timestamp("entered_at", { withTimezone: true }).notNull().defaultNow(),
+    changedBy: uuid("changed_by").references(() => users.id, { onDelete: "set null" }),
+  },
+  (t) => [index("idx_new_business_history_opp").on(t.opportunityId, t.enteredAt)],
+);

@@ -3,6 +3,7 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import { aac, asanaTasks } from "@/lib/db/schema";
 import { ASANA_COMPLETED_WINDOW_DAYS } from "@/lib/my-dashboard/asana-map";
+import { listPitchProjects } from "@/lib/new-business/server";
 import {
   INTERNAL_CLIENT_CODE,
   INTERNAL_CLIENT_NAME,
@@ -90,9 +91,13 @@ export async function listProjects(clientCode: string, department?: string | nul
   const narrowed = !!tag && taskProjects.some((p) => p.tags.includes(tag));
   const shown = (narrowed ? taskProjects.filter((p) => p.tags.includes(tag) || p.tags.length === 0) : taskProjects).map(({ tags: _tags, ...p }) => p);
 
+  // 1O8 also lists the New Business pitches (1O87xxxx), whatever the department.
   const fixed: LoggableProject[] =
     code === INTERNAL_CLIENT_CODE
-      ? INTERNAL_PROJECTS.map((p) => ({ projectNumber: p.projectNumber, name: p.name, asanaTaskGid: null, status: "Open" as const, assignee: null, url: null }))
+      ? [
+          ...INTERNAL_PROJECTS.map((p) => ({ projectNumber: p.projectNumber, name: p.name, asanaTaskGid: null, status: "Open" as const, assignee: null, url: null })),
+          ...(await listPitchProjects()),
+        ]
       : [{ projectNumber: generalProjectNumber(code), name: "General account work (no Asana task)", asanaTaskGid: null, status: "Open", assignee: null, url: null }];
 
   return { projects: [...fixed, ...shown], narrowed };
