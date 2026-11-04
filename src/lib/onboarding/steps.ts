@@ -256,6 +256,19 @@ export const STEP_TO_GANTT: Record<string, { taskName: string; subtaskTitle?: st
   feedbackwhiz:          { taskName: "FeedbackWhiz", subtaskTitle: "Setup FeedbackWhiz" },
 };
 
+/**
+ * Amazon-era groups (Seller Central, CLR/ALR, Intentwise, FeedbackWhiz) and the
+ * client portal users, which is "under construction". Hidden from onboarding;
+ * their rows and history stay in the database.
+ */
+export const ARCHIVED_STEP_GROUPS: ReadonlySet<string> = new Set([
+  "client_users",
+  "amazon_access",
+  "intentwise",
+  "intentwise_amc",
+  "feedbackwhiz_group",
+]);
+
 /** Parent groups that have sub-steps — used for auto-complete logic */
 export const PARENT_GROUPS = ["client_users", "amazon_access", "intentwise", "intentwise_amc"] as const;
 

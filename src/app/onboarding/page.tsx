@@ -4,7 +4,7 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery, useQueries } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { hasAdminPowers } from "@/lib/roles";
@@ -12,7 +12,6 @@ import {
   CheckCircle2,
   Circle,
   Loader2,
-  AlertCircle,
   XCircle,
   Clock,
   Plus,
@@ -24,8 +23,7 @@ import { Button } from "@/components/ui/button";
 import { NewClientDialog } from "@/components/clients/new-client-dialog";
 import { PageMetaSlot } from "@/components/layout/page-header-slot";
 import { EmptyState } from "@/components/ui/empty-state";
-import { isStepSatisfied, PARENT_GROUP_LABELS } from "@/lib/onboarding/steps";
-import { computeOnboardingProgress } from "@/lib/onboarding/progress";
+import type { ClientChecklist } from "@/lib/onboarding/checklist";
 import { ClientMark } from "@/components/onboarding/client-mark";
 
 // ── Types ──────────────────────────────────────────────────────────
@@ -39,18 +37,7 @@ interface ClientListItem {
   activeCount: number;
 }
 
-interface OnboardingStep {
-  key: string;
-  label: string;
-  parent: string | null;
-  status: "pending" | "in_progress" | "completed" | "failed";
-  order: number;
-}
-
-interface ClientOnboarding {
-  clientIdCode: string;
-  steps: OnboardingStep[];
-}
+type SectionState = "completed" | "in_progress" | "pending" | "failed";
 
 // ── Status groups ──────────────────────────────────────────────────
 // Clients are grouped into status sections. Order matches the prior
@@ -145,72 +132,34 @@ export default function OnboardingListPage() {
     retry: 1,
   });
 
-  // Fetch onboarding status for each client under the SAME query key the
-  // per-client detail page uses (["onboarding", code]). Sharing the key means
-  // a step change on the detail page invalidates this cache too, so the summary
-  // never shows stale progress — and it dedupes the fetch across both pages.
-  const onboardingResults = useQueries({
-    queries: (clients ?? []).map((c) => ({
-      queryKey: ["onboarding", c.clientIdCode],
-      queryFn: async () => {
-        const res = await fetch(
-          `/api/clients/${encodeURIComponent(c.clientIdCode)}/onboarding`
-        );
-        if (!res.ok) throw new Error("Failed to load onboarding status");
-        return (await res.json()) as ClientOnboarding;
-      },
-    })),
+  // Every client's profile checklist in one request (it used to be one
+  // request per client, dozens at once against a 15-slot DB pool).
+  const {
+    data: checklists,
+    isPending: loadingChecklists,
+    isError: checklistsFailed,
+  } = useQuery<Record<string, ClientChecklist>>({
+    queryKey: ["onboarding-checklists"],
+    queryFn: async () => {
+      const res = await fetch("/api/onboarding/checklist", { signal: AbortSignal.timeout(25_000) });
+      if (!res.ok) throw new Error(`Failed to load onboarding (HTTP ${res.status})`);
+      return res.json();
+    },
+    retry: 1,
   });
 
-  // Build a code→steps map from the successful queries, and track which clients
-  // failed to load so we can show that explicitly instead of a misleading "0/0".
-  const onboardingMap: Record<string, OnboardingStep[]> = {};
-  const onboardingErrors = new Set<string>();
-  (clients ?? []).forEach((c, i) => {
-    const q = onboardingResults[i];
-    if (q?.data?.steps) onboardingMap[c.clientIdCode] = q.data.steps;
-    else if (q?.isError) onboardingErrors.add(c.clientIdCode);
-  });
-  const loadingOnboarding = onboardingResults.some((q) => q.isPending);
-
-  const isLoading = loadingClients || loadingOnboarding;
-
-  function getProgress(clientIdCode: string) {
-    // Shared with the per-client detail page so both views always agree.
-    return computeOnboardingProgress(onboardingMap[clientIdCode] ?? []);
-  }
-
-  function getStatusIcon(clientIdCode: string) {
-    const { completed, total } = getProgress(clientIdCode);
-    if (total === 0) return <Circle className="size-4 text-muted-foreground" />;
-    if (completed === total)
-      return <CheckCircle2 className="size-4 text-[var(--brand-green)]" />;
-    const steps = onboardingMap?.[clientIdCode];
-    if (steps?.some((s) => s.status === "failed"))
-      return <AlertCircle className="size-4 text-[var(--brand-red)]" />;
-    if (steps?.some((s) => s.status === "in_progress"))
-      return <Loader2 className="size-4 animate-spin text-[var(--brand-yellow)]" />;
-    return <Circle className="size-4 text-muted-foreground" />;
-  }
+  const isLoading = loadingClients || loadingChecklists;
 
   function renderClientCard(client: ClientListItem) {
-    const { completed, total, percentage } = getProgress(client.clientIdCode);
-    const steps = onboardingMap?.[client.clientIdCode] ?? [];
-    // A failed fetch must not look identical to a genuine "not started" (0/0).
-    const failedToLoad = onboardingErrors.has(client.clientIdCode);
-
-    // Build section-level status map
-    const sectionStatuses = Object.entries(PARENT_GROUP_LABELS)
-      .sort((a, b) => a[1].order - b[1].order)
-      .map(([parentKey, { label }]) => {
-        const sectionSteps = steps.filter((s) => s.parent === parentKey || s.key === parentKey);
-        if (!sectionSteps.length) return { parentKey, label, state: "pending" as const };
-        if (sectionSteps.every(isStepSatisfied)) return { parentKey, label, state: "completed" as const };
-        if (sectionSteps.some((s) => s.status === "failed")) return { parentKey, label, state: "failed" as const };
-        if (sectionSteps.some((s) => s.status === "in_progress")) return { parentKey, label, state: "in_progress" as const };
-        if (sectionSteps.some((s) => s.status === "completed")) return { parentKey, label, state: "in_progress" as const };
-        return { parentKey, label, state: "pending" as const };
-      });
+    const checklist = checklists?.[client.clientIdCode];
+    // A failed fetch must not look identical to a genuine "not started".
+    const failedToLoad = checklistsFailed || !checklist;
+    const { done: completed, total, percentage } = checklist ?? { done: 0, total: 0, percentage: 0 };
+    const sectionStatuses = (checklist?.sections ?? []).map((sec) => ({
+      parentKey: sec.key,
+      label: `${sec.label} ${sec.done}/${sec.total}`,
+      state: (sec.total > 0 && sec.done === sec.total ? "completed" : sec.done > 0 ? "in_progress" : "pending") as SectionState,
+    }));
 
     return (
       <div
@@ -291,11 +240,9 @@ export default function OnboardingListPage() {
           <span className={`text-[10px] ${failedToLoad ? "text-destructive" : "text-muted-foreground"}`}>
             {failedToLoad
               ? "Couldn't load — open to retry"
-              : total === 0
-                ? "Not started"
-                : completed === total
-                  ? "All sections complete"
-                  : `${total - completed} section${total - completed !== 1 ? "s" : ""} remaining`}
+              : completed === total
+                ? "Profile complete"
+                : `${total - completed} item${total - completed !== 1 ? "s" : ""} missing`}
           </span>
           <Link href={`/clients/${client.clientIdCode}/onboarding`}>
             <Button variant="outline" size="sm" className="h-7 text-[11px] gap-1">
@@ -332,7 +279,7 @@ export default function OnboardingListPage() {
             <span className="font-bold text-sidebar-foreground">Client</span><span className="font-normal text-brand">Onboarding</span>
           </h1>
           <p className="text-xs text-muted-foreground/70 truncate">
-            Track onboarding progress across all clients.
+            How complete each client&apos;s profile is: brand, KPIs, connections, team.
           </p>
         </div>
         {isAdmin && (

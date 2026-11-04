@@ -53,7 +53,8 @@ import { ClrAttributeImport } from "@/components/onboarding/clr-attribute-import
 import { AlrLinkAndMerge } from "@/components/onboarding/alr-link-and-merge";
 import { ClientMark } from "@/components/onboarding/client-mark";
 import { DEFAULT_CLIENT_SECTIONS } from "@/lib/permissions";
-import { isStepSatisfied, OPTIONAL_STEP_KEYS, PARENT_GROUP_LABELS } from "@/lib/onboarding/steps";
+import { ARCHIVED_STEP_GROUPS, isStepSatisfied, OPTIONAL_STEP_KEYS, PARENT_GROUP_LABELS } from "@/lib/onboarding/steps";
+import { ClientChecklistPanel } from "@/components/onboarding/client-checklist";
 
 // ── Types ──────────────────────────────────────────────────────────
 
@@ -2921,30 +2922,8 @@ export default function OnboardingPage() {
     refetchInterval: 5000, // poll while steps may be running
   });
 
-  const allSteps = data?.steps ?? [];
-  // Group steps into sections (by parent). A section is "completed" only when all its sub-steps are.
-  const sections = (() => {
-    const groups = new Map<string, typeof allSteps>();
-    for (const s of allSteps) {
-      const key = s.parent ?? s.key;
-      const list = groups.get(key);
-      if (list) list.push(s);
-      else groups.set(key, [s]);
-    }
-    return Array.from(groups.entries()).map(([key, steps]) => {
-      const status: "pending" | "in_progress" | "completed" | "failed" = steps.every(isStepSatisfied)
-        ? "completed"
-        : steps.some((st) => st.status === "failed")
-          ? "failed"
-          : steps.some((st) => st.status === "in_progress")
-            ? "in_progress"
-            : "pending";
-      const minOrder = steps.reduce((m, st) => (st.order < m ? st.order : m), steps[0]?.order ?? 0);
-      return { key, steps, status, order: minOrder };
-    }).sort((a, b) => a.order - b.order);
-  })();
-  const completedCount = sections.filter((sec) => sec.status === "completed").length;
-  const totalCount = sections.length;
+  // Amazon-era and portal steps are archived; only 1o8's setup steps show.
+  const allSteps = (data?.steps ?? []).filter((s) => !ARCHIVED_STEP_GROUPS.has(s.parent ?? s.key));
 
   return (
     <div>
@@ -2973,72 +2952,9 @@ export default function OnboardingPage() {
           {clientIdCode}
         </Link>
       </PageMetaSlot>
-      <div className="sticky top-0 z-30 -mx-6 lg:-mx-10 px-6 lg:px-10 py-3 mb-4 bg-background border-b border-sidebar-border/40">
-          {/* Progress bar + summary */}
-          {totalCount > 0 && (() => {
-            const pct = Math.round((completedCount / totalCount) * 100);
-            const pendingCount = sections.filter((sec) => sec.status === "pending").length;
-            const inProgressCount = sections.filter((sec) => sec.status === "in_progress").length;
-            const failedCount = sections.filter((sec) => sec.status === "failed").length;
-            const allDone = completedCount === totalCount;
-            return (
-              <div className="flex items-start gap-6">
-                {/* Left: step stats in rows */}
-                <div className="flex flex-col gap-1 shrink-0 min-w-[100px]">
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="text-[10px] text-muted-foreground">Total</span>
-                    <span className="text-xs font-bold tabular-nums">{totalCount}</span>
-                  </div>
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="text-[10px] text-[var(--brand-green)]">Completed</span>
-                    <span className="text-xs font-bold tabular-nums text-[var(--brand-green)]">{completedCount}</span>
-                  </div>
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="text-[10px] text-muted-foreground">Pending</span>
-                    <span className="text-xs font-bold tabular-nums text-muted-foreground">{pendingCount + inProgressCount + failedCount}</span>
-                  </div>
-                </div>
+      <ClientChecklistPanel clientIdCode={clientIdCode} />
 
-                {/* Right: progress bar with step tick marks */}
-                <div className="flex-1">
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-[10px] font-bold text-muted-foreground uppercase">Progress</span>
-                    <span className={`text-xs font-bold tabular-nums ${allDone ? "text-[var(--brand-green)]" : ""}`}>{pct}%</span>
-                  </div>
-                  <div className="relative">
-                    <div className="h-4 rounded-full bg-muted overflow-hidden">
-                      <div
-                        className={`h-full rounded-full transition-all duration-500 ${allDone ? "bg-[var(--brand-green)]" : "bg-[var(--brand)]"}`}
-                        style={{ width: `${pct}%` }}
-                      />
-                    </div>
-                    {/* Section tick marks (one per parent group) */}
-                    <div className="absolute inset-0 flex items-center pointer-events-none">
-                      {sections.map((sec, i) => {
-                        const pos = ((i + 1) / totalCount) * 100;
-                        const done = sec.status === "completed";
-                        return (
-                          <div
-                            key={sec.key}
-                            className="absolute top-0 h-full flex items-center"
-                            style={{ left: `${pos}%` }}
-                          >
-                            <div className={`w-px h-full ${done ? "bg-black/50" : "bg-black/20"}`} />
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3 mt-1.5">
-                    {inProgressCount > 0 && <span className="text-[10px] text-[var(--brand-yellow)] tabular-nums">{inProgressCount} in progress</span>}
-                    {failedCount > 0 && <span className="text-[10px] text-[var(--brand-red)] tabular-nums">{failedCount} failed</span>}
-                  </div>
-                </div>
-              </div>
-            );
-          })()}
-      </div>
-
+      <h2 className="mt-8 mb-2 text-sm font-semibold">Setup steps</h2>
       <div className="w-full">
         {/* Loading state */}
         {isLoading && (
@@ -3058,26 +2974,16 @@ export default function OnboardingPage() {
         {/* Steps */}
         {data && (
           <SectionList
-            steps={data.steps.toSorted((a, b) => a.order - b.order)}
+            steps={allSteps.toSorted((a, b) => a.order - b.order)}
             clientIdCode={clientIdCode}
             clientName={clientData?.client.clientName}
             onEditClient={handleEditClient}
-            allSteps={data.steps}
+            allSteps={allSteps}
             teamMembers={teamMembers}
             clientType={clientData?.client.clientType ?? null}
           />
         )}
 
-        {/* Empty state for when all done */}
-        {data && completedCount === totalCount && totalCount > 0 && (
-          <div className="mt-6 rounded-xl border bg-emerald-500/5 border-emerald-500/20 p-5 text-center">
-            <CheckCircle2 className="size-6 text-[var(--brand-green)] mx-auto mb-2" />
-            <p className="text-sm font-medium">All onboarding steps completed</p>
-            <p className="text-xs text-muted-foreground mt-1">
-              {clientIdCode} is fully set up and ready to go.
-            </p>
-          </div>
-        )}
       </div>
 
       <NewClientDialog

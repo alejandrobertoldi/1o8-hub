@@ -27,7 +27,7 @@ import type { ClientKpiReadings, KpiReading } from "@/lib/kpi/sync";
 
 const GA4_PROPERTY_FIELD = "GA4Property";
 
-/** Where this client's KPI numbers come from: Shopify store and GA4 property (Meta, Klaviyo next). */
+/** Where this client's KPI numbers come from: GA4, Shopify, Meta, Klaviyo (and its Google Ads account, on file). */
 export function KpiDataSources({
   clientIdCode,
   rawData,
@@ -65,7 +65,37 @@ export function KpiDataSources({
         tone="border-sky-500/30 bg-sky-500/10 text-sky-400"
       />
       <KlaviyoKey clientIdCode={clientIdCode} readOnly={readOnly} />
+      <GoogleAdsAccount value={String(rawData[GOOGLE_ADS_FIELD] ?? "")} readOnly={readOnly} onSave={onSave} />
     </div>
+  );
+}
+
+const GOOGLE_ADS_FIELD = "GoogleAdsCustomerId";
+
+/**
+ * The client's Google Ads customer ID (123-456-7890). Recorded only for now:
+ * the hub doesn't read Google Ads yet, but onboarding checks it's on file.
+ */
+function GoogleAdsAccount({ value, readOnly, onSave }: { value: string; readOnly: boolean; onSave: (field: string, value: string) => Promise<void> }) {
+  const digits = value.replace(/\D/g, "");
+  return (
+    <span className="flex items-center gap-1.5">
+      <span className="text-muted-foreground">Google Ads</span>
+      <span className="w-32">
+        <EditableCell
+          field={GOOGLE_ADS_FIELD}
+          value={value}
+          readOnly={readOnly}
+          type="text"
+          onSave={(field, v) => {
+            const d = v.replace(/\D/g, "");
+            // Store it the way Google shows it; leave anything else as typed so the warning explains it.
+            return onSave(field, d.length === 10 ? `${d.slice(0, 3)}-${d.slice(3, 6)}-${d.slice(6)}` : v.trim());
+          }}
+        />
+      </span>
+      {value.trim() && digits.length !== 10 && <span className="text-orange-400">Use the 10-digit customer ID</span>}
+    </span>
   );
 }
 
