@@ -25,6 +25,7 @@ import { PageMetaSlot } from "@/components/layout/page-header-slot";
 import { EmptyState } from "@/components/ui/empty-state";
 import type { ClientChecklist } from "@/lib/onboarding/checklist";
 import { INTERNAL_CLIENT_CODE } from "@/lib/my-dashboard/asana-map";
+import { canUseConnectionsTool } from "@/lib/onboarding/connections-tool";
 import { ClientMark } from "@/components/onboarding/client-mark";
 
 // ── Types ──────────────────────────────────────────────────────────
@@ -283,6 +284,12 @@ export default function OnboardingListPage() {
             How complete each client&apos;s profile is: brand, KPIs, connections, team.
           </p>
         </div>
+        {canUseConnectionsTool(session?.user) && (
+          // TEMPORARY: bulk connections table (see connections-tool.ts).
+          <Link href="/onboarding/connections" className="shrink-0 text-xs font-semibold text-brand hover:underline">
+            Connections catch-up →
+          </Link>
+        )}
         {isAdmin && (
           <Button
             size="sm"

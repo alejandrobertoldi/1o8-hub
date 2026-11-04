@@ -73,15 +73,61 @@ export function KpiDataSources({
 
 const GOOGLE_ADS_FIELD = "GoogleAdsCustomerId";
 
+/** The GA4 property picker on its own (bulk connections table). */
+export function Ga4PropertyPicker({ value, readOnly, onSave }: { value: string; readOnly: boolean; onSave: (v: string) => void }) {
+  return (
+    <SourcePicker
+      showLabel={false}
+      label="GA4"
+      value={value}
+      readOnly={readOnly}
+      onSave={onSave}
+      endpoint="/api/kpi/properties"
+      queryKey="ga4-properties"
+      notConnected="Connect GA4 in Sync & Export → KPIs"
+      fallbackName={(id) => `Property ${id}`}
+      tone="border-orange-500/30 bg-orange-500/10 text-orange-400"
+    />
+  );
+}
+
+/** The Meta ad account picker on its own (bulk connections table). */
+export function MetaAdAccountPicker({ value, readOnly, onSave }: { value: string; readOnly: boolean; onSave: (v: string) => void }) {
+  return (
+    <SourcePicker
+      showLabel={false}
+      label="Meta"
+      value={value}
+      readOnly={readOnly}
+      onSave={onSave}
+      endpoint="/api/kpi/meta-accounts"
+      queryKey="meta-accounts"
+      notConnected="Connect Meta in Sync & Export → KPIs"
+      fallbackName={(id) => `act_${id}`}
+      tone="border-sky-500/30 bg-sky-500/10 text-sky-400"
+    />
+  );
+}
+
 /**
  * The client's Google Ads customer ID (123-456-7890). Recorded only for now:
  * the hub doesn't read Google Ads yet, but onboarding checks it's on file.
  */
-function GoogleAdsAccount({ value, readOnly, onSave }: { value: string; readOnly: boolean; onSave: (field: string, value: string) => Promise<void> }) {
+export function GoogleAdsAccount({
+  value,
+  readOnly,
+  onSave,
+  showLabel = true,
+}: {
+  value: string;
+  readOnly: boolean;
+  onSave: (field: string, value: string) => Promise<void>;
+  showLabel?: boolean;
+}) {
   const digits = value.replace(/\D/g, "");
   return (
     <span className="flex items-center gap-1.5">
-      <span className="text-muted-foreground">Google Ads</span>
+      {showLabel && <span className="text-muted-foreground">Google Ads</span>}
       <span className="w-32">
         <EditableCell
           field={GOOGLE_ADS_FIELD}
@@ -114,7 +160,9 @@ function SourcePicker({
   notConnected,
   fallbackName,
   tone,
+  showLabel = true,
 }: {
+  showLabel?: boolean;
   label: string;
   value: string;
   readOnly: boolean;
@@ -142,7 +190,7 @@ function SourcePicker({
   const save = (next: string[]) => onSave(next.join(","));
   return (
     <span className="flex flex-wrap items-center gap-1.5">
-      <span className="text-muted-foreground">{label}</span>
+      {showLabel && <span className="text-muted-foreground">{label}</span>}
       {ids.map((id) => (
         <span key={id} className={cn("inline-flex items-center gap-1 rounded-full border px-2 py-px", tone)}>
           {nameOf(id)}
@@ -214,12 +262,24 @@ function ShopifyStore({
 }
 
 /** The client's read-only Klaviyo key: admins paste it; nobody sees it again. */
-function KlaviyoKey({ clientIdCode, readOnly }: { clientIdCode: string; readOnly: boolean }) {
+export function KlaviyoKey({
+  clientIdCode,
+  readOnly,
+  showLabel = true,
+  connected,
+}: {
+  clientIdCode: string;
+  readOnly: boolean;
+  showLabel?: boolean;
+  /** Already known (bulk views): skips the per-client status request. */
+  connected?: boolean;
+}) {
   const qc = useQueryClient();
   const [draft, setDraft] = useState<string | null>(null);
   const { data } = useQuery<{ connected: boolean; metrics: number | null }>({
     queryKey: ["kpi", "klaviyo", clientIdCode],
     queryFn: async () => (await fetch(`/api/clients/${encodeURIComponent(clientIdCode)}/klaviyo-key`)).json(),
+    initialData: connected === undefined ? undefined : { connected, metrics: null },
   });
   const save = useMutation({
     mutationFn: async (key: string | null) => {
@@ -239,7 +299,7 @@ function KlaviyoKey({ clientIdCode, readOnly }: { clientIdCode: string; readOnly
   });
   return (
     <span className="flex items-center gap-1.5">
-      <span className="text-muted-foreground">Klaviyo</span>
+      {showLabel && <span className="text-muted-foreground">Klaviyo</span>}
       {draft !== null ? (
         <>
           <input
