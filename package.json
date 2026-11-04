@@ -37,6 +37,7 @@
     "seed:local": "tsx scripts/local/seed-local.ts",
     "import:seo-writer": "tsx scripts/local/import-seo-writer.ts",
     "sync:asana": "tsx scripts/local/sync-asana.ts",
+    "onboarding:gaps": "tsx scripts/local/connection-gaps.ts",
     "sync:team": "tsx scripts/local/sync-team.ts",
     "seed:org-chart": "tsx scripts/local/seed-org-chart.ts",
     "snapshot:readiness": "tsx scripts/local/snapshot-readiness.ts",
