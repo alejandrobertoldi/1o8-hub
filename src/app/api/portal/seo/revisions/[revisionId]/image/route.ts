@@ -9,6 +9,7 @@ import { getRevisionWithProject } from "@/lib/seo/revision-db";
 import { portalClientAllowed, seoSectionEnabled } from "@/lib/seo/revision-portal";
 import { listingImageDriveId } from "@/lib/seo/revision-products";
 import { driveClient } from "@/lib/drive-client";
+import { untrustedFileHeaders } from "@/lib/drive-access";
 import { listingImageThumbPx } from "@/lib/listing-image-slots";
 
 const SLOTS = new Set(["MAIN", "PT01", "PT02", "PT03", "PT04", "PT05", "PT06", "PT07", "PT08"]);
@@ -39,7 +40,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ revi
   try {
     const { bytes, contentType } = await driveClient.getThumbnail(driveFileId, listingImageThumbPx(false));
     return new NextResponse(new Blob([new Uint8Array(bytes)], { type: contentType }), {
-      headers: { "Content-Type": contentType, "Cache-Control": "private, max-age=3600" },
+      headers: { ...untrustedFileHeaders(contentType), "Cache-Control": "private, max-age=3600" },
     });
   } catch (err) {
     console.error("[portal revision image] error:", err);

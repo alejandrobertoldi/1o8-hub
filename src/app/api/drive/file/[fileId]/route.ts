@@ -9,6 +9,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthSession } from "@/lib/auth-db";
 import { getAccessToken } from "@/lib/gcp-auth";
+import { canReadDriveFile, untrustedFileHeaders } from "@/lib/drive-access";
 
 export const maxDuration = 60;
 
@@ -25,6 +26,10 @@ export async function GET(
   }
 
   const { fileId } = await params;
+  // Being signed in is not enough: a client may only read its own files.
+  if (!(await canReadDriveFile(session.user, fileId))) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
 
   try {
     const token = await getAccessToken([DRIVE_SCOPE]);
@@ -66,12 +71,11 @@ export async function GET(
       );
     }
 
-    const contentType = meta.mimeType || "application/octet-stream";
-
     // Stream the response body directly from Drive to the client
-    // (avoids buffering entire file in memory — critical for video)
+    // (avoids buffering entire file in memory — critical for video).
+    // untrustedFileHeaders: uploaded HTML/SVG must never render on our origin.
     const responseHeaders: Record<string, string> = {
-      "Content-Type": contentType,
+      ...untrustedFileHeaders(meta.mimeType, meta.name || fileId),
       "Accept-Ranges": "bytes",
       "Cache-Control": "private, max-age=3600",
     };
@@ -86,12 +90,8 @@ export async function GET(
       responseHeaders["Content-Range"] = dlContentRange;
     }
 
-    // For non-range requests, add filename and total size if known
-    if (!rangeHeader) {
-      if (fileSize) responseHeaders["Content-Length"] = String(fileSize);
-      const safeName = (meta.name || fileId).replace(/["\\\n\r]/g, "_");
-      responseHeaders["Content-Disposition"] = `inline; filename="${safeName}"`;
-    }
+    // For non-range requests, add the total size if known
+    if (!rangeHeader && fileSize) responseHeaders["Content-Length"] = String(fileSize);
 
     return new NextResponse(dlRes.body, {
       status: dlRes.status,

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { eq, sql } from "drizzle-orm";
-import { auth } from "@/lib/auth";
+import { getAuthSession } from "@/lib/auth-db";
 import { db } from "@/lib/db";
 import { aac, adminEventLog } from "@/lib/db/schema";
 import { invalidateClientsCache } from "@/lib/clients-cache";
@@ -11,7 +11,7 @@ export async function PATCH(
   req: Request,
   { params }: { params: Promise<{ clientIdCode: string }> },
 ) {
-  const session = await auth();
+  const session = await getAuthSession();
   if (!session || !hasAdminPowers(session.user?.role)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }

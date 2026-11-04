@@ -3,6 +3,7 @@ export const runtime = "nodejs";
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthSession } from "@/lib/auth-db";
 import { driveClient } from "@/lib/drive-client";
+import { canReadDriveFile, untrustedFileHeaders } from "@/lib/drive-access";
 
 // Authenticated proxy for Drive thumbnails. Drive files in the shared drive
 // are private, so the public `drive.google.com/thumbnail?id=…` endpoint
@@ -18,6 +19,9 @@ export async function GET(
   }
 
   const { driveFileId } = await params;
+  if (!(await canReadDriveFile(session.user, driveFileId))) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
   const sizeRaw = req.nextUrl.searchParams.get("size");
   const size = sizeRaw ? Math.min(Math.max(parseInt(sizeRaw, 10) || 400, 64), 1600) : 400;
 
@@ -26,7 +30,7 @@ export async function GET(
     return new NextResponse(new Uint8Array(bytes), {
       status: 200,
       headers: {
-        "Content-Type": contentType,
+        ...untrustedFileHeaders(contentType),
         "Cache-Control": "private, max-age=300",
       },
     });

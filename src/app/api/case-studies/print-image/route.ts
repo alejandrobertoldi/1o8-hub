@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthSession } from "@/lib/auth-db";
 import { driveClient } from "@/lib/drive-client";
+import { untrustedFileHeaders } from "@/lib/drive-access";
 import { isHubStaff } from "@/lib/roles";
 import { DRIVE_FILE_ID_RE, clampPrintWidth } from "@/lib/case-study/kit/print-image-url";
 
@@ -25,7 +26,7 @@ export async function GET(req: NextRequest) {
     const { bytes, contentType } = await driveClient.getThumbnail(driveFileId, width, { forceJpeg: true });
     return new NextResponse(new Blob([new Uint8Array(bytes)], { type: contentType }), {
       headers: {
-        "Content-Type": contentType,
+        ...untrustedFileHeaders(contentType),
         "Cache-Control": "private, max-age=31536000, immutable",
       },
     });

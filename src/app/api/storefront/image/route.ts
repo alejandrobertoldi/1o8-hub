@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthSession } from "@/lib/auth-db";
 import { driveClient } from "@/lib/drive-client";
+import { canReadDriveFile, untrustedFileHeaders } from "@/lib/drive-access";
 import { STOREFRONT_IMAGE_PREVIEW_PX } from "@/lib/storefront/asset-mime";
 
 export async function GET(req: NextRequest) {
@@ -10,6 +11,10 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const driveFileId = searchParams.get("driveFileId");
   if (!driveFileId) return NextResponse.json({ error: "driveFileId is required" }, { status: 400 });
+
+  if (!(await canReadDriveFile(session.user, driveFileId))) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
 
   const kind = searchParams.get("kind");
 
@@ -24,8 +29,8 @@ export async function GET(req: NextRequest) {
       ]);
       return new NextResponse(new Uint8Array(bytes), {
         headers: {
-          "Content-Type": metadata.mimeType ?? "application/octet-stream",
-          "Cache-Control": "public, max-age=31536000, immutable",
+          ...untrustedFileHeaders(metadata.mimeType, metadata.name),
+          "Cache-Control": "private, max-age=31536000, immutable",
         },
       });
     }
@@ -36,8 +41,8 @@ export async function GET(req: NextRequest) {
     );
     return new NextResponse(new Uint8Array(bytes), {
       headers: {
-        "Content-Type": contentType,
-        "Cache-Control": "public, max-age=31536000, immutable",
+        ...untrustedFileHeaders(contentType),
+        "Cache-Control": "private, max-age=31536000, immutable",
       },
     });
   } catch (err) {

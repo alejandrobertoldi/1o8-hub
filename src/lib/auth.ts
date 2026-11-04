@@ -34,7 +34,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     signIn: "/auth/signin",
   },
   callbacks: {
-    async jwt({ token, account, profile, user, trigger, session: updateData }) {
+    async jwt({ token, account, profile, user, trigger }) {
       // The dev-login provider has no OAuth profile; synthesize one from `user`.
       if (account?.provider === "dev-login" && user?.email) {
         profile = { email: user.email, name: user.name ?? null };
@@ -92,18 +92,34 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           token.isSuperAdmin = false;
         }
       }
-      // When client calls update() with new role/sections, persist in the token
-      if (trigger === "update" && updateData?.role) {
-        token.role = updateData.role;
-      }
-      if (trigger === "update" && updateData?.allowedSections) {
-        token.allowedSections = updateData.allowedSections;
-      }
-      if (trigger === "update" && updateData?.clientIdCode !== undefined) {
-        token.clientIdCode = updateData.clientIdCode;
-      }
-      if (trigger === "update" && updateData?.isSuperAdmin !== undefined) {
-        token.isSuperAdmin = updateData.isSuperAdmin;
+      // A session update() comes from the browser, so its payload is never
+      // trusted (it used to be copied into the token, letting anyone set their
+      // own role to "owner"). On update we re-read role/sections from the DB
+      // and ignore whatever the client sent.
+      if (trigger === "update" && token.email) {
+        const [fresh] = await db
+          .select({
+            id: users.id,
+            role: users.role,
+            isSuperAdmin: users.isSuperAdmin,
+            clientIdCode: users.clientIdCode,
+            allowedSections: users.allowedSections,
+          })
+          .from(users)
+          .where(eq(users.email, token.email))
+          .limit(1);
+        if (fresh) {
+          token.dbId = fresh.id;
+          token.role = fresh.role;
+          token.isSuperAdmin = fresh.role === "owner" || fresh.role === "super_admin" || fresh.isSuperAdmin;
+          token.clientIdCode = fresh.clientIdCode;
+          token.allowedSections = fresh.allowedSections;
+        } else {
+          token.role = "pending";
+          token.isSuperAdmin = false;
+          token.clientIdCode = null;
+          token.allowedSections = [];
+        }
       }
       return token;
     },

@@ -27,11 +27,10 @@ function SessionSync() {
               JSON.stringify(session.user.allowedSections ?? []) ||
             data.user.clientIdCode !== session.user.clientIdCode;
           if (needsUpdate) {
-            update({
-              role: data.user.role,
-              allowedSections: data.user.allowedSections ?? [],
-              clientIdCode: data.user.clientIdCode ?? null,
-            });
+            // Just a refresh signal (update() without data skips the jwt
+            // callback). The server re-reads role/sections from the DB and
+            // ignores anything sent here.
+            update({ refresh: true });
           }
           // Redirect pending users to registration page
           if (data.user.role === "pending" && !pathname.startsWith("/auth/register")) {

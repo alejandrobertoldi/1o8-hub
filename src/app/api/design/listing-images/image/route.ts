@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthSession } from "@/lib/auth-db";
 import { driveClient } from "@/lib/drive-client";
+import { canReadDriveFile, untrustedFileHeaders } from "@/lib/drive-access";
 import { listingImageThumbPx } from "@/lib/listing-image-slots";
 
 export async function GET(req: NextRequest) {
@@ -17,6 +18,9 @@ export async function GET(req: NextRequest) {
     if (!driveFileId) {
       return NextResponse.json({ error: "Missing driveFileId" }, { status: 400 });
     }
+    if (!(await canReadDriveFile(session.user, driveFileId))) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
 
     // Always a Drive-generated JPEG preview — never the original PNG. Raw
     // listing files exceed Vercel's 4.5 MB function response cap
@@ -28,10 +32,10 @@ export async function GET(req: NextRequest) {
     );
     return new NextResponse(new Blob([new Uint8Array(bytes)], { type: contentType }), {
       headers: {
-        "Content-Type": contentType,
+        ...untrustedFileHeaders(contentType),
         "Cache-Control": thumb
-          ? "public, max-age=86400"
-          : "public, max-age=31536000, immutable",
+          ? "private, max-age=86400"
+          : "private, max-age=31536000, immutable",
       },
     });
   } catch (err) {
