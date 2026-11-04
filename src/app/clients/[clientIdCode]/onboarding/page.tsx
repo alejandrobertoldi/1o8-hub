@@ -2013,22 +2013,6 @@ function StepCard({
   );
 }
 
-// ── Parent labels ─────────────────────────────────────────────────
-
-const PARENT_LABELS: Record<string, string> = {
-  create_client: "1. Create Client",
-  assign_team: "2. Assign Team",
-  setup_asana: "3. Setup Asana Project",
-  setup_timeline: "4. Setup Starting Day & Timeline",
-  client_users: "5. Add Client Users",
-  drive_folders: "6. Create Drive Folders",
-  send_onboarding_email: "7. Send Onboarding Email",
-  amazon_access: "8. Amazon Access",
-  intentwise: "9. Setup Intentwise",
-  intentwise_amc: "10. Setup Intentwise AMC",
-  feedbackwhiz_group: "11. Setup FeedbackWhiz",
-};
-
 // ── Assign Team Inline ───────────────────────────────────────────
 
 // 1o8's team roles (same keys and labels as the client profile's Team section).
@@ -2661,7 +2645,7 @@ function CollapsibleGroup({
       <div className="flex-1 rounded-r-lg border border-l-0 border-border/50 bg-card/50 p-4 space-y-3">
         <div className="flex items-center justify-between mb-1">
           <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-            {PARENT_LABELS[parentKey] ?? parentKey.replace(/_/g, " ")}
+            {PARENT_GROUP_LABELS[parentKey]?.label ?? parentKey.replace(/_/g, " ")}
           </span>
           <span className={`text-[10px] font-bold ${allDone ? "text-[var(--brand-green)]" : "text-muted-foreground"}`}>
             {doneCount}/{requiredSteps.length}

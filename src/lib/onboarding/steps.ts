@@ -257,12 +257,14 @@ export const STEP_TO_GANTT: Record<string, { taskName: string; subtaskTitle?: st
 };
 
 /**
- * Amazon-era groups (Seller Central, CLR/ALR, Intentwise, FeedbackWhiz) and the
- * client portal users, which is "under construction". Hidden from onboarding;
+ * Amazon-era groups (Seller Central, CLR/ALR, Intentwise, FeedbackWhiz), the
+ * client portal users ("under construction") and the AIA/NTA Gantt timeline. Hidden from onboarding;
  * their rows and history stay in the database.
  */
 export const ARCHIVED_STEP_GROUPS: ReadonlySet<string> = new Set([
   "client_users",
+  // The start date comes from the SOW / quote (client profile), not a Gantt template.
+  "setup_timeline",
   "amazon_access",
   "intentwise",
   "intentwise_amc",
@@ -279,8 +281,8 @@ export const PARENT_GROUP_LABELS: Record<string, { order: number; label: string 
   setup_asana:       { order: 3, label: "3. Setup Asana Project" },
   setup_timeline:    { order: 4, label: "4. Setup Starting Day & Timeline" },
   client_users:      { order: 5, label: "5. Add Client Users" },
-  drive_folders:     { order: 6, label: "5. Create Drive Folders" },
-  send_onboarding_email: { order: 7, label: "6. Send Onboarding Email" },
+  drive_folders:     { order: 6, label: "4. Create Drive Folders" },
+  send_onboarding_email: { order: 7, label: "5. Send Onboarding Email" },
   amazon_access:     { order: 8, label: "8. Amazon Access" },
   intentwise:        { order: 9, label: "9. Setup Intentwise" },
   intentwise_amc:    { order: 10, label: "10. Setup Intentwise AMC" },

@@ -96,9 +96,18 @@ export type ChecklistItem = {
   service?: string;
   /** A plain AAC field that can be filled right from the checklist (else: open `href`). */
   field?: { key: string; type: "text" | "url" | "date" | "email" };
+  /** A document to read the answer from (the SOW / quote for dates and term). */
+  reference?: { label: string; url: string };
 };
 export type ChecklistSection = { key: string; label: string; items: ChecklistItem[]; done: number; total: number };
-export type ClientChecklist = { sections: ChecklistSection[]; done: number; total: number; percentage: number };
+export type ClientChecklist = {
+  sections: ChecklistSection[];
+  done: number;
+  total: number;
+  percentage: number;
+  /** The contract at a glance, for the onboarding page header. */
+  contract: { sowUrl: string | null; sow: string; term: string; lastDay: string };
+};
 
 const OVERVIEW = "";
 const VOICE = "/brand-voice";
@@ -113,6 +122,8 @@ export function buildClientChecklist(input: ChecklistInput): ClientChecklist {
   const s = (k: string) => String(raw[k] ?? "").trim();
   const needs = serviceNeeds(raw);
   const bv = input.brandVoice;
+  const sowUrl = s("SOWURL");
+  const sowRef = sowUrl ? { reference: { label: "SOW / quote", url: sowUrl } } : {};
   const gl = input.guidelines;
 
   type Def = Omit<ChecklistItem, "state"> & { done: boolean; applies?: boolean };
@@ -122,7 +133,7 @@ export function buildClientChecklist(input: ChecklistInput): ClientChecklist {
       label: "Basics",
       defs: [
         { key: "status", label: "Client status", href: OVERVIEW, done: has(s("ClientStatus")) },
-        { key: "start_date", label: "Start date", href: OVERVIEW, done: has(input.onboardingDate), field: { key: "OnboardingDate", type: "date" } },
+        { key: "start_date", label: "Start date", href: OVERVIEW, done: has(input.onboardingDate), field: { key: "OnboardingDate", type: "date" }, ...sowRef },
         { key: "website", label: "Website", href: SOCIAL, done: has(s("BrandURL")), field: { key: "BrandURL", type: "url" } },
       ],
     },
@@ -133,8 +144,9 @@ export function buildClientChecklist(input: ChecklistInput): ClientChecklist {
         { key: "services", label: "Services checked", href: OVERVIEW, done: needs.anyService },
         { key: "tier", label: "Tier", href: OVERVIEW, done: has(s("Tier")), field: { key: "Tier", type: "text" } },
         { key: "retainer", label: "Retainer type", href: OVERVIEW, done: has(s("RetainerType")), field: { key: "RetainerType", type: "text" } },
+        { key: "sow_link", label: "SOW / quote document", href: OVERVIEW, done: has(sowUrl), field: { key: "SOWURL", type: "url" } },
         { key: "sow", label: "SOW", href: OVERVIEW, done: has(s("SOW")), field: { key: "SOW", type: "text" } },
-        { key: "term", label: "Term / last day", href: OVERVIEW, done: has(s("Term")) || has(s("Last Day of Term")), field: { key: "Last Day of Term", type: "text" } },
+        { key: "term", label: "Term / last day", href: OVERVIEW, done: has(s("Term")) || has(s("Last Day of Term")), field: { key: "Last Day of Term", type: "text" }, ...sowRef },
         { key: "hours", label: "Estimated hours / month", href: OVERVIEW, done: has(s("Estimated Hours TOTAL")), field: { key: "Estimated Hours TOTAL", type: "text" } },
       ],
     },
@@ -245,7 +257,7 @@ export function buildClientChecklist(input: ChecklistInput): ClientChecklist {
         .map((d) => {
           const mark = s(checkField(d.key)).toLowerCase();
           const state: ItemState = mark === "na" ? "na" : d.done || (d.manual && mark === "done") ? "done" : "missing";
-          return { key: d.key, label: d.label, href: d.href, manual: d.manual, service: d.service, field: d.field, state };
+          return { key: d.key, label: d.label, href: d.href, manual: d.manual, service: d.service, field: d.field, reference: d.reference, state };
         });
       const counted = items.filter((i) => i.state !== "na");
       return { key, label, items, done: counted.filter((i) => i.state === "done").length, total: counted.length };
@@ -254,5 +266,11 @@ export function buildClientChecklist(input: ChecklistInput): ClientChecklist {
 
   const done = built.reduce((a, sec) => a + sec.done, 0);
   const total = built.reduce((a, sec) => a + sec.total, 0);
-  return { sections: built, done, total, percentage: total ? Math.round((done / total) * 100) : 0 };
+  return {
+    sections: built,
+    done,
+    total,
+    percentage: total ? Math.round((done / total) * 100) : 0,
+    contract: { sowUrl: sowUrl || null, sow: s("SOW"), term: s("Term"), lastDay: s("Last Day of Term") },
+  };
 }

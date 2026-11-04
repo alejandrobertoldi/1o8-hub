@@ -38,6 +38,8 @@ const CONTRACT_FIELDS = [
   { key: "Tier", label: "Tier" },
   { key: "RetainerType", label: "Retainer type" },
   { key: "SOW", label: "SOW" },
+  // The signed SOW / quote. Comes from the link on the AAC sheet's SOW cell; can be set here too.
+  { key: "SOWURL", label: "SOW / quote document", link: true },
   { key: "Term", label: "Term", long: true },
   { key: "Last Day of Term", label: "Last day of term" },
   { key: "SOW Status", label: "SOW status (sheet)" },
@@ -123,6 +125,17 @@ export function ContractSection({ clientIdCode, rawData, readOnly, onSave }: Pro
               <span className="truncate text-muted-foreground">{f.label}</span>
               {"long" in f ? (
                 <LongTextField field={f.key} value={v(f.key)} readOnly={readOnly} onSave={onSave} />
+              ) : "link" in f ? (
+                <span className="flex min-w-0 items-center gap-2">
+                  <span className="min-w-0 flex-1">
+                    <EditableCell field={f.key} value={v(f.key)} readOnly={readOnly} onSave={onSave} type="url" />
+                  </span>
+                  {v(f.key) && (
+                    <a href={v(f.key)} target="_blank" rel="noreferrer" className="inline-flex shrink-0 items-center gap-1 text-xs text-brand hover:underline">
+                      Open <ExternalLink className="size-3" />
+                    </a>
+                  )}
+                </span>
               ) : (
                 <EditableCell field={f.key} value={v(f.key)} readOnly={readOnly} onSave={onSave} type="text" />
               )}

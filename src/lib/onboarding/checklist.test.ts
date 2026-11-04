@@ -68,4 +68,14 @@ describe("buildClientChecklist", () => {
     expect(after.total).toBe(before.total - 1);
     expect(after.done).toBe(before.done + 1);
   });
+
+  it("links the SOW / quote where dates are read from", () => {
+    const url = "https://drive.google.com/file/d/sow/view";
+    const c = buildClientChecklist(base({ rawData: { SOWURL: url, SOW: "Retainer", Term: "Signed Jan 6, 2026" } }));
+    expect(item(c, "sow_link")?.state).toBe("done");
+    expect(item(c, "start_date")?.reference).toEqual({ label: "SOW / quote", url });
+    expect(c.contract).toEqual({ sowUrl: url, sow: "Retainer", term: "Signed Jan 6, 2026", lastDay: "" });
+    expect(item(buildClientChecklist(base()), "sow_link")?.state).toBe("missing");
+  });
 });
+

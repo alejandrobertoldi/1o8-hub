@@ -67,3 +67,29 @@ export async function appendAacRows(rows: Record<number, string>[]): Promise<voi
     requestBody: { values: rows.map((r) => Array.from({ length: width }, (_, i) => r[i] ?? "")) },
   });
 }
+
+/**
+ * The hyperlink behind each cell of some columns (the SOW cell links to the
+ * signed SOW/quote, the code cell to the Asana project). The values API drops
+ * links, so this reads grid data. Result: column index → rowNumber → URL.
+ */
+export async function readAacColumnLinks(colIndexes: number[]): Promise<Map<number, Map<number, string>>> {
+  const out = new Map<number, Map<number, string>>();
+  if (!colIndexes.length) return out;
+  const { spreadsheetId, tab } = aacSheetTarget();
+  const res = await sheets().spreadsheets.get({
+    spreadsheetId,
+    ranges: colIndexes.map((i) => `${quote(tab)}!${columnLetter(i)}:${columnLetter(i)}`),
+    includeGridData: true,
+    fields: "sheets.data(startColumn,startRow,rowData.values.hyperlink)",
+  });
+  for (const grid of res.data.sheets?.[0]?.data ?? []) {
+    const byRow = new Map<number, string>();
+    (grid.rowData ?? []).forEach((r, i) => {
+      const url = r.values?.[0]?.hyperlink;
+      if (url) byRow.set((grid.startRow ?? 0) + i + 1, url);
+    });
+    out.set(grid.startColumn ?? 0, byRow);
+  }
+  return out;
+}

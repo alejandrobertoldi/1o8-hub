@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { CheckCircle2, Circle, Loader2, MinusCircle, ArrowUpRight } from "lucide-react";
+import { CheckCircle2, Circle, Loader2, MinusCircle, ArrowUpRight, FileText } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { isEditorOrAbove } from "@/lib/roles";
@@ -94,6 +94,8 @@ export function ClientChecklistPanel({ clientIdCode }: { clientIdCode: string })
           Only what&apos;s missing
         </label>
       </div>
+
+      <ContractBar contract={data.contract} />
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {data.sections.map((sec) => {
@@ -213,6 +215,11 @@ function FillPopover({
       </PopoverTrigger>
       <PopoverContent align="end" className="w-72 space-y-3 p-3">
         <p className="text-sm font-semibold">{item.label}</p>
+        {item.reference && (
+          <a href={item.reference.url} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 text-xs text-brand hover:underline">
+            <FileText className="size-3.5" /> Check the {item.reference.label} <ArrowUpRight className="size-3" />
+          </a>
+        )}
         {field && (
           <form
             className="flex gap-2"
@@ -253,5 +260,26 @@ function FillPopover({
         </div>
       </PopoverContent>
     </Popover>
+  );
+}
+
+/** The signed SOW / quote and its term, so the team can read the scope from onboarding (as in the AAC sheet). */
+function ContractBar({ contract }: { contract: ClientChecklist["contract"] }) {
+  const term = contract.term || contract.lastDay;
+  return (
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 rounded-xl border bg-card px-5 py-3 text-sm">
+      <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">SOW / Quote</span>
+      {contract.sowUrl ? (
+        <a href={contract.sowUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 font-medium text-brand hover:underline">
+          <FileText className="size-4" />
+          {contract.sow || "Open document"}
+          <ArrowUpRight className="size-3.5" />
+        </a>
+      ) : (
+        <span className="text-muted-foreground">No document linked yet (add the link on the AAC sheet&apos;s SOW cell or in Contract &amp; services)</span>
+      )}
+      {term && <span className="min-w-0 truncate text-xs text-muted-foreground" title={term}>{term}</span>}
+      {contract.lastDay && contract.term && <span className="shrink-0 text-xs text-muted-foreground">· ends {contract.lastDay}</span>}
+    </div>
   );
 }

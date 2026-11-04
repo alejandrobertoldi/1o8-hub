@@ -2,8 +2,8 @@ import { and, desc, eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { aac, aacSheetBaseline, aacSyncRuns, adminEventLog } from "@/lib/db/schema";
 import { invalidateClientsCache } from "@/lib/clients-cache";
-import { CODE_HEADER, READ_ONLY_IN_SHEET, columnForKey, duplicateCodes, hubValue, parseSheet } from "./columns";
-import { appendAacRows, readAacGrid, writeAacCells, type CellWrite } from "./google";
+import { CODE_HEADER, READ_ONLY_IN_SHEET, columnForKey, duplicateCodes, hubValue, parseSheet, type SheetRow } from "./columns";
+import { appendAacRows, readAacColumnLinks, readAacGrid, writeAacCells, type CellWrite } from "./google";
 import { mergeCell } from "./merge";
 
 export type AacSyncTrigger = "manual" | "script" | "sheet-edit" | "hub-edit" | "daily";
@@ -206,7 +206,12 @@ async function doSync(opts: AacSyncOptions, dryRun: boolean): Promise<AacSyncRep
       .values({ clientIdCode: b.code, values: b.values, syncedAt: new Date() })
       .onConflictDoUpdate({ target: aacSheetBaseline.clientIdCode, set: { values: b.values, syncedAt: new Date() } });
   }
-  if (hubUpdates.length || hubInserts.length) invalidateClientsCache();
+  const linked = await pullSheetLinks(sheet, only, dupes).catch((err) => {
+    // Links are a nice-to-have: never fail the value sync over them.
+    console.warn("[aac-sync] could not read sheet links:", err instanceof Error ? err.message : err);
+    return 0;
+  });
+  if (hubUpdates.length || hubInserts.length || linked) invalidateClientsCache();
 
   // Activity: one line per client that changed on either side.
   const byClient = new Map<string, { toHub: AacChange[]; toSheet: AacChange[] }>();
@@ -231,6 +236,63 @@ async function doSync(opts: AacSyncOptions, dryRun: boolean): Promise<AacSyncRep
   }));
   if (logs.length) await db.insert(adminEventLog).values(logs).catch(() => {});
   return report;
+}
+
+/** Hub-only key holding the link behind the sheet's SOW cell (the signed SOW / quote). */
+export const SOW_URL_KEY = "SOWURL";
+
+const asanaGidFromUrl = (url: string) => /\/project\/(\d+)/.exec(url)?.[1] ?? /app\.asana\.com\/0\/(\d+)/.exec(url)?.[1] ?? null;
+
+/**
+ * Per client code, the links the sheet carries: the SOW/quote document behind
+ * the SOW cell, and the Asana project behind the code cell. Pure, for tests.
+ */
+export function sheetLinksByCode(
+  rows: SheetRow[],
+  links: { sow?: Map<number, string>; code?: Map<number, string> },
+): Map<string, { sowUrl: string | null; asanaGid: string | null }> {
+  const out = new Map<string, { sowUrl: string | null; asanaGid: string | null }>();
+  for (const r of rows) {
+    if (!r.code) continue;
+    const sowUrl = links.sow?.get(r.rowNumber) ?? null;
+    const codeUrl = links.code?.get(r.rowNumber);
+    const asanaGid = codeUrl ? asanaGidFromUrl(codeUrl) : null;
+    if (sowUrl || asanaGid) out.set(upper(r.code), { sowUrl, asanaGid });
+  }
+  return out;
+}
+
+/**
+ * Sheet → hub only: the SOW link (SOWURL) and, when the hub has none yet, the
+ * Asana project. Values from the sheet's hyperlinks, which the values sync can't see.
+ */
+async function pullSheetLinks(
+  sheet: ReturnType<typeof parseSheet>,
+  only: Set<string> | null,
+  dupes: Map<string, unknown>,
+): Promise<number> {
+  const sowCol = sheet.columns.find((c) => c.header === "SOW");
+  const codeCol = sheet.columns.find((c) => c.header === CODE_HEADER);
+  const read = await readAacColumnLinks([sowCol?.index, codeCol?.index].filter((i): i is number => i != null));
+  const found = sheetLinksByCode(sheet.rows, {
+    sow: sowCol ? read.get(sowCol.index) : undefined,
+    code: codeCol ? read.get(codeCol.index) : undefined,
+  });
+  let changed = 0;
+  const hub = await db.select({ code: aac.clientIdCode, raw: aac.rawData, gid: aac.asanaProjectGid }).from(aac);
+  for (const h of hub) {
+    const code = upper(h.code);
+    const link = found.get(code);
+    if (!link || dupes.has(code) || (only && !only.has(code))) continue;
+    const raw = (h.raw ?? {}) as Record<string, string>;
+    const set: { rawData?: Record<string, string>; asanaProjectGid?: string } = {};
+    if (link.sowUrl && raw[SOW_URL_KEY] !== link.sowUrl) set.rawData = { ...raw, [SOW_URL_KEY]: link.sowUrl };
+    if (link.asanaGid && !h.gid) set.asanaProjectGid = link.asanaGid;
+    if (!set.rawData && !set.asanaProjectGid) continue;
+    await db.update(aac).set({ ...set, updatedAt: new Date() }).where(eq(aac.clientIdCode, h.code));
+    changed++;
+  }
+  return changed;
 }
 
 /** Latest sync runs, newest first (admin page). */
