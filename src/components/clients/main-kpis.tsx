@@ -23,6 +23,7 @@ import {
 import { cn } from "@/lib/utils";
 import { EditableCell } from "./editable-cell";
 import { formatKpi } from "@/lib/kpi/values";
+import { formatGoogleAdsId } from "@/lib/onboarding/checklist";
 import type { ClientKpiReadings, KpiReading } from "@/lib/kpi/sync";
 
 const GA4_PROPERTY_FIELD = "GA4Property";
@@ -87,11 +88,8 @@ function GoogleAdsAccount({ value, readOnly, onSave }: { value: string; readOnly
           value={value}
           readOnly={readOnly}
           type="text"
-          onSave={(field, v) => {
-            const d = v.replace(/\D/g, "");
-            // Store it the way Google shows it; leave anything else as typed so the warning explains it.
-            return onSave(field, d.length === 10 ? `${d.slice(0, 3)}-${d.slice(3, 6)}-${d.slice(6)}` : v.trim());
-          }}
+          // Stored the way Google shows it; anything else stays as typed so the warning explains it.
+          onSave={(field, v) => onSave(field, formatGoogleAdsId(v))}
         />
       </span>
       {value.trim() && digits.length !== 10 && <span className="text-orange-400">Use the 10-digit customer ID</span>}

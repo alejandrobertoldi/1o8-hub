@@ -105,6 +105,20 @@ function enumField(t: AsanaApiTask, gid: string): string | null {
   return t.custom_fields?.find((f) => f.gid === gid)?.enum_value?.name ?? null;
 }
 
+/**
+ * The client project a task lives in ("KSS | K9 Sport Sack" → KSS + its gid),
+ * or null when it's only in team/reporting projects. Used to link each client
+ * to its Asana project without anyone pasting the URL.
+ */
+export function clientProjectOf(t: AsanaApiTask, knownCodes?: ReadonlySet<string>): { code: string; gid: string } | null {
+  for (const m of t.memberships ?? []) {
+    if (m.project.gid === ASANA_REPORTING_PROJECT_GID || isTeamProject(m.project.name)) continue;
+    const code = parseClientCode(m.project.name, knownCodes);
+    if (code && code.toUpperCase() !== INTERNAL_CLIENT_CODE) return { code, gid: m.project.gid };
+  }
+  return null;
+}
+
 export function mapAsanaTask(t: AsanaApiTask, knownCodes?: ReadonlySet<string>): AsanaTaskRow {
   const memberships = t.memberships ?? [];
   const nonReporting = memberships.filter((m) => m.project.gid !== ASANA_REPORTING_PROJECT_GID);

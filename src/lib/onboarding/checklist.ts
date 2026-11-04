@@ -53,7 +53,6 @@ export function serviceNeeds(raw: Record<string, unknown>): Record<ServiceNeed, 
 export type ChecklistInput = {
   clientIdCode: string;
   rawData: Record<string, unknown>;
-  clientType: string | null;
   onboardingDate: string | null;
   asanaProjectGid: string | null;
   brandVoice: {
@@ -78,6 +77,12 @@ export type ChecklistInput = {
   completedSteps: ReadonlySet<string>;
 };
 
+/** Google shows customer IDs as 123-456-7890; anything that isn't 10 digits is kept as typed. */
+export function formatGoogleAdsId(v: string): string {
+  const d = v.replace(/\D/g, "");
+  return d.length === 10 ? `${d.slice(0, 3)}-${d.slice(3, 6)}-${d.slice(6)}` : v.trim();
+}
+
 export type ItemState = "done" | "missing" | "na";
 export type ChecklistItem = {
   key: string;
@@ -89,6 +94,8 @@ export type ChecklistItem = {
   manual?: boolean;
   /** Why it applies, e.g. "Email" for Klaviyo. */
   service?: string;
+  /** A plain AAC field that can be filled right from the checklist (else: open `href`). */
+  field?: { key: string; type: "text" | "url" | "date" | "email" };
 };
 export type ChecklistSection = { key: string; label: string; items: ChecklistItem[]; done: number; total: number };
 export type ClientChecklist = { sections: ChecklistSection[]; done: number; total: number; percentage: number };
@@ -115,9 +122,8 @@ export function buildClientChecklist(input: ChecklistInput): ClientChecklist {
       label: "Basics",
       defs: [
         { key: "status", label: "Client status", href: OVERVIEW, done: has(s("ClientStatus")) },
-        { key: "client_type", label: "Client type", href: OVERVIEW, done: has(input.clientType) },
-        { key: "start_date", label: "Start date", href: OVERVIEW, done: has(input.onboardingDate) },
-        { key: "website", label: "Website", href: SOCIAL, done: has(s("BrandURL")) },
+        { key: "start_date", label: "Start date", href: OVERVIEW, done: has(input.onboardingDate), field: { key: "OnboardingDate", type: "date" } },
+        { key: "website", label: "Website", href: SOCIAL, done: has(s("BrandURL")), field: { key: "BrandURL", type: "url" } },
       ],
     },
     {
@@ -125,11 +131,11 @@ export function buildClientChecklist(input: ChecklistInput): ClientChecklist {
       label: "Contract",
       defs: [
         { key: "services", label: "Services checked", href: OVERVIEW, done: needs.anyService },
-        { key: "tier", label: "Tier", href: OVERVIEW, done: has(s("Tier")) },
-        { key: "retainer", label: "Retainer type", href: OVERVIEW, done: has(s("RetainerType")) },
-        { key: "sow", label: "SOW", href: OVERVIEW, done: has(s("SOW")) },
-        { key: "term", label: "Term / last day", href: OVERVIEW, done: has(s("Term")) || has(s("Last Day of Term")) },
-        { key: "hours", label: "Estimated hours / month", href: OVERVIEW, done: has(s("Estimated Hours TOTAL")) },
+        { key: "tier", label: "Tier", href: OVERVIEW, done: has(s("Tier")), field: { key: "Tier", type: "text" } },
+        { key: "retainer", label: "Retainer type", href: OVERVIEW, done: has(s("RetainerType")), field: { key: "RetainerType", type: "text" } },
+        { key: "sow", label: "SOW", href: OVERVIEW, done: has(s("SOW")), field: { key: "SOW", type: "text" } },
+        { key: "term", label: "Term / last day", href: OVERVIEW, done: has(s("Term")) || has(s("Last Day of Term")), field: { key: "Last Day of Term", type: "text" } },
+        { key: "hours", label: "Estimated hours / month", href: OVERVIEW, done: has(s("Estimated Hours TOTAL")), field: { key: "Estimated Hours TOTAL", type: "text" } },
       ],
     },
     {
@@ -152,7 +158,7 @@ export function buildClientChecklist(input: ChecklistInput): ClientChecklist {
       label: "Contacts",
       defs: [
         { key: "contact_main", label: "Main client contact", href: OVERVIEW, done: has(s("ClientContactEmail1")) },
-        { key: "contact_billing", label: "Billing contact", href: OVERVIEW, done: [1, 2, 3, 4].some((i) => has(s(`Billingemail${i}`))) },
+        { key: "contact_billing", label: "Billing contact", href: OVERVIEW, done: [1, 2, 3, 4].some((i) => has(s(`Billingemail${i}`))), field: { key: "Billingemail1", type: "email" } },
       ],
     },
     {
@@ -212,13 +218,13 @@ export function buildClientChecklist(input: ChecklistInput): ClientChecklist {
       defs: [
         { key: "conn_ga4", label: "GA4 property", href: OVERVIEW, done: has(s("GA4Property")) },
         { key: "access_ga4", label: "GA4 access granted to 1o8", href: ONBOARDING, done: false, manual: true },
-        { key: "conn_shopify", label: "Shopify store", href: OVERVIEW, done: has(s("ShopifyStore")), applies: needs.web, service: "Website" },
+        { key: "conn_shopify", label: "Shopify store", href: OVERVIEW, done: has(s("ShopifyStore")), field: { key: "ShopifyStore", type: "text" }, applies: needs.web, service: "Website" },
         { key: "access_shopify", label: "Shopify admin access (collaborator)", href: ONBOARDING, done: false, manual: true, applies: needs.web, service: "Website" },
         { key: "conn_klaviyo", label: "Klaviyo key", href: OVERVIEW, done: input.klaviyoConnected, applies: needs.email, service: "Email" },
         { key: "access_klaviyo", label: "Klaviyo user access", href: ONBOARDING, done: false, manual: true, applies: needs.email, service: "Email" },
         { key: "conn_meta", label: "Meta ad account", href: OVERVIEW, done: has(s("MetaAdAccount")), applies: needs.meta, service: "Meta" },
         { key: "access_meta", label: "Meta Business partner access", href: ONBOARDING, done: false, manual: true, applies: needs.meta, service: "Meta" },
-        { key: "conn_google_ads", label: "Google Ads customer ID", href: OVERVIEW, done: has(s("GoogleAdsCustomerId")), applies: needs.googleAds, service: "Google" },
+        { key: "conn_google_ads", label: "Google Ads customer ID", href: OVERVIEW, done: has(s("GoogleAdsCustomerId")), field: { key: "GoogleAdsCustomerId", type: "text" }, applies: needs.googleAds, service: "Google" },
         { key: "access_google_ads", label: "Google Ads access (MCC link)", href: ONBOARDING, done: false, manual: true, applies: needs.googleAds, service: "Google" },
       ],
     },
@@ -227,7 +233,6 @@ export function buildClientChecklist(input: ChecklistInput): ClientChecklist {
       label: "Operations",
       defs: [
         { key: "ops_asana", label: "Asana project", href: ONBOARDING, done: has(input.asanaProjectGid) || input.completedSteps.has("setup_asana") },
-        { key: "ops_timeline", label: "Timeline set up", href: ONBOARDING, done: input.completedSteps.has("setup_timeline") },
         { key: "ops_drive", label: "Drive folders", href: ONBOARDING, done: input.driveFoldersCreated || input.completedSteps.has("drive_folders") },
         { key: "ops_welcome_email", label: "Welcome email sent", href: ONBOARDING, done: input.completedSteps.has("send_onboarding_email"), manual: true },
       ],
@@ -241,7 +246,7 @@ export function buildClientChecklist(input: ChecklistInput): ClientChecklist {
         .map((d) => {
           const mark = s(checkField(d.key)).toLowerCase();
           const state: ItemState = mark === "na" ? "na" : d.done || (d.manual && mark === "done") ? "done" : "missing";
-          return { key: d.key, label: d.label, href: d.href, manual: d.manual, service: d.service, state };
+          return { key: d.key, label: d.label, href: d.href, manual: d.manual, service: d.service, field: d.field, state };
         });
       const counted = items.filter((i) => i.state !== "na");
       return { key, label, items, done: counted.filter((i) => i.state === "done").length, total: counted.length };

@@ -24,6 +24,7 @@ import { NewClientDialog } from "@/components/clients/new-client-dialog";
 import { PageMetaSlot } from "@/components/layout/page-header-slot";
 import { EmptyState } from "@/components/ui/empty-state";
 import type { ClientChecklist } from "@/lib/onboarding/checklist";
+import { INTERNAL_CLIENT_CODE } from "@/lib/my-dashboard/asana-map";
 import { ClientMark } from "@/components/onboarding/client-mark";
 
 // ── Types ──────────────────────────────────────────────────────────
@@ -325,7 +326,8 @@ export default function OnboardingListPage() {
 
         {/* Status groups */}
         {!isLoading && !clientsFailed && clients && (() => {
-          const grouped = groupClients(clients);
+          // 1o8 itself isn't a client to onboard.
+          const grouped = groupClients(clients.filter((c) => c.clientIdCode.toUpperCase() !== INTERNAL_CLIENT_CODE));
           return (
             <div className="flex flex-col gap-6">
               {GROUP_RENDER_ORDER.map((key) => {

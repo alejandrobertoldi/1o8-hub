@@ -4,7 +4,6 @@ import { buildClientChecklist, serviceNeeds, type ChecklistInput } from "./check
 const base = (over: Partial<ChecklistInput> = {}): ChecklistInput => ({
   clientIdCode: "ELK",
   rawData: {},
-  clientType: null,
   onboardingDate: null,
   asanaProjectGid: null,
   brandVoice: null,
@@ -48,14 +47,12 @@ describe("buildClientChecklist", () => {
         rawData: { "Service: Google": "Google", GoogleAdsCustomerId: "123-456-7890", MainKPIs: JSON.stringify([{ key: "roas", target: "4x" }]) },
         klaviyoConnected: true,
         asanaProjectGid: "123",
-        completedSteps: new Set(["setup_timeline"]),
       }),
     );
     expect(item(c, "conn_google_ads")?.state).toBe("done");
     expect(item(c, "kpi_defined")?.state).toBe("done");
     expect(item(c, "kpi_targets")?.state).toBe("done");
     expect(item(c, "ops_asana")?.state).toBe("done");
-    expect(item(c, "ops_timeline")?.state).toBe("done");
     expect(item(c, "ops_drive")?.state).toBe("missing");
   });
 

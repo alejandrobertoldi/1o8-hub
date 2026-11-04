@@ -2,6 +2,7 @@ import { and, eq, inArray } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { aac, clientBrandGuidelines, clientBrandVoice, clientOnboardingSteps, driveFolders } from "@/lib/db/schema";
 import { clientsWithKlaviyo } from "@/lib/kpi/secrets";
+import { INTERNAL_CLIENT_CODE } from "@/lib/my-dashboard/asana-map";
 import { buildClientChecklist, type ClientChecklist } from "./checklist";
 
 /**
@@ -16,7 +17,6 @@ export async function loadClientChecklists(codes?: string[]): Promise<Map<string
       .select({
         clientIdCode: aac.clientIdCode,
         rawData: aac.rawData,
-        clientType: aac.clientType,
         onboardingDate: aac.onboardingDate,
         asanaProjectGid: aac.asanaProjectGid,
       })
@@ -55,6 +55,8 @@ export async function loadClientChecklists(codes?: string[]): Promise<Map<string
 
   const out = new Map<string, ClientChecklist>();
   for (const c of clients) {
+    // 1o8 itself isn't a client to onboard.
+    if (c.clientIdCode.toUpperCase() === INTERNAL_CLIENT_CODE) continue;
     const g = guideBy.get(c.clientIdCode);
     const logo = g?.logo;
     out.set(
@@ -62,7 +64,6 @@ export async function loadClientChecklists(codes?: string[]): Promise<Map<string
       buildClientChecklist({
         clientIdCode: c.clientIdCode,
         rawData: (c.rawData ?? {}) as Record<string, unknown>,
-        clientType: c.clientType,
         onboardingDate: c.onboardingDate ? c.onboardingDate.toISOString().slice(0, 10) : null,
         asanaProjectGid: c.asanaProjectGid,
         brandVoice: voiceBy.get(c.clientIdCode) ?? null,

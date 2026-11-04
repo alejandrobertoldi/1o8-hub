@@ -28,7 +28,7 @@ describe("runAsanaSync", () => {
     expect(d.calls.fetchPage).toEqual([null, "off1"]);
     expect(d.calls.upsert).toEqual([["1", "2"], ["3"]]);
     expect(d.calls.closeMissing).toEqual([["1", "2", "3"]]);
-    expect(res).toEqual({ open: 3, pages: 2, closed: 2 });
+    expect(res).toEqual({ open: 3, pages: 2, closed: 2, linked: 0 });
   });
 
   it("stores unassigned tasks too (filtering happens at read time)", async () => {
@@ -55,5 +55,18 @@ describe("runAsanaSync", () => {
     const d = deps(Array.from({ length: 60 }, (_, k) => ({ data: [task(String(k))], next: `o${k}` })));
     await expect(runAsanaSync(d)).rejects.toThrow(/page cap/i);
     expect(d.closeMissing).not.toHaveBeenCalled();
+  });
+
+  it("links each client to the project most of its tasks live in", async () => {
+    const inProject = (gid: string, project: { gid: string; name: string }): AsanaApiTask => ({
+      ...task(gid),
+      memberships: [{ project: { gid: "rep", name: "AAA - 1o8 Agency Reporting" } }, { project }, { project: { gid: "team", name: "1o8 | Internal Creative Team" } }],
+    });
+    const kss = { gid: "kss-main", name: "KSS | K9 Sport Sack" };
+    const d = deps([{ data: [inProject("1", kss), inProject("2", kss), inProject("3", { gid: "kss-old", name: "KSS - Old launch" }), inProject("4", { gid: "x", name: "1o8 | Internal Creative Team" })], next: null }]);
+    const link = vi.fn(async (projects: Map<string, string>) => projects.size);
+    const res = await runAsanaSync({ ...d, knownClientCodes: async () => new Set(["KSS"]), linkClientProjects: link });
+    expect(link).toHaveBeenCalledWith(new Map([["KSS", "kss-main"]]));
+    expect(res.linked).toBe(1);
   });
 });

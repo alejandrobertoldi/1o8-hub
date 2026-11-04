@@ -1,9 +1,10 @@
-import { and, eq, notInArray, sql } from "drizzle-orm";
+import { and, eq, isNull, notInArray, or, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { aac, asanaTasks, asanaSyncState } from "@/lib/db/schema";
 import { asanaFetch } from "@/lib/onboarding/create-asana-project";
 import {
   mapAsanaTask,
+  clientProjectOf,
   ASANA_COMPLETED_WINDOW_DAYS,
   ASANA_OPT_FIELDS,
   ASANA_REPORTING_PROJECT_GID,
@@ -21,19 +22,30 @@ export interface AsanaSyncDeps {
   closeMissing(openGids: string[]): Promise<number>;
   /** AAC client codes; enables 1o8-style bare-code matching ("KSS | …") in mapAsanaTask. */
   knownClientCodes?(): Promise<ReadonlySet<string>>;
+  /** Fill aac.asana_project_gid for clients that have none (never overwrites). Returns clients linked. */
+  linkClientProjects?(projects: Map<string, string>): Promise<number>;
 }
 
-export async function runAsanaSync(deps: AsanaSyncDeps): Promise<{ open: number; pages: number; closed: number }> {
+export async function runAsanaSync(deps: AsanaSyncDeps): Promise<{ open: number; pages: number; closed: number; linked: number }> {
   const seen: string[] = [];
   let openCount = 0;
   let offset: string | null = null;
   let pages = 0;
   const knownCodes = deps.knownClientCodes ? await deps.knownClientCodes() : undefined;
+  // code → project gid → tasks seen there; a client's project is the one most of its tasks live in.
+  const projectVotes = new Map<string, Map<string, number>>();
   do {
     if (pages >= MAX_PAGES) throw new Error(`Asana sync hit the page cap (${MAX_PAGES}); refusing to close out`);
     const page = await deps.fetchPage(offset);
     pages++;
     const rows = page.data.map((t) => mapAsanaTask(t, knownCodes));
+    for (const t of page.data) {
+      const p = clientProjectOf(t, knownCodes);
+      if (!p) continue;
+      const votes = projectVotes.get(p.code) ?? new Map<string, number>();
+      votes.set(p.gid, (votes.get(p.gid) ?? 0) + 1);
+      projectVotes.set(p.code, votes);
+    }
     if (rows.length) await deps.upsert(rows);
     seen.push(...rows.map((r) => r.gid));
     openCount += rows.filter((r) => !r.completed).length;
@@ -43,8 +55,10 @@ export async function runAsanaSync(deps: AsanaSyncDeps): Promise<{ open: number;
   // An empty run is far more likely an outage/permission change than a team with zero open tasks.
   if (seen.length === 0) throw new Error("Asana returned zero open tasks; refusing to mark everything completed");
   const closed = await deps.closeMissing(seen);
+  const projects = new Map([...projectVotes].map(([code, votes]) => [code, [...votes].sort((a, b) => b[1] - a[1])[0][0]]));
+  const linked = deps.linkClientProjects && projects.size ? await deps.linkClientProjects(projects) : 0;
   // `seen` also holds recently completed tasks (completed_since window); report open ones only.
-  return { open: openCount, pages, closed };
+  return { open: openCount, pages, closed, linked };
 }
 
 export function dbAsanaSyncDeps(): AsanaSyncDeps {
@@ -84,6 +98,18 @@ export function dbAsanaSyncDeps(): AsanaSyncDeps {
     async knownClientCodes() {
       const rows = await db.select({ code: aac.clientIdCode }).from(aac);
       return new Set(rows.map((r) => r.code));
+    },
+    async linkClientProjects(projects) {
+      let linked = 0;
+      for (const [code, gid] of projects) {
+        const res = await db
+          .update(aac)
+          .set({ asanaProjectGid: gid })
+          .where(and(eq(aac.clientIdCode, code), or(isNull(aac.asanaProjectGid), eq(aac.asanaProjectGid, ""))))
+          .returning({ code: aac.clientIdCode });
+        linked += res.length;
+      }
+      return linked;
     },
     async closeMissing(openGids) {
       const res = await db

@@ -19,7 +19,7 @@ async function main() {
   try {
     const r = await runAsanaSync(dbAsanaSyncDeps());
     await recordSyncState({ ok: true, open: r.open });
-    console.log(`Asana sync OK: ${r.open} open tasks (${r.pages} pages), ${r.closed} marked completed.`);
+    console.log(`Asana sync OK: ${r.open} open tasks (${r.pages} pages), ${r.closed} marked completed, ${r.linked} clients linked to their Asana project.`);
 
     const { db } = await import("../../src/lib/db");
     const { asanaTasks } = await import("../../src/lib/db/schema");
