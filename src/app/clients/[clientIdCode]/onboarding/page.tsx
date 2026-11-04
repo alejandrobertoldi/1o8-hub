@@ -13,6 +13,7 @@
 /* eslint-disable react-doctor/no-array-index-as-key */
 
 import { hasAdminPowers } from "@/lib/roles";
+import { TEAM_ROLES } from "@/lib/constants";
 /* eslint-disable react-doctor/nextjs-no-img-element */
 /* eslint-disable react-doctor/rendering-hydration-mismatch-time */
 
@@ -1483,16 +1484,6 @@ function StepCard({
                 )}
               </dd>
 
-              <dt className="text-muted-foreground">Template</dt>
-              <dd>
-                {createClientDetail?.client.clientType ? (
-                  <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${clientTypeChipClass(createClientDetail.client.clientType)}`}>
-                    {createClientDetail.client.clientType}
-                  </span>
-                ) : (
-                  <span className="text-muted-foreground">—</span>
-                )}
-              </dd>
             </dl>
           ) : (
             <p className="text-xs text-muted-foreground">{step.description}</p>
@@ -2040,16 +2031,8 @@ const PARENT_LABELS: Record<string, string> = {
 
 // ── Assign Team Inline ───────────────────────────────────────────
 
-const TEAM_ROLE_KEYS = [
-  { key: "ExecutiveStrategist_MF", label: "Executive Strategist" },
-  { key: "AccountManager_MF", label: "Account Manager" },
-  { key: "ProjectManager_MF", label: "Project Manager" },
-  { key: "SEOManager_MF", label: "SEO Manager" },
-  { key: "PPCManager_MF", label: "PPC Manager" },
-  { key: "DesignManager_MF", label: "Design Manager" },
-  { key: "CatalogManager_MF", label: "Catalog Manager" },
-];
-
+// 1o8's team roles (same keys and labels as the client profile's Team section).
+const TEAM_ROLE_KEYS = Object.entries(TEAM_ROLES).map(([key, label]) => ({ key, label }));
 function AssignTeamInline({
   step,
   clientIdCode,

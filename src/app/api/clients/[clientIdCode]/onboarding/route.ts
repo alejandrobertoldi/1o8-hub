@@ -73,7 +73,7 @@ async function getOnboarding(
 
   // Fetch aac data for pre-populating step metadata
   const [client] = await db
-    .select({ rawData: aac.rawData, onboardingDate: aac.onboardingDate, clientType: aac.clientType })
+    .select({ rawData: aac.rawData, onboardingDate: aac.onboardingDate, clientType: aac.clientType, asanaProjectGid: aac.asanaProjectGid })
     .from(aac)
     .where(eq(aac.clientIdCode, clientIdCode))
     .limit(1);
@@ -159,6 +159,27 @@ async function getOnboarding(
         .where(inArray(users.id, assigneeIds))
     : [];
   const assigneeMap = new Map(assigneeUsers.map((u) => [u.id, u]));
+
+  // The Asana sync links each client to its project (aac.asana_project_gid);
+  // once linked, "Setup Asana Project" is done — nobody has to paste the URL.
+  const asanaRow = stepMap.get("setup_asana");
+  if (client?.asanaProjectGid && asanaRow?.status !== "completed") {
+    const projectGid = client.asanaProjectGid;
+    const metadata = { ...((asanaRow?.metadata as Record<string, unknown> | null) ?? {}), projectGid, projectUrl: `https://app.asana.com/0/${projectGid}`, linkedBy: "asana-sync" };
+    const values = { status: "completed", completedAt: new Date(), completedBy: "auto", metadata, updatedAt: new Date() };
+    await db
+      .insert(clientOnboardingSteps)
+      .values({ clientIdCode, stepKey: "setup_asana", ...values })
+      .onConflictDoUpdate({ target: [clientOnboardingSteps.clientIdCode, clientOnboardingSteps.stepKey], set: values });
+    stepMap.set("setup_asana", {
+      id: asanaRow?.id ?? "",
+      clientIdCode,
+      stepKey: "setup_asana",
+      assigneeId: asanaRow?.assigneeId ?? null,
+      createdAt: asanaRow?.createdAt ?? new Date(),
+      ...values,
+    });
+  }
 
   // Merge definitions with DB state
   const steps = applicableSteps.map((def) => {

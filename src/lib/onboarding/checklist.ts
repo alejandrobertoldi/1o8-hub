@@ -175,7 +175,6 @@ export function buildClientChecklist(input: ChecklistInput): ClientChecklist {
         { key: "bv_reference_posts", label: "Reference posts", href: VOICE, done: has(bv?.referencePosts), applies: needs.seo, service: "SEO" },
         { key: "bv_keywords", label: "Pillar keywords", href: VOICE, done: has(bv?.keywords), applies: needs.seo, service: "SEO" },
         { key: "bv_product_facts", label: "Product facts", href: VOICE, done: has(bv?.productFacts), applies: needs.seo, service: "SEO" },
-        { key: "bv_internal_links", label: "Internal links", href: VOICE, done: has(bv?.internalLinks), applies: needs.seo, service: "SEO" },
       ],
     },
     {
