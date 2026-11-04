@@ -77,5 +77,13 @@ describe("buildClientChecklist", () => {
     expect(c.contract).toEqual({ sowUrl: url, sow: "Retainer", term: "Signed Jan 6, 2026", lastDay: "" });
     expect(item(buildClientChecklist(base()), "sow_link")?.state).toBe("missing");
   });
+
+  it("counts GA4 / Meta access as granted once a property / ad account is picked", () => {
+    const raw = { "Service: Meta": "Meta" };
+    expect(item(buildClientChecklist(base({ rawData: raw })), "access_ga4")?.state).toBe("missing");
+    const c = buildClientChecklist(base({ rawData: { ...raw, GA4Property: "123", MetaAdAccount: "456" } }));
+    expect(item(c, "access_ga4")?.state).toBe("done");
+    expect(item(c, "access_meta")?.state).toBe("done");
+  });
 });
 

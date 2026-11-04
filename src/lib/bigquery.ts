@@ -375,10 +375,11 @@ const AAC_TABLE = `${PROJECT_ID}.${DATASET}.AAC`;
  * Allowed AAC column names. The name is interpolated into a backtick-quoted
  * identifier, so it must never contain backticks, backslashes, quotes,
  * semicolons or newlines. Besides letters, digits, underscore and space, the
- * AAC sheet headers mirrored into raw_data use ":", "-" and parentheses
- * (e.g. "Service: SEO (2)", "ClientIDCode - ASANA"), so those are allowed too.
+ * AAC sheet headers mirrored into raw_data use ":", "-", "/" and parentheses
+ * (e.g. "Service: SEO (2)", "ClientIDCode - ASANA", "Service: Photo/Video"),
+ * so those are allowed too.
  */
-const AAC_COLUMN_NAME_RE = /^[A-Za-z_][A-Za-z0-9_ :()-]*$/;
+const AAC_COLUMN_NAME_RE = /^[A-Za-z_][A-Za-z0-9_ :()/-]*$/;
 const AAC_COLUMN_NAME_MAX = 300;
 
 export class InvalidAacColumnError extends Error {

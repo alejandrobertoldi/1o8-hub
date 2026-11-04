@@ -12,8 +12,9 @@ const insertChain = {
   values: vi.fn().mockResolvedValue(undefined),
 };
 
-vi.mock("@/lib/auth", () => ({
-  auth: vi.fn(),
+vi.mock("@/lib/auth-db", () => ({
+  // The route reads the DB-backed session (the role comes from users, not the JWT).
+  getAuthSession: vi.fn(),
 }));
 vi.mock("@/lib/db", () => ({
   db: {
@@ -23,7 +24,7 @@ vi.mock("@/lib/db", () => ({
 }));
 
 import { PATCH } from "./route";
-import { auth } from "@/lib/auth";
+import { getAuthSession } from "@/lib/auth-db";
 
 function makeReq(body: unknown) {
   return new Request("http://test/api/clients/C1/sections", {
@@ -42,13 +43,13 @@ beforeEach(() => {
 
 describe("PATCH /api/clients/[clientIdCode]/sections", () => {
   it("returns 403 for non-admin", async () => {
-    vi.mocked(auth).mockResolvedValue({ user: { role: "client", id: "u1" } } as never);
+    vi.mocked(getAuthSession).mockResolvedValue({ user: { role: "client", id: "u1" } } as never);
     const res = await PATCH(makeReq({ allowedSections: ["timeline"] }), { params: Promise.resolve({ clientIdCode: "C1" }) });
     expect(res.status).toBe(403);
   });
 
   it("returns 400 on invalid section id", async () => {
-    vi.mocked(auth).mockResolvedValue({ user: { role: "admin", id: "u1" } } as never);
+    vi.mocked(getAuthSession).mockResolvedValue({ user: { role: "admin", id: "u1" } } as never);
     const res = await PATCH(makeReq({ allowedSections: ["timeline", "not-a-real-section"] }), { params: Promise.resolve({ clientIdCode: "C1" }) });
     expect(res.status).toBe(400);
     const body = await res.json();
@@ -56,13 +57,13 @@ describe("PATCH /api/clients/[clientIdCode]/sections", () => {
   });
 
   it("returns 400 when allowedSections is missing or not an array", async () => {
-    vi.mocked(auth).mockResolvedValue({ user: { role: "admin", id: "u1" } } as never);
+    vi.mocked(getAuthSession).mockResolvedValue({ user: { role: "admin", id: "u1" } } as never);
     const res = await PATCH(makeReq({}), { params: Promise.resolve({ clientIdCode: "C1" }) });
     expect(res.status).toBe(400);
   });
 
   it("returns 200 with body on success", async () => {
-    vi.mocked(auth).mockResolvedValue({ user: { role: "admin", id: "u1" } } as never);
+    vi.mocked(getAuthSession).mockResolvedValue({ user: { role: "admin", id: "u1" } } as never);
     const res = await PATCH(makeReq({ allowedSections: ["timeline", "sales"] }), { params: Promise.resolve({ clientIdCode: "C1" }) });
     expect(res.status).toBe(200);
     const body = await res.json();
@@ -76,7 +77,7 @@ describe("PATCH /api/clients/[clientIdCode]/sections", () => {
   // that window reverted the first. The delta form never sends an array.
 
   it("applies a disable delta as SQL against the stored row, not a client array", async () => {
-    vi.mocked(auth).mockResolvedValue({ user: { role: "admin", id: "u1" } } as never);
+    vi.mocked(getAuthSession).mockResolvedValue({ user: { role: "admin", id: "u1" } } as never);
     const res = await PATCH(
       makeReq({ sectionId: "timeline", enabled: false }),
       { params: Promise.resolve({ clientIdCode: "C1" }) },
@@ -89,7 +90,7 @@ describe("PATCH /api/clients/[clientIdCode]/sections", () => {
   });
 
   it("applies an enable delta", async () => {
-    vi.mocked(auth).mockResolvedValue({ user: { role: "admin", id: "u1" } } as never);
+    vi.mocked(getAuthSession).mockResolvedValue({ user: { role: "admin", id: "u1" } } as never);
     const res = await PATCH(
       makeReq({ sectionId: "timeline", enabled: true }),
       { params: Promise.resolve({ clientIdCode: "C1" }) },
@@ -99,7 +100,7 @@ describe("PATCH /api/clients/[clientIdCode]/sections", () => {
   });
 
   it("enabling design also writes design subsection ids into the SQL expression", async () => {
-    vi.mocked(auth).mockResolvedValue({ user: { role: "admin", id: "u1" } } as never);
+    vi.mocked(getAuthSession).mockResolvedValue({ user: { role: "admin", id: "u1" } } as never);
     const res = await PATCH(
       makeReq({ sectionId: "design", enabled: true }),
       { params: Promise.resolve({ clientIdCode: "C1" }) },
@@ -131,7 +132,7 @@ describe("PATCH /api/clients/[clientIdCode]/sections", () => {
   });
 
   it("rejects an unknown sectionId in the delta form", async () => {
-    vi.mocked(auth).mockResolvedValue({ user: { role: "admin", id: "u1" } } as never);
+    vi.mocked(getAuthSession).mockResolvedValue({ user: { role: "admin", id: "u1" } } as never);
     const res = await PATCH(
       makeReq({ sectionId: "not-a-real-section", enabled: false }),
       { params: Promise.resolve({ clientIdCode: "C1" }) },
@@ -141,7 +142,7 @@ describe("PATCH /api/clients/[clientIdCode]/sections", () => {
   });
 
   it("rejects a delta with a non-boolean enabled", async () => {
-    vi.mocked(auth).mockResolvedValue({ user: { role: "admin", id: "u1" } } as never);
+    vi.mocked(getAuthSession).mockResolvedValue({ user: { role: "admin", id: "u1" } } as never);
     const res = await PATCH(
       makeReq({ sectionId: "timeline", enabled: "yes" }),
       { params: Promise.resolve({ clientIdCode: "C1" }) },

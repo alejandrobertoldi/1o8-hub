@@ -227,14 +227,16 @@ export function buildClientChecklist(input: ChecklistInput): ClientChecklist {
       key: "connections",
       label: "Connections",
       defs: [
+        // The GA4 / Meta pickers only list accounts 1o8 can already read, so a
+        // property or ad account on file means the access exists.
         { key: "conn_ga4", label: "GA4 property", href: OVERVIEW, done: has(s("GA4Property")) },
-        { key: "access_ga4", label: "GA4 access granted to 1o8", href: ONBOARDING, done: false, manual: true },
+        { key: "access_ga4", label: "GA4 access granted to 1o8", href: ONBOARDING, done: has(s("GA4Property")), manual: true },
         { key: "conn_shopify", label: "Shopify store", href: OVERVIEW, done: has(s("ShopifyStore")), field: { key: "ShopifyStore", type: "text" }, applies: needs.web, service: "Website" },
         { key: "access_shopify", label: "Shopify admin access (collaborator)", href: ONBOARDING, done: false, manual: true, applies: needs.web, service: "Website" },
         { key: "conn_klaviyo", label: "Klaviyo key", href: OVERVIEW, done: input.klaviyoConnected, applies: needs.email, service: "Email" },
         { key: "access_klaviyo", label: "Klaviyo user access", href: ONBOARDING, done: false, manual: true, applies: needs.email, service: "Email" },
         { key: "conn_meta", label: "Meta ad account", href: OVERVIEW, done: has(s("MetaAdAccount")), applies: needs.meta, service: "Meta" },
-        { key: "access_meta", label: "Meta Business partner access", href: ONBOARDING, done: false, manual: true, applies: needs.meta, service: "Meta" },
+        { key: "access_meta", label: "Meta Business partner access", href: ONBOARDING, done: has(s("MetaAdAccount")), manual: true, applies: needs.meta, service: "Meta" },
         { key: "conn_google_ads", label: "Google Ads customer ID", href: OVERVIEW, done: has(s("GoogleAdsCustomerId")), field: { key: "GoogleAdsCustomerId", type: "text" }, applies: needs.googleAds, service: "Google" },
         { key: "access_google_ads", label: "Google Ads access (MCC link)", href: ONBOARDING, done: false, manual: true, applies: needs.googleAds, service: "Google" },
       ],
