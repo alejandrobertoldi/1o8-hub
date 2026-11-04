@@ -60,6 +60,25 @@ export const kpiDef = (key: string): KpiDef | undefined => BY_KEY.get(key);
 export type ClientKpi = { key: string; label?: string; target?: string; note?: string };
 
 export const MAIN_KPIS_FIELD = "MainKPIs";
+
+/** The report page that breaks a KPI down, by where its number comes from. */
+const REPORT_BY_SOURCE: Record<KpiSource, string> = {
+  shopify: "/reports/sales",
+  ads: "/reports/paid-media",
+  ga4: "/reports/traffic",
+  email: "/reports/email",
+  // Mixed or not-yet-reported sources: the Main KPIs report shows them against target.
+  shopify_ads: "/reports/kpis",
+  retail: "/reports/kpis",
+  social: "/reports/kpis",
+  other: "/reports/kpis",
+};
+
+/** Deep link to a KPI's report for one client, month to date (what the KPI chips show). */
+export function kpiReportHref(key: string, clientIdCode: string): string {
+  const source = kpiDef(key)?.source ?? "other";
+  return `${REPORT_BY_SOURCE[source]}?client=${encodeURIComponent(clientIdCode)}&range=mtd`;
+}
 export const MAIN_KPI_SHEET_FIELD = "Main KPI";
 
 export function kpiLabel(k: ClientKpi): string {

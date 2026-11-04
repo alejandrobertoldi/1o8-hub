@@ -82,7 +82,19 @@ function useReportControlsState(): ReportControls {
       .then((payload: unknown) => {
         const list = asClientList(payload);
         setClients(list);
-        if (list.length > 0) {
+        // Deep link from Clients Insight: /reports/sales?client=KSS&range=mtd
+        // opens the report on that client, month to date (what the KPI chip shows).
+        const params = new URLSearchParams(window.location.search);
+        const wanted = params.get("client")?.trim().toUpperCase();
+        const linked = wanted ? list.find((c) => c.clientIdCode.toUpperCase() === wanted) : undefined;
+        if (params.get("range") === "mtd") {
+          setMode("custom");
+          setCustomStart(getFirstDayOfCurrentMonth(new Date()));
+          setCustomEnd(formatDate(new Date()));
+        }
+        if (linked) {
+          setSelectedClient(linked.clientName);
+        } else if (list.length > 0) {
           setSelectedClient((cur) => {
             const stillActive = list.some((c) => c.clientName === cur || c.clientIdCode === cur);
             return stillActive && cur ? cur : list[0].clientName;

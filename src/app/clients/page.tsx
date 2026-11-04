@@ -22,7 +22,7 @@ import { PageMetaSlot } from "@/components/layout/page-header-slot";
 import { hasAdminPowers } from "@/lib/roles";
 import { sowStatus } from "@/lib/clients/sow";
 import { SowBadge } from "@/components/clients/client-contract";
-import { MAIN_KPI_SHEET_FIELD, MAIN_KPIS_FIELD, kpiLabel, parseClientKpis, suggestKpisFromText } from "@/lib/clients/kpis";
+import { MAIN_KPI_SHEET_FIELD, MAIN_KPIS_FIELD, kpiLabel, kpiReportHref, parseClientKpis, suggestKpisFromText } from "@/lib/clients/kpis";
 import { formatKpi } from "@/lib/kpi/values";
 import type { ClientKpiReadings } from "@/lib/kpi/sync";
 
@@ -310,7 +310,11 @@ export default function ClientsPage() {
                       </div>
                     </div>
 
-                    <ClientKpiChips rawData={client.rawData ?? {}} readings={kpisByCode.get(client.clientIdCode.toUpperCase())} />
+                    <ClientKpiChips
+                      clientIdCode={client.clientIdCode}
+                      rawData={client.rawData ?? {}}
+                      readings={kpisByCode.get(client.clientIdCode.toUpperCase())}
+                    />
 
                     {/* Bottom: Asana readiness */}
                     <ClientReadinessBlock row={readinessByCode.get(client.clientIdCode.toUpperCase())} />
@@ -454,34 +458,48 @@ function ClientReadinessBlock({ row }: { row?: ClientReadinessRow }) {
  * profile) are solid; ones only read from the sheet's free text are dashed
  * until someone confirms them on the profile.
  */
-function ClientKpiChips({ rawData, readings }: { rawData: Record<string, string>; readings?: ClientKpiReadings }) {
+/**
+ * The client's Main KPIs, month to date against target. Each one opens the
+ * report that breaks it down (Sales, Paid Media, Traffic, Email or Main KPIs)
+ * on this client.
+ */
+function ClientKpiChips({ clientIdCode, rawData, readings }: { clientIdCode: string; rawData: Record<string, string>; readings?: ClientKpiReadings }) {
   const confirmed = parseClientKpis(rawData[MAIN_KPIS_FIELD]);
   const kpis = confirmed.length ? confirmed : suggestKpisFromText(rawData[MAIN_KPI_SHEET_FIELD]);
   if (!kpis.length) {
     return <p className="text-[11px] text-muted-foreground/70">No main KPI set</p>;
   }
   return (
-    <div className="flex flex-wrap gap-1" title={confirmed.length ? "Main KPIs" : "From the AAC sheet — confirm them on the client's profile"}>
-      {kpis.map((k, i) => (
-        <span
-          key={`${k.key}-${i}`}
-          className={`inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-[10px] font-medium ${
-            confirmed.length ? "border-brand/30 bg-brand/10 text-foreground" : "border-dashed border-border text-muted-foreground"
-          }`}
-        >
-          {kpiLabel(k)}
-          {(() => {
-            const r = confirmed.length ? readings?.kpis[i] : undefined;
-            if (!r?.mtd) return k.target ? <span className="text-muted-foreground">· {k.target}</span> : null;
-            const tone = r.status === "on_track" ? "text-emerald-500" : r.status === "behind" ? "text-red-500" : "text-foreground";
-            return (
-              <span className={`font-semibold tabular-nums ${tone}`} title={`Month to date · ${r.mtd.basis}${k.target ? ` · target ${k.target}` : ""}`}>
-                {formatKpi(r.mtd)}
+    <div>
+      <p className="mb-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+        Main KPIs{confirmed.length ? " · month to date" : " · from the AAC sheet"}
+      </p>
+      <div className="grid grid-cols-2 gap-1.5">
+        {kpis.map((k, i) => {
+          const r = confirmed.length ? readings?.kpis[i] : undefined;
+          const tone = r?.status === "on_track" ? "text-emerald-500" : r?.status === "behind" ? "text-red-500" : "text-foreground";
+          return (
+            <Link
+              key={`${k.key}-${i}`}
+              href={kpiReportHref(k.key, clientIdCode)}
+              onClick={(e) => e.stopPropagation()}
+              title={r?.mtd ? `Month to date · ${r.mtd.basis}${k.target ? ` · target ${k.target}` : ""} — open the report` : "Open the report"}
+              className={`group/kpi flex min-w-0 flex-col rounded-lg border px-2.5 py-1.5 transition-colors hover:border-brand ${
+                confirmed.length ? "border-brand/30 bg-brand/5" : "border-dashed border-border"
+              }`}
+            >
+              <span className="flex items-center justify-between gap-1 text-[10px] text-muted-foreground">
+                <span className="truncate">{kpiLabel(k)}</span>
+                <span aria-hidden className="shrink-0 opacity-0 transition-opacity group-hover/kpi:opacity-100">↗</span>
               </span>
-            );
-          })()}
-        </span>
-      ))}
+              <span className="flex items-baseline gap-1.5">
+                <span className={`text-sm font-bold tabular-nums ${r?.mtd ? tone : "text-muted-foreground"}`}>{r?.mtd ? formatKpi(r.mtd) : "—"}</span>
+                {k.target && <span className="truncate text-[10px] text-muted-foreground">/ {k.target}</span>}
+              </span>
+            </Link>
+          );
+        })}
+      </div>
     </div>
   );
 }
