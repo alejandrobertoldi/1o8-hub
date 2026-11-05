@@ -9,7 +9,7 @@ import { TIME_SETTINGS } from "./catalog";
 const DAY = 86_400_000;
 const addDays = (d: string, n: number) => new Date(Date.parse(`${d}T00:00:00Z`) + n * DAY).toISOString().slice(0, 10);
 const weekday = (d: string) => new Date(`${d}T00:00:00Z`).getUTCDay(); // 0 Sun … 6 Sat
-const isWorkday = (d: string) => weekday(d) !== 0 && weekday(d) !== 6;
+const isWeekdayDate = (d: string) => weekday(d) !== 0 && weekday(d) !== 6;
 
 export type HoursFlag = {
   today: number;
@@ -27,8 +27,11 @@ export function hoursFlag(
     windowDays = 14,
     min = TIME_SETTINGS.dailyMinimumHours,
     start = TIME_SETTINGS.trackingStartDate,
-  }: { windowDays?: number; min?: number; start?: string } = {},
+    holidays = new Set<string>(),
+  }: { windowDays?: number; min?: number; start?: string; holidays?: ReadonlySet<string> } = {},
 ): HoursFlag {
+  // Holidays on the person's calendar aren't workdays.
+  const isWorkday = (d: string) => isWeekdayDate(d) && !holidays.has(d);
   const byDay = new Map<string, number>();
   for (const l of logs) byDay.set(l.entryDate, (byDay.get(l.entryDate) ?? 0) + Number(l.hours));
   const on = (d: string) => Math.round((byDay.get(d) ?? 0) * 100) / 100;

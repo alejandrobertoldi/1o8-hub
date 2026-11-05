@@ -95,12 +95,12 @@ export function isValidHours(hours: number): boolean {
   return Math.abs(steps - Math.round(steps)) < 1e-9;
 }
 
-/** Monday–Friday count between two YYYY-MM-DD dates, inclusive. */
-export function workdaysBetween(from: string, to: string): number {
+/** Monday–Friday count between two YYYY-MM-DD dates, inclusive, minus any `holidays` (YYYY-MM-DD) among them. */
+export function workdaysBetween(from: string, to: string, holidays?: ReadonlySet<string>): number {
   let n = 0;
   for (let d = new Date(`${from}T00:00:00Z`); d <= new Date(`${to}T00:00:00Z`); d.setUTCDate(d.getUTCDate() + 1)) {
     const wd = d.getUTCDay();
-    if (wd !== 0 && wd !== 6) n++;
+    if (wd !== 0 && wd !== 6 && !holidays?.has(d.toISOString().slice(0, 10))) n++;
   }
   return n;
 }

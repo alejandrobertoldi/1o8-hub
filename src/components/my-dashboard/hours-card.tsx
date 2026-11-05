@@ -28,9 +28,19 @@ export function HoursCard({ userId, today, self }: { userId: string; today: stri
     },
     refetchInterval: 5 * 60_000,
   });
+  // Holidays on that person's calendar (US by default) aren't workdays.
+  const { data: holidays } = useQuery<{ dates: string[] }>({
+    queryKey: ["dashboard-holidays", userId, today],
+    queryFn: async () => {
+      const qs = new URLSearchParams({ from: back(today, WINDOW_DAYS), to: today, userId });
+      const res = await fetch(`/api/time-logs/holidays?${qs}`);
+      return res.ok ? res.json() : { dates: [] };
+    },
+    staleTime: 60 * 60_000,
+  });
   if (error || isLoading || !logs) return null;
 
-  const f = hoursFlag(logs, today, { windowDays: WINDOW_DAYS });
+  const f = hoursFlag(logs, today, { windowDays: WINDOW_DAYS, holidays: new Set(holidays?.dates ?? []) });
   const min = TIME_SETTINGS.dailyMinimumHours;
   const short = f.shortDays.length > 0;
 

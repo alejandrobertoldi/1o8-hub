@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { teamDirectoryProfiles, timeLogs, users } from "@/lib/db/schema";
 import { BILLING_TYPES, TIMESHEET_LIMIT, TIME_SETTINGS, WEEKLY_CAPACITY_HOURS, workdaysBetween } from "./catalog";
 import { listLoggableClients } from "./server";
+import { DEFAULT_HOLIDAY_CALENDAR, holidayCalendar, holidaysByCalendar } from "./holidays";
 import { readinessDepartmentFor } from "@/lib/readiness/match";
 
 export type InsightFilters = {
@@ -37,7 +38,9 @@ const DAYS_PER_MONTH = 30.44;
  * range can't be "missing" yet).
  */
 export async function buildInsights(from: string, to: string, today = new Date().toISOString().slice(0, 10), filters: InsightFilters = {}) {
-  const [allLogs, fullTeam, clients] = await Promise.all([
+  // Expected hours start when hour logging went live, not before.
+  const expectedFrom = from < TIME_SETTINGS.trackingStartDate ? TIME_SETTINGS.trackingStartDate : from;
+  const [allLogs, fullTeam, clients, holidays] = await Promise.all([
     db
       .select({
         userId: timeLogs.userId,
@@ -53,13 +56,17 @@ export async function buildInsights(from: string, to: string, today = new Date()
       .from(timeLogs)
       .where(and(gte(timeLogs.entryDate, from), lte(timeLogs.entryDate, to))),
     db
-      .select({ id: users.id, name: users.name, departments: users.departments })
+      .select({ id: users.id, name: users.name, departments: users.departments, countryCode: users.countryCode })
       .from(users)
       .innerJoin(teamDirectoryProfiles, eq(teamDirectoryProfiles.userId, users.id))
       .where(eq(users.employmentStatus, "active"))
       .orderBy(asc(users.name)),
     listLoggableClients(),
+    holidaysByCalendar(from < expectedFrom ? from : expectedFrom, to),
   ]);
+  // Holidays on each person's calendar aren't workdays (US when none is assigned).
+  const holidaysOf = (countryCode: string | null) => holidays.get(holidayCalendar(countryCode)) ?? new Set<string>();
+  const usHolidays = holidays.get(DEFAULT_HOLIDAY_CALENDAR) ?? new Set<string>();
 
   // Filters: team (Readiness department of the person), one person, one type of work.
   const teamOf = (departments: string[] | null) => readinessDepartmentFor(departments ?? []);
@@ -75,10 +82,9 @@ export async function buildInsights(from: string, to: string, today = new Date()
   );
   const name = new Map(fullTeam.map((t) => [t.id, t.name ?? "—"]));
   const expectedTo = to < today ? to : today;
-  const workdays = workdaysBetween(from, to);
-  // Expected hours start when hour logging went live, not before.
-  const expectedFrom = from < TIME_SETTINGS.trackingStartDate ? TIME_SETTINGS.trackingStartDate : from;
-  const workdaysSoFar = expectedTo >= expectedFrom ? workdaysBetween(expectedFrom, expectedTo) : 0;
+  // The range's workdays as shown (US calendar); each person's expected hours use their own calendar.
+  const workdays = workdaysBetween(from, to, usHolidays);
+  const workdaysSoFar = expectedTo >= expectedFrom ? workdaysBetween(expectedFrom, expectedTo, usHolidays) : 0;
 
   // ── 1. Compliance ──
   const perUserDay = new Map<string, Map<string, number>>();
@@ -94,8 +100,10 @@ export async function buildInsights(from: string, to: string, today = new Date()
   const compliance = team.map((t) => {
     const days = perUserDay.get(t.id) ?? new Map<string, number>();
     const logged = [...days.values()].reduce((a, b) => a + b, 0);
-    const expected = workdaysSoFar * TIME_SETTINGS.dailyMinimumHours;
-    const weekdayEntries = [...days.entries()].filter(([d]) => isWeekday(d) && d >= expectedFrom && d <= expectedTo);
+    const off = holidaysOf(t.countryCode);
+    const theirWorkdays = expectedTo >= expectedFrom ? workdaysBetween(expectedFrom, expectedTo, off) : 0;
+    const expected = theirWorkdays * TIME_SETTINGS.dailyMinimumHours;
+    const weekdayEntries = [...days.entries()].filter(([d]) => isWeekday(d) && !off.has(d) && d >= expectedFrom && d <= expectedTo);
     return {
       userId: t.id,
       name: t.name ?? "—",
@@ -105,7 +113,7 @@ export async function buildInsights(from: string, to: string, today = new Date()
       workdaysLogged: weekdayEntries.length,
       // Days with nothing logged count too, like the sheet's "workdays under the minimum".
       workdaysUnderMinimum:
-        weekdayEntries.filter(([, h]) => h < TIME_SETTINGS.dailyMinimumHours).length + (workdaysSoFar - weekdayEntries.length),
+        weekdayEntries.filter(([, h]) => h < TIME_SETTINGS.dailyMinimumHours).length + (theirWorkdays - weekdayEntries.length),
     };
   });
 
@@ -193,11 +201,16 @@ export async function buildInsights(from: string, to: string, today = new Date()
     return e > to ? to : e;
   };
   for (let w = weekStart(from); w <= to; ) {
-    weeks.push(w);
+    // A week whose days in the range are all weekend (a range starting on a Sunday) has
+    // nothing to measure: leave it out unless hours were logged in it.
+    if (workdaysBetween(w < from ? from : w, weekEnd(w)) > 0 || weekly[w]) weeks.push(w);
     const d = new Date(`${w}T00:00:00Z`);
     d.setUTCDate(d.getUTCDate() + 7);
     w = d.toISOString().slice(0, 10);
   }
+  // 8 h × each person's workdays that week (inside the range, after hour logging went live), minus their holidays.
+  const capacityOf = (w: string) =>
+    team.reduce((sum, t) => sum + workdaysBetween(clipFrom(w), weekEnd(w), holidaysOf(t.countryCode)), 0) * TIME_SETTINGS.dailyMinimumHours;
 
   return {
     range: { from, to, workdays, workdaysSoFar },
@@ -249,10 +262,10 @@ export async function buildInsights(from: string, to: string, today = new Date()
     clientNames: Object.fromEntries(clients.map((c) => [c.code, c.name])),
     people: fullTeam.map((t) => ({ id: t.id, name: t.name ?? "—", team: teamOf(t.departments) })),
     byPersonClient,
-    // Capacity = 8 h × workdays of the week inside the range × people (40 h per person for a full week).
+    // Capacity = 8 h × each person's workdays of the week inside the range, holidays excluded (40 h for a full week).
     weekly: weeks.map((w) => ({
       week: w,
-      capacity: workdaysBetween(clipFrom(w), weekEnd(w)) * TIME_SETTINGS.dailyMinimumHours * people,
+      capacity: capacityOf(w),
       total: round2(Object.values(weekly[w] ?? {}).reduce((a, b) => a + b, 0)),
       ...(weekly[w] ?? {}),
     })),

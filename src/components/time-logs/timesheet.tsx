@@ -87,6 +87,22 @@ export function Timesheet() {
     },
   });
 
+  // Holidays on this person's calendar (US by default) aren't workdays: never "under the minimum".
+  const holFrom = windowStart < weekStart ? windowStart : weekStart;
+  const holTo = weekEnd > today ? weekEnd : today;
+  const { data: holidayData } = useQuery<{ calendar: string; dates: string[] }>({
+    queryKey: ["time-log-holidays", userId, holFrom, holTo],
+    enabled: !!userId,
+    queryFn: async () => {
+      const res = await fetch(`/api/time-logs/holidays?from=${holFrom}&to=${holTo}&userId=${userId}`);
+      return res.ok ? res.json() : { calendar: "", dates: [] };
+    },
+    staleTime: 60 * 60_000,
+  });
+  const holidays = useMemo(() => new Set(holidayData?.dates ?? []), [holidayData]);
+  // A workday that's over (today isn't yet), not a holiday.
+  const isWorkdayDone = (d: string) => isWeekday(d) && !holidays.has(d) && d < today;
+
   const { data: projectData, isFetching: loadingProjects } = useQuery<{ projects: LoggableProject[]; narrowed: boolean }>({
     queryKey: ["time-log-projects", form.clientIdCode, form.department],
     enabled: !!form.clientIdCode,
@@ -162,9 +178,9 @@ export function Timesheet() {
     const t: Record<string, number> = {};
     for (const l of recent) t[l.entryDate] = (t[l.entryDate] ?? 0) + Number(l.hours);
     let n = 0;
-    for (let d = windowStart; d <= today; d = addDays(d, 1)) if (isWeekday(d) && (t[d] ?? 0) < min) n++;
+    for (let d = windowStart; d < today; d = addDays(d, 1)) if (isWeekday(d) && !holidays.has(d) && (t[d] ?? 0) < min) n++;
     return n;
-  }, [recent, windowStart, today, min]);
+  }, [recent, windowStart, today, min, holidays]);
 
   const clientName = (code: string) => options?.clients.find((c) => c.code === code)?.name ?? code;
   const canSave = form.entryDate && Number(form.hours) > 0 && form.clientIdCode && form.department && form.projectNumber;
@@ -239,7 +255,7 @@ export function Timesheet() {
       <div className="grid grid-cols-7 gap-2">
         {days.map((d) => {
           const total = totals[d] ?? 0;
-          const short = isWeekday(d) && d <= today && total < min;
+          const short = isWorkdayDone(d) && total < min;
           return (
             <button
               key={d}
@@ -254,7 +270,10 @@ export function Timesheet() {
                 d === today && "bg-muted/50",
               )}
             >
-              <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{fmtDay(d, { weekday: "short", day: "numeric" })}</div>
+              <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                {fmtDay(d, { weekday: "short", day: "numeric" })}
+                {holidays.has(d) && <span className="ml-1 normal-case tracking-normal text-brand">Holiday</span>}
+              </div>
               <div className={cn("text-lg font-bold tabular-nums", short ? "text-red-500" : total ? "" : "text-muted-foreground/60")}>{fmtHours(total)}</div>
             </button>
           );

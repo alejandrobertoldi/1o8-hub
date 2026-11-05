@@ -41,5 +41,7 @@ describe("time-tracking catalog", () => {
     expect(workTypeTag("Client Meetings")).toBeNull();
     expect(workdaysBetween("2026-10-01", "2026-10-31")).toBe(22);
     expect(workdaysBetween("2026-10-24", "2026-10-25")).toBe(0);
+    // November 2026 on the US calendar: Veterans Day and Thanksgiving aren't workdays.
+    expect(workdaysBetween("2026-11-01", "2026-11-30", new Set(["2026-11-11", "2026-11-26"]))).toBe(19);
   });
 });

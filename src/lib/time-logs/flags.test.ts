@@ -33,4 +33,12 @@ describe("hoursFlag", () => {
     expect(f.shortDays.map((d) => d.date)).toEqual(["2026-11-05", "2026-11-04", "2026-11-03", "2026-11-02"]);
     expect(hoursFlag([], "2026-11-02", opts)).toMatchObject({ lastWorkday: null, shortDays: [], week: { expected: 0 } });
   });
+
+  it("doesn't count holidays as workdays", () => {
+    // Thanksgiving Thu Nov 26: Friday's last workday is Wed Nov 25, and the 26th is never short.
+    const f = hoursFlag([{ entryDate: "2026-11-25", hours: 8 }], "2026-11-27", { ...opts, holidays: new Set(["2026-11-26"]) });
+    expect(f.lastWorkday).toEqual({ date: "2026-11-25", hours: 8 });
+    expect(f.shortDays.map((d) => d.date)).not.toContain("2026-11-26");
+    expect(f.week.expected).toBe(24);
+  });
 });
