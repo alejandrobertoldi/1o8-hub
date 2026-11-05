@@ -18,7 +18,8 @@ import { BrandWatermark } from "@/components/auth/brand-watermark";
 
 function SignInForm() {
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/products";
+  // "/" opens My Dashboard (client users are kept on /portal by the proxy).
+  const callbackUrl = searchParams.get("callbackUrl") || "/";
 
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-muted/40">
