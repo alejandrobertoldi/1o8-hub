@@ -1,6 +1,6 @@
 /* eslint-disable react-doctor/async-await-in-loop */
 // Asana REST API integration (Personal Access Token).
-// Config loaded from DB (Admin > Asana Config), falls back to hardcoded defaults.
+// Config loaded from DB (Admin → Configuration → Asana project template), falls back to the defaults below.
 
 import { db } from "@/lib/db";
 import { seoSettings } from "@/lib/db/schema";
@@ -9,12 +9,9 @@ import type { OrgProbe } from "./resolve-assignee";
 
 const ASANA_BASE = "https://app.asana.com/api/1.0";
 
-// Defaults — used when no DB config exists.
-// Team "Market Foundry" in the marketfoundry.agency workspace (1216006599656808).
-// The old 1o8 default was team "1o8 Marketplace" 1165458906654217 in org
-// 1165458906651074 — the 24 legacy client projects still live there and are read
-// through the fallback token in asanaFetch. New projects must not go there.
-const DEFAULT_TEAM_GID = "1216009494057854";
+// Defaults — used when no DB config exists. Team "1o8 Agency" in the 1o8
+// workspace (1165458906651074), where 1o8's client projects live.
+const DEFAULT_TEAM_GID = "1209687610482599";
 const DEFAULT_PROJECT_NAME_FORMAT = "{CIC} - {ClientName}";
 const DEFAULT_VIEW = "list";
 
@@ -31,7 +28,7 @@ async function loadConfig(): Promise<SavedConfig | null> {
     const [row] = await db
       .select({ value: seoSettings.value })
       .from(seoSettings)
-      .where(eq(seoSettings.key, "asana_config"))
+      .where(eq(seoSettings.key, "asana_config_1o8"))
       .limit(1);
     return row?.value ? JSON.parse(row.value) : null;
   } catch {
@@ -39,144 +36,35 @@ async function loadConfig(): Promise<SavedConfig | null> {
   }
 }
 
-// ── Custom Field Definitions ──────────────────────────────────────
-// These are created once at workspace level, then added to each project.
-
-interface CustomFieldDef {
-  name: string;
-  resource_subtype: "enum" | "text" | "number";
-  enum_options?: { name: string; color: string }[];
-  description?: string;
-  precision?: number;
-}
-
-const CUSTOM_FIELD_DEFINITIONS: CustomFieldDef[] = [
-  {
-    name: "Priority Levels",
-    resource_subtype: "enum",
-    enum_options: [
-      { name: "Low", color: "blue" },
-      { name: "Medium", color: "yellow" },
-      { name: "High", color: "orange" },
-      { name: "Urgent", color: "red" },
-    ],
-  },
-  {
-    name: "Task Status",
-    resource_subtype: "enum",
-    enum_options: [
-      { name: "Not Started", color: "cool-gray" },
-      { name: "In Progress", color: "blue" },
-      { name: "On Hold", color: "yellow" },
-      { name: "Completed", color: "green" },
-      { name: "Blocked", color: "red" },
-    ],
-  },
-  {
-    name: "Assignee Feedback",
-    resource_subtype: "text",
-    description: "Feedback from the task assignee",
-  },
-  {
-    name: "AM/PM Feedback",
-    resource_subtype: "text",
-    description: "Feedback from the Account Manager or Project Manager",
-  },
-  {
-    name: "Category",
-    resource_subtype: "enum",
-    enum_options: [
-      { name: "Onboarding", color: "purple" },
-      { name: "SEO", color: "green" },
-      { name: "Content", color: "blue" },
-      { name: "PPC", color: "orange" },
-      { name: "Admin", color: "cool-gray" },
-    ],
-  },
-  {
-    name: "Estimated Time",
-    resource_subtype: "number",
-    description: "Estimated time in hours",
-    precision: 1,
-  },
-  {
-    name: "Actual Time",
-    resource_subtype: "number",
-    description: "Actual time spent in hours",
-    precision: 1,
-  },
+// ── Custom fields ─────────────────────────────────────────────────
+// 1o8's own workspace fields, the ones its "CNM - Client Name" template project
+// carries. They already exist: they're added to each new project, never created.
+const CUSTOM_FIELD_GIDS = [
+  "1213197114817830", // 1O8 Priority
+  "1209866062360896", // Status
+  "1210746742899759", // 1O8 Status
+  "1213270453033481", // Go Live Date
+  "1216772547110708", // 1o8 Internal ID
 ];
 
-/** Get workspace GID from team */
-async function getWorkspaceGid(teamGid: string): Promise<string> {
-  const { data } = await asanaFetch(`/teams/${teamGid}?opt_fields=organization.gid`);
-  return data.organization.gid as string;
-}
-
-/** Search for existing custom fields in workspace by name */
-async function findWorkspaceCustomFields(
-  workspaceGid: string
-): Promise<{ gid: string; name: string }[]> {
-  const { data } = await asanaFetch(
-    `/workspaces/${workspaceGid}/custom_fields?opt_fields=name&limit=100`
-  );
-  return data as { gid: string; name: string }[];
-}
-
-/** Create a custom field in the workspace */
-async function createCustomField(
-  workspaceGid: string,
-  def: CustomFieldDef
-): Promise<string> {
-  const body: Record<string, unknown> = {
-    name: def.name,
-    resource_subtype: def.resource_subtype,
-    workspace: workspaceGid,
-  };
-  if (def.enum_options) body.enum_options = def.enum_options;
-  if (def.description) body.description = def.description;
-  if (def.precision !== undefined) body.precision = def.precision;
-
-  const { data } = await asanaFetch("/custom_fields", {
-    method: "POST",
-    body: JSON.stringify({ data: body }),
-  });
-  return data.gid as string;
-}
-
 /** Add a custom field to a project */
-async function addCustomFieldToProject(
-  projectGid: string,
-  customFieldGid: string
-): Promise<void> {
+async function addCustomFieldToProject(projectGid: string, customFieldGid: string): Promise<void> {
   await asanaFetch(`/projects/${projectGid}/addCustomFieldSetting`, {
     method: "POST",
-    body: JSON.stringify({
-      data: { custom_field: customFieldGid, is_important: true },
-    }),
+    body: JSON.stringify({ data: { custom_field: customFieldGid, is_important: true } }),
   });
 }
 
-/**
- * Ensure all custom fields exist in the workspace and add them to the project.
- * Finds existing fields by name to avoid duplicates.
- */
-async function ensureCustomFieldsOnProject(
-  teamGid: string,
-  projectGid: string
-): Promise<number> {
-  const workspaceGid = await getWorkspaceGid(teamGid);
-  const existing = await findWorkspaceCustomFields(workspaceGid);
-  const existingByName = new Map(existing.map((f) => [f.name, f.gid]));
-
+/** Adds 1o8's custom fields to the project; one that fails (e.g. another workspace) is skipped. */
+async function ensureCustomFieldsOnProject(projectGid: string): Promise<number> {
   let added = 0;
-  for (const def of CUSTOM_FIELD_DEFINITIONS) {
-    let fieldGid = existingByName.get(def.name);
-    if (!fieldGid) {
-      fieldGid = await createCustomField(workspaceGid, def);
+  for (const gid of CUSTOM_FIELD_GIDS) {
+    try {
+      await addCustomFieldToProject(projectGid, gid);
+      added++;
+    } catch (err) {
+      console.error(`[Asana] Couldn't add custom field ${gid} (continuing):`, err);
     }
-    await addCustomFieldToProject(projectGid, fieldGid);
-    added++;
   }
   return added;
 }
@@ -192,91 +80,35 @@ interface AsanaSection {
   tasks: AsanaTask[];
 }
 
-/**
- * Build sections with client ID code prefix.
- * Tasks without subtask: "{CIC} | {Section} | {Task}" (3-part)
- * Tasks with subtask:    "{CIC} | {Section} | {Task} | {Subtask}" (4-part)
- */
-function buildSections(cic: string): AsanaSection[] {
-  const p3 = (section: string, task: string) =>
-    `${cic} | ${section} | ${task}`;
-  const p4 = (section: string, task: string, subtask: string) =>
-    `${cic} | ${section} | ${task} | ${subtask}`;
-
-  return [
-    {
-      name: `${cic} | Onboarding`,
-      tasks: [
-        { name: p3("Onboarding", "01. Create Client"), notes: "Create client record in 1o8 Hub with ID code, name, and status" },
-        { name: p3("Onboarding", "02. Assign Team"), notes: "Assign team roles — auto-assigns remaining onboarding tasks to Account Manager (1o8)" },
-        { name: p3("Onboarding", "03. Setup Asana Project"), notes: "Create Asana project under 1o8" },
-        { name: p3("Onboarding", "04. Setup Starting Day & Timeline"), notes: "Set onboarding start date and initialize 13-week Gantt timeline" },
-        { name: p4("Onboarding", "05. Client Users", "Add Contact Emails"), notes: "Enter client contact email(s) for portal access and communication" },
-        { name: p4("Onboarding", "05. Client Users", "Add User to 1o8 Hub"), notes: "Add client Gmail account(s) to 1o8 Hub Users" },
-        { name: p4("Onboarding", "05. Client Users", "Assign Client Role"), notes: "Set user role to 'client' in Admin → Users" },
-        { name: p4("Onboarding", "05. Client Users", "Assign Client Project"), notes: "Link user to their client account (assign clientIdCode)" },
-        { name: p3("Onboarding", "06. Create Drive Folders"), notes: "Create full folder tree in Google Drive for assets, SEO, PPC, docs" },
-        { name: p3("Onboarding", "07. Send Onboarding Email"), notes: "Send welcome email with portal info, strategy overview, requirements" },
-        { name: p4("Onboarding", "08. Amazon Access", "Request Amazon Access"), notes: "Request access to Amazon Seller Central from client" },
-        { name: p4("Onboarding", "08. Amazon Access", "Provide Team Access"), notes: "Provide team members access to Amazon Seller Central" },
-        { name: p4("Onboarding", "09. Intentwise", "Add Sponsored Ads"), notes: "Add Sponsored Ads account in Intentwise" },
-        { name: p4("Onboarding", "09. Intentwise", "Add Seller Central"), notes: "Add Seller Central account in Intentwise" },
-        { name: p4("Onboarding", "09. Intentwise", "Get ID"), notes: "Get Intentwise advertiser ID" },
-        { name: p4("Onboarding", "09. Intentwise", "Request Enable"), notes: "Request Enable status in Intentwise" },
-        { name: p4("Onboarding", "10. Intentwise (AMC)", "Add Account"), notes: "Add AMC account in Intentwise" },
-        { name: p4("Onboarding", "10. Intentwise (AMC)", "Get ID"), notes: "Get Intentwise AMC ID" },
-        { name: p4("Onboarding", "10. Intentwise (AMC)", "Request Enable"), notes: "Request Enable status for AMC" },
-        { name: p4("Onboarding", "11. FeedbackWhiz", "Setup FeedbackWhiz"), notes: "Set up FeedbackWhiz review monitoring" },
-      ],
-    },
-    {
-      name: `${cic} | SEO`,
-      tasks: [
-        { name: p3("SEO", "Keyword Research"), notes: "Full keyword research for all client ASINs" },
-        { name: p3("SEO", "SEO Optimization"), notes: "Apply keyword strategy to titles, bullets, descriptions, and backend terms" },
-        { name: p4("SEO", "Competitors", "Tracking competitors"), notes: "Track and analyze competitor listings and keywords" },
-      ],
-    },
-    {
-      name: `${cic} | PPC`,
-      tasks: [
-        { name: p4("PPC", "Intentwise", "Setup Campaigns"), notes: "Connect Intentwise analytics and set up PPC campaigns" },
-        { name: p4("PPC", "Campaigns", "Launch"), notes: "Launch PPC campaigns" },
-        { name: p4("PPC", "Campaigns", "Manage"), notes: "Ongoing PPC campaign management and optimization" },
-      ],
-    },
-    {
-      name: `${cic} | Design`,
-      tasks: [
-        { name: p4("Design", "Brandstory", "Create"), notes: "Design and build A+ Brand Story module" },
-        { name: p4("Design", "A+ Content", "Create"), notes: "Design A+ content modules (up to 7 per ASIN)" },
-        { name: p4("Design", "Listing Images", "Create"), notes: "Design, edit, and optimize listing images" },
-        { name: p4("Design", "Storefront", "Create"), notes: "Design and build Amazon Storefront pages" },
-      ],
-    },
-    {
-      name: `${cic} | Recurring Tasks`,
-      tasks: [],
-    },
-    {
-      name: `${cic} | Others`,
-      tasks: [],
-    },
-  ];
-}
+/** 1o8's default sections (as its "CNM - Client Name" template project), named "{CIC} - Section". */
+const DEFAULT_SECTIONS: SavedConfig["sections"] = [
+  { name: "Form Requests", tasks: [] },
+  {
+    name: "Onboarding",
+    tasks: [
+      { name: "Project Tracker", notes: "Kick off the client: scope (SOW / quote), team, accesses and the 1o8 Hub client profile (Client Onboarding)" },
+      { name: "Review Project Tracker", notes: "Review the onboarding with the account team once the client profile is complete" },
+    ],
+  },
+  { name: "Account", tasks: [] },
+  { name: "Creative", tasks: [] },
+  { name: "Email", tasks: [] },
+  { name: "Web Development", tasks: [] },
+  { name: "Paid Media", tasks: [] },
+  { name: "SEO", tasks: [] },
+  { name: "Recurring Tasks", tasks: [] },
+  { name: "Other", tasks: [] },
+];
 
 /** Build sections from DB-stored config, applying CIC prefix */
 function buildSectionsFromConfig(
   cic: string,
   cfgSections: SavedConfig["sections"]
 ): AsanaSection[] {
+  // 1o8's naming: "KSS - Onboarding" sections, "KSS - Onboarding - Project Tracker" tasks.
   return cfgSections.map((s) => ({
-    name: `${cic} | ${s.name}`,
-    tasks: s.tasks.map((t) => ({
-      // Task name may already contain " | " for group/subtask (e.g., "Client Users | Add Contact Emails")
-      name: `${cic} | ${s.name} | ${t.name}`,
-      notes: t.notes,
-    })),
+    name: `${cic} - ${s.name}`,
+    tasks: s.tasks.map((t) => ({ name: `${cic} - ${s.name} - ${t.name}`, notes: t.notes })),
   }));
 }
 
@@ -661,7 +493,7 @@ export async function createAsanaProject(
   clientIdCode: string,
   clientName?: string
 ): Promise<AsanaProjectResult> {
-  // Load config from DB (Admin → Asana Config) or use defaults
+  // Load config from DB (Admin → Configuration) or use defaults
   const cfg = await loadConfig();
 
   const teamGid = cfg?.teamGid || DEFAULT_TEAM_GID;
@@ -692,15 +524,13 @@ export async function createAsanaProject(
   // 2. Add custom fields to project
   let customFieldsAdded = 0;
   try {
-    customFieldsAdded = await ensureCustomFieldsOnProject(teamGid, projectGid);
+    customFieldsAdded = await ensureCustomFieldsOnProject(projectGid);
   } catch (err) {
     console.error("[Asana] Failed to add custom fields (continuing):", err);
   }
 
   // 3. Build sections — from DB config or hardcoded defaults
-  const sections = cfg?.sections
-    ? buildSectionsFromConfig(clientIdCode, cfg.sections)
-    : buildSections(clientIdCode);
+  const sections = buildSectionsFromConfig(clientIdCode, cfg?.sections ?? DEFAULT_SECTIONS);
   for (const section of sections) {
     const { data: sec } = await asanaFetch(`/projects/${projectGid}/sections`, {
       method: "POST",

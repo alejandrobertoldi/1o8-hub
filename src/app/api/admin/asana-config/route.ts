@@ -24,7 +24,9 @@ export interface AsanaConfig {
   sections: AsanaSectionTemplate[];
 }
 
-const CONFIG_KEY = "asana_config";
+// v2 (2026-11-05): 1o8's template. The old key held MarketFoundry's Amazon
+// template and team, so it's left behind rather than migrated.
+const CONFIG_KEY = "asana_config_1o8";
 
 /** GET — return current Asana config */
 export async function GET() {

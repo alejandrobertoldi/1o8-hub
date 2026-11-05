@@ -17,23 +17,17 @@ describe("help registry", () => {
   });
   it("includes the log-hours guide under processes", () => {
     const g = getGuide("log-hours-process");
-    expect(g).toBeDefined();
     expect(g?.category).toBe("processes");
-    expect(g?.description).toMatch(/download a spreadsheet/i);
-    expect(g?.version).toMatch(/September 2026/);
+    expect(g?.description).toMatch(/My timesheet/);
   });
-  it("includes the monthly-report guide under processes", () => {
-    const g = getGuide("monthly-report-process");
-    expect(g).toBeDefined();
-    expect(g?.category).toBe("processes");
+  it("includes the client data guide, linked from Client Reports", () => {
+    expect(getGuide("client-data-process")?.category).toBe("processes");
+    const clients = HELP_TREE.find((s) => s.id === "clients");
+    expect(clients?.items.find((i) => i.href === "/reports")?.slug).toBe("client-data-process");
   });
-  it("links the A+ Content SOP from the Design tree", () => {
-    const guide = getGuide("aplus-content-process");
-    const design = HELP_TREE.find((section) => section.id === "design");
-    expect(guide?.category).toBe("processes");
-    expect(guide?.description).toMatch(/Group A\+ sets/i);
-    expect(design?.items.find((item) => item.href === "/design/aplus2")?.slug)
-      .toBe("aplus-content-process");
+  it("has no MarketFoundry Amazon guides", () => {
+    for (const slug of ["aplus-content-process", "seo-helium10-process", "brand-story-process", "design-upload-process", "monthly-report-process"])
+      expect(getGuide(slug)).toBeUndefined();
   });
   it("getGuide returns undefined for an unknown slug", () => {
     expect(getGuide("nope")).toBeUndefined();
@@ -48,17 +42,8 @@ describe("help registry", () => {
   });
   it("mirrors the Hours nav section and links its SOP", () => {
     const hours = HELP_TREE.find((s) => s.id === "hours");
-    expect(hours).toBeDefined();
-    expect(hours?.items.map((i) => i.href)).toEqual([
-      "/hours-log",
-      "/hours-admin",
-      "/admin/hour-categories",
-    ]);
-    expect(hours?.items.find((i) => i.href === "/hours-log")?.slug).toBe("log-hours-process");
-  });
-  it("links the Monthly Report SOP from the Clients tree", () => {
-    const clients = HELP_TREE.find((s) => s.id === "clients");
-    expect(clients?.items.find((i) => i.href === "/reports/monthly")?.slug).toBe("monthly-report-process");
+    expect(hours?.items.map((i) => i.href)).toEqual(["/hours", "/hours/analytics", "/calendar/requests", "/calendar/team"]);
+    expect(hours?.items.find((i) => i.href === "/hours")?.slug).toBe("log-hours-process");
   });
   it("lists each app route only once across the tree", () => {
     const hrefs = HELP_TREE.flatMap((s) => s.items.map((i) => i.href));

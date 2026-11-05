@@ -46,70 +46,29 @@ interface AsanaConfigResponse {
 // ── Default template (matches create-asana-project.ts) ─────────────
 
 const DEFAULT_CONFIG: AsanaConfig = {
-  // Team "Market Foundry" in the marketfoundry.agency workspace — must stay in
-  // sync with DEFAULT_TEAM_GID in create-asana-project.ts.
-  teamGid: "1216009494057854",
+  // Team "1o8 Agency" (workspace 1165458906651074), where 1o8's client projects
+  // live — must stay in sync with DEFAULT_TEAM_GID in create-asana-project.ts.
+  teamGid: "1209687610482599",
   projectNameFormat: "{CIC} - {ClientName}",
   defaultView: "list",
+  // The same sections as 1o8's "CNM - Client Name" template project in Asana.
   sections: [
+    { name: "Form Requests", tasks: [] },
     {
       name: "Onboarding",
       tasks: [
-        { name: "Create Client", notes: "Create client record in 1o8 Hub with ID code, name, and status" },
-        { name: "Assign Team", notes: "Assign team roles — auto-assigns remaining onboarding tasks to Account Manager (1o8)" },
-        { name: "Setup Asana Project", notes: "Create Asana project under 1o8" },
-        { name: "Client Users | Add Contact Emails", notes: "Enter client contact email(s) for portal access and communication" },
-        { name: "Client Users | Add Users to 1o8 Hub", notes: "Add client Gmail account(s) to 1o8 Hub Users" },
-        { name: "Client Users | Assign Client Role", notes: "Set user role to 'client' in Admin → Users" },
-        { name: "Client Users | Assign Client Project", notes: "Link user to their client account (assign clientIdCode)" },
-        { name: "Create Drive Folders", notes: "Create full folder tree in Google Drive for assets, SEO, PPC, docs" },
-        { name: "Setup Starting Day", notes: "Set onboarding start date — Gantt timeline tasks calculated from this" },
-        { name: "Send Onboarding Email", notes: "Send welcome email with portal info, strategy overview, requirements" },
-        { name: "Amazon Access | Request Amazon Access", notes: "Request access to Amazon Seller Central from client" },
-        { name: "Amazon Access | Provide Team Access", notes: "Provide team members access to Amazon Seller Central" },
-        { name: "Intentwise | Add Sponsored Ads", notes: "Add Sponsored Ads account in Intentwise" },
-        { name: "Intentwise | Add Seller Central", notes: "Add Seller Central account in Intentwise" },
-        { name: "Intentwise | Get ID", notes: "Get Intentwise advertiser ID" },
-        { name: "Intentwise | Request Enable", notes: "Request Enable status in Intentwise" },
-        { name: "Intentwise (AMC) | Add Account", notes: "Add AMC account in Intentwise" },
-        { name: "Intentwise (AMC) | Get ID", notes: "Get Intentwise AMC ID" },
-        { name: "Intentwise (AMC) | Request Enable", notes: "Request Enable status for AMC" },
-        { name: "FeedbackWhiz | Setup FeedbackWhiz", notes: "Set up FeedbackWhiz review monitoring" },
+        { name: "Project Tracker", notes: "Kick off the client: scope (SOW / quote), team, accesses and the 1o8 Hub client profile (Client Onboarding)" },
+        { name: "Review Project Tracker", notes: "Review the onboarding with the account team once the client profile is complete" },
       ],
     },
-    {
-      name: "SEO",
-      tasks: [
-        { name: "Keyword Research", notes: "Full keyword research for all client ASINs" },
-        { name: "SEO Optimization", notes: "Apply keyword strategy to titles, bullets, descriptions, and backend terms" },
-        { name: "Competitors | Tracking competitors", notes: "Track and analyze competitor listings and keywords" },
-      ],
-    },
-    {
-      name: "PPC",
-      tasks: [
-        { name: "Intentwise | Setup Campaigns", notes: "Connect Intentwise analytics and set up PPC campaigns" },
-        { name: "Campaigns | Launch", notes: "Launch PPC campaigns" },
-        { name: "Campaigns | Manage", notes: "Ongoing PPC campaign management and optimization" },
-      ],
-    },
-    {
-      name: "Design",
-      tasks: [
-        { name: "Brandstory | Create", notes: "Design and build A+ Brand Story module" },
-        { name: "A+ Content | Create", notes: "Design A+ content modules (up to 7 per ASIN)" },
-        { name: "Listing Images | Create", notes: "Design, edit, and optimize listing images" },
-        { name: "Storefront | Create", notes: "Design and build Amazon Storefront pages" },
-      ],
-    },
-    {
-      name: "Recurring Tasks",
-      tasks: [],
-    },
-    {
-      name: "Others",
-      tasks: [],
-    },
+    { name: "Account", tasks: [] },
+    { name: "Creative", tasks: [] },
+    { name: "Email", tasks: [] },
+    { name: "Web Development", tasks: [] },
+    { name: "Paid Media", tasks: [] },
+    { name: "SEO", tasks: [] },
+    { name: "Recurring Tasks", tasks: [] },
+    { name: "Other", tasks: [] },
   ],
 };
 
@@ -226,10 +185,10 @@ function TemplatePreview({ config }: { config: AsanaConfig }) {
       <div className="space-y-2">
         {config.sections.map((s, si) => (
           <div key={si}>
-            <p className="text-[10px] font-bold text-foreground">{cic} | {s.name}</p>
+            <p className="text-[10px] font-bold text-foreground">{cic} - {s.name}</p>
             {s.tasks.slice(0, 3).map((t, ti) => (
               <p key={ti} className="text-[10px] text-muted-foreground ml-3">
-                {cic} | {s.name} | {t.name}
+                {cic} - {s.name} - {t.name}
               </p>
             ))}
             {s.tasks.length > 3 && (
