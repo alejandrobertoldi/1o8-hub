@@ -4,11 +4,12 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowDownRight, ArrowUpRight, ExternalLink, Loader2 } from "lucide-react";
+import { ArrowDownRight, ArrowUpRight, ChevronDown, ExternalLink, Loader2 } from "lucide-react";
 import { PageMetaSlot } from "@/components/layout/page-header-slot";
 import { Input } from "@/components/ui/input";
 import { AvatarCircle } from "@/components/seo/avatar-circle";
 import { SalesSparkline } from "@/components/clients/sales-sparkline";
+import { SalesRankChart } from "@/components/reports/sales-rank-chart";
 import { isOwner } from "@/lib/roles";
 import { cn } from "@/lib/utils";
 import { formatKpi, kpiValue, type KpiValue } from "@/lib/kpi/values";
@@ -65,6 +66,19 @@ export default function SalesSummaryPage() {
   const [range, setRange] = useState(() => periodRange("Last week")!);
   const [search, setSearch] = useState("");
   const owner = isOwner(session?.user?.role);
+  // Cards start collapsed; click a header (or a column in the ranking) to open one.
+  const [open, setOpen] = useState<Set<string>>(new Set());
+  const toggle = (code: string, force?: boolean) =>
+    setOpen((prev) => {
+      const next = new Set(prev);
+      if (force ?? !next.has(code)) next.add(code);
+      else next.delete(code);
+      return next;
+    });
+  const pick = (code: string) => {
+    toggle(code, true);
+    requestAnimationFrame(() => document.getElementById(`client-${code}`)?.scrollIntoView({ behavior: "smooth", block: "start" }));
+  };
 
   const { data, isLoading, isError, error, isFetching } = useQuery<SalesSummary>({
     queryKey: ["sales-summary", range.start, range.end],
@@ -81,7 +95,11 @@ export default function SalesSummaryPage() {
   const clients = useMemo(() => {
     const q = search.trim().toLowerCase();
     const sales = (c: SummaryClient) => kpiValue("net_sales", c.current)?.value ?? -1;
-    return (data?.clients ?? []).filter((c) => !q || `${c.code} ${c.name}`.toLowerCase().includes(q)).sort((a, b) => sales(b) - sales(a));
+    // Shopify is the source of truth for sales: those clients first, then the GA4 estimates.
+    const shopify = (c: SummaryClient) => (c.sources.includes("shopify") ? 1 : 0);
+    return (data?.clients ?? [])
+      .filter((c) => !q || `${c.code} ${c.name}`.toLowerCase().includes(q))
+      .sort((a, b) => shopify(b) - shopify(a) || sales(b) - sales(a));
   }, [data, search]);
 
   if (status === "loading") return null;
@@ -145,10 +163,25 @@ export default function SalesSummaryPage() {
 
       {data && (
         <>
-          <SalesRanking clients={clients} />
-          {clients.map((c) => (
-            <ClientCard key={c.code} client={c} data={data} />
-          ))}
+          <SalesRankChart clients={clients} currentLabel={fmtRange(data)} previousLabel={fmtRange(data.previous)} onPick={pick} />
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-bold">
+              Clients <span className="font-normal text-muted-foreground">· {clients.length} · Shopify first</span>
+            </h2>
+            <div className="flex gap-3 text-xs">
+              <button type="button" className="font-semibold text-brand hover:underline" onClick={() => setOpen(new Set(clients.map((c) => c.code)))}>
+                Expand all
+              </button>
+              <button type="button" className="text-muted-foreground hover:text-foreground" onClick={() => setOpen(new Set())}>
+                Collapse all
+              </button>
+            </div>
+          </div>
+          <div className="space-y-3">
+            {clients.map((c) => (
+              <ClientCard key={c.code} client={c} data={data} open={open.has(c.code)} onToggle={() => toggle(c.code)} />
+            ))}
+          </div>
           {data.noData.length > 0 && (
             <p className="text-xs text-muted-foreground">
               No data connected yet: {data.noData.map((c) => c.name).join(", ")}. Connect their sources in Client Onboarding → Connections.
@@ -184,47 +217,6 @@ function Logo({ client, size }: { client: Pick<SummaryClient, "code" | "name" | 
     >
       {client.code}
     </span>
-  );
-}
-
-/** Net sales by client for the period, with the change vs the period before. */
-function SalesRanking({ clients }: { clients: SummaryClient[] }) {
-  const rows = clients
-    .map((c) => ({ c, now: kpiValue("net_sales", c.current), before: kpiValue("net_sales", c.previous) }))
-    .filter((r) => r.now && r.now.value > 0);
-  const max = Math.max(1, ...rows.map((r) => r.now!.value));
-  const total = rows.reduce((a, r) => a + r.now!.value, 0);
-  if (!rows.length) return null;
-  return (
-    <section className="rounded-xl border bg-card">
-      <header className="flex items-baseline justify-between border-b px-4 py-3">
-        <h2 className="text-sm font-bold">Net sales by client</h2>
-        <span className="text-xs text-muted-foreground">
-          Total <b className="text-foreground">{formatKpi({ value: total, unit: "money", basis: "" })}</b>
-        </span>
-      </header>
-      <ul className="space-y-1.5 p-4">
-        {rows.map(({ c, now, before }) => {
-          const d = delta(now!.value, before?.value);
-          return (
-            <li key={c.code}>
-              <a href={`#client-${c.code}`} className="group flex items-center gap-3">
-                <Logo client={c} size={28} />
-                <span className="w-40 shrink-0 truncate text-sm group-hover:text-brand" title={c.name}>
-                  {c.name}
-                </span>
-                <span className="relative h-5 flex-1 overflow-hidden rounded bg-muted">
-                  <span className="absolute inset-y-0 left-0 rounded bg-brand" style={{ width: `${(now!.value / max) * 100}%` }} />
-                </span>
-                <span className="w-20 shrink-0 text-right text-sm font-semibold tabular-nums">{formatKpi(now!)}</span>
-                <Change d={d} className="w-16 shrink-0 justify-end" />
-                {now!.basis.includes("until") && <span className="shrink-0 text-[10px] text-orange-400" title={now!.basis}>GA4</span>}
-              </a>
-            </li>
-          );
-        })}
-      </ul>
-    </section>
   );
 }
 
@@ -266,7 +258,10 @@ function ClientTeam({ team }: { team: SummaryClient["team"] }) {
   );
 }
 
-function ClientCard({ client, data }: { client: SummaryClient; data: SalesSummary }) {
+function ClientCard({ client, data, open, onToggle }: { client: SummaryClient; data: SalesSummary; open: boolean; onToggle: () => void }) {
+  const net = kpiValue("net_sales", client.current);
+  const netBefore = kpiValue("net_sales", client.previous);
+  const shopify = client.sources.includes("shopify");
   const days = daysIn(data);
   const rows = SUMMARY_ROWS.map((row) => ({
     row,
@@ -279,67 +274,107 @@ function ClientCard({ client, data }: { client: SummaryClient; data: SalesSummar
 
   return (
     <section id={`client-${client.code}`} className="scroll-mt-24 overflow-hidden rounded-xl border bg-card">
-      <div className="flex flex-wrap items-start justify-between gap-4 bg-brand px-5 py-3 text-sidebar">
-        <div className="flex min-w-0 items-start gap-3">
-          <Logo client={client} size={56} />
-          {client.spark.some((p) => p.sales > 0) && (
-            <div className="hidden rounded-md bg-sidebar/90 md:block">
-              <SalesSparkline points={client.spark} detailed label={`Sales by ${data.sparkBy}`} />
-            </div>
-          )}
-          <div className="min-w-0">
-            <h3 className="font-[family-name:var(--font-outfit)] text-2xl font-bold leading-tight tracking-tight">{client.name}</h3>
-            <p className="mt-0.5 font-mono text-[11px] opacity-75">
+      {!open && (
+        <button type="button" onClick={onToggle} className="flex w-full items-center gap-3 px-4 py-2.5 text-left hover:bg-muted/40" aria-expanded={false}>
+          <Logo client={client} size={32} />
+          <span className="min-w-0 flex-1">
+            <span className="block truncate font-semibold">{client.name}</span>
+            <span className="block font-mono text-[10px] text-muted-foreground">
               {client.code}
-              {client.tier && <span className="ml-2 font-bold">T{client.tier.replace(/^t/i, "")}</span>}
-              <span className="ml-2">{client.sources.join(" · ")}</span>
-            </p>
-            <Link href={`/reports/sales?client=${encodeURIComponent(client.code)}&range=mtd`} className="mt-1 inline-flex items-center gap-1 text-[11px] font-semibold underline-offset-2 hover:underline">
-              Open reports <ExternalLink className="size-3" />
-            </Link>
+              {client.tier && ` · T${client.tier.replace(/^t/i, "")}`}
+            </span>
+          </span>
+          <SourceBadge shopify={shopify} />
+          <span className="w-24 text-right font-semibold tabular-nums">{net ? formatKpi(net) : "—"}</span>
+          <Change d={delta(net?.value, netBefore?.value)} className="w-16 justify-end" />
+          <ChevronDown className="size-4 shrink-0 text-muted-foreground" />
+        </button>
+      )}
+      {open && (
+        <>
+          <div className="flex flex-wrap items-start justify-between gap-4 bg-brand px-5 py-3 text-sidebar">
+            <div className="flex min-w-0 items-start gap-3">
+              <button type="button" onClick={onToggle} aria-expanded title="Collapse" className="mt-1 rounded p-0.5 hover:bg-sidebar/10">
+                <ChevronDown className="size-4 rotate-180" />
+              </button>
+              <Logo client={client} size={56} />
+              {client.spark.some((p) => p.sales > 0) && (
+                <div className="hidden rounded-md bg-sidebar/90 md:block">
+                  <SalesSparkline points={client.spark} detailed label={`Sales by ${data.sparkBy}`} />
+                </div>
+              )}
+              <div className="min-w-0">
+                <h3 className="font-[family-name:var(--font-outfit)] text-2xl font-bold leading-tight tracking-tight">{client.name}</h3>
+                <p className="mt-0.5 font-mono text-[11px] opacity-75">
+                  {client.code}
+                  {client.tier && <span className="ml-2 font-bold">T{client.tier.replace(/^t/i, "")}</span>}
+                  <span className="ml-2">{client.sources.join(" · ")}</span>
+                </p>
+                <div className="mt-1">
+                  <SourceBadge shopify={shopify} onBrand />
+                </div>
+                <Link href={`/reports/sales?client=${encodeURIComponent(client.code)}&range=mtd`} className="mt-1 inline-flex items-center gap-1 text-[11px] font-semibold underline-offset-2 hover:underline">
+                  Open reports <ExternalLink className="size-3" />
+                </Link>
+              </div>
+            </div>
+            <ClientTeam team={client.team} />
           </div>
-        </div>
-        <ClientTeam team={client.team} />
-      </div>
 
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[860px] text-sm">
-          <thead>
-            <tr className="bg-sidebar text-left text-[11px] text-sidebar-foreground">
-              <th className="px-4 py-1.5 font-medium">Metric</th>
-              <th className="px-3 py-1.5 text-right font-medium">Goal</th>
-              <th className="px-3 py-1.5 text-right font-semibold text-brand">{fmtRange(data)}</th>
-              <th className="px-3 py-1.5 text-center font-medium">Trend</th>
-              <th className="px-3 py-1.5 text-right font-medium">{fmtRange(data.previous)}</th>
-              <th className="px-3 py-1.5 text-right font-medium">Last year</th>
-              <th className="px-3 py-1.5 text-right font-medium">MTD</th>
-              <th className="px-3 py-1.5 text-right font-medium">YTD</th>
-            </tr>
-          </thead>
-          <tbody>
-            {SUMMARY_SECTIONS.map((section) => {
-              const list = rows.filter((r) => r.row.section === section);
-              if (!list.length) return null;
-              return [
-                <tr key={section} className="bg-muted/60">
-                  <td colSpan={8} className="px-4 py-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                    {section}
-                  </td>
-                </tr>,
-                ...list.map((r) => <MetricRow key={r.row.key} {...r} kpis={client.kpis} days={days} />),
-              ];
-            })}
-            {!rows.length && (
-              <tr>
-                <td colSpan={8} className="px-4 py-6 text-center text-muted-foreground">
-                  No data for this period.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[860px] text-sm">
+              <thead>
+                <tr className="bg-sidebar text-left text-[11px] text-sidebar-foreground">
+                  <th className="px-4 py-1.5 font-medium">Metric</th>
+                  <th className="px-3 py-1.5 text-right font-medium">Goal</th>
+                  <th className="px-3 py-1.5 text-right font-semibold text-brand">{fmtRange(data)}</th>
+                  <th className="px-3 py-1.5 text-center font-medium">Trend</th>
+                  <th className="px-3 py-1.5 text-right font-medium">{fmtRange(data.previous)}</th>
+                  <th className="px-3 py-1.5 text-right font-medium">Last year</th>
+                  <th className="px-3 py-1.5 text-right font-medium">MTD</th>
+                  <th className="px-3 py-1.5 text-right font-medium">YTD</th>
+                </tr>
+              </thead>
+              <tbody>
+                {SUMMARY_SECTIONS.map((section) => {
+                  const list = rows.filter((r) => r.row.section === section);
+                  if (!list.length) return null;
+                  return [
+                    <tr key={section} className="border-t-2 border-brand/60 bg-brand/15">
+                      <td colSpan={8} className="px-4 py-1.5 text-[11px] font-bold uppercase tracking-wider text-foreground">
+                        {section}
+                      </td>
+                    </tr>,
+                    ...list.map((r) => <MetricRow key={r.row.key} {...r} kpis={client.kpis} days={days} />),
+                  ];
+                })}
+                {!rows.length && (
+                  <tr>
+                    <td colSpan={8} className="px-4 py-6 text-center text-muted-foreground">
+                      No data for this period.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
     </section>
+  );
+}
+
+/** Where a client's sales come from: Shopify (the source of truth) or a GA4 estimate until Shopify is connected. */
+function SourceBadge({ shopify, onBrand = false }: { shopify: boolean; onBrand?: boolean }) {
+  return shopify ? (
+    <span className={cn("shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold", onBrand ? "bg-sidebar text-emerald-400" : "bg-emerald-500/15 text-emerald-500")}>Shopify</span>
+  ) : (
+    <span
+      className={cn("shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold", onBrand ? "bg-sidebar text-orange-300" : "bg-orange-500/15 text-orange-400")}
+      title="Sales are GA4's estimate until the Shopify store is connected"
+    >
+      GA4 estimate
+    </span>
   );
 }
 
