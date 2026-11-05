@@ -1,15 +1,18 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
-import { readSecret, saveSecret, secretInfo } from "./secrets";
+import { deleteSecret, readSecret, saveSecret, secretInfo } from "./secrets";
 import type { DailyValue } from "./ga4";
 
 /**
- * Shopify for the Main KPIs, through 1o8's "1o8 Hub" app (custom
- * distribution, read-only). A store installs it from its install link; the
+ * Shopify for the Main KPIs, through 1o8's "1o8 Hub" apps (custom
+ * distribution, read-only). A custom-distribution app installs on one store
+ * only, so each client store gets its own app in the Dev Dashboard; its
+ * client ID and secret are sealed per shop (the env app is the fallback, for
+ * the store it was made for). A store installs its app from the install link; the
  * hub then runs OAuth (authorization code grant, expiring offline token +
  * refresh token, sealed per shop) and reads daily sales with ShopifyQL —
  * the same net sales Shopify's own reports show.
  *
- * Env: SHOPIFY_CLIENT_ID, SHOPIFY_CLIENT_SECRET, optional SHOPIFY_API_VERSION.
+ * Env: SHOPIFY_CLIENT_ID, SHOPIFY_CLIENT_SECRET (fallback app), optional SHOPIFY_API_VERSION.
  */
 
 export const SHOPIFY_STATE_COOKIE = "shopify_oauth_state";
@@ -18,6 +21,27 @@ const SCOPES = "read_orders,read_reports,read_products,read_customers";
 const VERSION = () => process.env.SHOPIFY_API_VERSION || "2025-10";
 export const shopifyConfigured = () => !!process.env.SHOPIFY_CLIENT_ID && !!process.env.SHOPIFY_CLIENT_SECRET;
 export const shopifyProvider = (shop: string) => `shopify:${shop}`;
+/** Its own app's credentials; kept apart from "shopify:%" (the stores' tokens). */
+export const shopifyAppProvider = (shop: string) => `shopify-app:${shop}`;
+
+export type ShopifyApp = { clientId: string; clientSecret: string };
+
+/** The app a store connects through: its own, else the env app. Null when neither is set. */
+export async function shopifyApp(shop: string): Promise<ShopifyApp | null> {
+  const own = await readSecret(shopifyAppProvider(shop));
+  if (own) return JSON.parse(own) as ShopifyApp;
+  return shopifyConfigured() ? { clientId: process.env.SHOPIFY_CLIENT_ID!, clientSecret: process.env.SHOPIFY_CLIENT_SECRET! } : null;
+}
+
+export async function hasOwnShopifyApp(shop: string): Promise<boolean> {
+  return !!(await secretInfo(shopifyAppProvider(shop)));
+}
+
+export async function saveShopifyApp(shop: string, app: ShopifyApp, userId: string) {
+  await saveSecret(shopifyAppProvider(shop), JSON.stringify({ clientId: app.clientId.trim(), clientSecret: app.clientSecret.trim() }), userId);
+}
+
+export const deleteShopifyApp = (shop: string) => deleteSecret(shopifyAppProvider(shop));
 
 /** "brand.myshopify.com" from what people paste ("Brand.myshopify.com/", an admin URL…); null when it isn't one. */
 export function normalizeShop(input: string | undefined | null): string | null {
@@ -29,7 +53,7 @@ export function normalizeShop(input: string | undefined | null): string | null {
 }
 
 /** Shopify signs its redirects: HMAC-SHA256 of the sorted query (minus hmac) with the app secret. */
-export function verifyShopifyHmac(params: URLSearchParams, secret = process.env.SHOPIFY_CLIENT_SECRET ?? ""): boolean {
+export function verifyShopifyHmac(params: URLSearchParams, secret: string): boolean {
   const hmac = params.get("hmac");
   if (!hmac || !secret) return false;
   const message = [...params.entries()]
@@ -43,18 +67,20 @@ export function verifyShopifyHmac(params: URLSearchParams, secret = process.env.
 
 export const shopifyRedirectUri = (origin: string) => `${origin}/api/integrations/shopify/callback`;
 
-export function shopifyAuthorizeUrl(shop: string, origin: string, state: string): string {
-  const q = new URLSearchParams({ client_id: process.env.SHOPIFY_CLIENT_ID ?? "", scope: SCOPES, redirect_uri: shopifyRedirectUri(origin), state });
+export function shopifyAuthorizeUrl(shop: string, origin: string, state: string, clientId: string): string {
+  const q = new URLSearchParams({ client_id: clientId, scope: SCOPES, redirect_uri: shopifyRedirectUri(origin), state });
   return `https://${shop}/admin/oauth/authorize?${q}`;
 }
 
 type Tokens = { access_token: string; refresh_token?: string; expires_in?: number; refresh_token_expires_in?: number };
 
 async function tokenRequest(shop: string, body: Record<string, string>): Promise<Tokens> {
+  const app = await shopifyApp(shop);
+  if (!app) throw new Error(`No Shopify app for ${shop}`);
   const res = await fetch(`https://${shop}/admin/oauth/access_token`, {
     method: "POST",
     headers: { "Content-Type": "application/json", Accept: "application/json" },
-    body: JSON.stringify({ client_id: process.env.SHOPIFY_CLIENT_ID, client_secret: process.env.SHOPIFY_CLIENT_SECRET, ...body }),
+    body: JSON.stringify({ client_id: app.clientId, client_secret: app.clientSecret, ...body }),
   });
   if (!res.ok) throw new Error(`Shopify token request failed (HTTP ${res.status})`);
   return (await res.json()) as Tokens;

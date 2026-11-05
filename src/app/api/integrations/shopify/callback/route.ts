@@ -3,7 +3,7 @@ import { getAuthSession } from "@/lib/auth-db";
 import { hasAdminPowers } from "@/lib/roles";
 import { db } from "@/lib/db";
 import { aac } from "@/lib/db/schema";
-import { SHOPIFY_STATE_COOKIE, connectShopify, normalizeShop, verifyShopifyHmac } from "@/lib/kpi/shopify";
+import { SHOPIFY_STATE_COOKIE, connectShopify, normalizeShop, shopifyApp, verifyShopifyHmac } from "@/lib/kpi/shopify";
 
 /** GET — Shopify's OAuth redirect: verify, store the store's token, back to the client's profile. */
 export async function GET(req: NextRequest) {
@@ -20,7 +20,8 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(back);
   };
   if (!shop || !code || !state || state !== req.cookies.get(SHOPIFY_STATE_COOKIE)?.value) return fail("missing shop/code or state mismatch");
-  if (!verifyShopifyHmac(params)) return fail("bad hmac");
+  const app = await shopifyApp(shop);
+  if (!app || !verifyShopifyHmac(params, app.clientSecret)) return fail("bad hmac");
   try {
     await connectShopify(shop, code, session.user.id);
   } catch (err) {

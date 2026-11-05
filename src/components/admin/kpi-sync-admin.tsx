@@ -184,14 +184,15 @@ export function KpiSyncAdmin() {
       <section className="space-y-1 rounded-xl border bg-card p-4">
         <div className="flex flex-wrap items-center gap-3">
           <h2 className="text-sm font-bold">Shopify</h2>
-          <span className={cn("rounded-full px-2.5 py-1 text-xs font-semibold", data.shopify.configured ? "bg-emerald-500/15 text-emerald-500" : "bg-orange-500/15 text-orange-500")}>
-            {data.shopify.configured ? `App ready · ${data.shopify.stores.length} store(s) connected` : "App not configured"}
+          <span className="rounded-full bg-muted px-2.5 py-1 text-xs font-semibold text-muted-foreground">
+            {data.shopify.stores.length ? `${data.shopify.stores.length} store(s) connected: ${data.shopify.stores.join(", ")}` : "No stores yet"}
           </span>
         </div>
         <p className="text-xs text-muted-foreground">
-          {data.shopify.configured
-            ? `Install the 1o8 Hub app on a store from its custom distribution link (Dev Dashboard → 1o8 Hub → Distribution), or use Connect on the client's profile. ${data.shopify.stores.join(", ")}`
-            : "Set SHOPIFY_CLIENT_ID and SHOPIFY_CLIENT_SECRET from the 1o8 Hub app (Dev Dashboard → Settings) and restart / redeploy."}
+          A custom-distribution app installs on one store, so each client store gets its own app: Dev Dashboard → Create app &ldquo;1o8 Hub – Brand&rdquo; → App URL{" "}
+          <code>{"<hub>/api/integrations/shopify/install"}</code>, redirect URL <code>{"<hub>/api/integrations/shopify/callback"}</code>, scopes{" "}
+          <code>read_orders, read_reports, read_products, read_customers</code> → release → Distribution: custom, the store&apos;s myshopify domain. Then on the
+          client&apos;s profile: Add app keys (client ID + secret from the app&apos;s Settings) → Connect.
         </p>
       </section>
 

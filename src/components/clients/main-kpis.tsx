@@ -228,34 +228,89 @@ function SourcePicker({
   );
 }
 
-/** The client's Shopify store (its *.myshopify.com domain) and whether the 1o8 Hub app can read it. */
-function ShopifyStore({
+/**
+ * The client's Shopify store (its *.myshopify.com domain), its own 1o8 Hub
+ * app (one per store: client ID + secret, sealed) and whether the hub can read it.
+ */
+export function ShopifyStore({
   clientIdCode,
   value,
   readOnly,
   onSave,
+  showLabel = true,
 }: {
   clientIdCode: string;
   value: string;
   readOnly: boolean;
   onSave: (field: string, value: string) => Promise<void>;
+  showLabel?: boolean;
 }) {
-  const { data } = useQuery<{ configured: boolean; shop: string | null; connected: boolean }>({
-    queryKey: ["kpi", "shopify", clientIdCode, value],
+  const qc = useQueryClient();
+  const [keys, setKeys] = useState<{ clientId: string; clientSecret: string } | null>(null);
+  const queryKey = ["kpi", "shopify", clientIdCode, value];
+  const { data } = useQuery<{ configured: boolean; ownApp: boolean; shop: string | null; connected: boolean }>({
+    queryKey,
     queryFn: async () => (await fetch(`/api/clients/${encodeURIComponent(clientIdCode)}/shopify`)).json(),
   });
+  const saveApp = useMutation({
+    mutationFn: async (app: { clientId: string; clientSecret: string }) => {
+      const res = await fetch(`/api/clients/${encodeURIComponent(clientIdCode)}/shopify`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(app),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error ?? "Could not save the app");
+    },
+    onSuccess: () => {
+      setKeys(null);
+      qc.invalidateQueries({ queryKey });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+  const input = "h-7 w-36 rounded-md border border-input bg-transparent px-2 text-xs outline-none focus:border-brand";
   return (
-    <span className="flex items-center gap-1.5">
-      <span className="text-muted-foreground">Shopify</span>
+    <span className="flex flex-wrap items-center gap-1.5">
+      {showLabel && <span className="text-muted-foreground">Shopify</span>}
       <span className="w-44">
         <EditableCell field="ShopifyStore" value={value} readOnly={readOnly} onSave={onSave} type="text" />
       </span>
       {value.trim() && data && !data.shop && <span className="text-orange-400">Use the brand.myshopify.com domain</span>}
       {data?.shop && data.connected && <span className="text-emerald-500">Connected</span>}
-      {data?.shop && !data.connected && data.configured && !readOnly && (
-        <a href={`/api/integrations/shopify/install?shop=${encodeURIComponent(data.shop)}`} className="text-brand hover:underline">
-          Connect
-        </a>
+      {data?.shop && !data.connected && !readOnly && keys && (
+        <>
+          <input autoFocus autoComplete="off" value={keys.clientId} onChange={(e) => setKeys({ ...keys, clientId: e.target.value })} placeholder="App client ID" className={input} />
+          <input
+            type="password"
+            autoComplete="off"
+            value={keys.clientSecret}
+            onChange={(e) => setKeys({ ...keys, clientSecret: e.target.value })}
+            placeholder="Client secret"
+            className={input}
+          />
+          <Button size="xs" variant="brand" disabled={!keys.clientId.trim() || !keys.clientSecret.trim() || saveApp.isPending} onClick={() => saveApp.mutate(keys)}>
+            Save
+          </Button>
+          <Button size="xs" variant="ghost" onClick={() => setKeys(null)}>
+            Cancel
+          </Button>
+        </>
+      )}
+      {data?.shop && !data.connected && !readOnly && !keys && (
+        <>
+          {data.configured && (
+            <a href={`/api/integrations/shopify/install?shop=${encodeURIComponent(data.shop)}`} className="text-brand hover:underline">
+              Connect
+            </a>
+          )}
+          <button
+            type="button"
+            className={data.ownApp ? "text-muted-foreground hover:text-foreground" : "text-brand hover:underline"}
+            onClick={() => setKeys({ clientId: "", clientSecret: "" })}
+          >
+            {data.ownApp ? "Replace app keys" : "Add app keys"}
+          </button>
+        </>
       )}
     </span>
   );

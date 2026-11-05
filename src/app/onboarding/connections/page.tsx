@@ -13,7 +13,7 @@ import { toast } from "sonner";
 import { PageMetaSlot } from "@/components/layout/page-header-slot";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { EditableCell } from "@/components/clients/editable-cell";
-import { Ga4PropertyPicker, GoogleAdsAccount, KlaviyoKey, MetaAdAccountPicker } from "@/components/clients/main-kpis";
+import { Ga4PropertyPicker, GoogleAdsAccount, KlaviyoKey, MetaAdAccountPicker, ShopifyStore } from "@/components/clients/main-kpis";
 import { AAC_SERVICES } from "@/lib/clients/sow";
 import { checkField } from "@/lib/onboarding/checklist";
 import { canUseConnectionsTool } from "@/lib/onboarding/connections-tool";
@@ -181,8 +181,8 @@ export default function ConnectionsToolPage() {
                     </td>
                     <td className="px-3 py-2.5">
                       {applies("conn_shopify") ? (
-                        <span className="block w-40">
-                          <EditableCell field="ShopifyStore" value={r.fields.ShopifyStore} readOnly={false} type="text" onSave={(f, v) => save(r.code, f, v)} />
+                        <span className="block w-64">
+                          <ShopifyStore clientIdCode={r.code} value={r.fields.ShopifyStore} readOnly={false} showLabel={false} onSave={(f, v) => save(r.code, f, v)} />
                         </span>
                       ) : (
                         na
