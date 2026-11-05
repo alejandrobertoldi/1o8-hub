@@ -96,6 +96,11 @@ export function hasHoursReportsAccess(role: string | null | undefined): boolean 
   return hasAdminPowers(role);
 }
 
+/** Owners only — e.g. Sales Summary, every client's sales side by side (user, 2026-11-05). */
+export function isOwner(role: string | null | undefined): boolean {
+  return role === "owner";
+}
+
 /** Internal hub staff (not client / prospect / pending). */
 export function isHubStaff(role: string | null | undefined): boolean {
   return (

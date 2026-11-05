@@ -16,6 +16,8 @@ interface SalesSparklineProps {
   width?: number;
   height?: number;
   detailed?: boolean;
+  /** Header label (default "Sales 7d"). */
+  label?: string;
 }
 
 const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
@@ -66,6 +68,7 @@ export function SalesSparkline({
   width,
   height,
   detailed = false,
+  label = "Sales 7d",
 }: SalesSparklineProps) {
   const [hoverIdx, setHoverIdx] = useState<number | null>(null);
 
@@ -142,7 +145,7 @@ export function SalesSparkline({
     >
       <div className="flex items-baseline justify-between mb-1 px-0.5">
         <span className="text-[9px] font-bold uppercase tracking-[0.15em] text-neutral-500">
-          Sales 7d
+          {label}
         </span>
         <span className="text-[11px] font-bold tabular-nums text-neutral-900">
           {formatCurrencyCompact(total)}
@@ -156,7 +159,7 @@ export function SalesSparkline({
           viewBox={`0 0 ${W} ${H}`}
           className="block"
           role="img"
-          aria-label={`7-day sales: ${formatCurrencyCompact(total)} total`}
+          aria-label={`${label}: ${formatCurrencyCompact(total)} total`}
         >
           {/* Gradient + area fill (detailed mode) */}
           {detailed && (

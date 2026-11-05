@@ -19,7 +19,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { hasAdminPowers, hasHoursReportsAccess, hasPeopleAccess, isHubStaff } from "@/lib/roles";
+import { hasAdminPowers, hasHoursReportsAccess, hasPeopleAccess, isHubStaff, isOwner } from "@/lib/roles";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -222,6 +222,7 @@ export function TopNav() {
         { title: "Client Summary", href: "/clients", icon: Users, visible: true },
         { title: "Brand Guidelines", href: "/clients/brand-guidelines", icon: BookOpen, visible: true },
         { title: "Client Reports", href: "/reports", icon: BarChart3, visible: checkAccess("reports"), crossDept: getCrossDeptLabels("reports", "clients") },
+        { title: "Sales Summary", href: "/sales-summary", icon: TrendingUp, visible: isOwner(role) },
         { title: "Client Onboarding", href: "/onboarding", icon: ClipboardList, visible: isAdmin },
         { title: "Case Studies", href: "/case-studies", icon: Presentation, visible: isHubStaff(role) },
         { title: "Client Portal", href: "/portal", icon: Eye, visible: isAdmin },

@@ -167,6 +167,7 @@ export function formatKpi(v: KpiValue): string {
       // Discounts and returns come in negative: "-$1,368.50", not "$-1,368.5".
       const sign = v.value < 0 ? "-" : "";
       const abs = Math.abs(v.value);
+      if (abs >= 1_000_000) return `${sign}$${(abs / 1_000_000).toFixed(2)}M`;
       return abs >= 10_000 ? `${sign}$${(abs / 1000).toFixed(1)}k` : `${sign}$${abs.toLocaleString("en-US", { maximumFractionDigits: 2 })}`;
     }
     case "percent":
