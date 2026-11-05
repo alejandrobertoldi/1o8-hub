@@ -275,6 +275,7 @@ export function ShopifyStore({
       <span className="w-44">
         <EditableCell field="ShopifyStore" value={value} readOnly={readOnly} onSave={onSave} type="text" />
       </span>
+      {!value.trim() && !readOnly && <span className="text-muted-foreground">Add the store&apos;s brand.myshopify.com (or admin URL) to connect it</span>}
       {value.trim() && data && !data.shop && <span className="text-orange-400">Use the brand.myshopify.com domain</span>}
       {data?.shop && data.connected && <span className="text-emerald-500">Connected</span>}
       {data?.shop && !data.connected && !readOnly && keys && (
