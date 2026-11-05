@@ -25,6 +25,8 @@ type Row = {
   services: string[];
   fields: Record<"GA4Property" | "MetaAdAccount" | "GoogleAdsCustomerId" | "ShopifyStore" | "SOWURL", string>;
   klaviyo: boolean;
+  /** Google Ads spend GA4 reported in the last 60 days; null = none (not linked to GA4). */
+  googleAdsSpend: number | null;
   items: Record<string, "done" | "missing" | "na">;
   done: number;
   total: number;
@@ -174,7 +176,16 @@ export default function ConnectionsToolPage() {
                     </td>
                     <td className="px-3 py-2.5">
                       {applies("conn_google_ads") ? (
-                        <GoogleAdsAccount value={r.fields.GoogleAdsCustomerId} readOnly={false} showLabel={false} onSave={(f, v) => save(r.code, f, v)} />
+                        <span className="block space-y-1">
+                          <GoogleAdsAccount value={r.fields.GoogleAdsCustomerId} readOnly={false} showLabel={false} onSave={(f, v) => save(r.code, f, v)} />
+                          {r.googleAdsSpend ? (
+                            <span className="block text-emerald-500" title="Google Ads spend GA4 reported in the last 60 days">
+                              Reporting via GA4 · ${Math.round(r.googleAdsSpend).toLocaleString("en-US")}
+                            </span>
+                          ) : (
+                            <span className="block text-orange-400">{r.fields.GA4Property ? "Not linked to GA4 yet" : "Pick GA4 first"}</span>
+                          )}
+                        </span>
                       ) : (
                         na
                       )}

@@ -72,6 +72,8 @@ export type ChecklistInput = {
   } | null;
   guidelines: { hasLogo: boolean; colors: number; hasTypography: boolean } | null;
   klaviyoConnected: boolean;
+  /** GA4 reports Google Ads spend lately: the Google Ads ↔ GA4 link works. */
+  googleAdsReporting?: boolean;
   driveFoldersCreated: boolean;
   /** client_onboarding_steps rows marked completed (setup_timeline, send_onboarding_email…). */
   completedSteps: ReadonlySet<string>;
@@ -237,7 +239,8 @@ export function buildClientChecklist(input: ChecklistInput): ClientChecklist {
         { key: "access_klaviyo", label: "Klaviyo user access", href: ONBOARDING, done: false, manual: true, applies: needs.email, service: "Email" },
         { key: "conn_meta", label: "Meta ad account", href: OVERVIEW, done: has(s("MetaAdAccount")), applies: needs.meta, service: "Meta" },
         { key: "access_meta", label: "Meta Business partner access", href: ONBOARDING, done: has(s("MetaAdAccount")), manual: true, applies: needs.meta, service: "Meta" },
-        { key: "conn_google_ads", label: "Google Ads customer ID", href: OVERVIEW, done: has(s("GoogleAdsCustomerId")), field: { key: "GoogleAdsCustomerId", type: "text" }, applies: needs.googleAds, service: "Google" },
+        // Google Ads numbers come through GA4's Google Ads link, so spend there means it's connected.
+        { key: "conn_google_ads", label: "Google Ads account", href: OVERVIEW, done: has(s("GoogleAdsCustomerId")) || !!input.googleAdsReporting, field: { key: "GoogleAdsCustomerId", type: "text" }, applies: needs.googleAds, service: "Google" },
         { key: "access_google_ads", label: "Google Ads access (MCC link)", href: ONBOARDING, done: false, manual: true, applies: needs.googleAds, service: "Google" },
       ],
     },

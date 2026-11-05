@@ -19,9 +19,10 @@ async function main() {
   }
   const { db } = await import("@/lib/db");
   const { aac } = await import("@/lib/db/schema");
-  const { loadClientChecklists } = await import("@/lib/onboarding/checklist-server");
+  const { serviceNeeds } = await import("@/lib/onboarding/checklist");
+  const { clientsWithGoogleAdsSpend, loadClientChecklists } = await import("@/lib/onboarding/checklist-server");
 
-  const clients = await db.select({ code: aac.clientIdCode, name: aac.clientName, status: aac.clientStatus }).from(aac);
+  const clients = await db.select({ code: aac.clientIdCode, name: aac.clientName, status: aac.clientStatus, raw: aac.rawData }).from(aac);
   const active = clients.filter((c) => (c.status ?? "").toLowerCase() === "active");
   const checklists = await loadClientChecklists(active.map((c) => c.code));
 
@@ -37,6 +38,24 @@ async function main() {
   console.log("\nBy connection\n");
   for (const [label, codes] of [...byItem].sort((a, b) => b[1].length - a[1].length)) {
     console.log(`${label} (${codes.length}): ${codes.join(", ")}`);
+  }
+
+  // Google Ads numbers come through GA4 (its Google Ads link), so a client is
+  // connected once its GA4 property reports Google Ads spend.
+  const spent = await clientsWithGoogleAdsSpend(60);
+  console.log("\nGoogle Ads → GA4 (clients whose services include Google Ads; spend in the last 60 days)\n");
+  for (const c of active.sort((a, b) => a.code.localeCompare(b.code))) {
+    const raw = (c.raw ?? {}) as Record<string, string>;
+    const needs = serviceNeeds(raw);
+    if (!needs.anyService || !needs.googleAds) continue;
+    const id = raw.GoogleAdsCustomerId?.trim();
+    const total = spent.get(c.code.toUpperCase());
+    const state = total
+      ? `linked ✓ ($${Math.round(total).toLocaleString("en-US")} spend)`
+      : !raw.GA4Property?.trim()
+        ? "pick the GA4 property first"
+        : "no Google Ads spend in GA4 → link Google Ads to the GA4 property";
+    console.log(`${c.code.padEnd(5)} Ads ID ${(id || "—").padEnd(13)} ${state}`);
   }
   process.exit(0);
 }

@@ -3,7 +3,7 @@ import { db } from "@/lib/db";
 import { aac } from "@/lib/db/schema";
 import { getAuthSession } from "@/lib/auth-db";
 import { clientServices } from "@/lib/clients/sow";
-import { loadClientChecklists } from "@/lib/onboarding/checklist-server";
+import { clientsWithGoogleAdsSpend, loadClientChecklists } from "@/lib/onboarding/checklist-server";
 import { canUseConnectionsTool } from "@/lib/onboarding/connections-tool";
 import { clientsWithKlaviyo } from "@/lib/kpi/secrets";
 
@@ -15,10 +15,11 @@ export async function GET() {
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   if (!canUseConnectionsTool(session.user)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-  const [clients, checklists, klaviyo] = await Promise.all([
+  const [clients, checklists, klaviyo, googleAds] = await Promise.all([
     db.select({ code: aac.clientIdCode, name: aac.clientName, status: aac.clientStatus, raw: aac.rawData }).from(aac),
     loadClientChecklists(),
     clientsWithKlaviyo(),
+    clientsWithGoogleAdsSpend(),
   ]);
   const rows = clients
     .filter((c) => (c.status ?? "").toLowerCase() === "active" && checklists.has(c.code))
@@ -32,6 +33,7 @@ export async function GET() {
         services: clientServices(raw),
         fields: Object.fromEntries(FIELDS.map((f) => [f, String(raw[f] ?? "").trim()])),
         klaviyo: klaviyo.has(c.code.toUpperCase()),
+        googleAdsSpend: googleAds.get(c.code.toUpperCase()) ?? null,
         // Which connection items apply (by service) and their state.
         items: Object.fromEntries((conn?.items ?? []).map((i) => [i.key, i.state])),
         done: conn?.done ?? 0,

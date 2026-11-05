@@ -1,9 +1,24 @@
-import { and, eq, inArray } from "drizzle-orm";
+import { and, eq, gt, gte, inArray, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { aac, clientBrandGuidelines, clientBrandVoice, clientOnboardingSteps, driveFolders } from "@/lib/db/schema";
+import { aac, clientBrandGuidelines, clientBrandVoice, clientOnboardingSteps, driveFolders, kpiDaily } from "@/lib/db/schema";
 import { clientsWithKlaviyo } from "@/lib/kpi/secrets";
 import { INTERNAL_CLIENT_CODE } from "@/lib/my-dashboard/asana-map";
 import { buildClientChecklist, type ClientChecklist } from "./checklist";
+
+/**
+ * Clients whose GA4 reported Google Ads spend in the last `days` days (code,
+ * upper case → spend): the Google Ads link on their GA4 property works, which
+ * is where the hub's Google Ads numbers come from.
+ */
+export async function clientsWithGoogleAdsSpend(days = 60): Promise<Map<string, number>> {
+  const since = new Date(Date.now() - days * 86_400_000).toISOString().slice(0, 10);
+  const rows = await db
+    .select({ code: kpiDaily.clientIdCode, total: sql<number>`sum(${kpiDaily.value})` })
+    .from(kpiDaily)
+    .where(and(eq(kpiDaily.source, "ga4"), eq(kpiDaily.metric, "google_ads_cost"), gte(kpiDaily.day, since), gt(kpiDaily.value, 0)))
+    .groupBy(kpiDaily.clientIdCode);
+  return new Map(rows.map((r) => [r.code.toUpperCase(), Number(r.total)]));
+}
 
 /**
  * The profile checklist for some clients (all when `codes` is omitted), in a
@@ -12,7 +27,7 @@ import { buildClientChecklist, type ClientChecklist } from "./checklist";
  */
 export async function loadClientChecklists(codes?: string[]): Promise<Map<string, ClientChecklist>> {
   const only = <T>(col: T) => (codes ? [inArray(col as never, codes)] : []);
-  const [clients, voices, guides, steps, folders, klaviyo] = await Promise.all([
+  const [clients, voices, guides, steps, folders, klaviyo, googleAds] = await Promise.all([
     db
       .select({
         clientIdCode: aac.clientIdCode,
@@ -41,6 +56,7 @@ export async function loadClientChecklists(codes?: string[]): Promise<Map<string
       .from(driveFolders)
       .where(and(eq(driveFolders.folderType, "client"), ...only(driveFolders.clientIdCode))),
     clientsWithKlaviyo(),
+    clientsWithGoogleAdsSpend(),
   ]);
 
   const voiceBy = new Map(voices.map((v) => [v.clientIdCode, v]));
@@ -75,6 +91,7 @@ export async function loadClientChecklists(codes?: string[]): Promise<Map<string
             }
           : null,
         klaviyoConnected: klaviyo.has(c.clientIdCode.toUpperCase()),
+        googleAdsReporting: googleAds.has(c.clientIdCode.toUpperCase()),
         driveFoldersCreated: withFolders.has(c.clientIdCode),
         completedSteps: stepsBy.get(c.clientIdCode) ?? new Set(),
       }),

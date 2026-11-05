@@ -85,5 +85,10 @@ describe("buildClientChecklist", () => {
     expect(item(c, "access_ga4")?.state).toBe("done");
     expect(item(c, "access_meta")?.state).toBe("done");
   });
-});
 
+  it("counts Google Ads as connected once GA4 reports its spend", () => {
+    const raw = { "Service: Google": "Google" };
+    expect(item(buildClientChecklist(base({ rawData: raw })), "conn_google_ads")?.state).toBe("missing");
+    expect(item(buildClientChecklist(base({ rawData: raw, googleAdsReporting: true })), "conn_google_ads")?.state).toBe("done");
+  });
+});
