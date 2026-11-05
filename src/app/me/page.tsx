@@ -14,6 +14,7 @@ import { HubTasks } from "@/components/my-dashboard/hub-tasks";
 import { ReviewsBox } from "@/components/my-dashboard/reviews-box";
 import { ReadinessCard } from "@/components/my-dashboard/readiness-card";
 import { GoLiveCard } from "@/components/my-dashboard/go-live-card";
+import { HoursCard } from "@/components/my-dashboard/hours-card";
 import { splitBySource } from "@/lib/my-dashboard/group-tasks";
 
 const localToday = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
@@ -69,6 +70,7 @@ function MyDashboardContent() {
           {data.staff.map((s) => <option key={s.id} value={s.id}>{s.name ?? s.id}</option>)}
         </select>
       )} />
+      <HoursCard userId={data.person.id} today={data.today} self={data.person.id === data.viewer.id} />
       <ReviewsBox reviews={data.reviews} asanaUrl={data.reviewsAsanaUrl} />
       <ReadinessCard userId={data.person.id} />
       <GoLiveCard userId={data.person.id} />
