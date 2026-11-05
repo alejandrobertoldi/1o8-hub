@@ -11,13 +11,13 @@ import { READINESS_DEPARTMENTS } from "@/lib/readiness/match";
 import { BillingSplit, TeamPerformance, WeeklyCapacity, WorkTypes, clientLabel } from "./insights-dashboard";
 import { UserCheck, X } from "lucide-react";
 
-const iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-const h2 = (n: number) => (Math.round(n * 100) / 100).toFixed(2);
+export const iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+export const h2 = (n: number) => (Math.round(n * 100) / 100).toFixed(2);
 
 /** Period shortcuts; weeks run Monday–Sunday. */
-const PERIODS = ["This month", "Last month", "This week", "Last week", "This quarter", "Year to date", "Custom"] as const;
-type Period = (typeof PERIODS)[number];
-function periodRange(p: Period, now = new Date()): [string, string] | null {
+export const PERIODS = ["This month", "Last month", "This week", "Last week", "This quarter", "Year to date", "Custom"] as const;
+export type Period = (typeof PERIODS)[number];
+export function periodRange(p: Period, now = new Date()): [string, string] | null {
   const y = now.getFullYear();
   const m = now.getMonth();
   const monday = new Date(y, m, now.getDate() - ((now.getDay() + 6) % 7));
@@ -271,10 +271,10 @@ export function HoursInsightsTab() {
   );
 }
 
-const SELECT = "h-9 rounded-md border border-input bg-transparent px-2 text-sm dark:bg-input/30";
-const fmt = (d: string) => new Date(`${d}T00:00:00`).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+export const SELECT = "h-9 rounded-md border border-input bg-transparent px-2 text-sm dark:bg-input/30";
+export const fmt = (d: string) => new Date(`${d}T00:00:00`).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+export function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="grid gap-1">
       <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{label}</span>
@@ -307,7 +307,7 @@ function Breakdown({ data }: { data: Record<string, Record<string, number>> }) {
   );
 }
 
-function Card({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) {
+export function Card({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) {
   return (
     <section className="rounded-xl border bg-card">
       <header className="border-b px-4 py-3">
@@ -319,7 +319,7 @@ function Card({ title, subtitle, children }: { title: string; subtitle?: string;
   );
 }
 
-function Table({ head, rows, numeric = [] }: { head: React.ReactNode[]; rows: React.ReactNode[][]; numeric?: number[] }) {
+export function Table({ head, rows, numeric = [] }: { head: React.ReactNode[]; rows: React.ReactNode[][]; numeric?: number[] }) {
   if (!rows.length) return <p className="text-sm text-muted-foreground">No data in this range.</p>;
   return (
     <table className="w-full text-sm">

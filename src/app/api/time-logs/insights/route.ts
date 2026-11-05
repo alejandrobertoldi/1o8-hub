@@ -6,11 +6,15 @@ import { buildInsights } from "@/lib/time-logs/insights";
 
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
 
-/** GET /api/time-logs/insights?from&to[&today][&team][&user][&workType][&client] — team-wide hours insights (owners / super admins). */
+/**
+ * GET /api/time-logs/insights?from&to[&today][&team][&user][&workType][&client]
+ * Team-wide hours insights for admins and up; anyone else (or ?mine=1) gets
+ * the same report scoped to their own hours, without other people's names or
+ * the clients' estimates.
+ */
 export async function GET(req: NextRequest) {
   const me = await timeLogSession();
   if (!me) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  if (!me.isAdmin) return NextResponse.json({ error: "Only owners and super admins can see team-wide insights" }, { status: 403 });
   const sp = req.nextUrl.searchParams;
   const from = sp.get("from") ?? "";
   const to = sp.get("to") ?? "";
@@ -19,7 +23,10 @@ export async function GET(req: NextRequest) {
   }
   const today = sp.get("today");
   const f = (k: string) => sp.get(k)?.slice(0, 120) || null;
-  return NextResponse.json(
-    await buildInsights(from, to, today && DATE.test(today) ? today : undefined, { team: f("team"), userId: f("user"), workType: f("workType"), client: f("client") }),
-  );
+  const day = today && DATE.test(today) ? today : undefined;
+  if (!me.teamReports || sp.get("mine") === "1") {
+    const mine = await buildInsights(from, to, day, { userId: me.userId, workType: f("workType"), client: f("client") });
+    return NextResponse.json({ ...mine, people: [], clientVsEstimate: [] });
+  }
+  return NextResponse.json(await buildInsights(from, to, day, { team: f("team"), userId: f("user"), workType: f("workType"), client: f("client") }));
 }

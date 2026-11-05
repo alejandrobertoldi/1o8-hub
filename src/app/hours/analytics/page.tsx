@@ -3,22 +3,26 @@
 import { Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { BarChart3, Gauge } from "lucide-react";
+import { BarChart3, Gauge, User } from "lucide-react";
 import { PageMetaSlot } from "@/components/layout/page-header-slot";
 import { HoursDashboard } from "@/components/admin/hours-dashboard";
 import { HoursInsightsTab } from "@/components/time-logs/hours-insights-tab";
-import { hasPeopleAccess } from "@/lib/roles";
+import { MyHoursAnalytics } from "@/components/time-logs/my-hours-analytics";
+import { hasHoursReportsAccess, isHubStaff } from "@/lib/roles";
 import { cn } from "@/lib/utils";
 
 const TABS = [
   { key: "analytics", label: "Analytics", icon: BarChart3 },
   { key: "insights", label: "Capacity & budget", icon: Gauge },
+  { key: "mine", label: "My hours", icon: User },
 ] as const;
+type Tab = (typeof TABS)[number]["key"];
 
 /**
- * Team-wide time analytics with export (from MarketFoundry's Admin Hours),
- * plus the former Hours Insights page as a tab: only what the main tab
- * doesn't show (capacity, compliance, hours vs estimate…). Admin and up.
+ * Admin and up: team-wide time analytics with export (from MarketFoundry's
+ * Admin Hours), the former Hours Insights as "Capacity & budget" (only what
+ * the main tab doesn't show), and their own hours. Everyone else: a light
+ * version with their own hours only.
  */
 export default function HoursAnalyticsPage() {
   return (
@@ -31,10 +35,12 @@ export default function HoursAnalyticsPage() {
 function HoursAnalytics() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const tab = useSearchParams().get("tab") === "insights" ? "insights" : "analytics";
+  const requested = useSearchParams().get("tab");
+  const team = hasHoursReportsAccess(session?.user?.role);
+  const tab: Tab = !team ? "mine" : requested === "insights" || requested === "mine" ? requested : "analytics";
 
   if (status === "loading") return null;
-  if (!hasPeopleAccess(session?.user?.role)) {
+  if (!isHubStaff(session?.user?.role)) {
     return <div className="p-8 text-sm text-muted-foreground">You don&apos;t have access to hours analytics.</div>;
   }
 
@@ -42,10 +48,11 @@ function HoursAnalytics() {
     <div className="space-y-5">
       <PageMetaSlot>
         <h1 className="text-[2.2rem] font-[family-name:var(--font-outfit)] tracking-tighter leading-none" aria-label="Hours Analytics">
-          <span className="font-bold text-sidebar-foreground">Hours</span>
+          <span className="font-bold text-sidebar-foreground">{team ? "Hours" : "My Hours"}</span>
           <span className="font-normal text-brand">Analytics</span>
         </h1>
       </PageMetaSlot>
+      {team && (
       <nav className="flex gap-1 overflow-x-auto border-b" aria-label="Hours analytics views">
         {TABS.map((t) => (
           <button
@@ -62,7 +69,8 @@ function HoursAnalytics() {
           </button>
         ))}
       </nav>
-      {tab === "analytics" ? <HoursDashboard /> : <HoursInsightsTab />}
+      )}
+      {tab === "analytics" ? <HoursDashboard /> : tab === "insights" ? <HoursInsightsTab /> : <MyHoursAnalytics />}
     </div>
   );
 }

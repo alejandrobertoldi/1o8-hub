@@ -19,7 +19,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { hasAdminPowers, hasPeopleAccess, isHubStaff } from "@/lib/roles";
+import { hasAdminPowers, hasHoursReportsAccess, hasPeopleAccess, isHubStaff } from "@/lib/roles";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -210,7 +210,8 @@ export function TopNav() {
       label: "Hours", icon: Clock, linkWhenSingle: true,
       items: [
         { title: "My timesheet", href: "/hours", icon: Clock, visible: isHubStaff(role) },
-        { title: "Hours analytics", href: "/hours/analytics", icon: BarChart3, visible: peopleAccess },
+        // Admin and up: team-wide hours reports; everyone else: their own hours.
+        { title: hasHoursReportsAccess(role) ? "Hours analytics" : "My hours analytics", href: "/hours/analytics", icon: BarChart3, visible: isHubStaff(role) },
         { title: "Time off requests", href: "/calendar/requests", icon: Plane, visible: !!role && canSubmitTimeOff(role) },
         { title: "Team time off", href: "/calendar/team", icon: Plane, visible: peopleAccess },
       ],

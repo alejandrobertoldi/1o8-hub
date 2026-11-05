@@ -86,6 +86,16 @@ export function hasPeopleAccess(role: string | null | undefined): boolean {
   return hasSuperPowers(role);
 }
 
+/**
+ * Team-wide hours reports (Hours Analytics, its Capacity & budget tab, the
+ * hours export) — Owner / Super Admin / Admin (user, 2026-11-05). Editing or
+ * viewing someone else's timesheet stays people data (hasPeopleAccess);
+ * everyone sees analytics of their own hours.
+ */
+export function hasHoursReportsAccess(role: string | null | undefined): boolean {
+  return hasAdminPowers(role);
+}
+
 /** Internal hub staff (not client / prospect / pending). */
 export function isHubStaff(role: string | null | undefined): boolean {
   return (

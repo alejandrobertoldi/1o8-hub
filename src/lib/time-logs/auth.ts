@@ -1,5 +1,5 @@
 import { getAuthSession } from "@/lib/auth-db";
-import { hasPeopleAccess, isHubStaff } from "@/lib/roles";
+import { hasHoursReportsAccess, hasPeopleAccess, isHubStaff } from "@/lib/roles";
 
 /**
  * Internal staff only. Everyone manages their own time; only owners / super
@@ -14,5 +14,7 @@ export async function timeLogSession() {
     email: session.user.email ?? null,
     name: session.user.name ?? null,
     isAdmin: hasPeopleAccess(session.user.role),
+    /** Team-wide hours reports (admin and up); everyone else gets their own. */
+    teamReports: hasHoursReportsAccess(session.user.role),
   };
 }

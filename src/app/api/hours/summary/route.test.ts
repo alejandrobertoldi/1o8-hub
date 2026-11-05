@@ -25,10 +25,10 @@ const RANGE = { from: "2026-07-01", to: "2026-07-31" };
 describe("GET /api/hours/summary", () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it("403 below owner / super admin (an admin can't see everyone's hours)", async () => {
+  it("403 below admin (editors only see their own hours, in My hours)", async () => {
     asMock(getAuthSession).mockResolvedValue({ user: { id: "a1", role: "editor", isSuperAdmin: false } });
     expect((await GET(req(RANGE))).status).toBe(403);
-    asMock(getAuthSession).mockResolvedValue({ user: { id: "a1", role: "admin", isSuperAdmin: false } });
+    asMock(getAuthSession).mockResolvedValue({ user: { id: "a1", role: "viewer", isSuperAdmin: false } });
     expect((await GET(req(RANGE))).status).toBe(403);
   });
 
