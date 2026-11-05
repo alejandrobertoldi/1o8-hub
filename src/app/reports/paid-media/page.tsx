@@ -28,7 +28,7 @@ export default function PaidMediaReportPage() {
       <SeriesState code={code} isLoading={isLoading} error={error} series={data}>
         {(s) => {
           const meta = hasAny(s, ["meta:spend"]);
-          const google = hasAny(s, ["ga4:google_ads_cost"]);
+          const google = hasAny(s, ["google_ads:cost", "ga4:google_ads_cost"]);
           return (
             <div className="space-y-8">
               <Section title="Blended" note="Meta + Google Ads together. MER uses Shopify net sales once the store is connected.">
@@ -53,14 +53,24 @@ export default function PaidMediaReportPage() {
                 )}
               </Section>
 
-              <Section title="Google Ads" note="From Google Analytics: cost of the Google Ads account linked to the GA4 property, and revenue of google / cpc sessions.">
+              <Section
+                title="Google Ads"
+                note={
+                  s.sources.includes("google_ads")
+                    ? "From the Google Ads API (1o8's MCC): the account's own spend, conversions and conversion value."
+                    : "From Google Analytics: cost of the Google Ads account linked to the GA4 property, and revenue of google / cpc sessions."
+                }
+              >
                 {google ? (
                   <>
                     <MetricGrid metrics={GOOGLE_ADS} series={s} />
                     <DailyChart series={s} bar={pick(GOOGLE_ADS, "spend")} line={pick(GOOGLE_ADS, "roas")} title="Daily Google Ads spend and ROAS" />
                   </>
                 ) : (
-                  <Empty>No Google Ads cost in this range. It shows up once the client&apos;s Google Ads account is linked to its GA4 property (GA4 → Admin → Google Ads links).</Empty>
+                  <Empty>
+                    No Google Ads cost in this range. It shows up once the client&apos;s Google Ads customer ID is on its profile (read through 1o8&apos;s MCC), or its
+                    Google Ads account is linked to its GA4 property.
+                  </Empty>
                 )}
               </Section>
             </div>

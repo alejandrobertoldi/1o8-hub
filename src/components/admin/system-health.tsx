@@ -41,7 +41,7 @@ const ago = (iso: string | null) => {
 const UNIT: Record<UnitKind, string> = { gb: "GB", hours: "h", gbHours: "GB-h", count: "" };
 const fmtQty = (n: number, kind: UnitKind) =>
   `${n.toLocaleString("en-US", { maximumFractionDigits: kind === "count" ? 0 : 2 })}${UNIT[kind] ? ` ${UNIT[kind]}` : ""}`;
-const SOURCE_LABEL: Record<string, string> = { ga4: "GA4", meta: "Meta", klaviyo: "Klaviyo", shopify: "Shopify" };
+const SOURCE_LABEL: Record<string, string> = { ga4: "GA4", google_ads: "Google Ads", meta: "Meta", klaviyo: "Klaviyo", shopify: "Shopify" };
 
 const LEVEL_BAR: Record<Level, string> = { ok: "bg-emerald-500", watch: "bg-amber-500", critical: "bg-red-500", unknown: "bg-muted-foreground/40" };
 const LEVEL_TEXT: Record<Level, string> = { ok: "text-emerald-600 dark:text-emerald-400", watch: "text-amber-600 dark:text-amber-400", critical: "text-red-500", unknown: "text-muted-foreground" };

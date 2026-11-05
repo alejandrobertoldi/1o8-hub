@@ -174,6 +174,7 @@ export function integrations() {
     { label: "Google sign-in", configured: set("GOOGLE_CLIENT_ID") && set("GOOGLE_CLIENT_SECRET") },
     { label: "Asana", configured: set("ASANA_ACCESS_TOKEN") },
     { label: "Shopify app", configured: set("SHOPIFY_CLIENT_ID") && set("SHOPIFY_CLIENT_SECRET") },
+    { label: "Google Ads API (developer token)", configured: set("GOOGLE_ADS_DEVELOPER_TOKEN") },
     { label: "Claude (Anthropic)", configured: set("ANTHROPIC_API_KEY") },
     { label: "Email (Resend)", configured: set("RESEND_API_KEY") },
     { label: "Cron secret", configured: set("CRON_SECRET") },

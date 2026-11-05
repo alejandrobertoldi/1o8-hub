@@ -1,4 +1,4 @@
-import { and, eq, gt, gte, inArray, sql } from "drizzle-orm";
+import { and, eq, gt, gte, inArray, or, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { aac, clientBrandGuidelines, clientBrandVoice, clientOnboardingSteps, driveFolders, kpiDaily } from "@/lib/db/schema";
 import { clientsWithKlaviyo } from "@/lib/kpi/secrets";
@@ -6,16 +6,22 @@ import { INTERNAL_CLIENT_CODE } from "@/lib/my-dashboard/asana-map";
 import { buildClientChecklist, type ClientChecklist } from "./checklist";
 
 /**
- * Clients whose GA4 reported Google Ads spend in the last `days` days (code,
- * upper case → spend): the Google Ads link on their GA4 property works, which
- * is where the hub's Google Ads numbers come from.
+ * Clients with Google Ads spend in the last `days` days (code, upper case →
+ * spend), from the Google Ads API or GA4's Google Ads link: the hub reads
+ * their Google Ads numbers one way or the other.
  */
 export async function clientsWithGoogleAdsSpend(days = 60): Promise<Map<string, number>> {
   const since = new Date(Date.now() - days * 86_400_000).toISOString().slice(0, 10);
   const rows = await db
     .select({ code: kpiDaily.clientIdCode, total: sql<number>`sum(${kpiDaily.value})` })
     .from(kpiDaily)
-    .where(and(eq(kpiDaily.source, "ga4"), eq(kpiDaily.metric, "google_ads_cost"), gte(kpiDaily.day, since), gt(kpiDaily.value, 0)))
+    .where(
+      and(
+        or(and(eq(kpiDaily.source, "ga4"), eq(kpiDaily.metric, "google_ads_cost")), and(eq(kpiDaily.source, "google_ads"), eq(kpiDaily.metric, "cost"))),
+        gte(kpiDaily.day, since),
+        gt(kpiDaily.value, 0),
+      ),
+    )
     .groupBy(kpiDaily.clientIdCode);
   return new Map(rows.map((r) => [r.code.toUpperCase(), Number(r.total)]));
 }

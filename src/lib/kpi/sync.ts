@@ -4,6 +4,7 @@ import { aac, kpiDaily, kpiSyncRuns } from "@/lib/db/schema";
 import { MAIN_KPIS_FIELD, parseClientKpis, type ClientKpi } from "@/lib/clients/kpis";
 import { fetchGa4Daily, type DailyValue } from "./ga4";
 import { fetchMetaDaily } from "./meta";
+import { fetchGoogleAdsDaily, googleAdsConfigured } from "./google-ads";
 import { fetchKlaviyoDaily } from "./klaviyo";
 import { clientsWithKlaviyo } from "./secrets";
 import { fetchShopifyDaily, normalizeShop, shopifyConnected } from "./shopify";
@@ -12,6 +13,7 @@ import { kpiValue, parseTarget, targetStatus, type KpiValue, type TargetStatus, 
 /** Hub-only raw_data keys naming each client's data sources. */
 export const GA4_PROPERTY_FIELD = "GA4Property";
 export const META_AD_ACCOUNT_FIELD = "MetaAdAccount";
+export const GOOGLE_ADS_FIELD = "GoogleAdsCustomerId";
 
 const DAY = 86_400_000;
 const iso = (d: Date) => d.toISOString().slice(0, 10);
@@ -22,7 +24,7 @@ const BACKFILL_DAYS = 400;
 const REFRESH_DAYS = 4;
 const CHUNK_DAYS = 180;
 
-type ClientSources = { code: string; ga4: string[]; meta: string[]; klaviyo: boolean; shop: string | null };
+type ClientSources = { code: string; ga4: string[]; meta: string[]; googleAds: string[]; klaviyo: boolean; shop: string | null };
 
 /** Some clients have several properties / ad accounts (US, Canada…): comma separated, summed. */
 const list = (v: string | undefined) => (v ?? "").split(",").map((s) => s.trim()).filter(Boolean);
@@ -41,6 +43,7 @@ async function clientSources(only?: string): Promise<ClientSources[]> {
       code: r.code,
       ga4: list(raw[GA4_PROPERTY_FIELD]),
       meta: list(raw[META_AD_ACCOUNT_FIELD]),
+      googleAds: list(raw[GOOGLE_ADS_FIELD]),
       klaviyo: klaviyo.has(r.code.toUpperCase()),
       shop: normalizeShop(raw.ShopifyStore),
     };
@@ -111,6 +114,9 @@ export async function syncKpis(trigger: string, only?: string, opts: { full?: bo
   for (const c of await clientSources(only)) {
     if (c.ga4.length) await pull(c.code, "ga4", async (f, t) => sumByDay((await Promise.all(c.ga4.map((id) => fetchGa4Daily(id, f, t)))).flat()));
     if (c.meta.length) await pull(c.code, "meta", async (f, t) => sumByDay((await Promise.all(c.meta.map((id) => fetchMetaDaily(id, f, t)))).flat()));
+    if (c.googleAds.length && googleAdsConfigured()) {
+      await pull(c.code, "google_ads", async (f, t) => sumByDay((await Promise.all(c.googleAds.map((id) => fetchGoogleAdsDaily(id, f, t)))).flat()));
+    }
     if (c.klaviyo) await pull(c.code, "klaviyo", (f, t) => fetchKlaviyoDaily(c.code, f, t), "emails_delivered");
     if (c.shop && (await shopifyConnected(c.shop))) await pull(c.code, "shopify", (f, t) => fetchShopifyDaily(c.shop!, f, t));
   }

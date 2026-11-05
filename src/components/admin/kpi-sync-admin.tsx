@@ -11,6 +11,7 @@ import type { KpiSyncReport } from "@/lib/kpi/sync";
 type Run = { id: string; trigger: string; startedAt: string; finishedAt: string | null; report: KpiSyncReport | null; error: string | null };
 type Status = {
   ga4: { oauthConfigured: boolean; connected: boolean; email: string | null; serviceAccount: string | null };
+  googleAds: { configured: boolean; granted: boolean };
   meta: { connected: boolean; adAccounts: number | null; updatedAt: string | null };
   klaviyo: { clients: string[] };
   shopify: { configured: boolean; stores: string[] };
@@ -120,7 +121,7 @@ export function KpiSyncAdmin() {
 
       <section className="space-y-2 rounded-xl border bg-card p-4">
         <div className="flex flex-wrap items-center gap-3">
-          <h2 className="text-sm font-bold">Google Analytics (GA4)</h2>
+          <h2 className="text-sm font-bold">Google Analytics (GA4) &amp; Google Ads</h2>
           <span className={cn("rounded-full px-2.5 py-1 text-xs font-semibold", ga4.connected ? "bg-emerald-500/15 text-emerald-500" : "bg-orange-500/15 text-orange-500")}>
             {ga4.connected ? `Connected · ${ga4.email ?? "account"}` : "Not connected"}
           </span>
@@ -148,6 +149,17 @@ export function KpiSyncAdmin() {
               Until then, properties shared with <b className="text-foreground">{ga4.serviceAccount}</b> as Viewer also work.
             </>
           )}
+        </p>
+        <p className="text-xs text-muted-foreground">
+          <b className="text-foreground">Google Ads:</b>{" "}
+          {!data.googleAds.configured ? (
+            <span className="text-orange-500">set GOOGLE_ADS_DEVELOPER_TOKEN (1o8 MCC → Admin → API Center) and redeploy.</span>
+          ) : !data.googleAds.granted ? (
+            <span className="text-orange-500">Reconnect the Google account above to grant Google Ads access.</span>
+          ) : (
+            <span className="text-emerald-500">reading the accounts under 1o8&apos;s MCC.</span>
+          )}{" "}
+          Each client&apos;s Google Ads customer ID (on its profile) is pulled daily; GA4&apos;s Google Ads link is the fallback.
         </p>
       </section>
 

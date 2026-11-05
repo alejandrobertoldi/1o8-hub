@@ -19,6 +19,9 @@ import { googleServiceAccount } from "@/lib/google-service-account";
 const PROVIDER = "google_analytics";
 export const GA_STATE_COOKIE = "ga_oauth_state";
 const SCOPES = ["https://www.googleapis.com/auth/analytics.readonly"];
+/** The connected account also reads Google Ads (through 1o8's MCC); the service account can't. */
+const ADS_SCOPE = "https://www.googleapis.com/auth/adwords";
+const OAUTH_SCOPES = [...SCOPES, ADS_SCOPE];
 
 export const gaRedirectUri = (origin: string) => `${origin}/api/integrations/google-analytics/callback`;
 export const gaOAuthConfigured = () => !!process.env.GOOGLE_CLIENT_ID && !!process.env.GOOGLE_CLIENT_SECRET;
@@ -28,7 +31,7 @@ const oauthClient = (origin?: string) =>
 
 export function gaAuthorizeUrl(origin: string, state: string): string {
   // offline + consent: Google only returns a refresh token on a fresh consent.
-  return oauthClient(origin).generateAuthUrl({ access_type: "offline", prompt: "consent", scope: SCOPES, state });
+  return oauthClient(origin).generateAuthUrl({ access_type: "offline", prompt: "consent", scope: OAUTH_SCOPES, state });
 }
 
 export async function connectGoogleAnalytics(origin: string, code: string, userId: string) {
@@ -42,16 +45,31 @@ export async function connectGoogleAnalytics(origin: string, code: string, userI
     sealed: sealed.ciphertext,
     keyVersion: sealed.keyVersion,
     expiresAt: null,
-    meta: { email: me?.data.email ?? null },
+    meta: { email: me?.data.email ?? null, googleAds: !!tokens.scope?.split(" ").includes(ADS_SCOPE) },
     connectedBy: userId,
     updatedAt: new Date(),
   };
   await db.insert(integrationTokens).values({ provider: PROVIDER, ...values }).onConflictDoUpdate({ target: integrationTokens.provider, set: values });
 }
 
-export async function gaConnection(): Promise<{ email: string | null; updatedAt: Date } | null> {
+/** googleAds: the account was connected with Google Ads access too (else: connect again). */
+export async function gaConnection(): Promise<{ email: string | null; googleAds: boolean; updatedAt: Date } | null> {
   const [row] = await db.select().from(integrationTokens).where(eq(integrationTokens.provider, PROVIDER)).limit(1);
-  return row ? { email: ((row.meta ?? {}) as { email?: string }).email ?? null, updatedAt: row.updatedAt } : null;
+  if (!row) return null;
+  const meta = (row.meta ?? {}) as { email?: string; googleAds?: boolean };
+  return { email: meta.email ?? null, googleAds: !!meta.googleAds, updatedAt: row.updatedAt };
+}
+
+/** An access token of the connected Google account, for Google Ads calls. */
+export async function googleAccessToken(): Promise<string> {
+  const [row] = await db.select().from(integrationTokens).where(eq(integrationTokens.provider, PROVIDER)).limit(1);
+  if (!row) throw new Error("Connect Google (Sync & Export → KPIs) first");
+  const { refresh_token } = JSON.parse(decryptPii(row.sealed, row.keyVersion)) as { refresh_token: string };
+  const client = oauthClient();
+  client.setCredentials({ refresh_token });
+  const { token } = await client.getAccessToken();
+  if (!token) throw new Error("Google didn't return an access token");
+  return token;
 }
 
 export async function disconnectGoogleAnalytics() {

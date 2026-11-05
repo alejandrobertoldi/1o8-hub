@@ -110,8 +110,8 @@ export function MetaAdAccountPicker({ value, readOnly, onSave }: { value: string
 }
 
 /**
- * The client's Google Ads customer ID (123-456-7890). Recorded only for now:
- * the hub doesn't read Google Ads yet, but onboarding checks it's on file.
+ * The client's Google Ads customer ID (123-456-7890): the KPI sync reads that
+ * account daily through 1o8's MCC (several, comma separated, are summed).
  */
 export function GoogleAdsAccount({
   value,

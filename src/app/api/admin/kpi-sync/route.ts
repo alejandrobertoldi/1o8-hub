@@ -9,6 +9,7 @@ import { gaConnection, gaOAuthConfigured } from "@/lib/kpi/ga4";
 import { lastKpiRuns, syncKpis } from "@/lib/kpi/sync";
 import { clientsWithKlaviyo, metaProvider, secretInfo } from "@/lib/kpi/secrets";
 import { shopifyConfigured } from "@/lib/kpi/shopify";
+import { googleAdsConfigured } from "@/lib/kpi/google-ads";
 import { db } from "@/lib/db";
 import { integrationTokens } from "@/lib/db/schema";
 import { like } from "drizzle-orm";
@@ -24,6 +25,7 @@ export async function GET() {
   const [ga, meta, klaviyo] = await Promise.all([gaConnection(), secretInfo(metaProvider), clientsWithKlaviyo()]);
   return NextResponse.json({
     ga4: { oauthConfigured: gaOAuthConfigured(), connected: !!ga, email: ga?.email ?? null, serviceAccount: googleServiceAccount()?.client_email ?? null },
+    googleAds: { configured: googleAdsConfigured(), granted: !!ga?.googleAds },
     meta: { connected: !!meta, adAccounts: (meta?.meta.adAccounts as number | undefined) ?? null, updatedAt: meta?.updatedAt ?? null },
     klaviyo: { clients: [...klaviyo].sort() },
     shopify: {

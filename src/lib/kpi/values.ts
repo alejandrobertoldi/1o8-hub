@@ -15,14 +15,41 @@ export type KpiValue = { value: number; unit: KpiUnit; basis: string };
 const get = (t: Totals, k: string) => (k in t ? t[k] : undefined);
 const div = (a: number | undefined, b: number | undefined) => (a === undefined || b === undefined || b === 0 ? undefined : a / b);
 
+/**
+ * Google Ads figures: from the Google Ads API when the client's account is
+ * connected (the platform's own numbers), else as GA4 sees them through its
+ * Google Ads link (revenue = GA4 google / cpc sessions).
+ */
+export function googleAdsTotals(t: Totals) {
+  if (get(t, "google_ads:cost") !== undefined) {
+    return {
+      cost: get(t, "google_ads:cost"),
+      value: get(t, "google_ads:conversion_value"),
+      purchases: get(t, "google_ads:conversions"),
+      clicks: get(t, "google_ads:clicks"),
+      impressions: get(t, "google_ads:impressions"),
+      direct: true,
+    };
+  }
+  return {
+    cost: get(t, "ga4:google_ads_cost"),
+    value: get(t, "ga4:google_ads_revenue"),
+    purchases: get(t, "ga4:google_ads_purchases"),
+    clicks: get(t, "ga4:google_ads_clicks"),
+    impressions: get(t, "ga4:google_ads_impressions"),
+    direct: false,
+  };
+}
+
 /** The value of a catalog KPI over a period, or null when its sources aren't connected yet. */
 export function kpiValue(key: string, t: Totals): KpiValue | null {
   // Paid media across platforms: Meta + Google Ads (from GA4 when linked).
   const metaSpend = get(t, "meta:spend");
-  const googleSpend = get(t, "ga4:google_ads_cost");
+  const ads = googleAdsTotals(t);
+  const googleSpend = ads.cost;
   const spend = metaSpend === undefined && googleSpend === undefined ? undefined : (metaSpend ?? 0) + (googleSpend ?? 0);
   const metaValue = get(t, "meta:purchase_value");
-  const googleValue = get(t, "ga4:google_ads_revenue");
+  const googleValue = ads.value;
   const platformValue = metaValue === undefined && googleValue === undefined ? undefined : (metaValue ?? 0) + (googleValue ?? 0);
   const shopifyOrders = get(t, "shopify:orders");
   const shopifyNet = get(t, "shopify:net_sales");

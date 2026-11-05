@@ -1,4 +1,4 @@
-import type { KpiUnit, Totals } from "./values";
+import { googleAdsTotals, type KpiUnit, type Totals } from "./values";
 
 /**
  * The metrics each report page shows, computed from "source:metric" totals —
@@ -19,9 +19,10 @@ const g = (t: Totals, k: string) => (k in t ? t[k] : undefined);
 const div = (a: number | undefined, b: number | undefined) => (a === undefined || b === undefined || b === 0 ? undefined : a / b);
 
 const sum = (...xs: (number | undefined)[]) => (xs.every((x) => x === undefined) ? undefined : xs.reduce<number>((a, x) => a + (x ?? 0), 0));
-const totalSpend = (t: Totals) => sum(g(t, "meta:spend"), g(t, "ga4:google_ads_cost"));
-const totalValue = (t: Totals) => sum(g(t, "meta:purchase_value"), g(t, "ga4:google_ads_revenue"));
-const totalPurchases = (t: Totals) => sum(g(t, "meta:purchases"), g(t, "ga4:google_ads_purchases"));
+const ga = googleAdsTotals;
+const totalSpend = (t: Totals) => sum(g(t, "meta:spend"), ga(t).cost);
+const totalValue = (t: Totals) => sum(g(t, "meta:purchase_value"), ga(t).value);
+const totalPurchases = (t: Totals) => sum(g(t, "meta:purchases"), ga(t).purchases);
 
 /** All paid platforms together (Meta + Google Ads). */
 export const BLENDED: ReportMetric[] = [
@@ -44,13 +45,19 @@ export const META: ReportMetric[] = [
 ];
 
 export const GOOGLE_ADS: ReportMetric[] = [
-  { key: "spend", label: "Ad Spend", unit: "money", compute: (t) => g(t, "ga4:google_ads_cost") },
-  { key: "revenue", label: "Revenue (google / cpc)", unit: "money", compute: (t) => g(t, "ga4:google_ads_revenue"), hint: "GA4 revenue from google / cpc sessions" },
-  { key: "roas", label: "ROAS", unit: "ratio", compute: (t) => div(g(t, "ga4:google_ads_revenue"), g(t, "ga4:google_ads_cost")) },
-  { key: "purchases", label: "Purchases", unit: "count", compute: (t) => g(t, "ga4:google_ads_purchases") },
-  { key: "cpa", label: "Cost per Purchase", unit: "money", compute: (t) => div(g(t, "ga4:google_ads_cost"), g(t, "ga4:google_ads_purchases")), lowerIsBetter: true },
-  { key: "cpc", label: "CPC", unit: "money", compute: (t) => div(g(t, "ga4:google_ads_cost"), g(t, "ga4:google_ads_clicks")), lowerIsBetter: true },
-  { key: "ctr", label: "CTR", unit: "percent", compute: (t) => div(g(t, "ga4:google_ads_clicks"), g(t, "ga4:google_ads_impressions")) },
+  { key: "spend", label: "Ad Spend", unit: "money", compute: (t) => ga(t).cost },
+  {
+    key: "revenue",
+    label: "Conversion Value",
+    unit: "money",
+    compute: (t) => ga(t).value,
+    hint: "Google Ads conversion value (or, without the Google Ads connection, GA4 revenue from google / cpc sessions)",
+  },
+  { key: "roas", label: "ROAS", unit: "ratio", compute: (t) => div(ga(t).value, ga(t).cost) },
+  { key: "purchases", label: "Conversions", unit: "count", compute: (t) => ga(t).purchases },
+  { key: "cpa", label: "Cost per Conversion", unit: "money", compute: (t) => div(ga(t).cost, ga(t).purchases), lowerIsBetter: true },
+  { key: "cpc", label: "CPC", unit: "money", compute: (t) => div(ga(t).cost, ga(t).clicks), lowerIsBetter: true },
+  { key: "ctr", label: "CTR", unit: "percent", compute: (t) => div(ga(t).clicks, ga(t).impressions) },
 ];
 
 /** Shopify's own sales figures (net sales = gross − discounts − returns). Discounts and returns come in negative. */
