@@ -12,7 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useSearchParams } from "next/navigation";
-import { Suspense } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { BrandLogo } from "@/components/brand/brand-logo";
 import { BrandWatermark } from "@/components/auth/brand-watermark";
 
@@ -55,17 +55,45 @@ function SignInForm() {
             </svg>
             Sign in with Google
           </Button>
-          {process.env.NODE_ENV === "development" && (
-            <Button
-              variant="outline"
-              className="mt-2 w-full"
-              onClick={() => signIn("dev-login", { callbackUrl })}
-            >
-              Local dev login
-            </Button>
-          )}
+          {process.env.NODE_ENV === "development" && <DevLogin callbackUrl={callbackUrl} />}
         </CardContent>
       </Card>
+    </div>
+  );
+}
+
+type DevUser = { email: string; name: string | null; role: string | null };
+
+/** Dev server only: sign in as yourself (DEV_LOGIN_EMAIL) or as any local user, to see the hub with their role. */
+function DevLogin({ callbackUrl }: { callbackUrl: string }) {
+  const [people, setPeople] = useState<DevUser[]>([]);
+  const [email, setEmail] = useState("");
+  useEffect(() => {
+    fetch("/api/auth/dev-users")
+      .then((r) => (r.ok ? r.json() : []))
+      .then(setPeople)
+      .catch(() => setPeople([]));
+  }, []);
+  return (
+    <div className="mt-2 space-y-2">
+      <Button variant="outline" className="w-full" onClick={() => signIn("dev-login", { email, callbackUrl })}>
+        Local dev login
+      </Button>
+      {people.length > 0 && (
+        <select
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          aria-label="Sign in as"
+          className="h-9 w-full rounded-md border border-input bg-transparent px-2 text-sm"
+        >
+          <option value="">Sign in as… (default: you)</option>
+          {people.map((p) => (
+            <option key={p.email} value={p.email}>
+              {p.name ?? p.email} · {p.role ?? "no role"}
+            </option>
+          ))}
+        </select>
+      )}
     </div>
   );
 }

@@ -7,8 +7,9 @@ import { eq, inArray } from "drizzle-orm";
 import { resolveClientAllowedSections } from "@/lib/auth-helpers";
 import { resolveSignInImage } from "@/lib/avatars/url";
 
-// Local draft only: passwordless sign-in as DEV_LOGIN_EMAIL. Registered
-// solely on the dev server (`next dev`), never in a production build.
+// Local draft only: passwordless sign-in as DEV_LOGIN_EMAIL, or as any user
+// picked on the sign-in page ("Sign in as", to see the hub with their role).
+// Registered solely on the dev server (`next dev`), never in a production build.
 export const DEV_LOGIN_ENABLED =
   process.env.NODE_ENV === "development" && !!process.env.DEV_LOGIN_EMAIL;
 
@@ -23,9 +24,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           Credentials({
             id: "dev-login",
             name: "Local dev login",
-            credentials: {},
+            credentials: { email: {} },
             // No name: the DB row keeps the real one (getAuthSession only overwrites on a new value).
-            authorize: () => ({ email: process.env.DEV_LOGIN_EMAIL! }),
+            authorize: (credentials) => {
+              const picked = typeof credentials?.email === "string" ? credentials.email.trim().toLowerCase() : "";
+              return { email: picked || process.env.DEV_LOGIN_EMAIL! };
+            },
           }),
         ]
       : []),

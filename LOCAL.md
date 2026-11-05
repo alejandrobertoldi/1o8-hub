@@ -13,6 +13,9 @@ npm run dev -- --port 3108   # terminal 2
 
 Open http://localhost:3108 and click **Local dev login** (only shown by `next dev`).
 You sign in as the owner account (`DEV_LOGIN_EMAIL` in `.env.local`).
+To see the hub as someone else (an editor, a viewer…), pick them in **Sign in as…** under that
+button first: you get their role and section permissions from the local database. Sign out
+(avatar menu) to switch back.
 
 ## First-time setup (already done once)
 
