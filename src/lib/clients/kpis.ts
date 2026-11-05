@@ -45,9 +45,10 @@ export const KPI_CATALOG: readonly KpiDef[] = [
   { key: "course_registrations", label: "Course Registrations", source: "ga4" },
   { key: "sessions", label: "Website Sessions", source: "ga4" },
   { key: "email_revenue", label: "Email Revenue", source: "email" },
+  { key: "email_flow_vs_campaign", label: "Flow vs Campaign Revenue", source: "email", hint: "Flows' share of email + SMS revenue" },
   { key: "email_list_growth", label: "Email List Growth", source: "email" },
   { key: "email_deliverability", label: "Email Deliverability", source: "email" },
-  { key: "email_engagement", label: "Email Engagement", source: "email" },
+  { key: "email_engagement", label: "Email Engagement", source: "email", hint: "Open rate (and click rate)" },
   { key: "social_followers", label: "Social Followers", source: "social" },
   { key: "social_engagement", label: "Social Engagement", source: "social" },
   { key: "custom", label: "Custom KPI", source: "other" },
@@ -86,6 +87,9 @@ export function kpiLabel(k: ClientKpi): string {
   return kpiDef(k.key)?.label ?? k.label ?? k.key;
 }
 
+/** Before the catalog had it, "Flow vs Campaign Revenue" was set up as a custom KPI. */
+const FLOW_VS_CAMPAIGN = /flows?\b[^\n]*\bcampaigns?|campaigns?\b[^\n]*\bflows?/i;
+
 export function parseClientKpis(raw: string | undefined | null): ClientKpi[] {
   if (!raw?.trim()) return [];
   try {
@@ -94,7 +98,7 @@ export function parseClientKpis(raw: string | undefined | null): ClientKpi[] {
     return list
       .filter((k): k is ClientKpi => !!k && typeof k === "object" && typeof (k as ClientKpi).key === "string")
       .map((k) => ({
-        key: k.key,
+        key: k.key === "custom" && FLOW_VS_CAMPAIGN.test(k.label ?? "") ? "email_flow_vs_campaign" : k.key,
         ...(k.label ? { label: String(k.label) } : {}),
         ...(k.target ? { target: String(k.target) } : {}),
         ...(k.note ? { note: String(k.note) } : {}),
@@ -118,6 +122,7 @@ export function kpisSheetText(kpis: ClientKpi[]): string {
 
 /** Old free-text phrasing → catalog key, most specific first. */
 const SUGGEST: [RegExp, string][] = [
+  [FLOW_VS_CAMPAIGN, "email_flow_vs_campaign"],
   [/blended[^\n]*roas|\bmer\b/i, "blended_roas"],
   [/instacart/i, "instacart_roas"],
   [/target\s+roas/i, "target_roas"],

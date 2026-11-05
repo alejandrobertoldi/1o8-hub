@@ -59,11 +59,11 @@ export function sumByDay(rows: DailyValue[]): DailyValue[] {
   return [...totals.values()];
 }
 
-async function lastDay(code: string, source: string): Promise<string | null> {
+async function lastDay(code: string, source: string, metric?: string): Promise<string | null> {
   const [row] = await db
     .select({ day: max(kpiDaily.day) })
     .from(kpiDaily)
-    .where(and(eq(kpiDaily.clientIdCode, code), eq(kpiDaily.source, source)));
+    .where(and(eq(kpiDaily.clientIdCode, code), eq(kpiDaily.source, source), metric ? eq(kpiDaily.metric, metric) : undefined));
   return row?.day ?? null;
 }
 
@@ -87,10 +87,11 @@ export async function syncKpis(trigger: string, only?: string, opts: { full?: bo
   const [run] = await db.insert(kpiSyncRuns).values({ trigger }).returning({ id: kpiSyncRuns.id });
   const yesterday = addDays(iso(new Date()), -1);
   const report: KpiSyncReport = { clients: [] };
-  const pull = async (code: string, source: string, fetchRange: (from: string, to: string) => Promise<DailyValue[]>) => {
+  // newestMetric: the source's latest-added metric; until it's stored the source backfills again.
+  const pull = async (code: string, source: string, fetchRange: (from: string, to: string) => Promise<DailyValue[]>, newestMetric?: string) => {
     try {
       // full: re-read the whole backfill window (e.g. after adding a metric).
-      const last = opts.full ? null : await lastDay(code, source);
+      const last = opts.full ? null : await lastDay(code, source, newestMetric);
       const from = last ? addDays(last, -REFRESH_DAYS) : addDays(yesterday, -BACKFILL_DAYS);
       // Some APIs cap a query at a year (Klaviyo); pull in half-year slices.
       const rows: DailyValue[] = [];
@@ -110,7 +111,7 @@ export async function syncKpis(trigger: string, only?: string, opts: { full?: bo
   for (const c of await clientSources(only)) {
     if (c.ga4.length) await pull(c.code, "ga4", async (f, t) => sumByDay((await Promise.all(c.ga4.map((id) => fetchGa4Daily(id, f, t)))).flat()));
     if (c.meta.length) await pull(c.code, "meta", async (f, t) => sumByDay((await Promise.all(c.meta.map((id) => fetchMetaDaily(id, f, t)))).flat()));
-    if (c.klaviyo) await pull(c.code, "klaviyo", (f, t) => fetchKlaviyoDaily(c.code, f, t));
+    if (c.klaviyo) await pull(c.code, "klaviyo", (f, t) => fetchKlaviyoDaily(c.code, f, t), "emails_delivered");
     if (c.shop && (await shopifyConnected(c.shop))) await pull(c.code, "shopify", (f, t) => fetchShopifyDaily(c.shop!, f, t));
   }
   const errors = report.clients.filter((c) => c.error).map((c) => `${c.code} ${c.source}: ${c.error}`);

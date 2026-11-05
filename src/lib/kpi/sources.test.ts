@@ -60,3 +60,29 @@ describe("kpiValue with Meta and Klaviyo", () => {
     expect(kpiValue("blended_roas", t)).toBeNull();
   });
 });
+
+describe("kpiValue with Klaviyo flows and engagement", () => {
+  const t = {
+    "klaviyo:attributed_revenue": 10_000,
+    "klaviyo:flow_revenue": 6_500,
+    "klaviyo:emails_delivered": 20_000,
+    "klaviyo:emails_opened": 8_000,
+    "klaviyo:emails_clicked": 400,
+    "klaviyo:emails_bounced": 200,
+  };
+  it("splits flow vs campaign revenue", () => {
+    const v = kpiValue("email_flow_vs_campaign", t);
+    expect(v?.value).toBe(0.65);
+    expect(v?.basis).toContain("Campaigns $3,500");
+  });
+  it("computes open rate (with click rate) and deliverability", () => {
+    expect(kpiValue("email_engagement", t)?.value).toBe(0.4);
+    expect(kpiValue("email_engagement", t)?.basis).toContain("click rate 2.00%");
+    expect(kpiValue("email_deliverability", t)?.value).toBeCloseTo(20_000 / 20_200);
+  });
+  it("stays empty until the new metrics are pulled", () => {
+    expect(kpiValue("email_engagement", { "klaviyo:attributed_revenue": 1 })).toBeNull();
+    expect(kpiValue("email_flow_vs_campaign", { "klaviyo:attributed_revenue": 1 })).toBeNull();
+  });
+});
+

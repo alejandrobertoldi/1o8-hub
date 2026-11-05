@@ -96,8 +96,10 @@ const addDay = (d: string) => new Date(Date.parse(`${d}T00:00:00Z`) + 86_400_000
 const ATTRIBUTED = (dim: string) => /email|sms/i.test(dim);
 
 /**
- * Daily: revenue and orders attributed to Klaviyo (email + SMS), total store
- * orders revenue as Klaviyo sees it, new subscribers, unsubscribes and net.
+ * Daily: revenue and orders attributed to Klaviyo (email + SMS) and the part
+ * of it from flows (campaigns = the rest), total store orders revenue as
+ * Klaviyo sees it, new subscribers, unsubscribes and net, and email delivery
+ * and engagement (delivered, unique opens and clicks, bounces).
  */
 export async function fetchKlaviyoDaily(clientIdCode: string, from: string, to: string): Promise<DailyValue[]> {
   const key = await readSecret(klaviyoProvider(clientIdCode));
@@ -107,21 +109,43 @@ export async function fetchKlaviyoDaily(clientIdCode: string, from: string, to: 
   const placed = find("Placed Order");
   const subscribed = find("Subscribed to Email Marketing", "Subscribed to List");
   const unsubscribed = find("Unsubscribed from Email Marketing", "Unsubscribed");
+  const received = find("Received Email");
+  const opened = find("Opened Email");
+  const clicked = find("Clicked Email");
+  const bounced = find("Bounced Email");
+
+  const none = new Map<string, number>();
+  const daily = async (metric: { id: string } | undefined, measurement: string) =>
+    metric ? sumAggregate(await aggregate(key, metric.id, from, to, [measurement]), measurement) : none;
+  // Each account has its own rate limit; call() waits out any 429s.
+  const [byChannel, byFlow, subs, unsubs, delivered, opens, clicks, bounces] = await Promise.all([
+    placed ? aggregate(key, placed.id, from, to, ["sum_value", "count"], ["$attributed_channel"]) : null,
+    placed ? aggregate(key, placed.id, from, to, ["sum_value"], ["$attributed_flow"]) : null,
+    daily(subscribed, "count"),
+    daily(unsubscribed, "count"),
+    daily(received, "count"),
+    daily(opened, "unique"),
+    daily(clicked, "unique"),
+    daily(bounced, "count"),
+  ]);
 
   const out: DailyValue[] = [];
   const push = (metric: string, map: Map<string, number>) => map.forEach((value, day) => out.push({ day, metric, value }));
 
-  if (placed) {
-    const byChannel = await aggregate(key, placed.id, from, to, ["sum_value", "count"], ["$attributed_channel"]);
+  if (byChannel) {
     push("attributed_revenue", sumAggregate(byChannel, "sum_value", ATTRIBUTED));
     push("attributed_orders", sumAggregate(byChannel, "count", ATTRIBUTED));
     push("store_revenue", sumAggregate(byChannel, "sum_value"));
   }
-  const subs = subscribed ? sumAggregate(await aggregate(key, subscribed.id, from, to, ["count"]), "count") : new Map<string, number>();
-  const unsubs = unsubscribed ? sumAggregate(await aggregate(key, unsubscribed.id, from, to, ["count"]), "count") : new Map<string, number>();
+  // Orders not attributed to a flow come back under an empty flow id.
+  if (byFlow) push("flow_revenue", sumAggregate(byFlow, "sum_value", (flow) => flow.trim() !== ""));
   push("new_subscribers", subs);
   push("unsubscribes", unsubs);
   const days = new Set([...subs.keys(), ...unsubs.keys()]);
   days.forEach((day) => out.push({ day, metric: "net_subscribers", value: (subs.get(day) ?? 0) - (unsubs.get(day) ?? 0) }));
+  push("emails_delivered", delivered);
+  push("emails_opened", opens);
+  push("emails_clicked", clicks);
+  push("emails_bounced", bounces);
   return out;
 }

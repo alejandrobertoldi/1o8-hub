@@ -72,10 +72,30 @@ export function kpiValue(key: string, t: Totals): KpiValue | null {
       return v(get(t, "klaviyo:attributed_revenue"), "money", "Klaviyo (email + SMS attributed)");
     case "email_list_growth":
       return v(get(t, "klaviyo:net_subscribers"), "count", "Klaviyo");
+    case "email_flow_vs_campaign": {
+      const flows = get(t, "klaviyo:flow_revenue");
+      const total = get(t, "klaviyo:attributed_revenue");
+      if (flows === undefined || total === undefined) return null;
+      const campaigns = Math.max(total - flows, 0);
+      return v(div(flows, total), "percent", `Flows ${money(flows)} · Campaigns ${money(campaigns)} (Klaviyo)`);
+    }
+    case "email_engagement": {
+      const delivered = get(t, "klaviyo:emails_delivered");
+      const clickRate = div(get(t, "klaviyo:emails_clicked"), delivered);
+      const basis = clickRate === undefined ? "Klaviyo open rate" : `Open rate · click rate ${(clickRate * 100).toFixed(2)}% (Klaviyo)`;
+      return v(div(get(t, "klaviyo:emails_opened"), delivered), "percent", basis);
+    }
+    case "email_deliverability": {
+      const delivered = get(t, "klaviyo:emails_delivered");
+      const bounced = get(t, "klaviyo:emails_bounced");
+      return v(div(delivered, delivered === undefined ? undefined : delivered + (bounced ?? 0)), "percent", "Klaviyo delivered ÷ (delivered + bounced)");
+    }
     default:
       return null;
   }
 }
+
+const money = (n: number) => formatKpi({ value: n, unit: "money", basis: "" });
 
 /** Rates and ratios compare as-is; everything else is a total that grows over the month. */
 export const isRate = (unit: KpiUnit) => unit === "percent" || unit === "ratio";

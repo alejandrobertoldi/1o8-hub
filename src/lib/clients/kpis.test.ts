@@ -31,3 +31,11 @@ describe("kpisSheetText / parseClientKpis", () => {
     expect(parseClientKpis('[{"nokey":1}, {"key":"orders"}]')).toEqual([{ key: "orders" }]);
   });
 });
+
+describe("custom Flow vs Campaign KPIs", () => {
+  it("become the catalog KPI, keeping their target", () => {
+    const [k] = parseClientKpis(JSON.stringify([{ key: "custom", label: "Flow vs Campaign Revenue", target: "60/40" }]));
+    expect(k).toEqual({ key: "email_flow_vs_campaign", label: "Flow vs Campaign Revenue", target: "60/40" });
+    expect(parseClientKpis(JSON.stringify([{ key: "custom", label: "Store visits" }]))[0].key).toBe("custom");
+  });
+});

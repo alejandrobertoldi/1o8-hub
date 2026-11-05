@@ -100,7 +100,32 @@ export const EMAIL: ReportMetric[] = [
     unit: "percent",
     compute: (t) => div(g(t, "klaviyo:attributed_revenue"), g(t, "shopify:net_sales") ?? g(t, "klaviyo:store_revenue")),
   },
+  { key: "flow_revenue", label: "Flow Revenue", unit: "money", compute: (t) => g(t, "klaviyo:flow_revenue") },
+  {
+    key: "campaign_revenue",
+    label: "Campaign Revenue",
+    unit: "money",
+    compute: (t) => {
+      const total = g(t, "klaviyo:attributed_revenue");
+      const flows = g(t, "klaviyo:flow_revenue");
+      return total === undefined || flows === undefined ? undefined : Math.max(total - flows, 0);
+    },
+    hint: "Email + SMS revenue not from flows",
+  },
   { key: "attributed_orders", label: "Attributed Orders", unit: "count", compute: (t) => g(t, "klaviyo:attributed_orders") },
+  { key: "emails_delivered", label: "Emails Delivered", unit: "count", compute: (t) => g(t, "klaviyo:emails_delivered") },
+  { key: "open_rate", label: "Open Rate", unit: "percent", compute: (t) => div(g(t, "klaviyo:emails_opened"), g(t, "klaviyo:emails_delivered")), hint: "Unique opens ÷ delivered" },
+  { key: "click_rate", label: "Click Rate", unit: "percent", compute: (t) => div(g(t, "klaviyo:emails_clicked"), g(t, "klaviyo:emails_delivered")), hint: "Unique clicks ÷ delivered" },
+  {
+    key: "bounce_rate",
+    label: "Bounce Rate",
+    unit: "percent",
+    compute: (t) => {
+      const delivered = g(t, "klaviyo:emails_delivered");
+      return delivered === undefined ? undefined : div(g(t, "klaviyo:emails_bounced") ?? 0, delivered + (g(t, "klaviyo:emails_bounced") ?? 0));
+    },
+    lowerIsBetter: true,
+  },
   { key: "new_subscribers", label: "New Subscribers", unit: "count", compute: (t) => g(t, "klaviyo:new_subscribers") },
   { key: "unsubscribes", label: "Unsubscribes", unit: "count", compute: (t) => g(t, "klaviyo:unsubscribes"), lowerIsBetter: true },
   { key: "net_subscribers", label: "Net List Growth", unit: "count", compute: (t) => g(t, "klaviyo:net_subscribers") },
