@@ -210,7 +210,6 @@ export function TopNav() {
       label: "Hours", icon: Clock, linkWhenSingle: true,
       items: [
         { title: "My timesheet", href: "/hours", icon: Clock, visible: isHubStaff(role) },
-        { title: "Hours insights", href: "/hours/insights", icon: BarChart3, visible: peopleAccess },
         { title: "Hours analytics", href: "/hours/analytics", icon: BarChart3, visible: peopleAccess },
         { title: "Time off requests", href: "/calendar/requests", icon: Plane, visible: !!role && canSubmitTimeOff(role) },
         { title: "Team time off", href: "/calendar/team", icon: Plane, visible: peopleAccess },

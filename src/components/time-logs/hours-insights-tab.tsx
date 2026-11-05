@@ -8,16 +8,8 @@ import { cn } from "@/lib/utils";
 import type { TimeInsights } from "@/lib/time-logs/insights";
 import { WORK_TYPES } from "@/lib/time-logs/catalog";
 import { READINESS_DEPARTMENTS } from "@/lib/readiness/match";
-import { ClientDistribution, OverviewPanel, PersonClientMatrix, TeamPerformance, Timesheet, clientLabel } from "./insights-dashboard";
-import { BarChart3, Briefcase, FileText, UserCheck, X } from "lucide-react";
-
-const TABS = [
-  { key: "overview", label: "Overview & velocity", icon: BarChart3 },
-  { key: "clients", label: "Clients", icon: Briefcase },
-  { key: "team", label: "Team", icon: UserCheck },
-  { key: "timesheet", label: "Timesheet", icon: FileText },
-] as const;
-type Tab = (typeof TABS)[number]["key"];
+import { BillingSplit, TeamPerformance, WeeklyCapacity, WorkTypes, clientLabel } from "./insights-dashboard";
+import { UserCheck, X } from "lucide-react";
 
 const iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 const h2 = (n: number) => (Math.round(n * 100) / 100).toFixed(2);
@@ -50,8 +42,12 @@ function periodRange(p: Period, now = new Date()): [string, string] | null {
   }
 }
 
-/** Hours insights for any period (admins): a visual dashboard on top, the TIME TRACKING 2.0 "Insights" tables below. Opens on the current month. */
-export function TimeInsightsView() {
+/**
+ * Hours Analytics' "Insights" tab (admins): what the main tab doesn't show —
+ * capacity, logging compliance, hours vs each client's estimate, client vs
+ * internal vs PTO, type of work and projects. Opens on the current month.
+ */
+export function HoursInsightsTab() {
   const now = new Date();
   const [period, setPeriod] = useState<Period>("This month");
   const [[from, to], setRange] = useState<[string, string]>(() => periodRange("This month", now)!);
@@ -61,7 +57,6 @@ export function TimeInsightsView() {
   const [user, setUser] = useState("");
   const [workType, setWorkType] = useState("");
   const [client, setClient] = useState("");
-  const [tab, setTab] = useState<Tab>("overview");
   const resetScope = () => {
     setTeam("");
     setUser("");
@@ -181,30 +176,12 @@ export function TimeInsightsView() {
         </div>
       )}
 
-      <nav className="flex gap-1 overflow-x-auto border-b" aria-label="Hours insights views">
-        {TABS.map((t) => (
-          <button
-            key={t.key}
-            type="button"
-            onClick={() => setTab(t.key)}
-            className={cn(
-              "-mb-px inline-flex shrink-0 items-center gap-1.5 border-b-2 px-3 py-2 text-sm",
-              tab === t.key ? "border-brand font-semibold text-foreground" : "border-transparent text-muted-foreground hover:text-foreground",
-            )}
-          >
-            <t.icon className="size-4" />
-            {t.label}
-            {data && t.key === "clients" && <span className="rounded-full bg-muted px-1.5 text-[10px] tabular-nums">{data.totals.activeClients}</span>}
-            {data && t.key === "team" && <span className="rounded-full bg-muted px-1.5 text-[10px] tabular-nums">{data.totals.peopleLogging}</span>}
-            {data && t.key === "timesheet" && <span className="rounded-full bg-muted px-1.5 text-[10px] tabular-nums">{data.totals.entries}</span>}
-          </button>
-        ))}
-        {data && (
-          <span className="ml-auto hidden shrink-0 self-center text-xs text-muted-foreground md:inline">
-            {data.range.workdays} workdays · {data.range.workdaysSoFar} so far
-          </span>
-        )}
-      </nav>
+      {data && (
+        <p className="text-xs text-muted-foreground">
+          {data.range.workdays} workdays · {data.range.workdaysSoFar} so far · {data.totals.peopleLogging} of {data.totals.peopleInScope} people logged ·{" "}
+          {data.totals.entries} entries
+        </p>
+      )}
 
       {isLoading && <p className="text-sm text-muted-foreground">Loading insights…</p>}
       {isError && <p className="text-sm text-red-500">{(error as Error).message}</p>}
@@ -213,57 +190,33 @@ export function TimeInsightsView() {
         <p className="rounded-xl border bg-card p-6 text-sm text-muted-foreground">No hours logged in this period for this scope.</p>
       )}
 
-      {data && data.totals.entries > 0 && tab === "overview" && <OverviewPanel data={data} />}
-
-      {data && data.totals.entries > 0 && tab === "clients" && (
+      {data && data.totals.entries > 0 && (
         <>
-          <ClientDistribution data={data} />
+          <BillingSplit data={data} />
+          <WeeklyCapacity data={data} />
+
           {team || user || workType ? (
             <p className="text-xs text-muted-foreground">Client hours vs estimate is shown for the whole team only (clear the team, person and type of work filters).</p>
           ) : (
-          <Card title="Client hours vs estimate" subtitle="Estimate = the client's monthly Estimated Hours (AAC table), prorated to the range. Hours over the estimate are work the client isn't paying for.">
-            <Table
-              head={["Client", "Hours", "Monthly estimate", "Estimate (range)", "Used", "Over estimate"]}
-              rows={data.clientVsEstimate.map((c) => [
-                <Link key="c" href={`/clients/${encodeURIComponent(c.client)}`} className="hover:underline">
-                  <span className="font-mono text-xs">{c.client}</span> <span className="text-xs text-muted-foreground">{c.clientName}</span>
-                </Link>,
-                h2(c.hours),
-                c.monthlyEstimate ?? "—",
-                c.estimate != null ? h2(c.estimate) : "—",
-                c.usedPct != null ? <UsedBar key="u" pct={c.usedPct} /> : "—",
-                c.overEstimate ? <span key="o" className="font-semibold text-red-500">{h2(c.overEstimate)}</span> : "—",
-              ])}
-              numeric={[1, 2, 3, 5]}
-            />
-          </Card>
-          )}
-          <div className="grid gap-5 lg:grid-cols-2">
-            <Card title="Top projects">
+            <Card title="Client hours vs estimate" subtitle="Estimate = the client's monthly Estimated Hours (AAC table), prorated to the range. Hours over the estimate are work the client isn't paying for.">
               <Table
-                head={["Project", "Client", "Name", "Hours"]}
-                rows={data.topProjects.map((p) => [
-                  <span key="n" className="font-mono text-xs">{p.projectNumber}</span>,
-                  p.client,
-                  <span key="t" className="line-clamp-1 text-xs" title={p.projectName}>{p.projectName}</span>,
-                  h2(p.hours),
+                head={["Client", "Hours", "Monthly estimate", "Estimate (range)", "Used", "Over estimate"]}
+                rows={data.clientVsEstimate.map((c) => [
+                  <Link key="c" href={`/clients/${encodeURIComponent(c.client)}`} className="hover:underline">
+                    <span className="font-mono text-xs">{c.client}</span> <span className="text-xs text-muted-foreground">{c.clientName}</span>
+                  </Link>,
+                  h2(c.hours),
+                  c.monthlyEstimate ?? "—",
+                  c.estimate != null ? h2(c.estimate) : "—",
+                  c.usedPct != null ? <UsedBar key="u" pct={c.usedPct} /> : "—",
+                  c.overEstimate ? <span key="o" className="font-semibold text-red-500">{h2(c.overEstimate)}</span> : "—",
                 ])}
-                numeric={[3]}
+                numeric={[1, 2, 3, 5]}
               />
             </Card>
-            <Card title="Hours by client and type of work">
-              <Breakdown data={data.byClientDepartment} />
-            </Card>
-          </div>
-        </>
-      )}
+          )}
 
-      {data && data.totals.entries > 0 && tab === "timesheet" && <Timesheet data={data} />}
-
-      {data && data.totals.entries > 0 && tab === "team" && (
-        <>
-          <TeamPerformance data={data} onPick={(id) => { setUser(id); setTab("overview"); }} />
-          <PersonClientMatrix data={data} />
+          <TeamPerformance data={data} onPick={setUser} />
           <Card title="Logging compliance" subtitle={`Minimum 8 hours per workday. Expected hours count workdays up to today.`}>
             <Table
               head={["Employee", "Hours logged", "Expected", "Gap", "Workdays logged", "Workdays under minimum"]}
@@ -281,13 +234,6 @@ export function TimeInsightsView() {
 
           <div className="grid gap-5 lg:grid-cols-2">
             <Card title="Client vs internal vs PTO">
-              <div className="mb-3 flex flex-wrap gap-2">
-                {data.billingTypes.map((b) => (
-                  <span key={b} className="rounded-lg bg-muted px-3 py-1.5 text-xs">
-                    {b} <span className="ml-1 font-bold tabular-nums">{h2(data.billingTotals[b] ?? 0)}</span>
-                  </span>
-                ))}
-              </div>
               <Table
                 head={["Employee", ...data.billingTypes]}
                 rows={Object.entries(data.byPersonBilling)
@@ -296,10 +242,29 @@ export function TimeInsightsView() {
                 numeric={data.billingTypes.map((_, i) => i + 1)}
               />
             </Card>
-            <Card title="Hours by person and type of work">
-              <Breakdown data={data.byPersonDepartment} />
+            <WorkTypes data={data} />
+          </div>
+
+          <div className="grid gap-5 lg:grid-cols-2">
+            <Card title="Top projects">
+              <Table
+                head={["Project", "Client", "Name", "Hours"]}
+                rows={data.topProjects.map((p) => [
+                  <span key="n" className="font-mono text-xs">{p.projectNumber}</span>,
+                  p.client,
+                  <span key="t" className="line-clamp-1 text-xs" title={p.projectName}>{p.projectName}</span>,
+                  h2(p.hours),
+                ])}
+                numeric={[3]}
+              />
+            </Card>
+            <Card title="Hours by client and type of work">
+              <Breakdown data={data.byClientDepartment} />
             </Card>
           </div>
+          <Card title="Hours by person and type of work">
+            <Breakdown data={data.byPersonDepartment} />
+          </Card>
         </>
       )}
     </div>
