@@ -11,7 +11,7 @@ import type { KpiSyncReport } from "@/lib/kpi/sync";
 type Run = { id: string; trigger: string; startedAt: string; finishedAt: string | null; report: KpiSyncReport | null; error: string | null };
 type Status = {
   ga4: { oauthConfigured: boolean; connected: boolean; email: string | null; serviceAccount: string | null };
-  googleAds: { configured: boolean; granted: boolean };
+  googleAds: { configured: boolean; granted: boolean; serviceAccount: string | null };
   meta: { connected: boolean; adAccounts: number | null; updatedAt: string | null };
   klaviyo: { clients: string[] };
   shopify: { configured: boolean; stores: string[] };
@@ -155,7 +155,14 @@ export function KpiSyncAdmin() {
           {!data.googleAds.configured ? (
             <span className="text-orange-500">set GOOGLE_ADS_DEVELOPER_TOKEN (1o8 MCC → Admin → API Center) and redeploy.</span>
           ) : !data.googleAds.granted ? (
-            <span className="text-orange-500">Reconnect the Google account above to grant Google Ads access.</span>
+            data.googleAds.serviceAccount ? (
+              <span>
+                read as the service account <b className="text-foreground">{data.googleAds.serviceAccount}</b>: add it as a user (Read only) of 1o8&apos;s MCC
+                (Admin → Access and security). Or reconnect the Google account above and grant Google Ads.
+              </span>
+            ) : (
+              <span className="text-orange-500">Reconnect the Google account above to grant Google Ads access.</span>
+            )
           ) : (
             <span className="text-emerald-500">reading the accounts under 1o8&apos;s MCC.</span>
           )}{" "}

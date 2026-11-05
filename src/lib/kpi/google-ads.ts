@@ -1,10 +1,13 @@
-import { googleAccessToken } from "./ga4";
+import { google } from "googleapis";
+import { googleServiceAccount } from "@/lib/google-service-account";
+import { gaConnection, googleAccessToken } from "./ga4";
 import type { DailyValue } from "./ga4";
 
 /**
- * Google Ads for the Main KPIs, straight from the Google Ads API: the Google
- * account connected for GA4 (analytics@1o8.agency, with the Google Ads
- * scope) reads every client account under 1o8's manager account (MCC).
+ * Google Ads for the Main KPIs, straight from the Google Ads API, reading
+ * every client account under 1o8's manager account (MCC) as either the
+ * Google account connected for GA4 (when it granted the Google Ads scope)
+ * or, without a login, the hub's service account added as a user of the MCC.
  * Covers clients without GA4, and gives the platform's own numbers.
  *
  * Env: GOOGLE_ADS_DEVELOPER_TOKEN (1o8 MCC → Admin → API Center), optional
@@ -23,11 +26,23 @@ export function normalizeCustomerId(input: string | null | undefined): string | 
   return digits.length === 10 ? digits : null;
 }
 
+const ADS_SCOPE = "https://www.googleapis.com/auth/adwords";
+
+/** The connected Google account when it granted Google Ads, else the service account. */
+async function accessToken(): Promise<string> {
+  if ((await gaConnection())?.googleAds) return googleAccessToken();
+  const sa = googleServiceAccount();
+  if (!sa) throw new Error("Connect Google with Google Ads access, or add the hub's service account to 1o8's MCC");
+  const { token } = await new google.auth.JWT({ email: sa.client_email, key: sa.private_key, scopes: [ADS_SCOPE] }).getAccessToken();
+  if (!token) throw new Error("The service account didn't get a Google Ads access token");
+  return token;
+}
+
 async function call(path: string, body: unknown, loginCustomerId?: string): Promise<unknown> {
   const res = await fetch(`${BASE()}${path}`, {
     method: body === undefined ? "GET" : "POST",
     headers: {
-      Authorization: `Bearer ${await googleAccessToken()}`,
+      Authorization: `Bearer ${await accessToken()}`,
       "developer-token": process.env.GOOGLE_ADS_DEVELOPER_TOKEN ?? "",
       "Content-Type": "application/json",
       ...(loginCustomerId ? { "login-customer-id": loginCustomerId } : {}),
@@ -39,7 +54,7 @@ async function call(path: string, body: unknown, loginCustomerId?: string): Prom
     const err = (Array.isArray(json) ? json[0] : json) as { error?: { message?: string; status?: string; details?: { errors?: { message?: string }[] }[] } };
     const detail = err?.error?.details?.[0]?.errors?.[0]?.message ?? err?.error?.message ?? `HTTP ${res.status}`;
     if (res.status === 401 || err?.error?.status === "PERMISSION_DENIED") {
-      throw new Error(`Google Ads: ${detail} (connect Google again in Sync & Export → KPIs to grant Google Ads access)`);
+      throw new Error(`Google Ads: ${detail} (add the hub's service account to 1o8's MCC, or reconnect Google with Google Ads access)`);
     }
     throw new Error(`Google Ads: ${detail}`);
   }

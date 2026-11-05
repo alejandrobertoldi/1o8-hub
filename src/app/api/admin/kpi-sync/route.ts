@@ -25,7 +25,7 @@ export async function GET() {
   const [ga, meta, klaviyo] = await Promise.all([gaConnection(), secretInfo(metaProvider), clientsWithKlaviyo()]);
   return NextResponse.json({
     ga4: { oauthConfigured: gaOAuthConfigured(), connected: !!ga, email: ga?.email ?? null, serviceAccount: googleServiceAccount()?.client_email ?? null },
-    googleAds: { configured: googleAdsConfigured(), granted: !!ga?.googleAds },
+    googleAds: { configured: googleAdsConfigured(), granted: !!ga?.googleAds, serviceAccount: googleServiceAccount()?.client_email ?? null },
     meta: { connected: !!meta, adAccounts: (meta?.meta.adAccounts as number | undefined) ?? null, updatedAt: meta?.updatedAt ?? null },
     klaviyo: { clients: [...klaviyo].sort() },
     shopify: {
