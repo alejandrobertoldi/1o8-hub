@@ -1,13 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Input } from "@/components/ui/input";
+import { DailyHoursHeatmap } from "@/components/admin/daily-hours-heatmap";
 import { cn } from "@/lib/utils";
 import type { TimeInsights } from "@/lib/time-logs/insights";
 import { BillingSplit, Panel, WeeklyCapacity, WorkTypes, clientLabel } from "./insights-dashboard";
 import { Card, Field, PERIODS, SELECT, Table, fmt, h2, iso, periodRange, type Period } from "./hours-insights-tab";
+
+/** The team periods, plus one day picked on a calendar. */
+const MY_PERIODS = ["Today", "Yesterday", "Pick a day", ...PERIODS.filter((p) => p !== "Today" && p !== "Yesterday")] as const;
+type MyPeriod = Period | "Pick a day";
 
 const tick = { fontSize: 11, fill: "var(--muted-foreground)" };
 const tooltipStyle = { background: "var(--popover)", border: "1px solid var(--border)", borderRadius: 8, fontSize: 12 };
@@ -19,11 +24,12 @@ const tooltipStyle = { background: "var(--popover)", border: "1px solid var(--bo
  */
 export function MyHoursAnalytics() {
   const now = new Date();
-  const [period, setPeriod] = useState<Period>("This month");
+  const [period, setPeriod] = useState<MyPeriod>("This month");
   const [[from, to], setRange] = useState<[string, string]>(() => periodRange("This month", now)!);
-  const choosePeriod = (p: Period) => {
+  const choosePeriod = (p: MyPeriod) => {
     setPeriod(p);
-    const r = periodRange(p);
+    // "Pick a day" opens on today; the date field then moves it.
+    const r = p === "Pick a day" ? ([iso(now), iso(now)] as [string, string]) : periodRange(p);
     if (r) setRange(r);
   };
   const qs = new URLSearchParams({ from, to, today: iso(now), mine: "1" }).toString();
@@ -40,6 +46,7 @@ export function MyHoursAnalytics() {
     },
   });
 
+  const clientNames = useMemo(() => new Map(Object.entries(data?.clientNames ?? {})), [data?.clientNames]);
   const me = data?.personStats[0];
   const compliance = data?.compliance[0];
   const byClient = (data?.clientStats ?? []).slice(0, 15).map((c) => ({ name: clientLabel(data!, c.client), hours: c.hours }));
@@ -48,13 +55,17 @@ export function MyHoursAnalytics() {
     <div className="space-y-5">
       <div className="flex flex-wrap items-end gap-3">
         <Field label="Period">
-          <select value={period} onChange={(e) => choosePeriod(e.target.value as Period)} className={SELECT}>
-            {PERIODS.map((p) => (
+          <select value={period} onChange={(e) => choosePeriod(e.target.value as MyPeriod)} className={SELECT}>
+            {MY_PERIODS.map((p) => (
               <option key={p}>{p}</option>
             ))}
           </select>
         </Field>
-        {period === "Custom" ? (
+        {period === "Pick a day" ? (
+          <Field label="Day">
+            <Input type="date" value={from} onChange={(e) => e.target.value && setRange([e.target.value, e.target.value])} className="w-40" />
+          </Field>
+        ) : period === "Custom" ? (
           <>
             <Field label="From">
               <Input type="date" value={from} onChange={(e) => setRange([e.target.value, to])} className="w-40" />
@@ -64,9 +75,7 @@ export function MyHoursAnalytics() {
             </Field>
           </>
         ) : (
-          <span className="pb-2 text-xs font-medium">
-            {fmt(from)} – {fmt(to)}
-          </span>
+          <span className="pb-2 text-xs font-medium">{from === to ? fmt(from) : `${fmt(from)} – ${fmt(to)}`}</span>
         )}
       </div>
 
@@ -94,7 +103,8 @@ export function MyHoursAnalytics() {
           </div>
 
           <BillingSplit data={data} />
-          <WeeklyCapacity data={data} />
+          <DailyHoursHeatmap from={from} to={to} categories={[]} clientNameMap={clientNames} mine />
+          {from !== to && <WeeklyCapacity data={data} />}
 
           <div className="grid gap-5 lg:grid-cols-2">
             <Panel title="Hours by client" subtitle="Where your time went (1O8 = internal)">

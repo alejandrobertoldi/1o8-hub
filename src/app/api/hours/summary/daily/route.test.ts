@@ -26,8 +26,18 @@ describe("GET /api/hours/summary/daily", () => {
     expect((await GET(req(RANGE))).status).toBe(401);
   });
 
-  it("403 for non-super-admin", async () => {
-    asMock(getAuthSession).mockResolvedValue({ user: { id: "a1", role: "editor", isSuperAdmin: false } });
+  it("scopes an editor (and ?mine=1) to their own hours", async () => {
+    asMock(summaryByDay).mockResolvedValue([]);
+    asMock(getAuthSession).mockResolvedValue({ user: { id: "e1", role: "editor", isSuperAdmin: false } });
+    expect((await GET(req(RANGE))).status).toBe(200);
+    expect(summaryByDay).toHaveBeenLastCalledWith("2026-07-01", "2026-07-31", "member", [], ["e1"]);
+    asMock(getAuthSession).mockResolvedValue({ user: { id: "a1", role: "admin", isSuperAdmin: false } });
+    await GET(req({ ...RANGE, mine: "1" }));
+    expect(summaryByDay).toHaveBeenLastCalledWith("2026-07-01", "2026-07-31", "member", [], ["a1"]);
+  });
+
+  it("403 for portal users", async () => {
+    asMock(getAuthSession).mockResolvedValue({ user: { id: "c1", role: "client", isSuperAdmin: false } });
     expect((await GET(req(RANGE))).status).toBe(403);
   });
 
@@ -45,7 +55,7 @@ describe("GET /api/hours/summary/daily", () => {
     expect(res.status).toBe(200);
     const json = await res.json();
     expect(json.dimension).toBe("member");
-    expect(summaryByDay).toHaveBeenCalledWith("2026-07-01", "2026-07-31", "member", []);
+    expect(summaryByDay).toHaveBeenCalledWith("2026-07-01", "2026-07-31", "member", [], undefined);
     expect(json.rows).toEqual([
       { key: "u1", keyName: "Ana", entryDate: "2026-07-01", totalHours: "4.00" },
     ]);
@@ -55,6 +65,6 @@ describe("GET /api/hours/summary/daily", () => {
     asMock(getAuthSession).mockResolvedValue({ user: { id: "a1", role: "super_admin", isSuperAdmin: true } });
     asMock(summaryByDay).mockResolvedValue([]);
     await GET(req({ ...RANGE, dimension: "client" }));
-    expect(summaryByDay).toHaveBeenCalledWith("2026-07-01", "2026-07-31", "client", []);
+    expect(summaryByDay).toHaveBeenCalledWith("2026-07-01", "2026-07-31", "client", [], undefined);
   });
 });

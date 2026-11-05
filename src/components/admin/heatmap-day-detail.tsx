@@ -27,9 +27,12 @@ export function HeatmapDayDetail({
   selection,
   categories,
   onClear,
+  mine = false,
 }: {
   selection: HeatmapCellSelection;
   categories: string[];
+  /** Only the signed-in person's entries. */
+  mine?: boolean;
   onClear: () => void;
 }) {
   const { data, isLoading, error } = useQuery<{ entries: HoursEntryRow[] }>({
@@ -39,9 +42,11 @@ export function HeatmapDayDetail({
       selection.scope,
       selection.key,
       categories,
+      mine,
     ],
     queryFn: async () => {
       const params = new URLSearchParams({ entryDate: selection.date });
+      if (mine) params.set("mine", "1");
       if (selection.scope === "member") params.set("userId", selection.key);
       else if (selection.scope === "client") params.set("clientIdCode", selection.key);
       else params.set("all", "1");

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthSession } from "@/lib/auth-db";
-import { hasHoursReportsAccess } from "@/lib/roles";
+import { hasHoursReportsAccess, isHubStaff } from "@/lib/roles";
 import { isValidDateString } from "@/lib/hours/validation";
 import { drillDayEntries, drillRangeEntries } from "@/lib/hours/analytics-queries";
 
@@ -37,12 +37,13 @@ export async function GET(req: NextRequest) {
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  if (!hasHoursReportsAccess(session.user.role)) {
+  const sp = req.nextUrl.searchParams;
+  // Admins drill into anyone; anyone else (or ?mine=1) only into their own entries.
+  const own = !hasHoursReportsAccess(session.user.role) || sp.get("mine") === "1";
+  if (own && (!isHubStaff(session.user.role) || !session.user.id)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
-
-  const sp = req.nextUrl.searchParams;
-  const userId = sp.get("userId") || undefined;
+  const userId = own ? session.user.id! : sp.get("userId") || undefined;
   const clientIdCode = sp.get("clientIdCode") || undefined;
   const entryDate = sp.get("entryDate");
   const from = sp.get("from");

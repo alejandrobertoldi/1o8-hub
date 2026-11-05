@@ -19,6 +19,7 @@ import {
   trafficLightText,
   overtimeBorderClass,
   TEAM_DAY_TARGET_HOURS,
+  PERSON_DAY_TARGET_HOURS,
   yearColumnGroups,
   monthColumnGroups,
   weekColumnGroups,
@@ -36,11 +37,14 @@ export function DailyHoursHeatmap({
   to,
   categories,
   clientNameMap,
+  mine = false,
 }: {
   from: string;
   to: string;
   categories: string[];
   clientNameMap: Map<string, string>;
+  /** Only the signed-in person's hours ("My hours"): one row, or their clients. */
+  mine?: boolean;
 }) {
   const [dimension, setDimension] = useState<"member" | "client">("member");
   const [selection, setSelection] = useState<HeatmapCellSelection | null>(null);
@@ -50,10 +54,10 @@ export function DailyHoursHeatmap({
   }, [from, to, categories]);
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["hours-daily", from, to, dimension, categories],
+    queryKey: ["hours-daily", from, to, dimension, categories, mine],
     queryFn: async () => {
       const res = await fetch(
-        `/api/hours/summary/daily?from=${from}&to=${to}&dimension=${dimension}${buildCategoryQuery(categories)}`,
+        `/api/hours/summary/daily?from=${from}&to=${to}&dimension=${dimension}${buildCategoryQuery(categories)}${mine ? "&mine=1" : ""}`,
       );
       if (!res.ok) throw new Error((await res.json()).error ?? "Failed to load daily hours");
       return res.json() as Promise<{ rows: DayRow[] }>;
@@ -111,6 +115,8 @@ export function DailyHoursHeatmap({
     setSelection(null);
   }
 
+  // The All row's traffic light: the team's day (40 h), or one person's (8 h) in My hours.
+  const dayTarget = mine ? PERSON_DAY_TARGET_HOURS : TEAM_DAY_TARGET_HOURS;
   const selectedRing = "ring-2 ring-brand ring-offset-1 ring-offset-background";
 
   return (
@@ -120,6 +126,7 @@ export function DailyHoursHeatmap({
           key={`${selection.scope}:${selection.key}:${selection.date}`}
           selection={selection}
           categories={categories}
+          mine={mine}
           onClear={() => setSelection(null)}
         />
       )}
@@ -137,7 +144,7 @@ export function DailyHoursHeatmap({
                 className="h-6 px-2 text-xs"
                 onClick={() => switchDimension(d)}
               >
-                {d === "member" ? "Members" : "Clients"}
+                {d === "member" ? (mine ? "Me" : "Members") : "Clients"}
               </Button>
             ))}
           </div>
@@ -297,44 +304,49 @@ export function DailyHoursHeatmap({
               </Fragment>
             ))}
 
-            {/* Hard rule between per-person/client days and the team All totals. */}
-            <div
-              className="col-span-full my-1.5 border-t-2 border-stone-400 dark:border-zinc-500"
-              role="presentation"
-            />
+            {/* My hours by person: the single row already is the total. */}
+            {!(mine && dimension === "member") && (
+              <>
+                {/* Hard rule between per-person/client days and the team All totals. */}
+                <div
+                  className="col-span-full my-1.5 border-t-2 border-stone-400 dark:border-zinc-500"
+                  role="presentation"
+                />
 
-            {/* All (per-day team total): 40h traffic light — yellow under, green at
-                exactly 40, scaled red above. */}
-            <div className="truncate pr-2 text-[11px] font-semibold text-foreground">All</div>
-            {days.map((d, i) => {
-              const v = h.dayTotal(d);
-              const signal = trafficLight(v, TEAM_DAY_TARGET_HOURS);
-              const overtime = signal === "over";
-              const selected = isSelected("all", "ALL", d);
-              return (
-                <button
-                  key={d}
-                  type="button"
-                  title={`All · ${d}: ${fmtHM(v)}${overtime ? " · Over team day" : ""} — click for day detail`}
-                  onClick={() =>
-                    selectCell({
-                      date: d,
-                      scope: "all",
-                      key: "ALL",
-                      label: "All",
-                      hours: v,
-                    })
-                  }
-                  /* No day-of-month here - this is a per-day total, not a dated cell, and
-                     the number is already in every cell above it. justify-end + the same
-                     pb as the rows above keeps the totals on their baseline. */
-                  className={`flex h-8 w-full min-w-0 cursor-pointer flex-col items-center justify-end rounded-sm px-1 pb-[3px] text-[9px] font-semibold leading-none tabular-nums transition-shadow hover:brightness-95 ${overtimeBorderClass(v, TEAM_DAY_TARGET_HOURS)} ${trafficLightText(v, TEAM_DAY_TARGET_HOURS)} ${overtime ? "" : divider(i)} ${selected ? selectedRing : ""}`}
-                  style={{ backgroundColor: trafficLightFill(v, TEAM_DAY_TARGET_HOURS) }}
-                >
-                  {v > 0 ? fmtHM(v) : ""}
-                </button>
-              );
-            })}
+                {/* All (per-day team total): 40h traffic light — yellow under, green at
+                    exactly 40, scaled red above. */}
+                <div className="truncate pr-2 text-[11px] font-semibold text-foreground">All</div>
+                {days.map((d, i) => {
+                  const v = h.dayTotal(d);
+                  const signal = trafficLight(v, dayTarget);
+                  const overtime = signal === "over";
+                  const selected = isSelected("all", "ALL", d);
+                  return (
+                    <button
+                      key={d}
+                      type="button"
+                      title={`All · ${d}: ${fmtHM(v)}${overtime ? " · Over team day" : ""} — click for day detail`}
+                      onClick={() =>
+                        selectCell({
+                          date: d,
+                          scope: "all",
+                          key: "ALL",
+                          label: "All",
+                          hours: v,
+                        })
+                      }
+                      /* No day-of-month here - this is a per-day total, not a dated cell, and
+                         the number is already in every cell above it. justify-end + the same
+                         pb as the rows above keeps the totals on their baseline. */
+                      className={`flex h-8 w-full min-w-0 cursor-pointer flex-col items-center justify-end rounded-sm px-1 pb-[3px] text-[9px] font-semibold leading-none tabular-nums transition-shadow hover:brightness-95 ${overtimeBorderClass(v, dayTarget)} ${trafficLightText(v, dayTarget)} ${overtime ? "" : divider(i)} ${selected ? selectedRing : ""}`}
+                      style={{ backgroundColor: trafficLightFill(v, dayTarget) }}
+                    >
+                      {v > 0 ? fmtHM(v) : ""}
+                    </button>
+                  );
+                })}
+              </>
+            )}
           </div>
         </div>
       )}

@@ -15,7 +15,7 @@ export const iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).p
 export const h2 = (n: number) => (Math.round(n * 100) / 100).toFixed(2);
 
 /** Period shortcuts; weeks run Monday–Sunday. */
-export const PERIODS = ["This month", "Last month", "This week", "Last week", "This quarter", "Year to date", "Custom"] as const;
+export const PERIODS = ["Today", "Yesterday", "This week", "Last week", "This month", "Last month", "This quarter", "Year to date", "Custom"] as const;
 export type Period = (typeof PERIODS)[number];
 export function periodRange(p: Period, now = new Date()): [string, string] | null {
   const y = now.getFullYear();
@@ -23,6 +23,12 @@ export function periodRange(p: Period, now = new Date()): [string, string] | nul
   const monday = new Date(y, m, now.getDate() - ((now.getDay() + 6) % 7));
   const plus = (d: Date, days: number) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + days);
   switch (p) {
+    case "Today":
+      return [iso(now), iso(now)];
+    case "Yesterday": {
+      const y1 = plus(now, -1);
+      return [iso(y1), iso(y1)];
+    }
     case "This month":
       return [iso(new Date(y, m, 1)), iso(new Date(y, m + 1, 0))];
     case "Last month":

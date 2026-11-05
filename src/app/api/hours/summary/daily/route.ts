@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthSession } from "@/lib/auth-db";
-import { hasHoursReportsAccess } from "@/lib/roles";
+import { hasHoursReportsAccess, isHubStaff } from "@/lib/roles";
 import { isValidDateString } from "@/lib/hours/validation";
 import { summaryByDay } from "@/lib/hours/analytics-queries";
 
@@ -9,7 +9,9 @@ export async function GET(req: NextRequest) {
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  if (!hasHoursReportsAccess(session.user.role)) {
+  // Admins see the team; anyone else (or ?mine=1) only their own hours.
+  const own = !hasHoursReportsAccess(session.user.role) || req.nextUrl.searchParams.get("mine") === "1";
+  if (own && (!isHubStaff(session.user.role) || !session.user.id)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
@@ -25,7 +27,7 @@ export async function GET(req: NextRequest) {
   const dimension = req.nextUrl.searchParams.get("dimension") === "client" ? "client" : "member";
   const categories = req.nextUrl.searchParams.getAll("category");
 
-  const rows = await summaryByDay(from, to, dimension, categories);
+  const rows = await summaryByDay(from, to, dimension, categories, own ? [session.user.id!] : undefined);
 
   return NextResponse.json({
     dimension,

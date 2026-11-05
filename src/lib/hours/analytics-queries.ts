@@ -91,7 +91,8 @@ export function drillDays(from: string, to: string, userId: string, clientIdCode
     .orderBy(asc(timeLogs.entryDate));
 }
 
-export function summaryByDay(from: string, to: string, dimension: "member" | "client", categories?: string[]) {
+/** Hours per day per member or client; `userIds` scopes it to some people (one's own "My hours"). */
+export function summaryByDay(from: string, to: string, dimension: "member" | "client", categories?: string[], userIds?: string[]) {
   if (dimension === "client") {
     return db
       .select({
@@ -101,7 +102,7 @@ export function summaryByDay(from: string, to: string, dimension: "member" | "cl
         totalHours: sql<string>`sum(${timeLogs.hours})`,
       })
       .from(timeLogs)
-      .where(filters({ from, to, categories }))
+      .where(filters({ from, to, categories, userIds }))
       .groupBy(timeLogs.clientIdCode, timeLogs.entryDate)
       .orderBy(asc(timeLogs.entryDate));
   }
@@ -114,7 +115,7 @@ export function summaryByDay(from: string, to: string, dimension: "member" | "cl
     })
     .from(timeLogs)
     .innerJoin(users, eq(users.id, timeLogs.userId))
-    .where(filters({ from, to, categories }))
+    .where(filters({ from, to, categories, userIds }))
     .groupBy(timeLogs.userId, users.name, timeLogs.entryDate)
     .orderBy(asc(timeLogs.entryDate));
 }
