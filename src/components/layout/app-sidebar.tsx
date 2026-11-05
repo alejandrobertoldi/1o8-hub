@@ -30,7 +30,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Download, Handshake, PenLine, Users, UserCog, HeartPulse, BarChart3, Key, KeyRound, ListChecks, ScrollText, DollarSign, Eye, ChevronRight, GitCompare, GitBranch, LayoutTemplate, CalendarDays, Palette, Shield, RefreshCw, Headset, Sparkles, Search, ArrowRightLeft, TrendingUp, Package, PackageOpen, Layers, ShoppingBag, ClipboardList, Calculator, Boxes, BookOpen, ImageIcon, Store, Target, Clock, Tags, Percent, type LucideIcon } from "lucide-react";
+import { Handshake, PenLine, Users, UserCog, HeartPulse, BarChart3, Key, KeyRound, ListChecks, ScrollText, DollarSign, Eye, ChevronRight, GitCompare, LayoutTemplate, CalendarDays, Palette, Shield, RefreshCw, Headset, Sparkles, Search, TrendingUp, Package, PackageOpen, Layers, ShoppingBag, ClipboardList, Calculator, Boxes, BookOpen, ImageIcon, Store, Target, Clock, Tags, Percent, type LucideIcon } from "lucide-react";
 import { canAccessAs, CROSS_DEPARTMENT_LINKS } from "@/lib/permissions";
 
 export function AppSidebar() {
@@ -135,7 +135,6 @@ export function AppSidebar() {
       label: "Admin",
       icon: Shield,
       items: [
-        { title: "Import", href: "/import", icon: Download, visible: checkAccess("import") },
         { title: "Sync & Export", href: "/publish", icon: RefreshCw, visible: checkAccess("publish") },
         { title: "Users", href: "/admin/users", icon: UserCog, visible: hasPeopleAccess(role) },
         { title: "Service Providers", href: "/admin/service-providers", icon: Handshake, visible: isAdmin },
@@ -145,10 +144,7 @@ export function AppSidebar() {
         { title: "System Health", href: "/admin/system-health", icon: HeartPulse, visible: isAdmin },
         { title: "Event Logs", href: "/admin/logs", icon: ScrollText, visible: isAdmin },
         { title: "Support", href: "/admin/support", icon: Headset, visible: true },
-        { title: "App Repo", href: "/admin/repo", icon: GitBranch, visible: isAdmin },
-        { title: "AI Config", href: "/admin/ai", icon: Sparkles, visible: isAdmin },
-        { title: "Asana Config", href: "/admin/asana", icon: ClipboardList, visible: isAdmin },
-        { title: "Data Sync", href: "/admin/sync", icon: ArrowRightLeft, visible: isAdmin },
+        { title: "Configuration", href: "/admin/config", icon: Sparkles, visible: isAdmin },
         { title: "Hour Categories", href: "/admin/hour-categories", icon: Tags, visible: isAdmin },
       ],
     },

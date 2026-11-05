@@ -53,10 +53,10 @@ import { ThemeToggle } from "./theme-toggle";
 import { OpalItemInner, OpalMenu, OpalNavFrame } from "./opal-nav-frame";
 import { canAccessAs, CROSS_DEPARTMENT_LINKS } from "@/lib/permissions";
 import {
-  Download, Users, UserCog, HeartPulse, BarChart3, Key, ListChecks, FolderTree,
-  ScrollText, DollarSign, Eye, GitCompare, GitBranch, LayoutTemplate,
+  Users, UserCog, HeartPulse, BarChart3, Key, ListChecks, FolderTree,
+  ScrollText, DollarSign, Eye, GitCompare, LayoutTemplate,
   CalendarDays, Palette, Shield, RefreshCw, Headset, Sparkles,
-  Search, ArrowRightLeft, TrendingUp, Package, PackageOpen, Layers,
+  Search, TrendingUp, Package, PackageOpen, Layers,
   ShoppingBag, ClipboardList, Calculator, Boxes, BookOpen, ImageIcon,
   Store, Target, Menu, MessageSquareText, UserPlus, ImagePlus, Star,
   HelpCircle, X as XIcon, ChevronRight, Table, Clock, Tags, Contact, Gift, Plane, FileText, KeyRound, Percent, Presentation, LayoutDashboard, Mail, Megaphone, Globe, type LucideIcon,
@@ -266,7 +266,8 @@ export function TopNav() {
     {
       label: "Admin", icon: Shield,
       items: [
-        { title: "Import", href: "/import", icon: Download, visible: checkAccess("import") },
+        // 1o8 (2026-11-05): product Import, Data Map (code map) and Data Sync (BigQuery → hub pull,
+        // superseded by Sync & Export) are hidden, not removed.
         { title: "Sync & Export", href: "/publish", icon: RefreshCw, visible: checkAccess("publish") },
         { title: "Users", href: "/admin/users", icon: UserCog, visible: peopleAccess },
         { title: "Service Providers", href: "/admin/service-providers", icon: Handshake, visible: isAdmin },
@@ -276,12 +277,8 @@ export function TopNav() {
         { title: "Event Logs", href: "/admin/logs", icon: ScrollText, visible: isAdmin },
         { title: "Holidays", href: "/admin/holidays", icon: Gift, visible: isAdmin },
         { title: "Support", href: "/admin/support", icon: Headset, visible: true },
-        { title: "App Repo", href: "/admin/repo", icon: GitBranch, visible: isAdmin },
-        { title: "Data Map", href: "/admin/data-map", icon: GitBranch, visible: isAdmin },
-        { title: "AI Config", href: "/admin/ai", icon: Sparkles, visible: isAdmin },
-        { title: "Asana Config", href: "/admin/asana", icon: ClipboardList, visible: isAdmin },
+        { title: "Configuration", href: "/admin/config", icon: Sparkles, visible: isAdmin },
         { title: "Drive Folder Tree", href: "/admin/drive-folder-config", icon: FolderTree, visible: isAdmin },
-        { title: "Data Sync", href: "/admin/sync", icon: ArrowRightLeft, visible: isAdmin },
       ],
     },
   ];
