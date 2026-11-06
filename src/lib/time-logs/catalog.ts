@@ -33,6 +33,8 @@ export const WORK_TYPES = [
   { label: "Creative", tag: "Creative" },
   { label: "SEO & Content", tag: "SEO" },
   { label: "Social", tag: "Social" },
+  // No Asana team tag: Account Management shows every project of the client.
+  { label: "Account Management", tag: null },
   { label: "Strategy & Planning", tag: null },
   { label: "Reporting & Analytics", tag: null },
   { label: "Client Meetings", tag: null },

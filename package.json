@@ -39,6 +39,7 @@
     "sync:asana": "tsx scripts/local/sync-asana.ts",
     "onboarding:gaps": "tsx scripts/local/connection-gaps.ts",
     "google-ads:ids": "tsx scripts/local/set-google-ads-ids.ts",
+    "hours:audit-am": "tsx scripts/local/audit-account-management-hours.ts",
     "sync:team": "tsx scripts/local/sync-team.ts",
     "seed:org-chart": "tsx scripts/local/seed-org-chart.ts",
     "snapshot:readiness": "tsx scripts/local/snapshot-readiness.ts",

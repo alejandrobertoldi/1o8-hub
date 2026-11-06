@@ -107,3 +107,6 @@ q.tmp.*
 
 # Google service account key for the AAC sheet sync (never commit)
 /google-service-account.json
+
+# Read-only audit output (npm run hours:audit-am)
+/hours-account-management-audit.csv
