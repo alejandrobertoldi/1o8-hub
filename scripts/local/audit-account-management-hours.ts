@@ -6,10 +6,17 @@
  *   possible — the note or the Asana task reads like account work (client
  *              calls / emails, check-ins, status, recaps, QBRs, billing, SOW…)
  * Prints a summary per person and writes every candidate to
- * hours-account-management-audit.csv to review; it changes nothing.
+ * hours-account-management-audit.csv to review; it changes nothing unless
+ * --apply is passed.
  *
  *   npm run hours:audit-am            # local DB
  *   npm run hours:audit-am -- --prod  # production (SUPABASE_DATABASE_URL)
+ *
+ * Retype candidates to Account Management (dry run unless --apply):
+ *   --retype strong|possible|all   which signal(s) to retype
+ *   --types "Client Meetings,Admin Work"   only entries currently of these types
+ *   --exclude <id,id>  /  --include <id,id>   fine-tune by entry id (CSV last column)
+ *   --apply                        write the change
  */
 import { config } from "dotenv";
 import { writeFileSync } from "node:fs";
@@ -29,7 +36,7 @@ async function main() {
   }
   const { db } = await import("@/lib/db");
   const { aac, timeLogs, users } = await import("@/lib/db/schema");
-  const { eq } = await import("drizzle-orm");
+  const { eq, inArray } = await import("drizzle-orm");
 
   const [logs, clients] = await Promise.all([
     db
@@ -91,7 +98,39 @@ async function main() {
   ];
   const file = "hours-account-management-audit.csv";
   writeFileSync(file, lines.join("\n"));
-  console.log(`Every candidate → ${file} (nothing was changed)`);
+  console.log(`Every candidate → ${file}`);
+
+  // Optional retype.
+  const arg = (name: string) => {
+    const i = process.argv.indexOf(name);
+    return i > -1 ? (process.argv[i + 1] ?? "") : null;
+  };
+  const ids = (name: string) => new Set((arg(name) ?? "").split(",").map((s) => s.trim()).filter(Boolean));
+  const retype = arg("--retype");
+  const include = ids("--include");
+  if (!retype && !include.size) {
+    console.log("(nothing was changed)");
+    process.exit(0);
+  }
+  if (retype && !["strong", "possible", "all"].includes(retype)) throw new Error("--retype must be strong, possible or all");
+  const onlyTypes = new Set((arg("--types") ?? "").split(",").map((s) => s.trim()).filter(Boolean));
+  const exclude = ids("--exclude");
+  const picked = hits.filter(
+    (h) =>
+      include.has(h.id) ||
+      (!!retype && (retype === "all" || h.signal === retype) && (!onlyTypes.size || onlyTypes.has(h.type)) && !exclude.has(h.id)),
+  );
+  const apply = process.argv.includes("--apply");
+  console.log(`\n${apply ? "RETYPING" : "WOULD RETYPE (dry run, add --apply)"}: ${picked.length} entries · ${sum(picked).toFixed(2)} h → Account Management`);
+  for (const h of picked) console.log(`  ${h.date} ${String(h.person ?? "—").padEnd(20)} ${h.client.padEnd(4)} ${h.type.padEnd(22)} ${Number(h.hours).toFixed(2)} h  ${h.id}`);
+  if (apply && picked.length) {
+    const done = await db
+      .update(timeLogs)
+      .set({ department: "Account Management", updatedAt: new Date() })
+      .where(inArray(timeLogs.id, picked.map((h) => h.id)))
+      .returning({ id: timeLogs.id });
+    console.log(`Updated ${done.length} entries.`);
+  }
   process.exit(0);
 }
 
