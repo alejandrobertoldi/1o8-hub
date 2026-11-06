@@ -318,7 +318,9 @@ export function trafficLightText(
   const signal = trafficLight(hours, targetHours);
   if (signal === "empty") return "text-muted-foreground";
   if (signal === "target") return "text-white";
-  if (signal === "under") return "text-foreground";
+  // Yellow reads best with the 1o8 ink (dark) text in both themes; only the
+  // fainter tints (mostly card, dark in dark mode) keep the theme foreground.
+  if (signal === "under") return underYellowPct(hours, targetHours) >= 75 ? "text-[#2C2B35] font-semibold" : "text-foreground";
   return overtimeStageText(overtimeStage(hours, targetHours));
 }
 
