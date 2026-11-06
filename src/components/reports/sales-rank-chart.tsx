@@ -120,7 +120,8 @@ export function SalesRankChart({
                         width={64}
                       />
                       <ReferenceLine y={0} stroke="var(--foreground)" strokeOpacity={0.35} strokeDasharray="4 4" />
-                      <Tooltip cursor={{ fill: "var(--muted)", opacity: 0.35 }} content={<RankTooltip rows={rows} currentLabel={currentLabel} previousLabel={previousLabel} />} />
+                      {/* Synced with the bars below: one tooltip there, only the cursor here. */}
+                      <Tooltip cursor={{ stroke: "var(--muted-foreground)", strokeOpacity: 0.3 }} content={() => null} />
                       <Line
                         type="monotone"
                         dataKey="plot"
