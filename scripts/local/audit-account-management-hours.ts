@@ -6,7 +6,7 @@
  *   possible — the note or the Asana task reads like account work (client
  *              calls / emails, check-ins, status, recaps, QBRs, billing, SOW…)
  * Prints a summary per person and writes every candidate to
- * hours-account-management-audit.csv to review; it changes nothing unless
+ * hours-account-management-audit-{prod,local}.csv to review; it changes nothing unless
  * --apply is passed.
  *
  *   npm run hours:audit-am            # local DB
@@ -96,7 +96,8 @@ async function main() {
       .sort((a, b) => a.signal.localeCompare(b.signal) || b.date.localeCompare(a.date))
       .map((h) => [h.signal, h.why, h.date, h.person, h.client, h.type, h.hours, h.project, h.task, h.note, h.id].map(csv).join(",")),
   ];
-  const file = "hours-account-management-audit.csv";
+  // One file per database, so a local run never overwrites the production audit.
+  const file = process.argv.includes("--prod") ? "hours-account-management-audit-prod.csv" : "hours-account-management-audit-local.csv";
   writeFileSync(file, lines.join("\n"));
   console.log(`Every candidate → ${file}`);
 

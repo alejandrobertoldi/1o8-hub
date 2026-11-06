@@ -109,4 +109,4 @@ q.tmp.*
 /google-service-account.json
 
 # Read-only audit output (npm run hours:audit-am)
-/hours-account-management-audit.csv
+/hours-account-management-audit*.csv
