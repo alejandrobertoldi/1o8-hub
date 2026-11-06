@@ -54,21 +54,22 @@ export function summaryRows(from: string, to: string, categories?: string[]) {
     .groupBy(timeLogs.userId, users.name, users.email, timeLogs.clientIdCode);
 }
 
-/** 1o8's own hours grouped by member × department. */
-export function internalBreakdownRows(from: string, to: string, categories?: string[]) {
+/** Hours grouped by member × client × department (the department breakdown; the UI scopes it to 1o8's own time or all hours). */
+export function departmentBreakdownRows(from: string, to: string, categories?: string[]) {
   return db
     .select({
       userId: timeLogs.userId,
       userName: users.name,
       userEmail: users.email,
+      clientIdCode: clientCode,
       category: timeLogs.department,
       totalHours: sql<string>`sum(${timeLogs.hours})`,
       entryCount: sql<number>`count(*)::int`,
     })
     .from(timeLogs)
     .innerJoin(users, eq(users.id, timeLogs.userId))
-    .where(and(eq(timeLogs.clientIdCode, INTERNAL_CLIENT_CODE), filters({ from, to, categories })))
-    .groupBy(timeLogs.userId, users.name, users.email, timeLogs.department);
+    .where(filters({ from, to, categories }))
+    .groupBy(timeLogs.userId, users.name, users.email, timeLogs.clientIdCode, timeLogs.department);
 }
 
 export function categoriesInRange(from: string, to: string) {

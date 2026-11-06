@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAuthSession } from "@/lib/auth-db";
 import { hasHoursReportsAccess } from "@/lib/roles";
 import { isValidDateString } from "@/lib/hours/validation";
-import { summaryRows, categoriesInRange, internalBreakdownRows } from "@/lib/hours/analytics-queries";
+import { summaryRows, categoriesInRange, departmentBreakdownRows } from "@/lib/hours/analytics-queries";
 
 export async function GET(req: NextRequest) {
   const session = await getAuthSession();
@@ -24,10 +24,10 @@ export async function GET(req: NextRequest) {
 
   const categories = req.nextUrl.searchParams.getAll("category");
 
-  const [rows, catRows, internalRows] = await Promise.all([
+  const [rows, catRows, breakdownRows] = await Promise.all([
     summaryRows(from, to, categories),
     categoriesInRange(from, to),
-    internalBreakdownRows(from, to, categories),
+    departmentBreakdownRows(from, to, categories),
   ]);
 
   const byMemberMap = new Map<
@@ -70,9 +70,10 @@ export async function GET(req: NextRequest) {
     byMember,
     byClient,
     categories: catRows.map((c) => c.category).filter((c): c is string => c !== null),
-    internalBreakdown: {
-      rows: internalRows.map((r) => ({
+    departmentBreakdown: {
+      rows: breakdownRows.map((r) => ({
         userId: r.userId,
+        clientIdCode: r.clientIdCode,
         userName: r.userName,
         userEmail: r.userEmail,
         category: r.category,

@@ -57,24 +57,57 @@ function StackTooltip({
   );
 }
 
+/** All hours (every client) or only 1o8's own internal time. */
+export function DeptScopeToggle({ scope, onScope }: { scope: "all" | "internal"; onScope: (s: "all" | "internal") => void }) {
+  return (
+    <div className="inline-flex rounded-md border border-border p-0.5 text-xs">
+      {(
+        [
+          ["all", "All hours"],
+          ["internal", "1o8 internal"],
+        ] as const
+      ).map(([k, label]) => (
+        <button
+          key={k}
+          type="button"
+          onClick={() => onScope(k)}
+          className={`rounded px-2.5 py-1 font-medium ${scope === k ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground"}`}
+        >
+          {label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 export function AgencyHoursBreakdown({
   breakdown,
+  scope = "internal",
+  onScope,
 }: {
   breakdown: AgencyBreakdown;
+  scope?: "all" | "internal";
+  onScope?: (s: "all" | "internal") => void;
 }) {
+  const internal = scope === "internal";
   const kpis = [
-    { label: "1o8 total", value: fmtHM(breakdown.totalHours) },
-    { label: "Internal as % of all hours", value: fmtPct(breakdown.pctOfAll), accent: true },
+    { label: internal ? "1o8 total" : "Total", value: fmtHM(breakdown.totalHours) },
+    internal
+      ? { label: "Internal as % of all hours", value: fmtPct(breakdown.pctOfAll), accent: true }
+      : { label: "Departments", value: breakdown.activities.length.toLocaleString(), accent: true },
     { label: breakdown.meetingsAdminLabel, value: fmtHM(breakdown.meetingsAdminHours) },
     { label: "Largest department", value: breakdown.largestLabel, text: true },
-    { label: "Internal entries", value: breakdown.entryCount.toLocaleString() },
+    { label: internal ? "Internal entries" : "Entries", value: breakdown.entryCount.toLocaleString() },
   ];
 
   return (
     <div className="space-y-3">
-      <div className="text-sm font-bold text-foreground">1o8 Hours</div>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="text-sm font-bold text-foreground">{internal ? "1o8 Hours" : "Hours by department"}</div>
+        {onScope && <DeptScopeToggle scope={scope} onScope={onScope} />}
+      </div>
       <p className="text-xs text-muted-foreground">
-        INTERNAL hours only — by department, then per person.
+        {internal ? "INTERNAL hours only" : "Every client and 1o8's own time"} — by department, then per person.
       </p>
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
@@ -94,7 +127,7 @@ export function AgencyHoursBreakdown({
 
       <div className="grid gap-4 lg:grid-cols-2">
         <div className={CARD}>
-          <div className="mb-2 text-sm font-medium">1o8 by department</div>
+          <div className="mb-2 text-sm font-medium">{internal ? "1o8 by department" : "By department"}</div>
           {breakdown.activities.length === 0 ? (
             <p className="py-6 text-center text-xs text-muted-foreground">No data</p>
           ) : (

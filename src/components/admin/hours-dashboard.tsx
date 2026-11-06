@@ -29,7 +29,7 @@ import {
 import { DatePicker } from "@/components/ui/date-picker";
 import { DailyHoursHeatmap } from "@/components/admin/daily-hours-heatmap";
 import { RangeScopeDetail } from "@/components/admin/hours-entries-table";
-import { AgencyHoursBreakdown } from "@/components/admin/marketfoundry-hours-breakdown";
+import { AgencyHoursBreakdown, DeptScopeToggle } from "@/components/admin/marketfoundry-hours-breakdown";
 
 function isoDate(d: Date): string {
   const pad = (n: number) => String(n).padStart(2, "0");
@@ -115,6 +115,7 @@ export function HoursDashboard() {
   const [from, setFrom] = useState(initial.from);
   const [to, setTo] = useState(initial.to);
   const [pivot, setPivot] = useState<"member" | "client">("client");
+  const [deptScope, setDeptScope] = useState<"all" | "internal">("all");
   const [memberFilter, setMemberFilter] = useState<string[]>([]);
   const [clientFilter, setClientFilter] = useState<string[]>([]);
   const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
@@ -123,7 +124,7 @@ export function HoursDashboard() {
   const [exportingSheet, setExportingSheet] = useState(false);
 
   const { data, isLoading, error } = useQuery<
-    Summary & { internalBreakdown?: { rows: InternalBreakdownRow[] } }
+    Summary & { departmentBreakdown?: { rows: InternalBreakdownRow[] } }
   >({
     queryKey: ["hours-summary", from, to, categoryFilter],
     queryFn: async () => {
@@ -158,15 +159,28 @@ export function HoursDashboard() {
     () => Math.max(1, ...heat.members.flatMap((m) => heat.clients.map((c) => heat.cell(m.userId, c.code)))),
     [heat],
   );
+  // Department breakdown: every client's hours, or only 1o8's own; follows the member and client filters.
   const mfBreakdown = useMemo(() => {
-    if (clientFilter.length > 0 && !clientFilter.includes("INTERNAL")) return null;
-    let rows = data?.internalBreakdown?.rows ?? [];
+    let rows = data?.departmentBreakdown?.rows ?? [];
+    if (deptScope === "internal") rows = rows.filter((r) => r.clientIdCode === "INTERNAL");
     if (memberFilter.length > 0) {
       const allowed = new Set(memberFilter);
       rows = rows.filter((r) => allowed.has(r.userId));
     }
-    return buildAgencyBreakdown(rows, kpis.totalHours);
-  }, [data?.internalBreakdown?.rows, memberFilter, clientFilter, kpis.totalHours]);
+    if (clientFilter.length > 0) {
+      const allowed = new Set(clientFilter);
+      rows = rows.filter((r) => allowed.has(r.clientIdCode ?? ""));
+    }
+    // Same member × department may come from several clients: merge them.
+    const merged = new Map<string, InternalBreakdownRow>();
+    for (const r of rows) {
+      const k = `${r.userId}|${r.category ?? ""}`;
+      const cur = merged.get(k);
+      if (cur) merged.set(k, { ...cur, hours: Math.round((cur.hours + r.hours) * 100) / 100, entries: cur.entries + r.entries });
+      else merged.set(k, { ...r });
+    }
+    return buildAgencyBreakdown([...merged.values()], kpis.totalHours);
+  }, [data?.departmentBreakdown?.rows, deptScope, memberFilter, clientFilter, kpis.totalHours]);
 
   function toggle(key: string) {
     setExpanded((prev) => {
@@ -250,14 +264,6 @@ export function HoursDashboard() {
       <div className="sticky top-0 z-30 flex flex-wrap items-center gap-2 rounded-xl border border-stone-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
         <DatePicker value={from} onChange={(v) => v && setFrom(v)} className="h-8 w-40" />
         <DatePicker value={to} onChange={(v) => v && setTo(v)} className="h-8 w-40" />
-        <div className="flex gap-1">
-          <Button variant={pivot === "client" ? "default" : "outline"} size="sm" onClick={() => { setPivot("client"); setExpanded(new Set()); }}>
-            By client
-          </Button>
-          <Button variant={pivot === "member" ? "default" : "outline"} size="sm" onClick={() => { setPivot("member"); setExpanded(new Set()); }}>
-            By member
-          </Button>
-        </div>
         {data && (
           <>
             <MultiSelect
@@ -394,7 +400,19 @@ export function HoursDashboard() {
             ))}
           </div>
 
-          {mfBreakdown && <AgencyHoursBreakdown breakdown={mfBreakdown} />}
+          {mfBreakdown ? (
+            <AgencyHoursBreakdown breakdown={mfBreakdown} scope={deptScope} onScope={setDeptScope} />
+          ) : (
+            deptScope === "internal" && (
+              <div className={CARD}>
+                <div className="flex items-center justify-between gap-2">
+                  <div className="text-sm font-bold">Hours by department</div>
+                  <DeptScopeToggle scope={deptScope} onScope={setDeptScope} />
+                </div>
+                <p className="py-4 text-center text-xs text-muted-foreground">No 1o8 internal hours with these filters.</p>
+              </div>
+            )
+          )}
 
           {/* Member × client heatmap */}
           {heat.members.length > 0 && heat.clients.length > 0 && (
@@ -458,6 +476,17 @@ export function HoursDashboard() {
 
           {/* Date-range scope detail — same layout as day detail */}
           <div className="space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="text-sm font-bold">Entries {pivot === "client" ? "by client" : "by member"}</div>
+              <div className="flex gap-1">
+                <Button variant={pivot === "client" ? "default" : "outline"} size="sm" onClick={() => { setPivot("client"); setExpanded(new Set()); }}>
+                  By client
+                </Button>
+                <Button variant={pivot === "member" ? "default" : "outline"} size="sm" onClick={() => { setPivot("member"); setExpanded(new Set()); }}>
+                  By member
+                </Button>
+              </div>
+            </div>
             {pivot === "client"
               ? filtered.byClient.map((c) => (
                   <RangeScopeDetail

@@ -625,6 +625,8 @@ export type InternalBreakdownRow = {
   userId: string;
   userName: string | null;
   userEmail: string;
+  /** Dashboard client code ("INTERNAL" for 1o8's own time); absent in older callers. */
+  clientIdCode?: string;
   category: string | null;
   hours: number;
   entries: number;

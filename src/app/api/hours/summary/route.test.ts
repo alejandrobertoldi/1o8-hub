@@ -5,7 +5,7 @@ vi.mock("@/lib/auth-db", () => ({ getAuthSession: vi.fn() }));
 vi.mock("@/lib/hours/analytics-queries", () => ({
   summaryRows: vi.fn(),
   categoriesInRange: vi.fn().mockResolvedValue([]),
-  internalBreakdownRows: vi.fn().mockResolvedValue([]),
+  departmentBreakdownRows: vi.fn().mockResolvedValue([]),
 }));
 
 import { GET } from "./route";
