@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -10,6 +9,8 @@ import { WORK_TYPES } from "@/lib/time-logs/catalog";
 import { READINESS_DEPARTMENTS } from "@/lib/readiness/match";
 import { BillingSplit, TeamPerformance, WeeklyCapacity, WorkTypes, clientLabel } from "./insights-dashboard";
 import { UserCheck, X } from "lucide-react";
+import { ClientEstimatesCard } from "./client-estimates-card";
+import { LastWeekCompliance } from "./last-week-compliance";
 
 export const iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 export const h2 = (n: number) => (Math.round(n * 100) / 100).toFixed(2);
@@ -204,25 +205,11 @@ export function HoursInsightsTab() {
           {team || user || workType ? (
             <p className="text-xs text-muted-foreground">Client hours vs estimate is shown for the whole team only (clear the team, person and type of work filters).</p>
           ) : (
-            <Card title="Client hours vs estimate" subtitle="Estimate = the client's monthly Estimated Hours (AAC table), prorated to the range. Hours over the estimate are work the client isn't paying for.">
-              <Table
-                head={["Client", "Hours", "Monthly estimate", "Estimate (range)", "Used", "Over estimate"]}
-                rows={data.clientVsEstimate.map((c) => [
-                  <Link key="c" href={`/clients/${encodeURIComponent(c.client)}`} className="hover:underline">
-                    <span className="font-mono text-xs">{c.client}</span> <span className="text-xs text-muted-foreground">{c.clientName}</span>
-                  </Link>,
-                  h2(c.hours),
-                  c.monthlyEstimate ?? "—",
-                  c.estimate != null ? h2(c.estimate) : "—",
-                  c.usedPct != null ? <UsedBar key="u" pct={c.usedPct} /> : "—",
-                  c.overEstimate ? <span key="o" className="font-semibold text-red-500">{h2(c.overEstimate)}</span> : "—",
-                ])}
-                numeric={[1, 2, 3, 5]}
-              />
-            </Card>
+            <ClientEstimatesCard data={data} />
           )}
 
           <TeamPerformance data={data} onPick={setUser} />
+          <LastWeekCompliance />
           <Card title="Logging compliance" subtitle={`Minimum 8 hours per workday. Expected hours count workdays up to today.`}>
             <Table
               head={["Employee", "Hours logged", "Expected", "Gap", "Workdays logged", "Workdays under minimum"]}
@@ -286,17 +273,6 @@ export function Field({ label, children }: { label: string; children: React.Reac
       <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{label}</span>
       {children}
     </label>
-  );
-}
-
-function UsedBar({ pct }: { pct: number }) {
-  return (
-    <div className="flex items-center gap-2">
-      <div className="h-1.5 w-20 rounded-full bg-muted">
-        <div className={cn("h-1.5 rounded-full", pct > 100 ? "bg-red-500" : "bg-brand")} style={{ width: `${Math.min(pct, 100)}%` }} />
-      </div>
-      <span className={cn("text-xs tabular-nums", pct > 100 && "font-semibold text-red-500")}>{pct}%</span>
-    </div>
   );
 }
 

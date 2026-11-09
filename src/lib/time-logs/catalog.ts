@@ -44,6 +44,8 @@ export const WORK_TYPES = [
   { label: "Time Off", tag: null },
 ] as const;
 export type WorkType = (typeof WORK_TYPES)[number]["label"];
+/** Departments a client's monthly hour estimate can be split into (client-facing work only). */
+export const ESTIMATE_DEPARTMENTS: WorkType[] = WORK_TYPES.map((w) => w.label).filter((l) => l !== "Time Off" && l !== "Internal Meetings");
 export const isWorkType = (v: unknown): v is WorkType => WORK_TYPES.some((w) => w.label === v);
 export const workTypeTag = (label: string) => WORK_TYPES.find((w) => w.label === label)?.tag ?? null;
 

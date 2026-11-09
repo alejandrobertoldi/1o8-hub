@@ -5,6 +5,7 @@ import { BILLING_TYPES, TIMESHEET_LIMIT, TIME_SETTINGS, WEEKLY_CAPACITY_HOURS, w
 import { listLoggableClients } from "./server";
 import { DEFAULT_HOLIDAY_CALENDAR, holidayCalendar, holidaysByCalendar } from "./holidays";
 import { readinessDepartmentFor } from "@/lib/readiness/match";
+import { listDepartmentEstimates } from "./estimates";
 
 export type InsightFilters = {
   /** Readiness team label (AM, Creative, Email, Paid, Web, Ops), from the person's departments. */
@@ -42,7 +43,7 @@ const DAYS_PER_MONTH = 30.44;
 export async function buildInsights(from: string, to: string, today = new Date().toISOString().slice(0, 10), filters: InsightFilters = {}) {
   // Expected hours start when hour logging went live, not before.
   const expectedFrom = from < TIME_SETTINGS.trackingStartDate ? TIME_SETTINGS.trackingStartDate : from;
-  const [allLogs, fullTeam, clients, holidays] = await Promise.all([
+  const [allLogs, fullTeam, clients, holidays, deptEstimates] = await Promise.all([
     db
       .select({
         userId: timeLogs.userId,
@@ -58,13 +59,14 @@ export async function buildInsights(from: string, to: string, today = new Date()
       .from(timeLogs)
       .where(and(gte(timeLogs.entryDate, from), lte(timeLogs.entryDate, to))),
     db
-      .select({ id: users.id, name: users.name, departments: users.departments, countryCode: users.countryCode })
+      .select({ id: users.id, name: users.name, email: users.email, role: users.role, departments: users.departments, countryCode: users.countryCode })
       .from(users)
       .innerJoin(teamDirectoryProfiles, eq(teamDirectoryProfiles.userId, users.id))
       .where(eq(users.employmentStatus, "active"))
       .orderBy(asc(users.name)),
     listLoggableClients(),
     holidaysByCalendar(from < expectedFrom ? from : expectedFrom, to),
+    listDepartmentEstimates(),
   ]);
   // Holidays on each person's calendar aren't workdays (US when none is assigned).
   const holidaysOf = (countryCode: string | null) => holidays.get(holidayCalendar(countryCode)) ?? new Set<string>();
@@ -110,6 +112,8 @@ export async function buildInsights(from: string, to: string, today = new Date()
     return {
       userId: t.id,
       name: t.name ?? "—",
+      email: t.email,
+      role: t.role,
       hoursLogged: round2(logged),
       expectedHours: expected,
       gap: round2(Math.max(0, expected - logged)),
@@ -174,7 +178,22 @@ export async function buildInsights(from: string, to: string, today = new Date()
     .map((c) => {
       const hours = clientHours[c.code] ?? 0;
       const estimate = c.estimatedHours != null ? round2(c.estimatedHours * months) : null;
+      // Department split: actual hours by type of work next to each department's own estimate.
+      const split = deptEstimates[c.code.toUpperCase()] ?? {};
+      const actual = byClientDepartment[c.code] ?? {};
+      const departments = [...new Set([...Object.keys(split), ...Object.keys(actual)])]
+        .map((department) => {
+          const monthly = (department in split ? split[department] : null) as number | null;
+          const est = monthly != null ? round2(monthly * months) : null;
+          const h = round2(actual[department] ?? 0);
+          return { department, hours: h, monthlyEstimate: monthly, estimate: est, usedPct: est ? Math.round((h / est) * 100) : null };
+        })
+        .sort((a, b) => b.hours - a.hours || (b.estimate ?? 0) - (a.estimate ?? 0) || a.department.localeCompare(b.department));
+      const splitTotal = Object.values(split).reduce((a, b) => a + b, 0);
       return {
+        departments,
+        /** Sum of the department estimates (monthly); null when the client has no split yet. */
+        monthlySplitTotal: splitTotal > 0 ? round2(splitTotal) : null,
         client: c.code,
         clientName: c.name,
         hours,

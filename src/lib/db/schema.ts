@@ -4750,6 +4750,24 @@ export const timeLogs = pgTable(
 
 export type TimeLog = typeof timeLogs.$inferSelect;
 
+// ─── Client hour estimates by department (0142) ──────────────────────
+// Monthly estimated hours per client × Department / Type of Work, edited in
+// Hours Analytics → Capacity & budget. The client's TOTAL stays in AAC
+// ("Estimated Hours TOTAL"); these split it so each department's actual
+// hours can be compared with its own estimate.
+export const clientHourEstimates = pgTable(
+  "client_hour_estimates",
+  {
+    clientIdCode: varchar("client_id_code", { length: 100 }).notNull(),
+    department: varchar("department", { length: 60 }).notNull(),
+    monthlyHours: numeric("monthly_hours", { precision: 7, scale: 2 }).notNull(),
+    updatedBy: uuid("updated_by").references(() => users.id, { onDelete: "set null" }),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [primaryKey({ name: "client_hour_estimates_pk", columns: [t.clientIdCode, t.department] })],
+);
+
+
 /**
  * Optional running timer, one per person (Harvest-style "record as you go").
  * Running when startedAt is set; paused time is banked in elapsedSeconds.
