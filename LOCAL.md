@@ -27,6 +27,17 @@ npm run seed-hub-features
 npm run seed-holidays
 ```
 
+## Copy production data to local
+
+```bash
+npm run db:pull:prod   # replaces ALL local data with production's (read-only on production)
+```
+
+Keep `npm run db:local` running. Run `npx drizzle-kit push` first if the local schema is behind.
+Everything local is overwritten (test hours, estimates…). The copy has real people and emails, and
+`.env.local` has a real `RESEND_API_KEY`: actions that send email (time off decisions, invites…)
+reach real inboxes, so test those with care.
+
 ## Where the sheet data goes
 
 | Sheet tab | Hub table | Notes |
