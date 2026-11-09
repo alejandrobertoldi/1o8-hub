@@ -110,3 +110,4 @@ q.tmp.*
 
 # Read-only audit output (npm run hours:audit-am)
 /hours-account-management-audit*.csv
+/rye-hours-*.csv
