@@ -503,6 +503,7 @@ export function HoursDashboard() {
                     showMember
                     showClient={false}
                     editable={false}
+                    onlyMembers={memberFilter}
                   />
                 ))
               : filtered.byMember.map((m) => (
@@ -519,6 +520,7 @@ export function HoursDashboard() {
                     showMember={false}
                     showClient
                     editable={false}
+                    onlyClients={clientFilter}
                   />
                 ))}
           </div>

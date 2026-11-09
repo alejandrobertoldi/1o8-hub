@@ -1163,6 +1163,8 @@ export function RangeScopeDetail({
   showMember,
   showClient,
   editable = true,
+  onlyMembers,
+  onlyClients,
 }: {
   label: string;
   brand?: boolean;
@@ -1177,6 +1179,9 @@ export function RangeScopeDetail({
   showMember?: boolean;
   showClient?: boolean;
   editable?: boolean;
+  /** The dashboard's Team member / Client filters: only these people's / clients' entries are listed. */
+  onlyMembers?: string[];
+  onlyClients?: string[];
 }) {
   const { data, isLoading, error } = useQuery<{ entries: HoursEntryRow[] }>({
     queryKey: ["hours-range-entries", from, to, userId, clientIdCode, categories],
@@ -1193,8 +1198,14 @@ export function RangeScopeDetail({
     },
   });
 
+  const memberKey = onlyMembers?.join(",") ?? "";
+  const clientKey = onlyClients?.join(",") ?? "";
   const entries = useMemo(() => {
-    const rows = [...(data?.entries ?? [])];
+    const members = memberKey ? new Set(memberKey.split(",")) : null;
+    const clients = clientKey ? new Set(clientKey.split(",")) : null;
+    const rows = (data?.entries ?? []).filter(
+      (e) => (!members || members.has(e.userId)) && (!clients || clients.has(e.clientIdCode)),
+    );
     rows.sort((a, b) => {
       const byDate = (a.entryDate ?? "").localeCompare(b.entryDate ?? "");
       if (byDate !== 0) return byDate;
@@ -1203,7 +1214,7 @@ export function RangeScopeDetail({
       return (a.userName ?? a.userEmail).localeCompare(b.userName ?? b.userEmail);
     });
     return rows;
-  }, [data?.entries]);
+  }, [data?.entries, memberKey, clientKey]);
 
   return (
     <div className={CARD}>
