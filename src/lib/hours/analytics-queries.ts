@@ -39,7 +39,7 @@ function filters(opts: {
   );
 }
 
-export function summaryRows(from: string, to: string, categories?: string[]) {
+export function summaryRows(from: string, to: string, categories?: string[], userIds?: string[]) {
   return db
     .select({
       userId: timeLogs.userId,
@@ -50,12 +50,12 @@ export function summaryRows(from: string, to: string, categories?: string[]) {
     })
     .from(timeLogs)
     .innerJoin(users, eq(users.id, timeLogs.userId))
-    .where(filters({ from, to, categories }))
+    .where(filters({ from, to, categories, userIds }))
     .groupBy(timeLogs.userId, users.name, users.email, timeLogs.clientIdCode);
 }
 
 /** Hours grouped by member × client × department (the department breakdown; the UI scopes it to 1o8's own time or all hours). */
-export function departmentBreakdownRows(from: string, to: string, categories?: string[]) {
+export function departmentBreakdownRows(from: string, to: string, categories?: string[], userIds?: string[]) {
   return db
     .select({
       userId: timeLogs.userId,
@@ -68,15 +68,15 @@ export function departmentBreakdownRows(from: string, to: string, categories?: s
     })
     .from(timeLogs)
     .innerJoin(users, eq(users.id, timeLogs.userId))
-    .where(filters({ from, to, categories }))
+    .where(filters({ from, to, categories, userIds }))
     .groupBy(timeLogs.userId, users.name, users.email, timeLogs.clientIdCode, timeLogs.department);
 }
 
-export function categoriesInRange(from: string, to: string) {
+export function categoriesInRange(from: string, to: string, userIds?: string[]) {
   return db
     .selectDistinct({ category: timeLogs.department })
     .from(timeLogs)
-    .where(filters({ from, to }))
+    .where(filters({ from, to, userIds }))
     .orderBy(asc(timeLogs.department));
 }
 
@@ -136,8 +136,8 @@ const entryColumns = {
 };
 
 /** All logs for a single day, optionally scoped to a member and/or client. */
-export function drillDayEntries(opts: { entryDate: string; userId?: string; clientIdCode?: string; categories?: string[] }) {
-  const { entryDate, userId, clientIdCode, categories } = opts;
+export function drillDayEntries(opts: { entryDate: string; userId?: string; userIds?: string[]; clientIdCode?: string; categories?: string[] }) {
+  const { entryDate, userId, userIds, clientIdCode, categories } = opts;
   return db
     .select(entryColumns)
     .from(timeLogs)
@@ -145,7 +145,7 @@ export function drillDayEntries(opts: { entryDate: string; userId?: string; clie
     .where(
       filters({
         entryDate,
-        userIds: userId ? [userId] : undefined,
+        userIds: userId ? [userId] : userIds,
         clientIdCodes: clientIdCode ? [clientIdCode] : undefined,
         categories,
       }),
@@ -154,8 +154,8 @@ export function drillDayEntries(opts: { entryDate: string; userId?: string; clie
 }
 
 /** Chronological logs across a date range, optionally scoped to a member and/or client. */
-export function drillRangeEntries(opts: { from: string; to: string; userId?: string; clientIdCode?: string; categories?: string[] }) {
-  const { from, to, userId, clientIdCode, categories } = opts;
+export function drillRangeEntries(opts: { from: string; to: string; userId?: string; userIds?: string[]; clientIdCode?: string; categories?: string[] }) {
+  const { from, to, userId, userIds, clientIdCode, categories } = opts;
   return db
     .select(entryColumns)
     .from(timeLogs)
@@ -164,7 +164,7 @@ export function drillRangeEntries(opts: { from: string; to: string; userId?: str
       filters({
         from,
         to,
-        userIds: userId ? [userId] : undefined,
+        userIds: userId ? [userId] : userIds,
         clientIdCodes: clientIdCode ? [clientIdCode] : undefined,
         categories,
       }),

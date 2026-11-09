@@ -3,6 +3,7 @@ import { getAuthSession } from "@/lib/auth-db";
 import { hasHoursReportsAccess, isHubStaff } from "@/lib/roles";
 import { isValidDateString } from "@/lib/hours/validation";
 import { drillDayEntries, drillRangeEntries } from "@/lib/hours/analytics-queries";
+import { hoursTeamScope } from "@/lib/hours/team-scope";
 
 function mapEntry(r: {
   id: string;
@@ -50,6 +51,12 @@ export async function GET(req: NextRequest) {
   const to = sp.get("to");
   const allDay = sp.get("all") === "1";
   const categories = sp.getAll("category");
+  // Admins: only their team's entries (owners / super admins: everyone).
+  const scope = own ? null : await hoursTeamScope(session.user);
+  if (scope && userId && !scope.includes(userId)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+  const userIds = scope ?? undefined;
 
   // Single-day mode (heatmap cell detail).
   if (entryDate) {
@@ -68,6 +75,7 @@ export async function GET(req: NextRequest) {
     const rows = await drillDayEntries({
       entryDate,
       userId,
+      userIds,
       clientIdCode,
       categories,
     });
@@ -92,6 +100,7 @@ export async function GET(req: NextRequest) {
       from,
       to,
       userId,
+      userIds,
       clientIdCode,
       categories,
     });

@@ -3,6 +3,7 @@ import { getAuthSession } from "@/lib/auth-db";
 import { hasHoursReportsAccess } from "@/lib/roles";
 import { isValidDateString } from "@/lib/hours/validation";
 import { summaryRows, categoriesInRange, departmentBreakdownRows } from "@/lib/hours/analytics-queries";
+import { hoursTeamScope } from "@/lib/hours/team-scope";
 
 export async function GET(req: NextRequest) {
   const session = await getAuthSession();
@@ -23,11 +24,13 @@ export async function GET(req: NextRequest) {
   }
 
   const categories = req.nextUrl.searchParams.getAll("category");
+  // Admins see their own team; owners / super admins everyone.
+  const scope = (await hoursTeamScope(session.user)) ?? undefined;
 
   const [rows, catRows, breakdownRows] = await Promise.all([
-    summaryRows(from, to, categories),
-    categoriesInRange(from, to),
-    departmentBreakdownRows(from, to, categories),
+    summaryRows(from, to, categories, scope),
+    categoriesInRange(from, to, scope),
+    departmentBreakdownRows(from, to, categories, scope),
   ]);
 
   const byMemberMap = new Map<

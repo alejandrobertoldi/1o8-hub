@@ -3,6 +3,7 @@ import { getAuthSession } from "@/lib/auth-db";
 import { hasHoursReportsAccess } from "@/lib/roles";
 import { isValidDateString } from "@/lib/hours/validation";
 import { drillDays } from "@/lib/hours/analytics-queries";
+import { hoursTeamScope } from "@/lib/hours/team-scope";
 
 export async function GET(req: NextRequest) {
   const session = await getAuthSession();
@@ -33,6 +34,10 @@ export async function GET(req: NextRequest) {
   }
 
   const categories = sp.getAll("category");
+  const scope = await hoursTeamScope(session.user);
+  if (scope && !scope.includes(userId)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
 
   const rows = await drillDays(from, to, userId, clientIdCode, categories);
   const days = rows.map((r) => ({

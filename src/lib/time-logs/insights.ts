@@ -10,6 +10,8 @@ export type InsightFilters = {
   /** Readiness team label (AM, Creative, Email, Paid, Web, Ops), from the person's departments. */
   team?: string | null;
   userId?: string | null;
+  /** Only these people (an admin's team); undefined = everyone. */
+  userIds?: string[];
   /** Department / Type of Work on the entry (time_logs.department). */
   workType?: string | null;
   /** Client code on the entry. */
@@ -70,13 +72,14 @@ export async function buildInsights(from: string, to: string, today = new Date()
 
   // Filters: team (Readiness department of the person), one person, one type of work.
   const teamOf = (departments: string[] | null) => readinessDepartmentFor(departments ?? []);
-  const team = fullTeam.filter(
+  const visible = filters.userIds ? fullTeam.filter((t) => filters.userIds!.includes(t.id)) : fullTeam;
+  const team = visible.filter(
     (t) => (!filters.team || teamOf(t.departments) === filters.team) && (!filters.userId || t.id === filters.userId),
   );
   const inScope = new Set(team.map((t) => t.id));
   const logs = allLogs.filter(
     (l) =>
-      (!filters.team && !filters.userId ? true : inScope.has(l.userId)) &&
+      (!filters.team && !filters.userId && !filters.userIds ? true : inScope.has(l.userId)) &&
       (!filters.workType || l.department === filters.workType) &&
       (!filters.client || l.client.toUpperCase() === filters.client.toUpperCase()),
   );
@@ -260,7 +263,7 @@ export async function buildInsights(from: string, to: string, today = new Date()
       })),
     capacityPerWeek: WEEKLY_CAPACITY_HOURS * people,
     clientNames: Object.fromEntries(clients.map((c) => [c.code, c.name])),
-    people: fullTeam.map((t) => ({ id: t.id, name: t.name ?? "—", team: teamOf(t.departments) })),
+    people: visible.map((t) => ({ id: t.id, name: t.name ?? "—", team: teamOf(t.departments) })),
     byPersonClient,
     // Capacity = 8 h × each person's workdays of the week inside the range, holidays excluded (40 h for a full week).
     weekly: weeks.map((w) => ({

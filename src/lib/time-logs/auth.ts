@@ -13,6 +13,7 @@ export async function timeLogSession() {
     userId: session.user.id,
     email: session.user.email ?? null,
     name: session.user.name ?? null,
+    role: session.user.role ?? null,
     isAdmin: hasPeopleAccess(session.user.role),
     /** Team-wide hours reports (admin and up); everyone else gets their own. */
     teamReports: hasHoursReportsAccess(session.user.role),

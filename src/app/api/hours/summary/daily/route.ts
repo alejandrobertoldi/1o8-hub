@@ -3,6 +3,7 @@ import { getAuthSession } from "@/lib/auth-db";
 import { hasHoursReportsAccess, isHubStaff } from "@/lib/roles";
 import { isValidDateString } from "@/lib/hours/validation";
 import { summaryByDay } from "@/lib/hours/analytics-queries";
+import { hoursTeamScope } from "@/lib/hours/team-scope";
 
 export async function GET(req: NextRequest) {
   const session = await getAuthSession();
@@ -27,7 +28,8 @@ export async function GET(req: NextRequest) {
   const dimension = req.nextUrl.searchParams.get("dimension") === "client" ? "client" : "member";
   const categories = req.nextUrl.searchParams.getAll("category");
 
-  const rows = await summaryByDay(from, to, dimension, categories, own ? [session.user.id!] : undefined);
+  const scope = own ? [session.user.id!] : ((await hoursTeamScope(session.user)) ?? undefined);
+  const rows = await summaryByDay(from, to, dimension, categories, scope);
 
   return NextResponse.json({
     dimension,

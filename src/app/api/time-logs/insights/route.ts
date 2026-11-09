@@ -3,6 +3,7 @@ export const runtime = "nodejs";
 import { NextRequest, NextResponse } from "next/server";
 import { timeLogSession } from "@/lib/time-logs/auth";
 import { buildInsights } from "@/lib/time-logs/insights";
+import { hoursTeamScope } from "@/lib/hours/team-scope";
 
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -28,5 +29,7 @@ export async function GET(req: NextRequest) {
     const mine = await buildInsights(from, to, day, { userId: me.userId, workType: f("workType"), client: f("client") });
     return NextResponse.json({ ...mine, people: [], clientVsEstimate: [] });
   }
-  return NextResponse.json(await buildInsights(from, to, day, { team: f("team"), userId: f("user"), workType: f("workType"), client: f("client") }));
+  // Admins see their own team; owners / super admins everyone.
+  const scope = await hoursTeamScope({ id: me.userId, role: me.role });
+  return NextResponse.json(await buildInsights(from, to, day, { team: f("team"), userId: f("user"), userIds: scope ?? undefined, workType: f("workType"), client: f("client") }));
 }

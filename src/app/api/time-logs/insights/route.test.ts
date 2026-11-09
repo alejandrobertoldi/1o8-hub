@@ -3,9 +3,11 @@ import { NextRequest } from "next/server";
 
 vi.mock("@/lib/time-logs/auth", () => ({ timeLogSession: vi.fn() }));
 vi.mock("@/lib/time-logs/insights", () => ({ buildInsights: vi.fn() }));
+vi.mock("@/lib/hours/team-scope", () => ({ hoursTeamScope: vi.fn() }));
 
 import { timeLogSession } from "@/lib/time-logs/auth";
 import { buildInsights } from "@/lib/time-logs/insights";
+import { hoursTeamScope } from "@/lib/hours/team-scope";
 import { GET } from "./route";
 
 const asMock = (fn: unknown) => fn as ReturnType<typeof vi.fn>;
@@ -15,6 +17,7 @@ const RANGE = "from=2026-11-01&to=2026-11-30";
 describe("GET /api/time-logs/insights", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    asMock(hoursTeamScope).mockResolvedValue(null);
     asMock(buildInsights).mockResolvedValue({ people: [{ id: "u2", name: "Someone" }], clientVsEstimate: [{ client: "KSS" }], totals: {} });
   });
 
@@ -34,6 +37,13 @@ describe("GET /api/time-logs/insights", () => {
     expect(asMock(buildInsights).mock.calls[0][3]).toMatchObject({ userId: "u2" });
     await GET(req(`${RANGE}&mine=1`));
     expect(asMock(buildInsights).mock.calls[1][3]).toMatchObject({ userId: "boss" });
+  });
+
+  it("scopes an admin to their own team", async () => {
+    asMock(timeLogSession).mockResolvedValue({ userId: "lead", role: "admin", isAdmin: false, teamReports: true });
+    asMock(hoursTeamScope).mockResolvedValue(["lead", "u3"]);
+    await GET(req(RANGE));
+    expect(asMock(buildInsights).mock.calls[0][3]).toMatchObject({ userIds: ["lead", "u3"] });
   });
 
   it("401 without a staff session", async () => {

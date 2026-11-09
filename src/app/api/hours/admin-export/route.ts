@@ -3,6 +3,7 @@ import { getAuthSession } from "@/lib/auth-db";
 import { hasHoursReportsAccess } from "@/lib/roles";
 import { isValidDateString } from "@/lib/hours/validation";
 import { adminExportEntries } from "@/lib/hours/analytics-queries";
+import { hoursTeamScope, withinScope } from "@/lib/hours/team-scope";
 import {
   adminHoursExportFilename,
   generateAdminHoursXlsx,
@@ -19,7 +20,7 @@ const SHEETS_FOLDER_NAME = "1o8_Hours_Exports";
 type Filters = {
   from: string;
   to: string;
-  userIds: string[];
+  userIds?: string[];
   clientIdCodes: string[];
   categories: string[];
 };
@@ -53,7 +54,8 @@ async function authorizeAndParse(req: NextRequest): Promise<Filters | NextRespon
   return {
     from,
     to,
-    userIds: sp.getAll("userId"),
+    // Admins export only their team (owners / super admins: anyone).
+    userIds: withinScope(await hoursTeamScope(session.user), sp.getAll("userId")),
     clientIdCodes: sp.getAll("client"),
     categories: sp.getAll("category"),
   };
