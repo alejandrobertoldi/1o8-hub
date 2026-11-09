@@ -53,7 +53,8 @@
     "hours:clear-tests": "tsx --env-file=.env.local scripts/local/clear-test-hours.ts",
     "access:admin-sections": "tsx --env-file=.env.local scripts/local/grant-admin-sections.ts",
     "hours:lookup": "tsx --env-file=.env.local scripts/local/hours-lookup.ts",
-    "db:connections": "tsx --env-file=.env.local scripts/local/db-connections.ts"
+    "db:connections": "tsx --env-file=.env.local scripts/local/db-connections.ts",
+    "user:email": "tsx --env-file=.env.local scripts/local/change-user-email.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.78.0",
