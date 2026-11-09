@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthSession } from "@/lib/auth-db";
-import { canSubmitTimeOff } from "@/lib/time-off/guards";
+import { isHubStaff } from "@/lib/roles";
 import { getApprovedInRange, type ApprovedRow } from "@/lib/time-off/queries";
 import { teamEventsInRange } from "@/lib/time-off/team-calendar";
 import { timeRangeLabel } from "@/lib/time-off/calendar-events";
@@ -20,7 +20,8 @@ export async function GET(req: NextRequest) {
   const session = await getAuthSession();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  if (!canSubmitTimeOff(session.user.role)) {
+  // Who's out is for every team member, viewers included (they don't book time off, but plan around it).
+  if (!isHubStaff(session.user.role)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 

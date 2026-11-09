@@ -33,8 +33,8 @@ describe("GET /api/time-off/approved", () => {
     expect(res.status).toBe(401);
   });
 
-  it("403s a role that cannot submit time off", async () => {
-    asMock(getAuthSession).mockResolvedValue({ user: { id: "u1", role: "viewer" } });
+  it("403s anyone outside the team (clients)", async () => {
+    asMock(getAuthSession).mockResolvedValue({ user: { id: "u1", role: "client" } });
     const res = await GET(getReq("?from=2026-08-01&to=2026-08-31"));
     expect(res.status).toBe(403);
   });
