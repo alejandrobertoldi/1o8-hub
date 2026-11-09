@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { AvatarCircle } from "@/components/seo/avatar-circle";
 import { SalesSparkline } from "@/components/clients/sales-sparkline";
 import { SalesRankChart } from "@/components/reports/sales-rank-chart";
-import { isOwner } from "@/lib/roles";
+import { isHubStaff } from "@/lib/roles";
 import { cn } from "@/lib/utils";
 import { formatKpi, kpiValue, type KpiValue } from "@/lib/kpi/values";
 import { delta } from "@/lib/kpi/report-metrics";
@@ -55,7 +55,7 @@ function periodRange(p: Period): { start: string; end: string } | null {
 }
 
 /**
- * Sales Summary (owners): every client's sales on one page — a ranking of net
+ * Sales Summary (every 1o8 team member): every client's sales on one page — a ranking of net
  * sales with logos, then one card per client with its team and its sales,
  * traffic, paid media and email metrics against the period before, last year,
  * month and year to date. MarketFoundry's Amazon page, on 1o8's sources.
@@ -65,7 +65,7 @@ export default function SalesSummaryPage() {
   const [period, setPeriod] = useState<Period>("Last week");
   const [range, setRange] = useState(() => periodRange("Last week")!);
   const [search, setSearch] = useState("");
-  const owner = isOwner(session?.user?.role);
+  const staff = isHubStaff(session?.user?.role);
   // Cards start collapsed; click a header (or a column in the ranking) to open one.
   const [open, setOpen] = useState<Set<string>>(new Set());
   const toggle = (code: string, force?: boolean) =>
@@ -82,7 +82,7 @@ export default function SalesSummaryPage() {
 
   const { data, isLoading, isError, error, isFetching } = useQuery<SalesSummary>({
     queryKey: ["sales-summary", range.start, range.end],
-    enabled: owner && range.start <= range.end,
+    enabled: staff && range.start <= range.end,
     placeholderData: (prev) => prev,
     queryFn: async () => {
       const res = await fetch(`/api/reports/sales-summary?start=${range.start}&end=${range.end}`);
@@ -103,7 +103,7 @@ export default function SalesSummaryPage() {
   }, [data, search]);
 
   if (status === "loading") return null;
-  if (!owner) return <p className="p-8 text-sm text-muted-foreground">The Sales Summary is only available to owners.</p>;
+  if (!staff) return <p className="p-8 text-sm text-muted-foreground">The Sales Summary is only available to the 1o8 team.</p>;
 
   return (
     <div className="space-y-6">

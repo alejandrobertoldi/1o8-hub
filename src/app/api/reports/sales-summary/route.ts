@@ -2,7 +2,7 @@ export const runtime = "nodejs";
 
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthSession } from "@/lib/auth-db";
-import { isOwner } from "@/lib/roles";
+import { isHubStaff } from "@/lib/roles";
 import { isDateString } from "@/lib/time-off/working-days";
 import { salesSummary } from "@/lib/kpi/sales-summary-server";
 
@@ -10,7 +10,7 @@ import { salesSummary } from "@/lib/kpi/sales-summary-server";
 export async function GET(req: NextRequest) {
   const session = await getAuthSession();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  if (!isOwner(session.user.role)) return NextResponse.json({ error: "Only owners can see the Sales Summary" }, { status: 403 });
+  if (!isHubStaff(session.user.role)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   const start = req.nextUrl.searchParams.get("start");
   const end = req.nextUrl.searchParams.get("end");
   if (!isDateString(start) || !isDateString(end) || end < start) {
