@@ -4680,6 +4680,11 @@ export const teamDirectoryProfiles = pgTable("team_directory_profiles", {
   workEndLocal: varchar("work_end_local", { length: 12 }),
   workStartChicago: varchar("work_start_chicago", { length: 12 }),
   workEndChicago: varchar("work_end_chicago", { length: 12 }),
+  // Whether the person logs hours in the hub (0143). Some contractors don't:
+  // false leaves them out of logging compliance, capacity, the weekly
+  // reminder and the My Dashboard hours flag. Edited on the team card only
+  // (the team-sheet sync never writes it).
+  logsTime: boolean("logs_time").notNull().default(true),
   // "sheet" = last written by the team-sheet sync; "hub" = added/edited in the hub.
   source: varchar("source", { length: 20 }).notNull().default("hub"),
   sheetSyncedAt: timestamp("sheet_synced_at", { withTimezone: true }),

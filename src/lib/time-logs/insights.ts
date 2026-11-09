@@ -1,4 +1,4 @@
-import { and, asc, eq, gte, lte } from "drizzle-orm";
+import { and, asc, eq, gte, inArray, lte, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { teamDirectoryProfiles, timeLogs, users } from "@/lib/db/schema";
 import { BILLING_TYPES, TIMESHEET_LIMIT, TIME_SETTINGS, WEEKLY_CAPACITY_HOURS, workdaysBetween } from "./catalog";
@@ -34,6 +34,8 @@ const addTo = (m: Record<string, number>, k: string, v: number) => {
 
 /** Average calendar days per month, to prorate a monthly estimate to any range. */
 const DAYS_PER_MONTH = 30.44;
+/** Roles that make up the team (not clients / pending). */
+const STAFF_ROLES = ["owner", "super_admin", "admin", "editor", "viewer"] as const;
 
 /**
  * The "Insights" tab of TIME TRACKING 2.0, computed from time_logs for a date
@@ -61,8 +63,9 @@ export async function buildInsights(from: string, to: string, today = new Date()
     db
       .select({ id: users.id, name: users.name, email: users.email, role: users.role, departments: users.departments, countryCode: users.countryCode })
       .from(users)
-      .innerJoin(teamDirectoryProfiles, eq(teamDirectoryProfiles.userId, users.id))
-      .where(eq(users.employmentStatus, "active"))
+      // Active team members expected to log time ("Logs time" on their card; on by default, also without a card).
+      .leftJoin(teamDirectoryProfiles, eq(teamDirectoryProfiles.userId, users.id))
+      .where(and(eq(users.employmentStatus, "active"), inArray(users.role, [...STAFF_ROLES]), sql`coalesce(${teamDirectoryProfiles.logsTime}, true)`))
       .orderBy(asc(users.name)),
     listLoggableClients(),
     holidaysByCalendar(from < expectedFrom ? from : expectedFrom, to),

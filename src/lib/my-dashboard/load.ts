@@ -1,6 +1,6 @@
 import { and, desc, eq, gte, ilike, inArray, ne, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { aac, asanaAssigneeMap, asanaSyncState, asanaTasks, clientOnboardingSteps, monthlyReportAsanaLinks, monthlyReportGenerateFailures, monthlyReports, users } from "@/lib/db/schema";
+import { aac, asanaAssigneeMap, asanaSyncState, asanaTasks, clientOnboardingSteps, monthlyReportAsanaLinks, monthlyReportGenerateFailures, monthlyReports, teamDirectoryProfiles, users } from "@/lib/db/schema";
 import { buildDailyCacheKey, buildSummaryCacheKey, getCachedData, getCachedDataMany } from "@/lib/sales-cache";
 import { recentWeekRanges } from "@/lib/iso-week";
 import { getStepDef, isStepSatisfied } from "@/lib/onboarding/steps";
@@ -49,6 +49,13 @@ type CachedClient = { clientIdCode: string; accountIds: string[]; latestSalesDat
 export async function loadMyDashboard(personId: string, viewer: { id: string; canPick: boolean }, today: string): Promise<MyDashboardPayload | null> {
   const [person] = await db.select({ id: users.id, name: users.name, email: users.email, image: users.image, asanaEmail: users.asanaEmail }).from(users).where(eq(users.id, personId)).limit(1);
   if (!person?.email) return null;
+  // "Logs time" on the person's team card (on unless switched off; also on without a card).
+  const logsTime = await db
+    .select({ logsTime: teamDirectoryProfiles.logsTime })
+    .from(teamDirectoryProfiles)
+    .where(eq(teamDirectoryProfiles.userId, person.id))
+    .limit(1)
+    .then((r) => r?.[0]?.logsTime ?? true, () => true);
   // Work email plus the Asana login when it differs (e.g. a shared klaviyo@ inbox).
   const asanaEmails = [...new Set([person.email, person.asanaEmail].filter((e): e is string => !!e).map((e) => e.toLowerCase()))];
 
@@ -205,7 +212,7 @@ export async function loadMyDashboard(personId: string, viewer: { id: string; ca
 
   return {
     viewer: { id: viewer.id, canPickPerson: viewer.canPick },
-    person: { id: person.id, name: person.name, email: person.email, image: person.image },
+    person: { id: person.id, name: person.name, email: person.email, image: person.image, logsTime },
     today,
     sync: { lastSuccessAt: syncRow?.lastSuccessAt?.toISOString() ?? null, lastError: syncState.error ?? syncRow?.lastError ?? null, connected: hasAsanaToken() },
     tasks: taskList.error ? { data: null, error: taskList.error } : trySection(() => groupTasks(tasks, today)),

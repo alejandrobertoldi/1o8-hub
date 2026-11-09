@@ -56,6 +56,18 @@ export async function PATCH(req: NextRequest, { params }: Ctx) {
     workStartChicago: p?.workStartChicago ?? "",
     workEndChicago: p?.workEndChicago ?? "",
   };
+  // "Logs time" is its own switch, saved on its own (not part of the sheet fields).
+  if ("logsTime" in body) {
+    const logsTime = (body as { logsTime: unknown }).logsTime;
+    if (typeof logsTime !== "boolean" || Object.keys(body).length > 1) {
+      return NextResponse.json({ error: "logsTime must be true or false, sent on its own" }, { status: 400 });
+    }
+    await db
+      .insert(teamDirectoryProfiles)
+      .values({ userId, logsTime, source: "hub" })
+      .onConflictDoUpdate({ target: teamDirectoryProfiles.userId, set: { logsTime, updatedAt: new Date() } });
+    return NextResponse.json({ ok: true });
+  }
   const unknown = Object.keys(body).filter((k) => !(k in base));
   if (unknown.length) return NextResponse.json({ error: `Unknown field(s): ${unknown.join(", ")}` }, { status: 400 });
   // null clears a text field

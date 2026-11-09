@@ -41,12 +41,13 @@ export function DirectoryBlock({
     | "workEndLocal"
     | "workStartChicago"
     | "workEndChicago"
+    | "logsTime"
   > | null;
   canEdit: boolean;
 }) {
   const qc = useQueryClient();
   const patch = useMutation({
-    mutationFn: async (body: Record<string, string | string[] | null>) => {
+    mutationFn: async (body: Record<string, string | string[] | boolean | null>) => {
       const res = await fetch(`/api/team/directory/${userId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -78,6 +79,34 @@ export function DirectoryBlock({
         canWrite={canEdit}
         onSave={save("employmentType")}
       />
+      <div className="flex flex-col gap-1 py-1.5">
+        <span className="text-[10px] font-bold uppercase text-muted-foreground">Logs time</span>
+        <div className="flex gap-1.5">
+          {([
+            [true, "Yes"],
+            [false, "No"],
+          ] as const).map(([v, label]) => {
+            const on = (d?.logsTime ?? true) === v;
+            return (
+              <button
+                key={label}
+                type="button"
+                aria-pressed={on}
+                disabled={!canEdit || patch.isPending || on}
+                onClick={() => patch.mutate({ logsTime: v })}
+                className={cn(
+                  "rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors disabled:cursor-default",
+                  on ? "border-brand bg-brand text-brand-foreground" : "border-border text-muted-foreground",
+                  canEdit && !on && "hover:text-foreground",
+                )}
+              >
+                {label}
+              </button>
+            );
+          })}
+        </div>
+        <span className="text-[11px] text-muted-foreground">No = not expected to log hours (left out of compliance, capacity and reminders).</span>
+      </div>
       <EditableField label="Location" value={d?.location ?? null} canWrite={canEdit} onSave={save("location")} placeholder="Puebla, MX" />
       <EditableField label="Time zone (label)" value={d?.timeZone ?? null} canWrite={canEdit} onSave={save("timeZone")} placeholder="CST (UTC-6)" />
       <EditableField label="Local start" value={d?.workStartLocal ?? null} canWrite={canEdit} onSave={save("workStartLocal")} placeholder="09:00 AM" />

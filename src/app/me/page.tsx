@@ -70,7 +70,7 @@ function MyDashboardContent() {
           {data.staff.map((s) => <option key={s.id} value={s.id}>{s.name ?? s.id}</option>)}
         </select>
       )} />
-      <HoursCard userId={data.person.id} today={data.today} self={data.person.id === data.viewer.id} />
+      {data.person.logsTime && <HoursCard userId={data.person.id} today={data.today} self={data.person.id === data.viewer.id} />}
       <ReviewsBox reviews={data.reviews} asanaUrl={data.reviewsAsanaUrl} />
       <ReadinessCard userId={data.person.id} />
       <GoLiveCard userId={data.person.id} />

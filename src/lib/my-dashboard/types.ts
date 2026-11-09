@@ -58,7 +58,7 @@ export interface ReviewItem {
 
 export interface MyDashboardPayload {
   viewer: { id: string; canPickPerson: boolean };
-  person: { id: string; name: string | null; email: string; image: string | null };
+  person: { id: string; name: string | null; email: string; image: string | null; /** False for people who don't log hours (no hours flag). */ logsTime: boolean };
   today: string;
   sync: { lastSuccessAt: string | null; lastError: string | null; connected: boolean };
   tasks: Section<Record<TaskGroupKey, DashTask[]>>;
