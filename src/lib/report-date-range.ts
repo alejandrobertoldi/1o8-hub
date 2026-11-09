@@ -30,9 +30,20 @@ export function getSundayOfWeek(year: number, week: number): Date {
   return sunday;
 }
 
+/** Monday of ISO week `week` of `year`. */
+export function getMondayOfWeek(year: number, week: number): Date {
+  const monday = getSundayOfWeek(year, week);
+  monday.setDate(monday.getDate() + 1);
+  return monday;
+}
+
+/**
+ * Week mode = ISO week, Monday → Sunday (the same weeks as Sales Summary and
+ * Hours). MarketFoundry's reports ran Sunday → Saturday.
+ */
 export function resolveRange(mode: RangeMode, opts: RangeOpts): { start: string; end: string } {
   if (mode === "week") {
-    const weekStart = formatDate(getSundayOfWeek(opts.year, opts.week));
+    const weekStart = formatDate(getMondayOfWeek(opts.year, opts.week));
     const startDate = new Date(weekStart + "T00:00:00");
     const endDate = new Date(startDate);
     endDate.setDate(startDate.getDate() + 6);

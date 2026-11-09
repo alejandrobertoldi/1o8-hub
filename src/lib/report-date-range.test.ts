@@ -22,12 +22,16 @@ describe("report-date-range", () => {
     expect(d.getDay()).toBe(0); // Sunday
   });
 
-  it("resolveRange week mode returns sunday..sunday+6", () => {
+  it("resolveRange week mode returns the ISO week, monday..sunday", () => {
     const { start, end } = resolveRange("week", { customStart: "", customEnd: "", year: 2026, week: 25 });
     const s = new Date(start + "T00:00:00");
     const e = new Date(end + "T00:00:00");
-    expect(s.getDay()).toBe(0);
+    expect(s.getDay()).toBe(1);
     expect((e.getTime() - s.getTime()) / 86400000).toBe(6);
+  });
+
+  it("W45 2026 = Nov 2–8, the same week as Sales Summary's 'Last week' on Nov 9", () => {
+    expect(resolveRange("week", { customStart: "", customEnd: "", year: 2026, week: 45 })).toEqual({ start: "2026-11-02", end: "2026-11-08" });
   });
 
   it("resolveRange custom mode passes through", () => {
