@@ -3,7 +3,7 @@ import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
 import { db } from "@/lib/db";
 import { users, aac } from "@/lib/db/schema";
-import { eq, inArray } from "drizzle-orm";
+import { eq, inArray, sql } from "drizzle-orm";
 import { resolveClientAllowedSections } from "@/lib/auth-helpers";
 import { resolveSignInImage } from "@/lib/avatars/url";
 
@@ -38,6 +38,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     signIn: "/auth/signin",
   },
   callbacks: {
+    // Deactivated people (Admin → Users → Deactivated) can't sign in; anyone
+    // without a row still can (they become a pending sign-up).
+    async signIn({ user, profile }) {
+      const email = (profile?.email ?? user?.email ?? "").toLowerCase();
+      if (!email) return true;
+      const [row] = await db
+        .select({ status: users.employmentStatus })
+        .from(users)
+        .where(sql`lower(${users.email}) = ${email}`)
+        .limit(1);
+      return !row || row.status === "active" ? true : "/auth/signin?error=Deactivated";
+    },
     async jwt({ token, account, profile, user, trigger }) {
       // The dev-login provider has no OAuth profile; synthesize one from `user`.
       if (account?.provider === "dev-login" && user?.email) {

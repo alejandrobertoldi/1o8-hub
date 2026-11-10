@@ -24,6 +24,7 @@ const authUserColumns = {
   role: users.role,
   clientIdCode: users.clientIdCode,
   allowedSections: users.allowedSections,
+  employmentStatus: users.employmentStatus,
 };
 
 /**
@@ -110,6 +111,11 @@ export const getAuthSession = cache(async function getAuthSession() {
       patchAuthIdentity(email, written);
     }
   }
+
+  // Deactivated in Admin → Users (employment status inactive / alumni): no
+  // session at all, so every page and API treats them as signed out. Sign-in
+  // itself is refused in src/lib/auth.ts (callbacks.signIn).
+  if (dbUser.employmentStatus && dbUser.employmentStatus !== "active") return null;
 
   session.user.id = dbUser.id;
   session.user.role = dbUser.role;

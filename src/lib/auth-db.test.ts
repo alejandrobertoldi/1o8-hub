@@ -84,6 +84,14 @@ describe("getAuthSession", () => {
     expect(result).toBeNull();
   });
 
+  it("returns null for a deactivated user (inactive / alumni can't use the hub)", async () => {
+    authMock.mockResolvedValue({ user: { email: "gone@example.com", name: "Gone", image: null } });
+    fixtures.usersSelectResult = [
+      { id: "u-gone", name: "Gone", image: null, role: "editor", clientIdCode: null, allowedSections: [], employmentStatus: "alumni" },
+    ];
+    expect(await getAuthSession()).toBeNull();
+  });
+
   it("for client role, resolves allowedSections from aac (union across assigned codes), not from users.allowed_sections", async () => {
     authMock.mockResolvedValue({
       user: { email: "client@example.com", name: "Client User", image: null },

@@ -147,7 +147,11 @@ type User = {
   residenceTimezone: string | null;
   lastLoginAt: string | null;
   createdAt: string;
+  employmentStatus: "active" | "inactive" | "alumni";
 };
+
+/** Inactive / alumni: listed under Deactivated and blocked from signing in. */
+const isDeactivated = (u: User) => u.employmentStatus !== "active";
 
 function EditableName({ user, isSelf, onSave, href }: { user: User; isSelf: boolean; onSave: (name: string | null) => void; href?: string }) {
   const [editing, setEditing] = useState(false);
@@ -283,7 +287,29 @@ function UsersPageInner() {
     },
   });
 
-  const users = allUsers;
+  // The main table lists active people; deactivated ones get their own section.
+  const users = allUsers?.filter((u) => !isDeactivated(u));
+  const deactivatedUsers = (allUsers ?? []).filter(isDeactivated).toSorted((a, b) => (a.name ?? a.email).localeCompare(b.name ?? b.email));
+  const [showDeactivated, setShowDeactivated] = useState(false);
+
+  const statusMutation = useMutation({
+    mutationFn: async ({ userId, employmentStatus }: { userId: string; employmentStatus: "active" | "alumni" }) => {
+      const res = await fetch(`/api/team/${userId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ employmentStatus }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || "Failed to update status");
+      }
+    },
+    onSuccess: (_d, v) => {
+      queryClient.invalidateQueries({ queryKey: ["admin-users"] });
+      toast.success(v.employmentStatus === "active" ? "User reactivated" : "User deactivated — they can no longer sign in");
+    },
+    onError: (error: Error) => toast.error(error.message),
+  });
 
   const [deleteTargetUser, setDeleteTargetUser] = useState<User | null>(null);
   const [clientDropdownUserId, setClientDropdownUserId] = useState<string | null>(null);
@@ -516,15 +542,30 @@ function UsersPageInner() {
         </TableCell>
         <TableCell>
           {!isSelf && (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-red-500 hover:text-red-600 hover:bg-red-500/10"
-              disabled={deleteMutation.isPending}
-              onClick={() => setDeleteTargetUser(user)}
-            >
-              Remove
-            </Button>
+            <div className="flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-muted-foreground hover:text-foreground"
+                disabled={statusMutation.isPending}
+                onClick={() => {
+                  if (window.confirm(`Deactivate ${user.name ?? user.email}? They won't be able to sign in. Their hours and history stay, and you can reactivate them anytime.`)) {
+                    statusMutation.mutate({ userId: user.id, employmentStatus: "alumni" });
+                  }
+                }}
+              >
+                Deactivate
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-red-500 hover:text-red-600 hover:bg-red-500/10"
+                disabled={deleteMutation.isPending}
+                onClick={() => setDeleteTargetUser(user)}
+              >
+                Remove
+              </Button>
+            </div>
           )}
         </TableCell>
       </TableRow>
@@ -1046,6 +1087,60 @@ function UsersPageInner() {
           </table>
         </div>
         </TooltipProvider>
+      )}
+
+      {/* Deactivated people: can't sign in; their hours, PTO and history stay. */}
+      {deactivatedUsers.length > 0 && (
+        <section className="rounded-xl border bg-card">
+          <button
+            type="button"
+            onClick={() => setShowDeactivated((v) => !v)}
+            aria-expanded={showDeactivated}
+            className="flex w-full items-center gap-2 px-4 py-3 text-left"
+          >
+            <ChevronDown className={`size-4 text-muted-foreground transition-transform ${showDeactivated ? "" : "-rotate-90"}`} />
+            <span className="text-sm font-semibold">Deactivated</span>
+            <Badge variant="outline" className="text-[10px]">{deactivatedUsers.length}</Badge>
+            <span className="text-xs text-muted-foreground">Can&apos;t sign in. Hours, time off and history are kept.</span>
+          </button>
+          {showDeactivated && (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Role</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Last login</TableHead>
+                  <TableHead className="w-28" />
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {deactivatedUsers.map((u) => (
+                  <TableRow key={u.id} className="text-muted-foreground">
+                    <TableCell className="font-medium text-foreground/80">{u.name ?? "—"}</TableCell>
+                    <TableCell className="text-sm">{u.email}</TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className={`${ROLE_COLORS[u.role]} text-[10px]`}>{ROLE_LABELS[u.role] ?? u.role}</Badge>
+                    </TableCell>
+                    <TableCell className="text-sm">{u.employmentStatus === "alumni" ? "Left the team" : "Inactive"}</TableCell>
+                    <TableCell className="text-sm">{u.lastLoginAt ? new Date(u.lastLoginAt).toLocaleDateString("en-US") : "Never"}</TableCell>
+                    <TableCell>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        disabled={statusMutation.isPending}
+                        onClick={() => statusMutation.mutate({ userId: u.id, employmentStatus: "active" })}
+                      >
+                        Reactivate
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </section>
       )}
 
       <DeleteConfirmDialog

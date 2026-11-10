@@ -20,6 +20,7 @@ function SignInForm() {
   const searchParams = useSearchParams();
   // "/" opens My Dashboard (client users are kept on /portal by the proxy).
   const callbackUrl = searchParams.get("callbackUrl") || "/";
+  const deactivated = searchParams.get("error") === "Deactivated";
 
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-muted/40">
@@ -32,6 +33,11 @@ function SignInForm() {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {deactivated && (
+            <p role="alert" className="mb-3 rounded-md border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-500">
+              This account is deactivated. Ask a hub owner if you need access again.
+            </p>
+          )}
           <Button
             className="w-full"
             onClick={() => signIn("google", { callbackUrl })}

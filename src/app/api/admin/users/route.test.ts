@@ -274,6 +274,7 @@ const EXPECTED = [
   "residenceTimezone",
   "lastLoginAt",
   "createdAt",
+  "employmentStatus",
 ];
 
 describe("GET /api/admin/users projection", () => {
@@ -291,7 +292,7 @@ describe("GET /api/admin/users projection", () => {
     expect(res.status).toBe(403);
   });
 
-  it("projects exactly the 13 fields the page consumes and nothing more", async () => {
+  it("projects exactly the 14 fields the page consumes and nothing more", async () => {
     // This route used to be an unprojected select().from(users). Migration
     // 0090 adds five columns to `users`, and an unprojected select would ship
     // every future column to the browser by default. Tier-0 fields are safe

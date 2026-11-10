@@ -39,7 +39,8 @@ export async function GET() {
   // Explicit projection, not select(). Migration 0090 adds five columns to
   // `users`, and an unprojected select ships every future column to the
   // browser by default. These are exactly the 13 fields the page's `User` type
-  // consumes — add nothing here (spec D10).
+  // consumes — add nothing here (spec D10). employmentStatus feeds the
+  // Deactivated section (inactive / alumni can't sign in).
   const allUsers = await db
     .select({
       id: users.id,
@@ -55,6 +56,7 @@ export async function GET() {
       residenceTimezone: users.residenceTimezone,
       lastLoginAt: users.lastLoginAt,
       createdAt: users.createdAt,
+      employmentStatus: users.employmentStatus,
     })
     .from(users);
   return NextResponse.json(allUsers);
