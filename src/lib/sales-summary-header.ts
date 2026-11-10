@@ -14,6 +14,8 @@ export const CLIENT_TEAM_ROLES: ReadonlyArray<readonly [key: string, label: stri
   ["ExecutiveStrategist_MF", "Executive Strategist"],
   ["AccountManager_MF", "Account Manager"],
   ["ProjectManager_MF", "Project Manager"],
+  // Second PM shows as a Project Manager too (same org level).
+  ["ProjectManager2_1o8", "Project Manager"],
   ["PPCManager_MF", "PPC"],
   ["SEOManager_MF", "SEO"],
   ["DesignManager_MF", "Design"],

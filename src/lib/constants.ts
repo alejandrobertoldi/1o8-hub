@@ -187,13 +187,16 @@ export const STATUS_CHIP_EMPTY: Record<string, string> = {
 
 // ── Team role mappings ────────────────────────────────────────────────
 
-// 1o8 account-team roles, one per AAC sheet column. Keys keep the MF raw_data
+// 1o8 account-team roles, one per AAC sheet column (plus the hub-only second PM). Keys keep the MF raw_data
 // names where an equivalent exists (scripts/local/seed-local.ts aliases them);
 // the three 1o8-only roles use the sheet's own column names.
 export const TEAM_ROLES: Record<string, string> = {
   ExecutiveStrategist_MF: "Executive Strategist",
   AccountManager_MF: "Account Manager",
   ProjectManager_MF: "Project Manager",
+  // Hub-only second PM (no AAC sheet column yet; a sheet column with this exact
+  // header would sync it both ways).
+  ProjectManager2_1o8: "Project Manager 2",
   EmailManager_1o8: "Email Manager",
   WebManager_1o8: "Web Manager",
   DesignManager_MF: "Creative Manager",

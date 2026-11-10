@@ -717,7 +717,7 @@ export function ClientDetail({ clientIdCode }: { clientIdCode: string }) {
   const isActive = statusLower === "active";
   const isProspect = statusLower === "prospect";
 
-  // The nine account-team roles of the 1o8 AAC sheet (see TEAM_ROLES).
+  // The account-team roles of the 1o8 AAC sheet (see TEAM_ROLES).
   const teamMFKeys = Object.keys(TEAM_ROLES);
 
   return (

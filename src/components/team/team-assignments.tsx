@@ -11,6 +11,7 @@ const SHORT: Record<string, string> = {
   ExecutiveStrategist_MF: "Exec. Strategist",
   AccountManager_MF: "Account Mgr",
   ProjectManager_MF: "Project Mgr",
+  ProjectManager2_1o8: "Project Mgr 2",
   EmailManager_1o8: "Email",
   WebManager_1o8: "Web",
   DesignManager_MF: "Creative",
@@ -18,7 +19,7 @@ const SHORT: Record<string, string> = {
   PPCManager_MF: "Paid Media",
   SocialMediaManager_108: "Social",
 };
-const LEAD_ROLES = ["ExecutiveStrategist_MF", "AccountManager_MF", "ProjectManager_MF"];
+const LEAD_ROLES = ["ExecutiveStrategist_MF", "AccountManager_MF", "ProjectManager_MF", "ProjectManager2_1o8"];
 
 const norm = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").trim().toLowerCase();
 

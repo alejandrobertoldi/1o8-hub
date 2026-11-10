@@ -15,7 +15,7 @@ export const normName = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, ""
 
 /**
  * The "By Team Member" sheet view, live: every ACTIVE account in the AAC table
- * with the person in each of the nine 1o8 account-team roles (TEAM_ROLES).
+ * with the person in each of the 1o8 account-team roles (TEAM_ROLES).
  */
 export async function listAssignments(): Promise<Assignments> {
   const [clients, people] = await Promise.all([

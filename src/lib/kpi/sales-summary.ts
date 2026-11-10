@@ -79,6 +79,7 @@ const LEVEL: Record<string, 1 | 2 | 3> = {
   "Executive Strategist": 1,
   "Account Manager": 2,
   "Project Manager": 2,
+  "Project Manager 2": 2,
 };
 
 /** The client's 1o8 team from its AAC role columns, one entry per person (all their roles). */
