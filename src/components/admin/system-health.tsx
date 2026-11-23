@@ -1,9 +1,11 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AlertTriangle, CheckCircle2, CircleDashed, Database, ExternalLink, RefreshCw, Server, XCircle } from "lucide-react";
 import { PageMetaSlot } from "@/components/layout/page-header-slot";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { Level, UnitKind, VercelMetric } from "@/lib/system-health/plans";
 import { cn } from "@/lib/utils";
@@ -27,9 +29,23 @@ type Health = {
   kpiSources: { source: string; clientsOk: number; failed: string[] }[];
   integrations: { label: string; configured: boolean }[];
   claude: { calls: number; errors: number; inputTokens: number; outputTokens: number; costUsd: number };
+  anthropic: Anthropic | null;
   recentErrors: { id: number; section: string; action: string; message: string | null; userEmail: string | null; createdAt: string }[];
 };
 
+type Anthropic = {
+  key: { ok: boolean; error: string | null };
+  adminKeyConfigured: boolean;
+  adminError: string | null;
+  monthSpendUsd: number | null;
+  credit: { amountUsd: number; asOf: string; updatedBy: string } | null;
+  spentSinceCreditUsd: number | null;
+  spendSource: "anthropic" | "hub";
+  remainingUsd: number | null;
+  billingUrl: string;
+};
+
+const usd = (n: number) => `$${n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 const mb = (b: number) => `${(b / 1024 / 1024).toLocaleString("en-US", { maximumFractionDigits: 1 })} MB`;
 const ago = (iso: string | null) => {
   if (!iso) return "Never";
@@ -230,13 +246,7 @@ export function SystemHealth() {
                 ))}
               </ul>
             </Panel>
-            <Panel title="Claude AI" subtitle="Last 30 days">
-              <p className="text-2xl font-bold tabular-nums">{data.claude.calls.toLocaleString("en-US")}</p>
-              <p className="text-xs text-muted-foreground">
-                calls · {data.claude.errors} errors · {(data.claude.inputTokens + data.claude.outputTokens).toLocaleString("en-US")} tokens · ≈ $
-                {data.claude.costUsd.toFixed(2)}
-              </p>
-            </Panel>
+            <ClaudePanel claude={data.claude} account={data.anthropic} />
             <Panel title="Recent errors" subtitle="Logged by the hub">
               {data.recentErrors.length === 0 ? (
                 <p className="text-sm text-muted-foreground">No errors logged.</p>
@@ -260,6 +270,98 @@ export function SystemHealth() {
         </>
       )}
     </div>
+  );
+}
+
+/** Claude API: does the key work, credit left (balance typed from the Console minus spend since), usage. */
+function ClaudePanel({ claude, account }: { claude: Health["claude"]; account: Anthropic | null }) {
+  const qc = useQueryClient();
+  const [editing, setEditing] = useState(false);
+  const [amount, setAmount] = useState("");
+  const [asOf, setAsOf] = useState(() => new Date().toISOString().slice(0, 10));
+  const save = useMutation({
+    mutationFn: async () => {
+      const res = await fetch("/api/admin/system-health/anthropic-credit", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amountUsd: Number(amount.replace(/[$,\s]/g, "")), asOf }),
+      });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(body.error ?? "Could not save");
+    },
+    onSuccess: () => {
+      setEditing(false);
+      qc.invalidateQueries({ queryKey: ["system-health"] });
+    },
+  });
+  const remaining = account?.remainingUsd ?? null;
+
+  return (
+    <Panel title="Claude AI" subtitle="API credit and usage" link={account ? { href: account.billingUrl, label: "Billing" } : undefined}>
+      {account && (
+        <p className="mb-2 flex items-center gap-1.5 text-sm">
+          {account.key.ok ? <CheckCircle2 className="size-4 text-emerald-500" /> : <XCircle className="size-4 text-red-500" />}
+          {account.key.ok ? "API key works" : account.key.error}
+        </p>
+      )}
+      {remaining !== null && account?.credit ? (
+        <>
+          <p className={cn("text-2xl font-bold tabular-nums", remaining < 10 && "text-red-500")}>{usd(remaining)}</p>
+          <p className="text-xs text-muted-foreground">
+            credit left (estimate): {usd(account.credit.amountUsd)} on {account.credit.asOf} − {usd(account.spentSinceCreditUsd ?? 0)} spent since
+            {account.spendSource === "hub" ? " by the hub" : ""}
+          </p>
+        </>
+      ) : (
+        <p className="text-xs text-muted-foreground">
+          Anthropic doesn&apos;t share the credit balance by API. Type the balance shown in Billing to track it here.
+        </p>
+      )}
+      {account?.monthSpendUsd !== null && account?.monthSpendUsd !== undefined && (
+        <p className="mt-2 text-xs text-muted-foreground">
+          This month: <span className="font-semibold text-foreground">{usd(account.monthSpendUsd)}</span> (whole Anthropic account)
+        </p>
+      )}
+      {account?.adminError && <p className="mt-1 text-xs text-amber-600 dark:text-amber-400">Spend report: {account.adminError}</p>}
+      <p className="mt-2 text-xs text-muted-foreground">
+        Hub, last 30 days: {claude.calls.toLocaleString("en-US")} calls · {claude.errors} errors · ≈ {usd(claude.costUsd)}
+      </p>
+      {editing ? (
+        <form
+          className="mt-3 space-y-2"
+          onSubmit={(e) => {
+            e.preventDefault();
+            save.mutate();
+          }}
+        >
+          <div className="flex gap-2">
+            <Input aria-label="Credit balance in USD" placeholder="Balance, e.g. 50.00" inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value)} className="h-8" />
+            <Input aria-label="Balance date" type="date" value={asOf} onChange={(e) => setAsOf(e.target.value)} className="h-8 w-40" />
+          </div>
+          {save.error && <p className="text-xs text-red-500">{(save.error as Error).message}</p>}
+          <div className="flex gap-2">
+            <Button type="submit" size="sm" disabled={!amount.trim() || save.isPending}>
+              Save
+            </Button>
+            <Button type="button" size="sm" variant="ghost" onClick={() => setEditing(false)}>
+              Cancel
+            </Button>
+          </div>
+        </form>
+      ) : (
+        <Button
+          size="sm"
+          variant="outline"
+          className="mt-3"
+          onClick={() => {
+            setAmount(account?.credit ? String(account.credit.amountUsd) : "");
+            setEditing(true);
+          }}
+        >
+          {account?.credit ? "Update balance" : "Set credit balance"}
+        </Button>
+      )}
+    </Panel>
   );
 }
 

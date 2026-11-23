@@ -2,8 +2,8 @@ import { expect, it } from "vitest";
 import { modelShortLabel, summarizeSeoModels, SEO_MODEL_STEPS } from "./ai-models";
 
 it("short labels drop the parenthetical; unknown ids pass through", () => {
-  expect(modelShortLabel("claude-opus-4-7")).toBe("Opus 4.7");
-  expect(modelShortLabel("claude-haiku-4-5")).toBe("Haiku 4.5");
+  expect(modelShortLabel("claude-opus-5-5")).toBe("Opus 5.5");
+  expect(modelShortLabel("claude-haiku-5-5")).toBe("Haiku 5.5");
   expect(modelShortLabel("claude-x")).toBe("claude-x");
 });
 it("summary: one model, mixed, or AI off; disabled steps don't count", () => {

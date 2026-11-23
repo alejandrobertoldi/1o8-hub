@@ -7,7 +7,7 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Loader2, RotateCcw, Save, ChevronDown, ChevronRight } from "lucide-react";
-import { AI_DEFAULTS, AVAILABLE_MODELS, AI_FEATURE_KEYS } from "@/lib/ai-config";
+import { AI_DEFAULTS, AVAILABLE_MODELS, AI_FEATURE_KEYS, ACTIVE_AI_FEATURE_KEYS } from "@/lib/ai-config";
 import type { AiFeatureKey, AiFeatureConfig } from "@/lib/ai-config";
 
 interface AiConfigResponse {
@@ -123,9 +123,14 @@ export function AiConfig() {
         </div>
       </div>
 
+      <p className="mb-4 text-xs text-zinc-500">
+        Only the AI features 1o8 uses are listed. MarketFoundry&apos;s Amazon tools (A+ content, Amazon SEO, PPC, case
+        study drafts) are switched off, so they can&apos;t spend API credit.
+      </p>
+
       {/* Feature cards */}
       <div className="space-y-3">
-        {AI_FEATURE_KEYS.map((key) => {
+        {ACTIVE_AI_FEATURE_KEYS.map((key) => {
           const feat = config?.[key] ?? AI_DEFAULTS[key];
           const defaults = AI_DEFAULTS[key];
           const isDefault = feat.model === defaults.model && feat.maxTokens === defaults.maxTokens && feat.enabled === defaults.enabled;

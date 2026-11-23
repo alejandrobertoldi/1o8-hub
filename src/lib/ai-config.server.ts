@@ -5,7 +5,7 @@
 import { db } from "@/lib/db";
 import { seoSettings } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
-import { AI_DEFAULTS, AVAILABLE_MODELS, type AiFeatureKey, type AiFeatureConfig } from "@/lib/ai-config";
+import { AI_DEFAULTS, AVAILABLE_MODELS, isActiveAiFeature, type AiFeatureKey, type AiFeatureConfig } from "@/lib/ai-config";
 
 type AiConfigMap = Partial<Record<AiFeatureKey, Partial<AiFeatureConfig>>>;
 
@@ -57,6 +57,8 @@ export async function getAiFeatureConfig(key: AiFeatureKey): Promise<AiFeatureCo
   if (!validModelIds.includes(merged.model)) {
     merged.model = defaults.model;
   }
+  // MarketFoundry's Amazon features are off in 1o8, whatever the saved config says.
+  if (!isActiveAiFeature(key)) merged.enabled = false;
   return merged;
 }
 

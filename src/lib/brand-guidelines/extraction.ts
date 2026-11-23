@@ -18,6 +18,18 @@ import {
   BRAND_SUMMARY_TOOL_SCHEMA,
 } from "./prompts";
 import { summaryAllSchema, type SummaryAll } from "./types";
+import { logEventAsync } from "@/lib/event-logger";
+
+/** Token usage of each Claude call, so System Health counts what extraction spends. */
+function logClaudeUsage(step: string, clientIdCode: string, res: Anthropic.Message): Promise<void> {
+  return logEventAsync({
+    section: "brand-guidelines",
+    action: `claude:brand_guidelines:${step}`,
+    resourceType: "client",
+    resourceId: clientIdCode,
+    detail: { model: res.model, usage: res.usage },
+  });
+}
 
 const MODEL = "claude-sonnet-4-6";
 const MAX_TOKENS_MD = 16000;
@@ -58,6 +70,7 @@ export async function runExtraction(args: RunExtractionArgs): Promise<void> {
       system: BRAND_BOOK_TO_MD_PROMPT,
       messages: [{ role: "user", content: rawText }],
     });
+    await logClaudeUsage("markdown", clientIdCode, mdResp);
     const mdBlock = mdResp.content.find((b) => b.type === "text");
     const extractedMd = mdBlock && mdBlock.type === "text" ? mdBlock.text : "";
 
@@ -75,6 +88,7 @@ export async function runExtraction(args: RunExtractionArgs): Promise<void> {
       tool_choice: { type: "tool", name: "save_summary" },
     });
 
+    await logClaudeUsage("summary", clientIdCode, summaryResp);
     const toolBlock = summaryResp.content.find(
       (b) => b.type === "tool_use" && b.name === "save_summary"
     );

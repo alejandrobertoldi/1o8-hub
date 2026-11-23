@@ -176,6 +176,7 @@ export function integrations() {
     { label: "Shopify app", configured: set("SHOPIFY_CLIENT_ID") && set("SHOPIFY_CLIENT_SECRET") },
     { label: "Google Ads API (developer token)", configured: set("GOOGLE_ADS_DEVELOPER_TOKEN") },
     { label: "Claude (Anthropic)", configured: set("ANTHROPIC_API_KEY") },
+    { label: "Claude spend (Admin API key)", configured: set("ANTHROPIC_ADMIN_KEY") },
     { label: "Email (Resend)", configured: set("RESEND_API_KEY") },
     { label: "Cron secret", configured: set("CRON_SECRET") },
     { label: "Vercel usage (API token)", configured: set("VERCEL_API_TOKEN") },

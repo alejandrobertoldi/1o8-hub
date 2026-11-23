@@ -24,12 +24,22 @@ export const AI_FEATURE_KEYS = [
   "seo_extract_doc",
   "ppc_analysis",
   "case_study_narrative",
+  "client_report_writer",
 ] as const;
 
 export type AiFeatureKey = (typeof AI_FEATURE_KEYS)[number];
 
-// Latest Claude Opus model — bump this single constant to upgrade every SEO feature at once.
-export const LATEST_CLAUDE_OPUS_MODEL = "claude-opus-4-7" as const;
+// Latest Claude Opus model — bump this single constant to upgrade every feature that uses it.
+export const LATEST_CLAUDE_OPUS_MODEL = "claude-opus-5-5" as const;
+
+/**
+ * The AI features 1o8 uses. The rest come from MarketFoundry's Amazon tools
+ * (A+ content, Amazon SEO pipeline, PPC, case study drafts): they stay in the
+ * code but are switched off and hidden from Admin → Configuration, so nothing
+ * can spend API credit through them.
+ */
+export const ACTIVE_AI_FEATURE_KEYS: readonly AiFeatureKey[] = ["client_report_writer"];
+export const isActiveAiFeature = (key: AiFeatureKey) => ACTIVE_AI_FEATURE_KEYS.includes(key);
 
 export const AI_DEFAULTS: Record<AiFeatureKey, AiFeatureConfig> = {
   aplus_alt_text: {
@@ -152,10 +162,18 @@ VOICE EXEMPLAR (match this tone — do NOT copy facts):
 "The storefront is the only spot on Amazon you fully control."
 "Each campaign received daily, weekly, and monthly optimisations to keep KPIs on track while driving new-to-brand sales."`,
   },
+  client_report_writer: {
+    label: "Client monthly report writer",
+    route: "/reports/monthly",
+    model: LATEST_CLAUDE_OPUS_MODEL,
+    maxTokens: 16000,
+    enabled: true,
+  },
 };
 
 export const AVAILABLE_MODELS = [
-  { id: "claude-opus-4-7", label: "Opus 4.7 (latest, most powerful)" },
-  { id: "claude-opus-4-6", label: "Opus 4.6" },
-  { id: "claude-haiku-4-5", label: "Haiku 4.5 (fastest)" },
+  { id: "claude-opus-5-5", label: "Opus 5.5 (recommended)" },
+  { id: "claude-sonnet-5-5", label: "Sonnet 5.5 (faster, cheaper)" },
+  { id: "claude-haiku-5-5", label: "Haiku 5.5 (fastest, cheapest)" },
+  { id: "claude-fable-5-2", label: "Fable 5.2 (most capable, 2x Opus price)" },
 ];
