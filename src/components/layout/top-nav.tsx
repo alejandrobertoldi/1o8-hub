@@ -113,6 +113,7 @@ const REPORT_TABS = [
   { label: "Paid Media", href: "/reports/paid-media" },
   { label: "Traffic & Conversion", href: "/reports/traffic" },
   { label: "Email & SMS", href: "/reports/email" },
+  { label: "Monthly Reports", href: "/reports/monthly" },
 ];
 
 /* ========================================================== */
@@ -655,7 +656,7 @@ export function TopNav() {
           ) : pathname.startsWith("/reports") ? (
             <nav className="hidden lg:flex items-center justify-center pl-2 pr-4 lg:pl-3 lg:pr-6 border-t border-sidebar-border/40 overflow-x-auto">
               {REPORT_TABS.map((t) => {
-                const isActive = pathname === t.href;
+                const isActive = pathname === t.href || (t.href === "/reports/monthly" && pathname.startsWith("/reports/monthly/"));
                 return (
                   <Link
                     key={t.href}

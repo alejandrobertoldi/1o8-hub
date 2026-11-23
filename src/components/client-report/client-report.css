@@ -1,0 +1,294 @@
+/* Client monthly report: US Letter pages in the 1o8 brand (docs/brand/1O8-BRAND.md).
+   Fixed light colors: the report looks the same in dark mode and in the PDF. */
+
+.cr-doc {
+  --cr-yellow: #f7bf1d;
+  --cr-ink: #2c2b35;
+  --cr-slate: #6e6c77;
+  --cr-card: #f4f4f2;
+  --cr-line: #e4e3e7;
+  --cr-good: #1e8e5a;
+  --cr-bad: #c8412f;
+  color: var(--cr-ink);
+  font-family: var(--font-inter), Inter, ui-sans-serif, system-ui, sans-serif;
+  font-size: 12px;
+  line-height: 1.45;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.cr-page {
+  position: relative;
+  box-sizing: border-box;
+  width: 8.5in;
+  height: 11in;
+  overflow: hidden;
+  padding: 0.6in 0.6in 0.75in;
+  background: #fff;
+  break-after: page;
+  page-break-after: always;
+}
+.cr-page:last-child {
+  break-after: auto;
+  page-break-after: auto;
+}
+
+/* On screen: stacked sheets. */
+.cr-screen .cr-page {
+  margin: 0 auto 24px;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.12), 0 8px 24px rgb(0 0 0 / 0.08);
+}
+
+@page {
+  size: letter;
+  margin: 0;
+}
+@media print {
+  html,
+  body {
+    background: #fff !important;
+  }
+  /* The app's noise texture and ambient wash (globals.css) get rasterized on
+     every PDF page: ~20 MB per report. */
+  body::before,
+  .ambient-bg {
+    display: none !important;
+  }
+}
+
+/* Cover */
+.cr-cover {
+  display: flex;
+  flex-direction: column;
+  background: var(--cr-yellow);
+  padding: 0.7in;
+}
+.cr-cover-logo {
+  height: 34px;
+  width: auto;
+  align-self: flex-start;
+}
+.cr-cover-main {
+  margin-top: auto;
+  margin-bottom: auto;
+}
+.cr-cover h1 {
+  margin: 18px 0 6px;
+  font-size: 52px;
+  font-weight: 800;
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+}
+.cr-cover-month {
+  font-size: 26px;
+  font-weight: 700;
+}
+.cr-cover-client-logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 28px;
+  padding: 18px 22px;
+  border-radius: 12px;
+  background: #fff;
+}
+.cr-cover-client-logo img {
+  max-height: 70px;
+  max-width: 220px;
+  object-fit: contain;
+}
+.cr-cover-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  font-size: 12px;
+}
+.cr-cover-foot strong {
+  display: block;
+  font-size: 14px;
+}
+/* Eyebrow pill + titles */
+.cr-eyebrow {
+  display: inline-block;
+  border-radius: 999px;
+  background: var(--cr-ink);
+  color: var(--cr-yellow);
+  padding: 4px 12px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.cr-title {
+  margin: 10px 0 4px;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+}
+.cr-subtitle {
+  margin: 0 0 18px;
+  color: var(--cr-slate);
+  font-size: 12px;
+}
+
+/* KPI cards */
+.cr-kpis {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.cr-kpi {
+  border-radius: 10px;
+  background: var(--cr-card);
+  padding: 12px 14px;
+}
+.cr-kpi-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--cr-slate);
+}
+.cr-kpi-value {
+  margin: 4px 0 6px;
+  font-size: 24px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+.cr-kpi-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+  font-size: 10.5px;
+  color: var(--cr-slate);
+}
+.cr-target {
+  display: inline-block;
+  margin-top: 6px;
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  background: #fff;
+}
+.cr-target.good {
+  color: var(--cr-good);
+}
+.cr-target.bad {
+  color: var(--cr-bad);
+}
+
+.cr-good {
+  color: var(--cr-good);
+  font-weight: 700;
+}
+.cr-bad {
+  color: var(--cr-bad);
+  font-weight: 700;
+}
+.cr-flat {
+  color: var(--cr-slate);
+  font-weight: 700;
+}
+
+/* Cards holding charts */
+.cr-card {
+  margin-top: 14px;
+  border-radius: 10px;
+  background: var(--cr-card);
+  padding: 12px 14px 8px;
+}
+.cr-card-title {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.cr-card-title span {
+  color: var(--cr-slate);
+  font-weight: 400;
+}
+.cr-charts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.cr-charts .cr-card {
+  margin-top: 14px;
+}
+
+/* Metric tables */
+.cr-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+.cr-table th {
+  padding: 6px 8px;
+  border-bottom: 2px solid var(--cr-ink);
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-align: right;
+  text-transform: uppercase;
+  color: var(--cr-slate);
+}
+.cr-table th:first-child,
+.cr-table td:first-child {
+  white-space: normal;
+  text-align: left;
+}
+.cr-table td {
+  white-space: nowrap;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--cr-line);
+  text-align: right;
+}
+.cr-table td.cr-now {
+  font-weight: 700;
+}
+.cr-table .cr-group td {
+  padding-top: 12px;
+  border-bottom: none;
+  font-size: 11px;
+  font-weight: 800;
+}
+.cr-hint {
+  display: block;
+  font-size: 9.5px;
+  color: var(--cr-slate);
+}
+
+/* Footer */
+.cr-footer {
+  position: absolute;
+  left: 0.6in;
+  right: 0.6in;
+  bottom: 0.35in;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 9.5px;
+  color: var(--cr-slate);
+}
+.cr-page-dot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: var(--cr-ink);
+  color: var(--cr-yellow);
+  font-size: 9.5px;
+  font-weight: 700;
+}
+.cr-note {
+  margin-top: 10px;
+  font-size: 10px;
+  color: var(--cr-slate);
+}

@@ -5043,3 +5043,29 @@ export const newBusinessStageHistory = pgTable(
   },
   (t) => [index("idx_new_business_history_opp").on(t.opportunityId, t.enteredAt)],
 );
+
+// ─── Client monthly reports (1o8, built on kpi_daily) ─────────────────
+// One row per (client, YYYY-MM). `data` is the numbers snapshot the report is
+// rendered from (src/lib/client-report), so the PDF doesn't shift after review.
+// Spec: docs/superpowers/specs/2026-11-23-client-monthly-report-design.md
+
+export const clientReports = pgTable(
+  "client_reports",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    clientIdCode: varchar("client_id_code", { length: 20 }).notNull(),
+    period: varchar("period", { length: 7 }).notNull(),
+    status: varchar("status", { length: 20 }).notNull().default("draft"),
+    data: jsonb("data").notNull(),
+    dataThrough: date("data_through", { mode: "string" }),
+    generatedBy: uuid("generated_by").references(() => users.id, { onDelete: "set null" }),
+    generatedAt: timestamp("generated_at", { withTimezone: true }).notNull().defaultNow(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    uniqueIndex("uq_client_reports_client_period").on(t.clientIdCode, t.period),
+    index("idx_client_reports_period").on(t.period),
+  ],
+);
+export type ClientReportRow = typeof clientReports.$inferSelect;

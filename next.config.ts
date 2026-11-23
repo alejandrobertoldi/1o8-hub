@@ -41,6 +41,9 @@ const nextConfig: NextConfig = {
     "/api/reports/monthly/pdf/drive": [
       "./node_modules/@sparticuz/chromium/**/*",
     ],
+    "/api/reports/monthly/[code]/[period]/pdf": [
+      "./node_modules/@sparticuz/chromium/**/*",
+    ],
     "/help/[slug]": [
       "./src/content/help/**/*",
     ],

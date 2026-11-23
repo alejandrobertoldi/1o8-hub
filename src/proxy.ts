@@ -20,6 +20,7 @@ export default auth((req) => {
     pathname.startsWith("/api/auth") ||
     pathname.startsWith("/api/cron") ||
     pathname.startsWith("/api/webhooks") ||
+    pathname === "/reports/monthly/print" || // PDF print target: the data is injected by headless Chrome, the page holds none
     pathname.startsWith("/auth") ||
     pathname.startsWith("/status") ||
     pathname.startsWith("/_next") ||

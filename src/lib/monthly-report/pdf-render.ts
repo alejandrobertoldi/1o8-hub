@@ -46,7 +46,7 @@ async function resolveChromiumExecutable(
   return inflightExecutable;
 }
 
-async function launchBrowser() {
+export async function launchBrowser() {
   const puppeteer = (await import("puppeteer-core")).default;
   const local = process.platform === "darwin" ? localChromePath() : process.env.CHROME_EXECUTABLE_PATH;
   if (local) {

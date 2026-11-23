@@ -53,8 +53,6 @@ export function LayoutRouter({ children }: { children: React.ReactNode }) {
   const productCatalogPage = pathname === "/products";
   // Listing Images client page pins the shared slot header under nav
   const listingImagesClientPage = /^\/design\/listing-images\/[^/]+/.test(pathname ?? "");
-  // Monthly report TOC lives in TopNav row 4 — drop main padding so the cover sits flush
-  const monthlyReportPage = pathname === "/reports/monthly";
   const flushTop =
     seoProjectPage ||
     onboardingProjectPage ||
@@ -63,8 +61,7 @@ export function LayoutRouter({ children }: { children: React.ReactNode }) {
     adminUsersPage ||
     productDetailPage ||
     productCatalogPage ||
-    listingImagesClientPage ||
-    monthlyReportPage;
+    listingImagesClientPage;
 
   // Internal routes get top nav + full-width content
   return (

@@ -409,3 +409,21 @@ sheet is being retired (the hub is the source of truth; new fields live only in 
   no code (AAF - Reflexology, Koios, and 8 inactive).
 - Test note: `tests/lib/seo/runner.s1-e2e.test.ts` (MarketFoundry) makes a live Claude call and fails without
   ANTHROPIC_API_KEY whenever the local DB is up — not a regression.
+
+## Client monthly reports (`/reports/monthly`, 2026-11-23)
+
+Spec: `docs/superpowers/specs/2026-11-23-client-monthly-report-design.md`. Phase 1 is built: numbers, layout
+and PDF. Claude writing, the PM → AM → ES approval flow and sending come next.
+
+- Data comes from `kpi_daily` (Shopify, GA4, Meta, Google Ads, Klaviyo). Each section shows only when its
+  source has data for the client.
+- Comparisons are with the previous calendar month and the same month last year. A source that covers
+  less than 80% of a comparison month is left out of it, so a mid-month connection doesn't fake a jump.
+- **Generate** saves a numbers snapshot in `client_reports` (migration `0144`). The PDF always prints
+  that snapshot. **Refresh** rebuilds it.
+- How the PDF is made:
+  - Headless Chrome opens `/reports/monthly/print` and puts the report on `window.__CLIENT_REPORT__`.
+  - That page holds no data of its own, so `src/proxy.ts` lets it load without sign-in.
+  - Locally the PDF uses your installed Chrome; on Vercel it uses `@sparticuz/chromium`.
+- The app's background noise texture is hidden when printing. With it, each PDF was about 20 MB.
+- Production needs `npm run db:push:prod` (new table `client_reports`) before deploying.

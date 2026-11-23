@@ -67,11 +67,9 @@ describe("LayoutRouter", () => {
     expect(queryByTestId("portal-shell")).toBeNull();
   });
 
-  it("flushes top padding on /reports/monthly so the TOC can sit in the hub nav", () => {
+  it("keeps normal top padding on /reports/monthly (1o8's client report list)", () => {
     const { container } = renderAt("/reports/monthly");
-    const main = container.querySelector("main");
-    expect(main?.className).toContain("pt-0");
-    expect(main?.className).not.toMatch(/(?:^|\s)pt-6(?:\s|$)/);
+    expect(container.querySelector("main")?.className).not.toContain("pt-0");
   });
 
   it("keeps default top padding on v2 report pages", () => {
