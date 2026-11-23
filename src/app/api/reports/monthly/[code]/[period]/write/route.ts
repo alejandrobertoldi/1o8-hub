@@ -39,6 +39,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ cod
   } catch (e) {
     if (e instanceof WriterError) return NextResponse.json({ error: e.message }, { status: 422 });
     console.error("[client-report] write", code, period, e);
-    return NextResponse.json({ error: "Claude couldn't write the report. Check the server logs." }, { status: 500 });
+    const msg = e instanceof Error ? e.message : String(e);
+    const hint = /client_report_texts/.test(msg) && /does not exist/.test(msg) ? " The report text table is missing: run npm run db:push:prod." : "";
+    return NextResponse.json({ error: `Claude couldn't write the report: ${msg.slice(0, 300)}.${hint}` }, { status: 500 });
   }
 }
