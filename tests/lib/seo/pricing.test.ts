@@ -16,14 +16,14 @@ describe("Anthropic token → USD pricing", () => {
   });
 
   it("computes cost for Haiku 4.5 (no cache usage)", () => {
-    // Haiku 4.5: $0.80/M input, $4/M output
+    // Haiku 4.5: $1/M input, $5/M output
     const cost = computeCostUsd("claude-haiku-4-5-20251001", {
       input_tokens: 1000,
       cache_creation_input_tokens: 0,
       cache_read_input_tokens: 0,
       output_tokens: 500,
     });
-    expect(cost).toBeCloseTo(0.0008 + 0.002, 4);
+    expect(cost).toBeCloseTo(0.001 + 0.0025, 4);
   });
 
   it("throws on unknown model", () => {
