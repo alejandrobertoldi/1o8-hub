@@ -20,10 +20,10 @@ describe("help registry", () => {
     expect(g?.category).toBe("processes");
     expect(g?.description).toMatch(/My timesheet/);
   });
-  it("includes the client data guide, linked from Client Reports", () => {
+  it("includes the client data guide, linked from KPI Overview", () => {
     expect(getGuide("client-data-process")?.category).toBe("processes");
     const clients = HELP_TREE.find((s) => s.id === "clients");
-    expect(clients?.items.find((i) => i.href === "/reports")?.slug).toBe("client-data-process");
+    expect(clients?.items.find((i) => i.href === "/reports/kpis")?.slug).toBe("client-data-process");
   });
   it("has no MarketFoundry Amazon guides", () => {
     for (const slug of ["aplus-content-process", "seo-helium10-process", "brand-story-process", "design-upload-process", "monthly-report-process"])

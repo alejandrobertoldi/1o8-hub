@@ -1,42 +1,89 @@
 /* eslint-disable @next/next/no-img-element -- data URLs and static assets in a print document */
+import type { ReactNode } from "react";
 import type {
   ClientReportData,
   KpiCard,
   MetricRow,
   ReportSection,
 } from "@/lib/client-report/types";
+import { TEXT_LABELS, type TextSection } from "@/lib/client-report/text";
 import { cn } from "@/lib/utils";
 import { DailyBars, MonthBars } from "./charts";
 import { fmt, fmtChange, type Change } from "./format";
 import "./client-report.css";
 
+/** The report's written parts: current HTML per section, or an editor in their place. */
+export type ReportTexts = {
+  html: Partial<Record<TextSection, string>>;
+  /** Editing on the hub: renders this instead of the text. */
+  render?: (key: TextSection) => ReactNode;
+};
+
 /**
- * The client monthly report as US Letter pages: cover, KPIs at a glance, then
- * one page per data source. Same markup on screen (`screen`) and in the PDF.
+ * The client monthly report as US Letter pages: cover, KPIs at a glance with
+ * the executive summary, one page per data source with its commentary, then
+ * highlights and next steps. Same markup on screen (`screen`) and in the PDF.
  */
 export function ClientReportDocument({
   data,
+  texts,
   screen = false,
 }: {
   data: ClientReportData;
+  texts?: ReportTexts;
   screen?: boolean;
 }) {
   const sectionPages = splitSections(data.sections);
-  const pages = 2 + sectionPages.length;
+  const closing = !!texts?.render || CLOSING.some((k) => texts?.html[k]);
+  const pages = 2 + sectionPages.length + (closing ? 1 : 0);
   return (
     <div className={cn("cr-doc", screen && "cr-screen")}>
       <Cover data={data} />
-      <GlancePage data={data} page={2} pages={pages} />
+      <GlancePage data={data} texts={texts} page={2} pages={pages} />
       {sectionPages.map((sp, i) => (
         <SectionPage
           key={`${sp.section.key}-${i}`}
           data={data}
+          texts={texts}
           {...sp}
           page={3 + i}
           pages={pages}
         />
       ))}
+      {closing && <ClosingPage data={data} texts={texts} page={pages} pages={pages} />}
     </div>
+  );
+}
+
+const CLOSING: TextSection[] = ["wins", "watchouts", "next_steps"];
+
+/** A written block: the editor when editing, else the saved text (nothing when empty). */
+function TextBlock({ k, texts, label, className }: { k: TextSection; texts?: ReportTexts; label?: string; className?: string }) {
+  if (texts?.render) return <div className={cn("cr-commentary", className)}>{texts.render(k)}</div>;
+  const html = texts?.html[k];
+  if (!html) return null;
+  return (
+    <div className={cn("cr-commentary", className)}>
+      {label && <div className="cr-commentary-label">{label}</div>}
+      {/* Sanitized when saved (src/lib/client-report/text.ts). */}
+      <div className="cr-commentary-body" dangerouslySetInnerHTML={{ __html: html }} />
+    </div>
+  );
+}
+
+function ClosingPage({ data, texts, page, pages }: { data: ClientReportData; texts?: ReportTexts; page: number; pages: number }) {
+  return (
+    <section className="cr-page">
+      <span className="cr-eyebrow">Highlights</span>
+      <h2 className="cr-title">What it means for next month</h2>
+      <p className="cr-subtitle">{data.period.label}</p>
+      <div className="cr-highlights">
+        {CLOSING.map((k) => (
+          <TextBlock key={k} k={k} texts={texts} label={TEXT_LABELS[k]} className="cr-highlight" />
+        ))}
+      </div>
+      <Footer data={data} page={page} pages={pages} />
+    </section>
   );
 }
 
@@ -186,10 +233,12 @@ function Kpi({ k, data }: { k: KpiCard; data: ClientReportData }) {
 
 function GlancePage({
   data,
+  texts,
   page,
   pages,
 }: {
   data: ClientReportData;
+  texts?: ReportTexts;
   page: number;
   pages: number;
 }) {
@@ -201,6 +250,7 @@ function GlancePage({
         Compared with {data.period.previousLabel} and with{" "}
         {data.period.lastYearLabel}.
       </p>
+      <TextBlock k="summary" texts={texts} label="Executive summary" className="cr-summary" />
       {data.kpis.length ? (
         <div className="cr-kpis">
           {data.kpis.map((k) => (
@@ -250,13 +300,14 @@ function Row({ r }: { r: MetricRow }) {
 
 function SectionPage({
   data,
+  texts,
   section,
   title,
   groups,
   charts,
   page,
   pages,
-}: SectionPageSpec & { data: ClientReportData; page: number; pages: number }) {
+}: SectionPageSpec & { data: ClientReportData; texts?: ReportTexts; page: number; pages: number }) {
   const month = data.period.label.split(" ")[0];
   const titled = groups.length > 1 || section.groups.length > 1;
   return (
@@ -285,6 +336,7 @@ function SectionPage({
           ))}
         </tbody>
       </table>
+      {charts && <TextBlock k={section.key} texts={texts} label="Our read" />}
       {charts && (
         <div className="cr-charts">
           {section.daily && (

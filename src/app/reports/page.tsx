@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
-// The reports landing page routes straight to the KPI overview — every section
-// is reachable from the report tab strip in the top nav.
+// Clients → Client Reports is the monthly client reports; the KPI pages live
+// under Clients → KPI Overview (/reports/kpis and its tab strip).
 export default function ReportsPage() {
-  redirect("/reports/kpis");
+  redirect("/reports/monthly");
 }

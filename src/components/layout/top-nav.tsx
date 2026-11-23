@@ -113,8 +113,16 @@ const REPORT_TABS = [
   { label: "Paid Media", href: "/reports/paid-media" },
   { label: "Traffic & Conversion", href: "/reports/traffic" },
   { label: "Email & SMS", href: "/reports/email" },
-  { label: "Monthly Reports", href: "/reports/monthly" },
 ];
+/** Clients → KPI Overview covers every KPI report page; Clients → Client Reports is the monthly reports. */
+const isKpiReportPage = (pathname: string) => REPORT_TABS.some((t) => pathname.startsWith(t.href));
+
+/** Whether a menu item is the current page. */
+function navItemActive(href: string, pathname: string): boolean {
+  if (href === "/" || href === "/clients") return pathname === href;
+  if (href === "/reports/kpis") return isKpiReportPage(pathname);
+  return pathname.startsWith(href);
+}
 
 /* ========================================================== */
 export function TopNav() {
@@ -222,7 +230,8 @@ export function TopNav() {
       items: [
         { title: "Client Summary", href: "/clients", icon: Users, visible: true },
         { title: "Brand Guidelines", href: "/clients/brand-guidelines", icon: BookOpen, visible: true },
-        { title: "Client Reports", href: "/reports", icon: BarChart3, visible: isHubStaff(role), crossDept: getCrossDeptLabels("reports", "clients") },
+        { title: "Client Reports", href: "/reports/monthly", icon: FileText, visible: isHubStaff(role), crossDept: getCrossDeptLabels("reports", "clients") },
+        { title: "KPI Overview", href: "/reports/kpis", icon: BarChart3, visible: isHubStaff(role) },
         { title: "Sales Summary", href: "/sales-summary", icon: TrendingUp, visible: isHubStaff(role) },
         { title: "Client Onboarding", href: "/onboarding", icon: ClipboardList, visible: isAdmin },
         { title: "Case Studies", href: "/case-studies", icon: Presentation, visible: isHubStaff(role) },
@@ -291,7 +300,7 @@ export function TopNav() {
     .filter((s) => s.items.length > 0);
 
   const isSectionActive = (sec: NavSection) =>
-    sec.items.some((item) => item.href === "/" ? pathname === "/" : pathname.startsWith(item.href));
+    sec.items.some((item) => navItemActive(item.href, pathname));
 
   const opalActiveKey =
     topLevelItems.find((i) => i.visible && pathname.startsWith(i.href))?.href ??
@@ -524,7 +533,7 @@ export function TopNav() {
                       </CollapsibleTrigger>
                       <CollapsibleContent>
                         {sec.items.map((item) => {
-                          const isActive = item.href === "/" || item.href === "/clients" ? pathname === item.href : pathname.startsWith(item.href);
+                          const isActive = navItemActive(item.href, pathname);
                           return (
                             <Link
                               key={item.href}
@@ -609,7 +618,7 @@ export function TopNav() {
                   <NavigationMenuContent className={alignEnd ? "left-auto right-0 origin-top-right" : undefined}>
                     <OpalMenu activeKey={pathname}>
                       {sec.items.map((item) => {
-                        const isActive = item.href === "/" || item.href === "/clients" ? pathname === item.href : pathname.startsWith(item.href);
+                        const isActive = navItemActive(item.href, pathname);
                         return (
                           <Link
                             key={item.href}
@@ -653,10 +662,10 @@ export function TopNav() {
             <div className="border-t border-sidebar-border/40">
               {pageSubnav}
             </div>
-          ) : pathname.startsWith("/reports") ? (
+          ) : isKpiReportPage(pathname) ? (
             <nav className="hidden lg:flex items-center justify-center pl-2 pr-4 lg:pl-3 lg:pr-6 border-t border-sidebar-border/40 overflow-x-auto">
               {REPORT_TABS.map((t) => {
-                const isActive = pathname === t.href || (t.href === "/reports/monthly" && pathname.startsWith("/reports/monthly/"));
+                const isActive = pathname === t.href;
                 return (
                   <Link
                     key={t.href}

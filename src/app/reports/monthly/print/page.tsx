@@ -2,11 +2,13 @@
 
 import { useSyncExternalStore } from "react";
 import { ClientReportDocument } from "@/components/client-report/client-report-document";
+import type { TextSection } from "@/lib/client-report/text";
 import type { ClientReportData } from "@/lib/client-report/types";
 
 declare global {
   interface Window {
     __CLIENT_REPORT__?: ClientReportData;
+    __CLIENT_REPORT_TEXTS__?: Partial<Record<TextSection, string>>;
   }
 }
 
@@ -25,7 +27,7 @@ export default function ClientReportPrintPage() {
   if (!data) return null;
   return (
     <>
-      <ClientReportDocument data={data} />
+      <ClientReportDocument data={data} texts={{ html: window.__CLIENT_REPORT_TEXTS__ ?? {} }} />
       <div data-report-ready="true" hidden />
     </>
   );

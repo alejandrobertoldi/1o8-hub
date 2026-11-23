@@ -3,15 +3,17 @@
 import { Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { ClipboardList, Sparkles } from "lucide-react";
+import { ClipboardList, PenLine, Sparkles } from "lucide-react";
 import { PageMetaSlot } from "@/components/layout/page-header-slot";
 import { AiConfig } from "@/components/admin/ai-config";
 import { AsanaTemplateConfig } from "@/components/admin/asana-template-config";
+import { WritingStyleConfig } from "@/components/admin/writing-style-config";
 import { hasAdminPowers } from "@/lib/roles";
 import { cn } from "@/lib/utils";
 
 const TABS = [
   { key: "ai", label: "AI models & prompts", icon: Sparkles },
+  { key: "writing", label: "Writing style", icon: PenLine },
   { key: "asana", label: "Asana project template", icon: ClipboardList },
 ] as const;
 
@@ -27,7 +29,8 @@ export default function AdminConfigPage() {
 function AdminConfig() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const tab = useSearchParams().get("tab") === "asana" ? "asana" : "ai";
+  const param = useSearchParams().get("tab");
+  const tab = param === "asana" || param === "writing" ? param : "ai";
 
   if (status === "loading") return null;
   if (!hasAdminPowers(session?.user?.role)) {
@@ -58,7 +61,7 @@ function AdminConfig() {
           </button>
         ))}
       </nav>
-      {tab === "ai" ? <AiConfig /> : <AsanaTemplateConfig />}
+      {tab === "ai" ? <AiConfig /> : tab === "writing" ? <WritingStyleConfig /> : <AsanaTemplateConfig />}
     </div>
   );
 }

@@ -7,6 +7,7 @@ import { isHubStaff } from "@/lib/roles";
 import { getReport } from "@/lib/client-report/load";
 import { isPeriod } from "@/lib/client-report/period";
 import { renderReportPdf, reportPdfName } from "@/lib/client-report/pdf";
+import { currentTexts } from "@/lib/client-report/texts-store";
 import type { ClientReportData } from "@/lib/client-report/types";
 
 /** GET — the saved report as a PDF download. */
@@ -20,7 +21,8 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ code
   if (!row) return NextResponse.json({ error: "Not generated yet" }, { status: 404 });
   const data = row.data as ClientReportData;
   try {
-    const pdf = await renderReportPdf(req.nextUrl.origin, data);
+    const texts = Object.fromEntries(Object.entries(await currentTexts(row.id)).map(([k, v]) => [k, v.html]));
+    const pdf = await renderReportPdf(req.nextUrl.origin, data, texts);
     return new NextResponse(new Uint8Array(pdf), {
       headers: {
         "Content-Type": "application/pdf",

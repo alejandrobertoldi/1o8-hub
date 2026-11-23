@@ -412,8 +412,14 @@ sheet is being retired (the hub is the source of truth; new fields live only in 
 
 ## Client monthly reports (`/reports/monthly`, 2026-11-23)
 
-Spec: `docs/superpowers/specs/2026-11-23-client-monthly-report-design.md`. Phase 1 is built: numbers, layout
-and PDF. Claude writing, the PM → AM → ES approval flow and sending come next.
+Spec: `docs/superpowers/specs/2026-11-23-client-monthly-report-design.md`. Built so far:
+- Phase 1: numbers, layout and PDF.
+- Phase 2: Claude writing, the editor and versions.
+
+Still to come: the PM → AM → ES approval flow and sending.
+
+Menu: Clients → **Client Reports** opens `/reports/monthly`. The KPI pages (`/reports/kpis`, sales,
+paid media, traffic, email) are under Clients → **KPI Overview**, with their own tab strip.
 
 - Data comes from `kpi_daily` (Shopify, GA4, Meta, Google Ads, Klaviyo). Each section shows only when its
   source has data for the client.
@@ -427,3 +433,19 @@ and PDF. Claude writing, the PM → AM → ES approval flow and sending come nex
   - Locally the PDF uses your installed Chrome; on Vercel it uses `@sparticuz/chromium`.
 - The app's background noise texture is hidden when printing. With it, each PDF was about 20 MB.
 - Production needs `npm run db:push:prod` (new table `client_reports`) before deploying.
+- Claude writing (phase 2):
+  - **Write with Claude** drafts the executive summary, one "Our read" per section, and wins,
+    watch-outs and next month's focus.
+  - Model and token limit come from Admin → Configuration → AI (Client monthly report writer).
+  - The style rules come from Admin → Configuration → **Writing style**. That page starts with the
+    SEO blog tool's guide; the report skips its hook, SEO and CTA sections.
+  - Figures are handed to Claude already formatted. Any figure in the text that isn't in the
+    report's numbers is flagged under that block.
+- Each text is versioned in `client_report_texts` (migration `0145`, append-only). Edit text lets you
+  edit in place, use Rewrite with AI (with an optional instruction), or restore an older version.
+  Refresh numbers keeps the text.
+- Production needs `npm run db:push:prod` (new table `client_report_texts`) before deploying.
+- Local Claude: `npm run claude:check` tests the key in `.env.local`. A shell-exported
+  `ANTHROPIC_API_KEY` overrides `.env.local` for Node and Next; `.claude/launch.json` starts the dev
+  server without it.
+

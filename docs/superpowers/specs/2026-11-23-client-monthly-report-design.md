@@ -1,6 +1,6 @@
 # Client Monthly Report (1o8): design
 
-Status: approved 2026-11-23 · phase 1 built (numbers, layout, PDF); phases 2-4 pending
+Status: approved 2026-11-23 · phases 1-2 built (numbers, layout, PDF; Claude writing, editor, versions); phases 3-4 pending
 
 ## Goal
 

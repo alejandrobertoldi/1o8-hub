@@ -5069,3 +5069,29 @@ export const clientReports = pgTable(
   ],
 );
 export type ClientReportRow = typeof clientReports.$inferSelect;
+
+/**
+ * The written parts of a client monthly report (executive summary, each
+ * section's commentary, wins / watch-outs / next steps). Append-only: every
+ * AI draft, rewrite, edit or restore adds a row, and the newest row per
+ * (report, section) is the current text. Survives "Refresh numbers".
+ */
+export const clientReportTexts = pgTable(
+  "client_report_texts",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    reportId: uuid("report_id")
+      .notNull()
+      .references(() => clientReports.id, { onDelete: "cascade" }),
+    section: varchar("section", { length: 30 }).notNull(),
+    html: text("html").notNull(),
+    /** ai | ai_rewrite | edit | restore */
+    source: varchar("source", { length: 20 }).notNull(),
+    /** The instruction given for an AI rewrite. */
+    instruction: text("instruction"),
+    createdBy: uuid("created_by").references(() => users.id, { onDelete: "set null" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("idx_client_report_texts_report").on(t.reportId, t.section, t.createdAt)],
+);
+export type ClientReportTextRow = typeof clientReportTexts.$inferSelect;
