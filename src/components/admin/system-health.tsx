@@ -295,52 +295,67 @@ function ClaudePanel({ claude, account }: { claude: Health["claude"]; account: A
     },
   });
   const remaining = account?.remainingUsd ?? null;
+  const amountNum = Number(amount.replace(/[$,\s]/g, ""));
+  const amountOk = amount.trim() !== "" && Number.isFinite(amountNum) && amountNum >= 0;
+  const day = (d: string) => new Date(`${d}T12:00:00Z`).toLocaleDateString("en-US", { month: "short", day: "numeric" });
 
   return (
     <Panel title="Claude AI" subtitle="API credit and usage" link={account ? { href: account.billingUrl, label: "Billing" } : undefined}>
       {account && (
-        <p className="mb-2 flex items-center gap-1.5 text-sm">
+        <p className="mb-3 flex items-center gap-1.5 text-sm">
           {account.key.ok ? <CheckCircle2 className="size-4 text-emerald-500" /> : <XCircle className="size-4 text-red-500" />}
           {account.key.ok ? "API key works" : account.key.error}
         </p>
       )}
+
+      <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Credit left</p>
       {remaining !== null && account?.credit ? (
         <>
-          <p className={cn("text-2xl font-bold tabular-nums", remaining < 10 && "text-red-500")}>{usd(remaining)}</p>
+          <p className={cn("text-3xl font-bold tabular-nums", remaining < 5 && "text-red-500")}>{usd(remaining)}</p>
           <p className="text-xs text-muted-foreground">
-            credit left (estimate): {usd(account.credit.amountUsd)} on {account.credit.asOf} − {usd(account.spentSinceCreditUsd ?? 0)} spent since
-            {account.spendSource === "hub" ? " by the hub" : ""}
+            {usd(account.credit.amountUsd)} in Billing on {day(account.credit.asOf)}
+            {(account.spentSinceCreditUsd ?? 0) > 0 && ` − ${usd(account.spentSinceCreditUsd ?? 0)} spent since${account.spendSource === "hub" ? " by the hub" : ""}`}
           </p>
         </>
       ) : (
-        <p className="text-xs text-muted-foreground">
-          Anthropic doesn&apos;t share the credit balance by API. Type the balance shown in Billing to track it here.
-        </p>
+        <p className="text-sm text-muted-foreground">Not set yet</p>
       )}
-      {account?.monthSpendUsd !== null && account?.monthSpendUsd !== undefined && (
-        <p className="mt-2 text-xs text-muted-foreground">
-          This month: <span className="font-semibold text-foreground">{usd(account.monthSpendUsd)}</span> (whole Anthropic account)
-        </p>
-      )}
-      {account?.adminError && <p className="mt-1 text-xs text-amber-600 dark:text-amber-400">Spend report: {account.adminError}</p>}
-      <p className="mt-2 text-xs text-muted-foreground">
-        Hub, last 30 days: {claude.calls.toLocaleString("en-US")} calls · {claude.errors} errors · ≈ {usd(claude.costUsd)}
-      </p>
+
       {editing ? (
         <form
-          className="mt-3 space-y-2"
+          className="mt-3 space-y-2 rounded-lg border p-3"
           onSubmit={(e) => {
             e.preventDefault();
-            save.mutate();
+            if (amountOk) save.mutate();
           }}
         >
-          <div className="flex gap-2">
-            <Input aria-label="Credit balance in USD" placeholder="Balance, e.g. 50.00" inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value)} className="h-8" />
-            <Input aria-label="Balance date" type="date" value={asOf} onChange={(e) => setAsOf(e.target.value)} className="h-8 w-40" />
+          <label className="block text-xs font-medium" htmlFor="claude-credit">
+            Credit balance shown in Billing
+          </label>
+          <div className="space-y-2">
+            <div className="relative">
+              <span className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">$</span>
+              <Input
+                id="claude-credit"
+                autoFocus
+                placeholder="12.85"
+                inputMode="decimal"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                className="h-8 bg-transparent pl-6 tabular-nums"
+              />
+            </div>
+            <label className="flex items-center gap-2 whitespace-nowrap text-xs text-muted-foreground">
+              As of
+              <Input aria-label="Date of that balance" type="date" value={asOf} onChange={(e) => setAsOf(e.target.value)} className="h-8 w-40 bg-transparent" />
+            </label>
           </div>
+          <p className="text-[11px] text-muted-foreground">
+            Claude Console → Settings → Billing → &quot;Credit balance&quot;. The hub subtracts what it spends from that day on.
+          </p>
           {save.error && <p className="text-xs text-red-500">{(save.error as Error).message}</p>}
           <div className="flex gap-2">
-            <Button type="submit" size="sm" disabled={!amount.trim() || save.isPending}>
+            <Button type="submit" size="sm" disabled={!amountOk || save.isPending}>
               Save
             </Button>
             <Button type="button" size="sm" variant="ghost" onClick={() => setEditing(false)}>
@@ -352,15 +367,28 @@ function ClaudePanel({ claude, account }: { claude: Health["claude"]; account: A
         <Button
           size="sm"
           variant="outline"
-          className="mt-3"
+          className="mt-2"
           onClick={() => {
             setAmount(account?.credit ? String(account.credit.amountUsd) : "");
+            setAsOf(new Date().toISOString().slice(0, 10));
             setEditing(true);
           }}
         >
-          {account?.credit ? "Update balance" : "Set credit balance"}
+          {account?.credit ? "Update from Billing" : "Enter balance from Billing"}
         </Button>
       )}
+
+      <div className="mt-3 space-y-0.5 border-t pt-2 text-xs text-muted-foreground">
+        {account?.monthSpendUsd !== null && account?.monthSpendUsd !== undefined && (
+          <p>
+            This month (whole account): <span className="font-semibold text-foreground">{usd(account.monthSpendUsd)}</span>
+          </p>
+        )}
+        {account?.adminError && <p className="text-amber-600 dark:text-amber-400">Spend report: {account.adminError}</p>}
+        <p>
+          Hub, last 30 days: {claude.calls.toLocaleString("en-US")} calls · {claude.errors} errors · ≈ {usd(claude.costUsd)}
+        </p>
+      </div>
     </Panel>
   );
 }
