@@ -435,7 +435,7 @@ export function HoursDashboard() {
                 >
                   <div />
                   {heat.clients.map((c) => {
-                    const name = c.code === "INTERNAL" ? "1o8" : (clientNameMap.get(c.code) ?? c.code);
+                    const name = c.code === "INTERNAL" ? "1o8" : c.code === "PTO" ? "PTO" : (clientNameMap.get(c.code) ?? c.code);
                     return (
                       <div
                         key={c.code}

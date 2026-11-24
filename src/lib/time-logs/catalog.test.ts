@@ -45,3 +45,13 @@ describe("time-tracking catalog", () => {
     expect(workdaysBetween("2026-11-01", "2026-11-30", new Set(["2026-11-11", "2026-11-26"]))).toBe(19);
   });
 });
+
+describe("noteRequired", () => {
+  it("requires a note only on General internal work", async () => {
+    const { noteRequired } = await import("./catalog");
+    expect(noteRequired("1O800000")).toBe(true);
+    expect(noteRequired("1o800000")).toBe(true);
+    expect(noteRequired("1O890001")).toBe(false);
+    expect(noteRequired("KSS00000")).toBe(false);
+  });
+});

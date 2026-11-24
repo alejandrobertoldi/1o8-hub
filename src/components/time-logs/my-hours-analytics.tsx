@@ -107,7 +107,7 @@ export function MyHoursAnalytics() {
           {from !== to && <WeeklyCapacity data={data} />}
 
           <div className="grid gap-5 lg:grid-cols-2">
-            <Panel title="Hours by client" subtitle="Where your time went (1O8 = internal)">
+            <Panel title="Hours by client" subtitle="Where your time went (1O8 = internal, PTO apart)">
               <ResponsiveContainer width="100%" height={Math.max(160, byClient.length * 26 + 30)}>
                 <BarChart data={byClient} layout="vertical" margin={{ left: 0, right: 24, top: 0, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" horizontal={false} />

@@ -1,7 +1,7 @@
 import { and, asc, eq, gte, inArray, lte, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { teamDirectoryProfiles, timeLogs, users } from "@/lib/db/schema";
-import { BILLING_TYPES, TIMESHEET_LIMIT, TIME_SETTINGS, WEEKLY_CAPACITY_HOURS, workdaysBetween } from "./catalog";
+import { BILLING_TYPES, PTO_REPORT_CODE, PTO_REPORT_NAME, TIMESHEET_LIMIT, TIME_SETTINGS, WEEKLY_CAPACITY_HOURS, workdaysBetween } from "./catalog";
 import { listLoggableClients } from "./server";
 import { DEFAULT_HOLIDAY_CALENDAR, holidayCalendar, holidaysByCalendar } from "./holidays";
 import { readinessDepartmentFor } from "@/lib/readiness/match";
@@ -45,7 +45,7 @@ const STAFF_ROLES = ["owner", "super_admin", "admin", "editor", "viewer"] as con
 export async function buildInsights(from: string, to: string, today = new Date().toISOString().slice(0, 10), filters: InsightFilters = {}) {
   // Expected hours start when hour logging went live, not before.
   const expectedFrom = from < TIME_SETTINGS.trackingStartDate ? TIME_SETTINGS.trackingStartDate : from;
-  const [allLogs, fullTeam, clients, holidays, deptEstimates] = await Promise.all([
+  const [rawLogs, fullTeam, clients, holidays, deptEstimates] = await Promise.all([
     db
       .select({
         userId: timeLogs.userId,
@@ -71,6 +71,8 @@ export async function buildInsights(from: string, to: string, today = new Date()
     holidaysByCalendar(from < expectedFrom ? from : expectedFrom, to),
     listDepartmentEstimates(),
   ]);
+  // PTO and holidays are logged to 1O8 but reported as their own "client", apart from 1o8's internal time.
+  const allLogs = rawLogs.map((l) => (l.billingType === BILLING_TYPES.pto ? { ...l, client: PTO_REPORT_CODE } : l));
   // Holidays on each person's calendar aren't workdays (US when none is assigned).
   const holidaysOf = (countryCode: string | null) => holidays.get(holidayCalendar(countryCode)) ?? new Set<string>();
   const usHolidays = holidays.get(DEFAULT_HOLIDAY_CALENDAR) ?? new Set<string>();
@@ -215,7 +217,7 @@ export async function buildInsights(from: string, to: string, today = new Date()
   // Every week in the range, even empty ones, so the trend has no gaps.
   const weeks: string[] = [];
   const activeDays = new Set(logs.map((l) => `${l.userId}|${l.date}`)).size;
-  const clientCodes = [...clientStats.keys()].filter((c) => c.toUpperCase() !== "1O8");
+  const clientCodes = [...clientStats.keys()].filter((c) => c.toUpperCase() !== "1O8" && c !== PTO_REPORT_CODE);
   const topClient = clientCodes.sort((a, b) => clientStats.get(b)!.hours - clientStats.get(a)!.hours)[0] ?? null;
   const people = filters.userId ? 1 : team.length;
   const clipFrom = (w: string) => (w < expectedFrom ? expectedFrom : w);
@@ -284,7 +286,7 @@ export async function buildInsights(from: string, to: string, today = new Date()
         note: l.note,
       })),
     capacityPerWeek: WEEKLY_CAPACITY_HOURS * people,
-    clientNames: Object.fromEntries(clients.map((c) => [c.code, c.name])),
+    clientNames: { ...Object.fromEntries(clients.map((c) => [c.code, c.name])), [PTO_REPORT_CODE]: PTO_REPORT_NAME } as Record<string, string>,
     people: visible.map((t) => ({ id: t.id, name: t.name ?? "—", team: teamOf(t.departments) })),
     byPersonClient,
     // Capacity = 8 h × each person's workdays of the week inside the range, holidays excluded (40 h for a full week).

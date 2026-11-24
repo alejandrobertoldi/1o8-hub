@@ -1,7 +1,8 @@
 import { db } from "@/lib/db";
 import { timeLogs, users } from "@/lib/db/schema";
-import { and, asc, eq, gte, inArray, lte, sql, type SQL } from "drizzle-orm";
+import { and, asc, eq, gte, inArray, lte, ne, or, sql, type SQL } from "drizzle-orm";
 import { INTERNAL_CLIENT_CODE } from "@/lib/my-dashboard/asana-map";
+import { BILLING_TYPES, PTO_REPORT_CODE } from "@/lib/time-logs/catalog";
 
 /**
  * Hours Analytics (MarketFoundry's Admin Hours dashboard) over 1o8's time
@@ -13,9 +14,18 @@ import { INTERNAL_CLIENT_CODE } from "@/lib/my-dashboard/asana-map";
 
 const DASHBOARD_INTERNAL = "INTERNAL";
 
-/** Client code as the dashboard sees it. */
-const clientCode = sql<string>`case when ${timeLogs.clientIdCode} = ${INTERNAL_CLIENT_CODE} then ${DASHBOARD_INTERNAL} else ${timeLogs.clientIdCode} end`;
-const toLogCode = (code: string) => (code === DASHBOARD_INTERNAL ? INTERNAL_CLIENT_CODE : code);
+/** Client code as the dashboard sees it: PTO / holidays apart ("PTO"), then 1o8's own time ("INTERNAL"). */
+const clientCode = sql<string>`case when ${timeLogs.billingType} = ${BILLING_TYPES.pto} then ${PTO_REPORT_CODE} when ${timeLogs.clientIdCode} = ${INTERNAL_CLIENT_CODE} then ${DASHBOARD_INTERNAL} else ${timeLogs.clientIdCode} end`;
+
+/** Filter on dashboard client codes ("PTO" and "INTERNAL" split 1O8's logs by billing type). */
+function clientFilter(codes: string[]): SQL | undefined {
+  const real = codes.filter((c) => c !== PTO_REPORT_CODE && c !== DASHBOARD_INTERNAL);
+  return or(
+    real.length ? inArray(timeLogs.clientIdCode, real) : undefined,
+    codes.includes(PTO_REPORT_CODE) ? eq(timeLogs.billingType, BILLING_TYPES.pto) : undefined,
+    codes.includes(DASHBOARD_INTERNAL) ? and(eq(timeLogs.clientIdCode, INTERNAL_CLIENT_CODE), ne(timeLogs.billingType, BILLING_TYPES.pto)) : undefined,
+  );
+}
 
 /** Comments column: project, then the note. */
 const noteText = sql<string | null>`nullif(concat_ws(' — ', nullif(${timeLogs.projectName}, ''), nullif(${timeLogs.note}, '')), '')`;
@@ -34,7 +44,7 @@ function filters(opts: {
     to ? lte(timeLogs.entryDate, to) : undefined,
     entryDate ? eq(timeLogs.entryDate, entryDate) : undefined,
     userIds?.length ? inArray(timeLogs.userId, userIds) : undefined,
-    clientIdCodes?.length ? inArray(timeLogs.clientIdCode, clientIdCodes.map(toLogCode)) : undefined,
+    clientIdCodes?.length ? clientFilter(clientIdCodes) : undefined,
     categories?.length ? inArray(timeLogs.department, categories) : undefined,
   );
 }
@@ -51,7 +61,7 @@ export function summaryRows(from: string, to: string, categories?: string[], use
     .from(timeLogs)
     .innerJoin(users, eq(users.id, timeLogs.userId))
     .where(filters({ from, to, categories, userIds }))
-    .groupBy(timeLogs.userId, users.name, users.email, timeLogs.clientIdCode);
+    .groupBy(timeLogs.userId, users.name, users.email, clientCode);
 }
 
 /** Hours grouped by member × client × department (the department breakdown; the UI scopes it to 1o8's own time or all hours). */
@@ -69,7 +79,7 @@ export function departmentBreakdownRows(from: string, to: string, categories?: s
     .from(timeLogs)
     .innerJoin(users, eq(users.id, timeLogs.userId))
     .where(filters({ from, to, categories, userIds }))
-    .groupBy(timeLogs.userId, users.name, users.email, timeLogs.clientIdCode, timeLogs.department);
+    .groupBy(timeLogs.userId, users.name, users.email, clientCode, timeLogs.department);
 }
 
 export function categoriesInRange(from: string, to: string, userIds?: string[]) {
@@ -104,7 +114,7 @@ export function summaryByDay(from: string, to: string, dimension: "member" | "cl
       })
       .from(timeLogs)
       .where(filters({ from, to, categories, userIds }))
-      .groupBy(timeLogs.clientIdCode, timeLogs.entryDate)
+      .groupBy(clientCode, timeLogs.entryDate)
       .orderBy(asc(timeLogs.entryDate));
   }
   return db

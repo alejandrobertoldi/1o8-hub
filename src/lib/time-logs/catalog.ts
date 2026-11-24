@@ -61,6 +61,13 @@ export const BILLING_TYPES = {
 } as const;
 export type BillingType = (typeof BILLING_TYPES)[keyof typeof BILLING_TYPES];
 
+/**
+ * Reports show PTO and holidays as their own line, not as 1o8 internal time:
+ * entries with the PTO billing type are grouped under this code.
+ */
+export const PTO_REPORT_CODE = "PTO";
+export const PTO_REPORT_NAME = "PTO / Holiday";
+
 /** Fixed 1O8 project numbers for time that can't go to a client. */
 export const INTERNAL_PROJECTS = [
   { projectNumber: "1O800000", name: "General internal work", billingType: BILLING_TYPES.internal },
@@ -72,6 +79,10 @@ export const INTERNAL_PROJECTS = [
   { projectNumber: "1O890006", name: "Agency ops & admin", billingType: BILLING_TYPES.internal },
   { projectNumber: "1O890007", name: "1o8 Hub (build & maintenance)", billingType: BILLING_TYPES.internal },
 ] as const;
+
+/** Projects whose entries must say what the time was for (General internal work is too broad to read without a note). */
+export const NOTE_REQUIRED_PROJECTS: readonly string[] = ["1O800000"];
+export const noteRequired = (projectNumber: string) => NOTE_REQUIRED_PROJECTS.includes(projectNumber.trim().toUpperCase());
 
 export const GENERAL_SUFFIX = "00000";
 export const generalProjectNumber = (clientCode: string) => `${clientCode.toUpperCase()}${GENERAL_SUFFIX}`;

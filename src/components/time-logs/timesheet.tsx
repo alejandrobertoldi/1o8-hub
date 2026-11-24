@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { noteRequired } from "@/lib/time-logs/catalog";
 import type { TimeLog } from "@/lib/db/schema";
 import type { LoggableClient, LoggableProject } from "@/lib/time-logs/server";
 import { TimerControl } from "./timer-control";
@@ -183,7 +184,8 @@ export function Timesheet() {
   }, [recent, windowStart, today, min, holidays]);
 
   const clientName = (code: string) => options?.clients.find((c) => c.code === code)?.name ?? code;
-  const canSave = form.entryDate && Number(form.hours) > 0 && form.clientIdCode && form.department && form.projectNumber;
+  const needsNote = noteRequired(form.projectNumber);
+  const canSave = form.entryDate && Number(form.hours) > 0 && form.clientIdCode && form.department && form.projectNumber && (!needsNote || form.note.trim());
 
   function startEdit(l: TimeLog) {
     setEditingId(l.id);
@@ -376,8 +378,14 @@ export function Timesheet() {
               )}
             </select>
           </Field>
-          <Field label="Notes (optional)">
-            <Input value={form.note} onChange={(e) => set("note", e.target.value)} />
+          <Field label={needsNote ? "Notes" : "Notes (optional)"} required={needsNote}>
+            <Input
+              value={form.note}
+              onChange={(e) => set("note", e.target.value)}
+              placeholder={needsNote ? "What was it? e.g. hiring interviews" : undefined}
+              aria-invalid={needsNote && !form.note.trim() ? true : undefined}
+              className={needsNote && !form.note.trim() ? "border-red-400" : undefined}
+            />
           </Field>
           {/* An empty label keeps the buttons level with the fields, not with the project hint below them. */}
           <div className="grid gap-1">

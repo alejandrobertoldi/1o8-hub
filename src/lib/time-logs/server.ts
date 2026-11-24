@@ -12,6 +12,7 @@ import {
   generalProjectNumber,
   isValidHours,
   isWorkType,
+  noteRequired,
   taskProjectNumber,
   workTypeTag,
 } from "./catalog";
@@ -131,6 +132,7 @@ export async function resolveTimeLog(
   const client = clients.find((c) => c.code.toUpperCase() === input.clientIdCode.toUpperCase());
   if (!client) return { ok: false, error: `${input.clientIdCode} is not a client` };
   const projectNumber = input.projectNumber.toUpperCase();
+  if (noteRequired(projectNumber) && !input.note) return { ok: false, error: "Add a note: General internal work needs a short description of what you did." };
 
   let projectName: string;
   let asanaTaskGid: string | null;

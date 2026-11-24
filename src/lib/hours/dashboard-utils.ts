@@ -14,7 +14,7 @@ export type Heatmap = {
 const round2 = (n: number) => Math.round(n * 100) / 100;
 
 export function clientLabel(code: string): string {
-  return code === "INTERNAL" ? "1o8" : code;
+  return code === "INTERNAL" ? "1o8" : code === "PTO" ? "PTO / Holiday" : code;
 }
 
 export function computeKpis(s: Summary): Kpis {
